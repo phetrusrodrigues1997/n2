@@ -7,7 +7,7 @@ import { getProvisionalOutcome, } from '../Database/OwnerActions';
 import { TrendingUp, TrendingDown, Shield, Zap, AlertTriangle, Clock, FileText, Upload, ChevronDown, ChevronUp, Eye, Trophy } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { getMarkets } from '../Constants/markets';
-import { getTranslation } from '../Languages/languages';
+import { getTranslation, Language } from '../Languages/languages';
 import { getPrice } from '../Constants/getPrice';
 import { useQueryClient } from '@tanstack/react-query';
 import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, BASE_ENTRY_FEE, calculateEntryFee } from '../Database/config';
@@ -110,6 +110,12 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
   const { address, isConnected } = useAccount();
   const { writeContract, data: txHash, isPending } = useWriteContract();
   const queryClient = useQueryClient();
+  
+  // Language state
+  const [currentLanguage, setCurrentLanguage] = useState<Language>('en');
+  
+  // Get translations for safe display strings only
+  const t = getTranslation(currentLanguage);
   
   // TESTING TOGGLE - Set to false to test prediction logic on Saturdays
   const SHOW_RESULTS_DAY_INFO = false; // Toggle this on/off as needed
@@ -432,6 +438,12 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
   useEffect(() => {
     const savedContract = Cookies.get('selectedMarket');
     const savedQuestion = Cookies.get('selectedMarketQuestion');
+    const savedLanguage = Cookies.get('language') as Language;
+    
+    // Set language
+    if (savedLanguage) {
+      setCurrentLanguage(savedLanguage);
+    }
     
     // Set the market question if available
     if (savedQuestion) {
@@ -895,8 +907,8 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
             <div className="w-24 h-24 bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-xl shadow-gray-900/25 transform rotate-3 hover:rotate-0 transition-transform duration-500">
               <span className="text-4xl font-black text-white drop-shadow-lg">₿</span>
             </div>
-            <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Connect Wallet</h1>
-            <p className="text-gray-600 text-lg">Connect to start predicting</p>
+            <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">{t.connectWalletTitle || "Connect Wallet"}</h1>
+            <p className="text-gray-600 text-lg">{t.connectToStartPredicting || "Connect to start predicting"}</p>
             
             {/* Subtle pulse indicator */}
             <div className="absolute -top-2 -right-2 w-4 h-4 bg-blue-500 rounded-full animate-ping"></div>
@@ -921,10 +933,10 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
             <div className="w-24 h-24 bg-gradient-to-br from-gray-900 to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-xl">
               <Shield className="w-12 h-12 text-white" />
             </div>
-            <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Access Required</h1>
-            <p className="text-gray-600 mb-8 text-lg">You must join the pot first</p>
+            <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">{t.accessRequired || "Access Required"}</h1>
+            <p className="text-gray-600 mb-8 text-lg">{t.mustJoinPotFirst || "You must join the pot first"}</p>
             <button className="bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-xl hover:shadow-2xl hover:scale-105 transform duration-300">
-              Enter Pot
+              {t.enterPot || "Enter Pot"}
             </button>
           </div>
         </div>
@@ -934,7 +946,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
 
   // Show initial loading screen first
   if (isInitialLoading) {
-    return <LoadingScreenAdvanced subtitle="Loading your predictions..." />;
+    return <LoadingScreenAdvanced subtitle={t.loadingPredictions || "Loading your predictions..."} />;
   }
 
   return (
@@ -953,11 +965,11 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
             </div>
             
             {/* Header */}
-            <h2 className="text-3xl font-black text-purple-700 mb-4">Final Predictions</h2>
+            <h2 className="text-3xl font-black text-purple-700 mb-4">{t.finalPredictions || "Final Predictions"}</h2>
             
             {/* Subheading */}
             <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-              Congratulations! You are down to the last 10. Make your predictions as you normally would and if you win we will notify you.
+              {t.congratulationsFinal10 || "Congratulations! You are down to the last 10. Make your predictions as you normally would and if you win we will notify you."}
             </p>
             
             {/* Close Button */}
@@ -965,7 +977,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
               onClick={() => setShowFinalDayPopup(false)}
               className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-xl font-medium transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
             >
-              Got it! 🎯
+              {t.gotIt || "Got it! 🎯"}
             </button>
           </div>
         </div>
@@ -984,7 +996,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
           <div className="bg-white/70 backdrop-blur-xl border border-gray-200/50 rounded-3xl p-10 mb-8 shadow-2xl shadow-gray-900/10 text-center">
             <div className="inline-flex items-center gap-3 text-gray-600">
               <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
-              <span className="font-medium">Loading your bet...</span>
+              <span className="font-medium">{t.loadingYourBet || "Loading your bet..."}</span>
             </div>
           </div>
         ) : reEntryFee && reEntryFee > 0 && !potInfo.isFinalDay ? (
@@ -1011,7 +1023,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                     Processing...
                   </>
                 ) : (
-                  `Enter Pot (${ethToUsd(getEntryAmount()).toFixed(2)} USD)`
+                  `${t.enterPot || 'Enter Pot'} (${ethToUsd(getEntryAmount()).toFixed(2)} USD)`
                 )}
               </button>
             </div>
@@ -1051,7 +1063,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                         <div className={`text-2xl font-black tracking-tight ${
                           marketOutcome?.outcome === 'positive' ? 'text-green-700' : 'text-purple-700'
                         }`}>
-                          {marketOutcome?.outcome === 'positive' ? 'YES' : 'NO'}
+                          {marketOutcome?.outcome === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
                         </div>
                       </div>
                     </div>
@@ -1061,7 +1073,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                     <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mt-4">
                       <p className="text-yellow-800 font-semibold text-sm text-center">
                         ⚠️ Outcome disputed and updated to: <span className="font-bold">
-                          {marketOutcome.finalOutcome === 'positive' ? 'YES' : 'NO'}
+                          {marketOutcome.finalOutcome === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
                         </span>
                       </p>
                     </div>
@@ -1231,7 +1243,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                     
                     <div className="text-left">
                       <div className="text-5xl font-black text-black tracking-tight mb-2">
-                        {(tomorrowsBet as TodaysBet).prediction === 'positive' ? 'YES' : 'NO'}
+                        {(tomorrowsBet as TodaysBet).prediction === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
                       </div>
                       {/* <div className="text-gray-600 text-sm font-medium">
                         Set at {new Date(tomorrowsBet.createdAt).toLocaleTimeString('en-GB', {
@@ -1259,7 +1271,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                         <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
                           <Clock className="w-1.5 h-1.5 text-white" />
                         </div>
-                        <span className="text-gray-700 font-medium text-xs">Next Question</span>
+                        <span className="text-gray-700 font-medium text-xs">{t.nextQuestion || "Next Question"}</span>
                         <span className="font-black text-gray-900 text-xs tracking-wider">
                           {timeUntilNewQuestion.hours.toString().padStart(2, '0')}:
                           {timeUntilNewQuestion.minutes.toString().padStart(2, '0')}:
@@ -1346,7 +1358,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                       <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
                         <Clock className="w-1.5 h-1.5 text-white" />
                       </div>
-                      <span className="text-purple-700 font-medium text-xs">Next Question</span>
+                      <span className="text-purple-700 font-medium text-xs">{t.nextQuestion || "Next Question"}</span>
                       <span className="font-black text-purple-900 text-xs tracking-wider">
                         {timeUntilNewQuestion.hours.toString().padStart(2, '0')}:
                         {timeUntilNewQuestion.minutes.toString().padStart(2, '0')}:
@@ -1398,7 +1410,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                               ? 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border border-purple-200' 
                               : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-200'
                           }`}>
-                            {(tomorrowsBet as TodaysBet).prediction === 'positive' ? 'YES' : 'NO'}
+                            {(tomorrowsBet as TodaysBet).prediction === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
                           </div>
                         ) : (
                           // Show YES/NO buttons when collapsed and no active prediction
@@ -1409,14 +1421,14 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                                 disabled={isLoading}
                                 className="bg-[#00bb00] hover:bg-[#009900] disabled:opacity-50 text-white px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                               >
-                                YES
+                                {t.yesButton || "YES"}
                               </button>
                               <button
                                 onClick={() => handlePlaceBet('negative')}
                                 disabled={isLoading}
                                 className="bg-[#bb0000] hover:bg-[#990000] disabled:opacity-50 text-white px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                               >
-                                NO
+                                {t.noButton || "NO"}
                               </button>
                             </div>
                           )
@@ -1461,7 +1473,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                         <div className="bg-gradient-to-r from-purple-50/80 to-white border border-purple-200/50 rounded-2xl p-4 max-w-sm mx-auto">
                           <p className="text-gray-700 text-sm font-medium">
                             Submitting: <span className="font-black text-purple-700">
-                              {votingPreference === 'positive' ? 'YES' : 'NO'}
+                              {votingPreference === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
                             </span>
                           </p>
                         </div>
@@ -1481,7 +1493,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                             <div className="p-2 bg-white/10 rounded-lg mb-2 flex items-center justify-center">
                               <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />
                             </div>
-                            <div className="tracking-wide">YES</div>
+                            <div className="tracking-wide">{t.yesButton || "YES"}</div>
                           </div>
                         </button>
 
@@ -1495,7 +1507,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                             <div className="p-2 bg-gray-900/10 group-hover:bg-purple-700/10 rounded-lg mb-2 flex items-center justify-center transition-colors duration-200">
                               <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6" />
                             </div>
-                            <div className="tracking-wide">NO</div>
+                            <div className="tracking-wide">{t.noButton || "NO"}</div>
                           </div>
                         </button>
                       </div>
@@ -1517,7 +1529,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
 
                     {/* Timer Section */}
                     <div className="border-t border-gray-100 pt-6">
-                      <h4 className="text-lg font-black text-gray-900 text-center mb-6">Important Timers</h4>
+                      <h4 className="text-lg font-black text-gray-900 text-center mb-6">{t.importantTimers || "Important Timers"}</h4>
                       <div className="space-y-3">
                       
                       {/* New Question Timer */}
@@ -1544,7 +1556,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                         return (
                           <div className={`${containerClass} rounded-xl p-4`}>
                             <div className="flex items-center justify-between">
-                              <div className={`${textClass} font-semibold text-sm`}>Next Question</div>
+                              <div className={`${textClass} font-semibold text-sm`}>{t.nextQuestion || "Next Question"}</div>
                               <div className="flex items-center gap-3">
                                 <div className={`w-6 h-6 ${iconClass} rounded-full flex items-center justify-center`}>
                                   <Clock className="w-3 h-3 text-white" />
@@ -1646,7 +1658,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                         <span className={`font-black text-base ${
                           prediction.prediction === 'positive' ? 'text-purple-700' : 'text-gray-700'
                         }`}>
-                          {prediction.prediction === 'positive' ? 'YES' : 'NO'}
+                          {prediction.prediction === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
                         </span>
                         <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium">
                           {new Date(prediction.predictionDate).toLocaleDateString('en-US', { 
@@ -1737,7 +1749,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                 </div>
                 <div className="text-left">
                   <div className="text-lg sm:text-xl font-black text-gray-900 tracking-tight">
-                    {todaysBet.prediction === 'positive' ? 'YES' : 'NO'}
+                    {todaysBet.prediction === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
                   </div>
                   {/* <div className="text-gray-500 text-xs font-medium">
                     For: <span className="text-purple-700">tomorrow</span>

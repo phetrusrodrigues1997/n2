@@ -32,8 +32,9 @@ import MessagingPage from './Pages/MessagingPage';
 import IdeasPage from './Pages/IdeasPage';
 import AdminEvidenceReviewPage from './Pages/AdminEvidenceReviewPage';
 import { getMarkets } from './Constants/markets';
-import { Language, getTranslation, supportedLanguages } from './Languages/languages';
+import { Language, getTranslation, supportedLanguages, getMarketDisplayName, getPersonalizedLabel } from './Languages/languages';
 import { getPrice } from './Constants/getPrice';
+import Cookies from 'js-cookie';
 
 
 
@@ -54,6 +55,8 @@ export default function App() {
   const [hasUnreadAnnouncementsState, setHasUnreadAnnouncementsState] = useState(false); // Track unread announcements
   const [isNavigationMenuOpen, setIsNavigationMenuOpen] = useState(false); // Track navigation menu state
   const [ethPrice, setEthPrice] = useState<number | null>(null); // ETH price in USD
+  const [isMobile, setIsMobile] = useState(false); // Track if device is mobile
+  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false); // Track language dropdown state
 
   // Get ETH balance
   const ethBalance = useBalance({
@@ -76,6 +79,50 @@ export default function App() {
   // Get market options for carousels
   const t = getTranslation(currentLanguage);
   const marketOptions = getMarkets(t, 'options');
+
+  // Mobile detection
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.matchMedia('(max-width: 787px)').matches);
+    };
+  
+    // Initial check
+    checkIfMobile();
+  
+    // Listen for window resize events
+    window.addEventListener('resize', checkIfMobile);
+  
+    // Clean up
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
+
+  // Initialize language from cookies
+  useEffect(() => {
+    const savedLang = Cookies.get('language') as Language | undefined;
+    if (savedLang && supportedLanguages.some(lang => lang.code === savedLang)) {
+      setCurrentLanguage(savedLang);
+    }
+  }, []);
+
+  // Language switching function
+  const handleLanguageChange = (language: Language) => {
+    setCurrentLanguage(language);
+    Cookies.set('language', language, { expires: 365 });
+    setIsLanguageDropdownOpen(false);
+  };
+
+  // Close language dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (isLanguageDropdownOpen && !target.closest('[data-language-dropdown]')) {
+        setIsLanguageDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isLanguageDropdownOpen]);
 
   // Fetch ETH price
   useEffect(() => {
@@ -308,19 +355,7 @@ export default function App() {
   }, []);
   const [toastMessage] = useState('');
   const [showToast] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   // Removed unused state variables for cleaner code
-
-  useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-
-    return () => window.removeEventListener('resize', checkIsMobile);
-  }, []);
 
   // Click outside handler for More dropdown
   useEffect(() => {
@@ -452,6 +487,7 @@ export default function App() {
                   setActiveSection={setActiveSection} 
                   onMenuToggle={setIsNavigationMenuOpen}
                   onTriggerWallet={navigateToWallet}
+                  currentLanguage={currentLanguage}
                 />
               </div>
 
@@ -471,7 +507,7 @@ export default function App() {
                   </div>
                   <input
                     type="text"
-                    placeholder="Search pots..."
+                    placeholder={t.searchPotsPlaceholder}
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
                     className="w-[530px] pl-10 pr-10 py-2 bg-gray-100 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:bg-white focus:border-2 focus:border-purple-700 transition-colors duration-200"
@@ -491,7 +527,7 @@ export default function App() {
                     i
                   </span>
                   {/* Text */}
-                  <span className="text-purple-700">How it works</span>
+                  <span className="text-purple-700">{t.howItWorks}</span>
                 </button>
               </div>
             </div>
@@ -510,17 +546,56 @@ export default function App() {
                     onClick={() => setActiveSection('receive')}
                     className={`hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-4 py-1 rounded-md min-w-fit translate-x-16 hover:bg-gray-100 cursor-pointer`}
                   >
-                    <div className="text-xs text-gray-500 whitespace-nowrap opacity-70">Your balance</div>
+                    <div className="text-xs text-gray-500 whitespace-nowrap opacity-70">{t.yourBalance}</div>
                     <div className="text-sm font-semibold text-purple-700 whitespace-nowrap">
                       {ethBalance.data ? formatBalance(ethBalance.data.value) : '$0.00'}
                     </div>
                   </button>
                 )}
 
+                {/* Language dropdown - Mobile only, left of Bell */}
+                {isMobile && isConnected && (
+                  <div className="relative z-50 translate-x-14" data-language-dropdown>
+                    <button
+                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                      onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
+                      type="button"
+                    >
+                      <img
+                        src={supportedLanguages.find(lang => lang.code === currentLanguage)?.flag}
+                        alt={`${currentLanguage} flag`}
+                        className="w-6 h-4 object-cover rounded"
+                      />
+                    </button>
+                    
+                    {/* Language dropdown menu */}
+                    {isLanguageDropdownOpen && (
+                      <div className="absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+                        {supportedLanguages.map((language) => (
+                          <button
+                            key={language.code}
+                            onClick={() => handleLanguageChange(language.code)}
+                            className={`w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors flex items-center gap-2 ${
+                              currentLanguage === language.code ? 'bg-purple-50 text-purple-700' : 'text-gray-700'
+                            }`}
+                          >
+                            <img
+                              src={language.flag}
+                              alt={`${language.name} flag`}
+                              className="w-5 h-3 object-cover rounded"
+                            />
+                            <span className="text-sm font-medium">{language.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Bell button - separate from wallet */}
                 {isConnected && !(isNavigationMenuOpen && isMobile) && (
                   <button
-                    className="relative p-2 hover:bg-gray-100 rounded-full transition-colors z-50 translate-x-12 md:translate-x-16"
+                    className="relative p-2 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-12 md:translate-x-16"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -556,7 +631,7 @@ export default function App() {
                             }}
                             className="flex flex-col items-center bg-transparent text-gray-700 font-medium text-xs hover:bg-gray-100 cursor-pointer px-2 py-1 rounded-md transition-colors duration-200"
                           >
-                            <div className="text-xs text-gray-500 whitespace-nowrap opacity-70">Balance</div>
+                            <div className="text-xs text-gray-500 whitespace-nowrap opacity-70">{t.yourBalance}</div>
                             <div className="text-sm font-semibold text-purple-700 whitespace-nowrap">
                               {ethBalance.data ? formatBalance(ethBalance.data.value) : '$0.00'}
                             </div>
@@ -621,7 +696,7 @@ export default function App() {
     minWidth: 'fit-content',
   }}
 >
-  {market.name}
+  {getMarketDisplayName(market.name, currentLanguage)}
 </button>
 
                 ))}
@@ -715,7 +790,7 @@ export default function App() {
           </div>
           <input
             type="text"
-            placeholder="Search pots..."
+            placeholder={t.searchPotsPlaceholder}
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-transparent border border-gray-300 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:bg-white focus:border-purple-700 transition-colors duration-200"
@@ -851,7 +926,7 @@ export default function App() {
                     }}
                   >
                     <span className="text-sm whitespace-nowrap tracking-tight">
-                      {personalizedLabels[market.name as keyof typeof personalizedLabels] || market.name}
+                      {getPersonalizedLabel(market.name, currentLanguage)}
                     </span>
                   </button>
                 ))}
@@ -870,19 +945,19 @@ export default function App() {
         {activeSection === "receive" && <ReceiveSection activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "profile" && <ProfilePage activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "messagesPage" && <MessagingPage activeSection={activeSection} setActiveSection={setActiveSection} />}
-        {activeSection === "discord" && <HowItWorksSection setActiveSection={setActiveSection} />}
+        {activeSection === "discord" && <HowItWorksSection setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "activity" && <Activity />}
         {/* {activeSection === "notifications" && <CreateMessage />} */}
         {activeSection === "dashboard" && <TutorialBridge activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "notReadyPage" && <NotReadyPage activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "bitcoinPot" && <PredictionPotTest activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "referralProgram" && <ReferralProgram activeSection={activeSection} setActiveSection={setActiveSection} />}
-        {activeSection === "home" && <LandingPage activeSection={activeSection} setActiveSection={setActiveSection} isMobileSearchActive={isMobileSearchActive} searchQuery={searchQuery} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} onLoadingChange={handleLoadingChange} />}
+        {activeSection === "home" && <LandingPage activeSection={activeSection} setActiveSection={setActiveSection} isMobileSearchActive={isMobileSearchActive} searchQuery={searchQuery} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} onLoadingChange={handleLoadingChange} currentLanguage={currentLanguage} />}
         {activeSection === "makePrediction" && <MakePredicitions activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "AI" && <GamesHub activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "createPot" && <CreatePotPage navigateToPrivatePot={navigateToPrivatePot} />}
         {activeSection === "ideas" && <IdeasPage activeSection={activeSection} setActiveSection={setActiveSection} />}
-        {activeSection === "bookmarks" && <BookmarksPage activeSection={activeSection} setActiveSection={setActiveSection} />}
+        {activeSection === "bookmarks" && <BookmarksPage activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "adminEvidenceReview" && <AdminEvidenceReviewPage activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "privatePot" && privatePotAddress && (
           <PrivatePotInterface

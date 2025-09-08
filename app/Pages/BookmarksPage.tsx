@@ -7,7 +7,7 @@ import { Bookmark, X, Trophy, Users, TrendingUp } from 'lucide-react';
 import { getUserBookmarks, removeBookmark } from '../Database/actions';
 import { CONTRACT_TO_TABLE_MAPPING, MIN_PLAYERS, MIN_PLAYERS2 } from '../Database/config';
 import { getMarkets } from '../Constants/markets';
-import { getTranslation } from '../Languages/languages';
+import { getTranslation, Language } from '../Languages/languages';
 import { useContractData } from '../hooks/useContractData';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
 import LoadingScreen from '../Components/LoadingScreen';
@@ -15,6 +15,7 @@ import LoadingScreen from '../Components/LoadingScreen';
 interface BookmarksPageProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
+  currentLanguage?: Language;
 }
 
 interface BookmarkItem {
@@ -26,7 +27,7 @@ interface BookmarkItem {
   // Note: marketName and marketQuestion are no longer fetched from database - we use live data from markets.ts
 }
 
-const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) => {
+const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en' }: BookmarksPageProps) => {
   const { contractAddresses, participantsData, balancesData, isConnected, address } = useContractData();
   const [bookmarks, setBookmarks] = useState<BookmarkItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +46,7 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
   const balanceCalculatedRef = useRef<boolean>(false);
 
   // Get translation instance for market data
-  const t = getTranslation('en');
+  const t = getTranslation(currentLanguage);
 
   // Function to get current market data from markets.ts
   const getCurrentMarketData = (marketId: string, marketCategory: string) => {
@@ -256,15 +257,15 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <Bookmark className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Connect Your Wallet</h2>
-          <p className="text-gray-600">Connect your wallet to view your bookmarked pots.</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.connectYourWallet}</h2>
+          <p className="text-gray-600">{t.connectWalletBookmarks}</p>
         </div>
       </div>
     );
   }
 
   if (loading) {
-    return <LoadingScreen title="Prediwin" subtitle="Loading your bookmarks..." />;
+    return <LoadingScreen title="Prediwin" subtitle={t.loadingBookmarks} />;
   }
 
   return (
@@ -274,9 +275,9 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Bookmark className="w-8 h-8 text-purple-700" />
-            <h1 className="text-3xl font-bold text-gray-900">Your Pots</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t.yourPots}</h1>
           </div>
-          <p className="text-gray-600">Pots you've bookmarked and entered</p>
+          <p className="text-gray-600">{t.potsBookmarkedEntered}</p>
         </div>
 
         {/* Tab Navigation */}
@@ -290,7 +291,7 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
             }`}
           >
             <Trophy className="w-5 h-5" />
-            Entered pots
+            {t.enteredPots}
             {userPots.length > 0 && (
               <span className={`text-xs px-2 py-1 rounded-full ${
                 activeTab === 'entered' ? 'bg-purple-100' : 'bg-gray-200'
@@ -308,7 +309,7 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
             }`}
           >
             <Bookmark className="w-5 h-5" />
-            Bookmarked
+            {t.bookmarked}
             {bookmarks.length > 0 && (
               <span className={`text-xs px-2 py-1 rounded-full ${
                 activeTab === 'bookmarks' ? 'bg-purple-100' : 'bg-gray-200'
@@ -325,13 +326,13 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
           bookmarks.length === 0 ? (
             <div className="text-center py-16">
               <Bookmark className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">No bookmarks yet</h2>
-              <p className="text-gray-600 mb-6">Start bookmarking questions to see them here.</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.noBookmarksYet}</h2>
+              <p className="text-gray-600 mb-6">{t.startBookmarking}</p>
               <button
                 onClick={() => setActiveSection('home')}
                 className="bg-purple-700 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
-                Explore
+                {t.explore}
               </button>
             </div>
           ) : (
@@ -354,7 +355,7 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
                       <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
                         {(() => {
                           const liveData = getCurrentMarketData(bookmark.marketId, bookmark.marketCategory);
-                          return liveData?.question || 'Market question not available';
+                          return liveData?.question || t.marketNotAvailable;
                         })()}
                       </h3>
 
@@ -372,7 +373,7 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
                       onClick={() => handleRemoveBookmark(bookmark.marketId)}
                       disabled={removing === bookmark.marketId}
                       className="ml-4 p-2 text-gray-400 hover:text-purple-700 hover:bg-purple-100 rounded-lg transition-colors disabled:opacity-50"
-                      title="Remove bookmark"
+                      title={t.removeBookmark}
                     >
                       {removing === bookmark.marketId ? (
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-700"></div>
@@ -388,7 +389,7 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
                       onClick={() => handleViewMarket(bookmark)}
                       className="bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                     >
-                      {bookmark.contractAddress ? 'View Pot' : 'Go to Category'}
+                      {bookmark.contractAddress ? t.viewPot : t.goToCategory}
                     </button>
                     {bookmark.contractAddress && (
                       <div className="flex items-center gap-2">
@@ -397,7 +398,7 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
                         {/* Show balance if available, otherwise show loading */}
                         {potBalances[bookmark.contractAddress] !== undefined ? (
                           <span className="text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full self-center">
-                            {potBalances[bookmark.contractAddress]} in pot
+                            {potBalances[bookmark.contractAddress]} {t.inPot}
                           </span>
                         ) : (
                           <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full self-center">
@@ -416,20 +417,20 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
           userPots.length === 0 ? (
             <div className="text-center py-16">
               <Trophy className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">No pots entered yet</h2>
-              <p className="text-gray-600 mb-6">Enter prediction pots to start competing and making predictions.</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.noPotsEntered}</h2>
+              <p className="text-gray-600 mb-6">{t.enterPredictionPots}</p>
               <button
                 onClick={() => setActiveSection('home')}
                 className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
-                Find Pots to Enter
+                {t.findPotsToEnter}
               </button>
             </div>
           ) : (
             <div>
               <div className="flex items-center gap-2 mb-6">
                 <Users className="w-6 h-6 text-purple-600" />
-                <h2 className="text-xl font-bold text-gray-900">Pots You've Entered</h2>
+                <h2 className="text-xl font-bold text-gray-900">{t.potsYouEntered}</h2>
                 {/* <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm font-medium">
                   {userPots.length} Active
                 </span> */}
@@ -445,7 +446,7 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
                       case 'crypto': return 'Crypto';
                       case 'stocks': return 'Stocks';
                       case 'music': return 'Music Charts';
-                      default: return 'Unknown Market';
+                      default: return t.unknownMarket;
                     }
                   };
                   const marketName = getMarketDisplayName(marketType);
@@ -467,7 +468,7 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
                           <div className="flex items-center gap-2">
                             {hasEnoughParticipants(contractAddress) && (
                               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
-                               Next Question: {timeUntilMidnight}
+                               {t.nextQuestion} {timeUntilMidnight}
                               </span>
                             )}
                           </div>
@@ -475,17 +476,17 @@ const BookmarksPage = ({ activeSection, setActiveSection }: BookmarksPageProps) 
                       </div>
                       
                       <div className="text-sm text-gray-600 mb-3">
-                        You're participating in this pot. Click to make predictions and check your status.
+                        {t.participatingInPot}
                       </div>
                       
                      <div className="flex items-center">
   {potBalances[contractAddress] && (
     <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-      {potBalances[contractAddress]} in pot
+      {potBalances[contractAddress]} {t.inPot}
     </div>
   )}
   <div className="ml-auto px-4 py-2 bg-purple-700 text-white text-sm font-semibold rounded-lg hover:bg-purple-200 transition-colors cursor-pointer shadow-sm">
-  View
+  {t.view}
 </div>
 
 </div>

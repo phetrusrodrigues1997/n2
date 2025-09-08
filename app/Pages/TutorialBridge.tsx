@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 import { useAccount, useReadContract } from 'wagmi';
 import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2 } from '../Database/config';
 import { getUserEmail, saveUserEmail } from '../Database/actions';
+import { Language, getTranslation } from '../Languages/languages';
 
 interface DashboardProps {
   activeSection: string;
@@ -62,8 +63,20 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
   const [emailSubmitting, setEmailSubmitting] = useState<boolean>(false);
   const [hasUserEmail, setHasUserEmail] = useState<boolean | null>(null);
   const [isLoadingEmail, setIsLoadingEmail] = useState<boolean>(true);
+  const [currentLanguage, setCurrentLanguage] = useState<Language>('en');
 
   const { address, isConnected } = useAccount();
+
+  // Initialize language from cookies
+  useEffect(() => {
+    const savedLang = Cookies.get('language') as Language | undefined;
+    if (savedLang) {
+      setCurrentLanguage(savedLang);
+    }
+  }, []);
+
+  // Get translations
+  const t = getTranslation(currentLanguage);
 
   // Check if user has email when wallet connects
   useEffect(() => {
@@ -311,7 +324,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                       onClick={handleSkipEmail}
                       className="hidden md:block text-purple-600 hover:text-gray-700 transition-colors duration-200 font-light text-sm tracking-wide"
                     >
-                      Skip for now
+                      {t.skipForNow}
                     </button>
                   </div>
 
@@ -321,7 +334,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                     <div className="text-center mb-12">
                       <div className="flex items-center justify-center gap-3 mb-6 flex-nowrap">
                         <h1 className="text-2xl md:text-4xl font-light text-gray-900 tracking-tight flex-shrink-0">
-                          Ready to Play?
+                          {t.readyToPlay}
                         </h1>
                         <img
                           src="/ghostie.png"
@@ -330,7 +343,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                         />
                       </div>
                       <p className="text-gray-600 text-lg font-light leading-relaxed max-w-md mx-auto">
-                        Join the global prediction community and start competing today
+                        {t.joinGlobalCommunity}
                       </p>
                     </div>
 
@@ -341,7 +354,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          placeholder="Enter your email address"
+                          placeholder={t.enterEmailAddress}
                           className="w-full px-6 py-5 md:px-7 md:py-5
                            text-lg bg-gray-50/80 border-2 border-gray-200 rounded-2xl focus:border-purple-500
                            focus:bg-white focus:ring-4 focus:ring-purple-100 focus:outline-none 
@@ -366,10 +379,10 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                           {emailSubmitting ? (
                             <span className="flex items-center justify-center">
                               <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
-                              Joining...
+                              {t.joining}
                             </span>
                           ) : (
-                            'Get Started'
+                            t.joinCommunity
                           )}
                         </button>
 
@@ -377,7 +390,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                           onClick={handleSkipEmail}
                           className="w-full md:hidden text-purple-600 hover:text-gray-700 font-light py-3 px-6 transition-all duration-200 text-base tracking-wide"
                         >
-                          Skip for now
+                          {t.skipForNow}
                         </button>
                       </div>
 
@@ -426,7 +439,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                       {/* Header Section */}
                       <div className="mb-10">
                         <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-tight">
-                          Connect Wallet
+                          {t.connectWallet}
                         </h1>
 
                       </div>
@@ -434,7 +447,13 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                       {/* Instruction Text */}
                       <div className="mb-8">
                         <p className="text-gray-600 text-lg leading-relaxed font-light">
-                          Click the <span className="font-medium text-purple-600">Sign In</span> button at the top right of the screen to connect your wallet
+                          {t.clickSignInButton.split('Sign In').map((part, index) => 
+                            index === 0 ? part : 
+                            <>
+                              <span className="font-medium text-purple-600">Sign In</span>
+                              {part}
+                            </>
+                          )}
                         </p>
                       </div>
 
@@ -460,7 +479,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                     className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
                   >
                     <span>←</span>
-                    <span>Email collection</span>
+                    <span>{t.emailCollection}</span>
                   </button>
                 </div>
 
@@ -468,13 +487,13 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                 <div className="bg-white rounded-3xl border-0 p-6 md:p-16 mb-8">
                   <div className="flex items-center justify-between mb-12 relative">
                     <h2 className="text-3xl md:text-5xl font-light text-gray-900 tracking-tight">
-                      How It Works
+                      {t.howItWorksTitle}
                     </h2>
                     <button
                       onClick={handleSkipClick}
                       className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-4 py-2 md:px-8 md:py-3 rounded-2xl transition-all duration-300 font-medium text-sm md:text-base transform hover:scale-[1.02] active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl"
                     >
-                      Skip →
+                      {t.skipButton}
                     </button>
                   </div>
 
@@ -484,9 +503,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                         1
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">Global competition</h3>
+                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.globalCompetition}</h3>
                         <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                          Players worldwide compete in the same prediction tournaments.
+                          {t.globalCompetitionDesc}
                         </p>
                       </div>
                     </div>
@@ -496,9 +515,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                         2
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">Daily predictions</h3>
+                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.dailyPredictions}</h3>
                         <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                          Predict what's gonna happen tomorrow!
+                          {t.dailyPredictionsDesc}
                         </p>
                       </div>
                     </div>
@@ -508,9 +527,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                         3
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">Dynamic pricing</h3>
+                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.dynamicPricing}</h3>
                         <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                          Entry fees start low but will double after the 5th day - join early to save!
+                          {t.dynamicPricingDesc}
                         </p>
                       </div>
                     </div>
@@ -520,9 +539,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                         4
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">Second chances</h3>
+                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.secondChances}</h3>
                         <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                          Eliminated? Pay today's fee to re-enter anytime.
+                          {t.secondChancesDesc}
                         </p>
                       </div>
                     </div>
@@ -532,9 +551,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                         5
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">Final showdown</h3>
+                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.finalShowdown}</h3>
                         <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                          Tournament runs until final 10 players remain.
+                          {t.finalShowdownDesc}
                         </p>
                       </div>
                     </div>
@@ -544,9 +563,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                         6
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">Live stats</h3>
+                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.liveStats}</h3>
                         <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                          Stay informed with up-to-date information for each pot.
+                          {t.liveStatsDesc}
                         </p>
                       </div>
                     </div>

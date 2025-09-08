@@ -1,21 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useAccount, useDisconnect } from 'wagmi';
 import { FaDiscord } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
+import { getTranslation, Language } from '../Languages/languages';
 
 interface NavigationMenuProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
   onMenuToggle?: (isOpen: boolean) => void;
   onTriggerWallet?: () => void;
+  currentLanguage?: Language;
 }
 
-const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTriggerWallet }: NavigationMenuProps) => {
+const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTriggerWallet, currentLanguage = 'en' }: NavigationMenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
+  
+  // Get translations
+  const t = getTranslation(currentLanguage);
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -39,28 +44,27 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
     }
   }, [isMenuOpen, onMenuToggle]);
 
-
-  // Menu items - different for mobile and desktop
+  // Menu items - testing translations one by one
   const mobileMenuItems = [
-    { id: 'home', label: 'Home' },
-    { id: 'createPot', label: 'Private Markets' },
-    { id: 'receive', label: 'Fund Account' },
-    { id: 'profile', label: 'Stats & Rankings' },
-    { id: 'AI', label: 'Games' },
-    { id: 'discord', label: 'How it works' },
-    { id: 'ideas', label: 'Ideas' },
+    { id: 'home', label: t.home || 'Home' },
+    { id: 'createPot', label: t.privateMarkets || 'Private Markets' },
+    { id: 'receive', label: t.fundAccount || 'Fund Account' },
+    { id: 'profile', label: t.statsRankings || 'Stats & Rankings' },
+    { id: 'AI', label: t.games || 'Games' },
+    { id: 'discord', label: t.howItWorksTitle || 'How it works' },
+    { id: 'ideas', label: t.ideas || 'Ideas' },
   ];
 
   const desktopMenuItems = [
-    { id: 'home', label: 'Home' },
-    { id: 'createPot', label: 'Private Markets' },
-    { id: 'receive', label: 'Fund Account' },
-    { id: 'AI', label: 'Games' },
-    { id: 'profile', label: 'Stats & Rankings' },
-    { id: 'bookmarks', label: 'My pots' },
-    { id: 'discord', label: 'How it works' },
-    { id: 'ideas', label: 'Ideas' },
-    { id: 'liveMarkets', label: 'Live Markets' },
+    { id: 'home', label: t.home || 'Home' },
+    { id: 'createPot', label: t.privateMarkets || 'Private Markets' },
+    { id: 'receive', label: t.fundAccount || 'Fund Account' },
+    { id: 'AI', label: t.games || 'Games' },
+    { id: 'profile', label: t.statsRankings || 'Stats & Rankings' },
+    { id: 'bookmarks', label: t.myPots || 'My pots' },
+    { id: 'discord', label: t.howItWorksTitle || 'How it works' },
+    { id: 'ideas', label: t.ideas || 'Ideas' },
+    { id: 'liveMarkets', label: t.liveMarkets || 'Live Markets' },
   ];
 
   return (
@@ -132,7 +136,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                     }}
                     className="block w-full text-left py-4 text-lg text-blue-600 hover:text-blue-700 border-t border-gray-100 mt-2"
                   >
-                    Wallet
+                    {t.wallet || "Wallet"}
                   </button>
                 )}
                 
@@ -145,7 +149,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                     }}
                     className="block w-full text-left py-4 text-lg text-red-600 hover:text-red-700 border-t border-gray-100 mt-2"
                   >
-                    Log out
+                    {t.logOut || "Log out"}
                   </button>
                 )}
               </div>
@@ -160,7 +164,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                     className="flex items-center justify-center space-x-2 px-3 py-2 bg-[#5865F2] text-white rounded-lg hover:bg-[#4752C4] transition-colors text-sm"
                   >
                     <FaDiscord size={16} />
-                    <span>Discord Support</span>
+                    <span>{t.discordSupportNav || "Discord Support"}</span>
                   </a>
                   <a
                     href="https://x.com/Prediwin"
@@ -169,7 +173,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                     className="flex items-center justify-center space-x-2 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm"
                   >
                     <FaXTwitter size={16} />
-                    <span>Follow on X</span>
+                    <span>{t.followOnXNav || "Follow on X"}</span>
                   </a>
                 </div>
               </div>

@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 import { formatUnits } from 'viem';
 import { checkMissedPredictionPenalty } from '../Database/actions3';
 import { ArrowRight, Bookmark, Check } from 'lucide-react';
-import { Language, getTranslation, supportedLanguages } from '../Languages/languages';
+import { Language, getTranslation, supportedLanguages, getTranslatedMarketQuestion } from '../Languages/languages';
 import { getMarkets, Market } from '../Constants/markets';
 import { CustomAlert, useCustomAlert } from '../Components/CustomAlert';
 import { addBookmark, removeBookmark, isMarketBookmarked, getPredictionPercentages, getTomorrowsBet, placeBitcoinBet, getReEntryFee } from '../Database/actions';
@@ -35,6 +35,7 @@ interface LandingPageProps {
   selectedMarket?: string;
   setSelectedMarket?: (market: string) => void;
   onLoadingChange?: (isLoading: boolean) => void;
+  currentLanguage?: Language;
 }
 
 // Helper function to get contract address from markets data
@@ -44,10 +45,11 @@ const getContractAddress = (marketId: string): string | null => {
   return market?.contractAddress || null;
 };
 
-const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = false, searchQuery = '', selectedMarket: propSelectedMarket = 'Trending', setSelectedMarket, onLoadingChange }: LandingPageProps) => {
+const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = false, searchQuery = '', selectedMarket: propSelectedMarket = 'Trending', setSelectedMarket, onLoadingChange, currentLanguage: propCurrentLanguage }: LandingPageProps) => {
   const { contractAddresses, participantsData, balancesData, isConnected, address } = useContractData();
   const [isVisible, setIsVisible] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState<Language>('en');
+  // Use language from parent component or fallback to 'en'
+  const currentLanguage = propCurrentLanguage || 'en';
   const selectedMarket = propSelectedMarket;
   const { alertState, showAlert, closeAlert } = useCustomAlert();
 
@@ -122,7 +124,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         const marketData = getMarkets(getTranslation(currentLanguage), option.id);
         const market = marketData[0];
         return market && (
-          market.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          getTranslatedMarketQuestion(market, currentLanguage).toLowerCase().includes(searchQuery.toLowerCase()) ||
           market.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
       }).length
@@ -160,7 +162,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           const marketData = getMarkets(getTranslation(currentLanguage), option.id);
           const market = marketData[0];
           return market && (
-            market.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            getTranslatedMarketQuestion(market, currentLanguage).toLowerCase().includes(searchQuery.toLowerCase()) ||
             market.name.toLowerCase().includes(searchQuery.toLowerCase())
           );
         }).length
@@ -231,58 +233,24 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       onLoadingChange?.(false);
     }, 4000);
 
-    // Initialize language
-    const savedLang = Cookies.get('language') as Language | undefined;
-    if (savedLang && supportedLanguages.some(lang => lang.code === savedLang)) {
-      setCurrentLanguage(savedLang);
-    }
+    // Language is now managed by parent component
 
     return () => clearTimeout(timer);
   }, []);
 
 
 
-  useEffect(() => {
-    const detectLanguage = async () => {
-      // Check if language is already cached
-      const cachedLanguage = localStorage.getItem('detectedLanguage');
-      const cacheTimestamp = localStorage.getItem('languageDetectionTime');
-      const ONE_HOUR = 60 * 60 * 1000;
-
-      // Use cached result if less than 1 hour old
-      if (cachedLanguage && cacheTimestamp &&
-        (Date.now() - parseInt(cacheTimestamp)) < ONE_HOUR) {
-        console.log('Using cached language detection:', cachedLanguage);
-        setCurrentLanguage(cachedLanguage as Language);
-        return;
-      }
-
-      try {
-        console.log('Detecting language via geo IP...');
-        const res = await fetch('https://ipapi.co/json/');
-        const data = await res.json();
-        const isBrazil = data.country === 'BR';
-        const detectedLang = isBrazil ? 'pt-BR' : 'en';
-
-        // Cache the result
-        localStorage.setItem('detectedLanguage', detectedLang);
-        localStorage.setItem('languageDetectionTime', Date.now().toString());
-
-        setCurrentLanguage(detectedLang);
-      } catch (err) {
-        console.error('Geo IP detection failed:', err);
-        setCurrentLanguage('en'); // fallback
-      }
-    };
-
-    detectLanguage();
-  }, []);
 
 
 
 
 
   const t = getTranslation(currentLanguage);
+  
+  // Debug translations
+  console.log('🌍 LandingPage currentLanguage:', currentLanguage);
+  console.log('🌍 LandingPage t.heroTitle:', t.heroTitle);
+  console.log('🌍 LandingPage t.comingSoon:', t.comingSoon);
 
   const markets = getMarkets(t, selectedMarket);
   const marketOptions = getMarkets(t, 'options');
@@ -637,7 +605,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
     // For participants who haven't voted or want to change: show clickable option
     // For non-participants: show default option (will navigate to pot entry)
-    return buttonType === 'positive' ? 'Yes' : 'No';
+    return buttonType === 'positive' ? t.higher : t.lower;
   };
 
   // Helper function to get button styling based on user's prediction
@@ -1005,7 +973,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 // Filter markets based on search query
                 const filteredMarkets = searchQuery
                   ? allMarkets.filter(market =>
-                    market.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    getTranslatedMarketQuestion(market, currentLanguage).toLowerCase().includes(searchQuery.toLowerCase()) ||
                     market.name.toLowerCase().includes(searchQuery.toLowerCase())
                   )
                   : allMarkets;
@@ -1168,7 +1136,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   color: '#374151',
                                   fontWeight: '650'
                                 }}>
-                                  {market.question}
+                                  {getTranslatedMarketQuestion(market, currentLanguage)}
                                 </p>
                               </div>
 
@@ -1298,7 +1266,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         })}
                                         className="bg-purple-50 hover:bg-blue-200 text-purple-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center"
                                       >
-                                        Yes
+                                        {t.higher}
                                       </button>
                                       <button
                                         onClick={handleButtonClick(market.id, 'negative', (e) => {
@@ -1308,7 +1276,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         })}
                                         className="bg-blue-50 hover:bg-purple-200 text-blue-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center"
                                       >
-                                        No
+                                        {t.lower}
                                       </button>
                                     </div>
                                   );
@@ -1325,8 +1293,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   <div className="flex items-center justify-between mb-3 px-2">
                                     {/* Left side: Yes/No labels stacked */}
                                     <div className="flex flex-col gap-2">
-                                      <div className="text-base font-normal text-black">Yes</div>
-                                      <div className="text-base font-normal text-black">No</div>
+                                      <div className="text-base font-normal text-black">{t.higher}</div>
+                                      <div className="text-base font-normal text-black">{t.lower}</div>
                                     </div>
 
                                     {/* Right side: Percentages and buttons */}
@@ -1512,7 +1480,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 // Filter markets based on search query
                 const filteredMarkets = searchQuery
                   ? allMarkets.filter(market =>
-                    market.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    getTranslatedMarketQuestion(market, currentLanguage).toLowerCase().includes(searchQuery.toLowerCase()) ||
                     market.name.toLowerCase().includes(searchQuery.toLowerCase())
                   )
                   : allMarkets;
@@ -1660,7 +1628,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               return (
                                 <div className={`flex-1 ${showThermometer ? 'pr-16' : 'pr-4'}`}>
                                   <p className="text-sm leading-tight line-clamp-2 font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]" style={{ color: '#374151', fontWeight: '650' }}>
-                                    {market.question}
+                                    {getTranslatedMarketQuestion(market, currentLanguage)}
                                   </p>
                                 </div>
                               );
@@ -1792,7 +1760,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       })}
                                       className="bg-purple-50 hover:bg-blue-200 text-purple-700 px-14 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 flex-1 max-w-[130px]"
                                     >
-                                      Yes
+                                      {t.higher}
                                     </button>
                                     <button
                                       onClick={handleButtonClick(market.id, 'negative', (e) => {
@@ -1802,7 +1770,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       })}
                                       className="bg-blue-50 hover:bg-purple-200 text-blue-700 px-14 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 flex-1 max-w-[130px]"
                                     >
-                                      No
+                                      {t.lower}
                                     </button>
                                   </div>
                                 );
@@ -1819,8 +1787,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 <div className="flex items-center justify-between mb-3">
                                   {/* Left side: Yes/No labels stacked */}
                                   <div className="flex flex-col gap-1">
-                                    <div className="text-sm font-normal text-black">Yes</div>
-                                    <div className="text-sm font-normal text-black">No</div>
+                                    <div className="text-sm font-normal text-black">{t.higher}</div>
+                                    <div className="text-sm font-normal text-black">{t.lower}</div>
                                   </div>
 
                                   {/* Right side: Percentages and buttons */}

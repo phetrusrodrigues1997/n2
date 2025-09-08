@@ -91,6 +91,50 @@ npm run lint
 - `app/Constants/`: Configuration files for markets, coins, and pricing
 - `app/Languages/`: Internationalization support
 
+### Internationalization (i18n) System
+**Complete Portuguese translation implementation with ultra-conservative approach to protect critical business logic**
+
+#### Translation Architecture
+- **Central Translation System**: `app/Languages/languages.ts` contains all translations with TypeScript support
+- **Language Support**: English (en) and Portuguese (pt-BR) with extensible structure for additional languages
+- **Cookie-Based Persistence**: Language preference stored in 'language' cookie and persists across sessions
+- **Fallback Pattern**: All translations use `{t.translationKey || "English fallback"}` for safety
+- **Component Prop Passing**: currentLanguage prop passed from main app to all child components
+
+#### Critical Safety Measures
+**⚠️ ULTRA-CONSERVATIVE APPROACH**: Translations implemented with extreme caution to protect database operations, smart contract interactions, and prediction logic:
+
+- **Display-Only Translations**: Only user-facing display strings translated (buttons, labels, messages)
+- **Database Logic Untouched**: All database identifiers, table names, and query logic remain in English
+- **Smart Contract Safety**: Contract interactions and blockchain logic completely unchanged
+- **Business Logic Protection**: Prediction algorithms, entry fees, and winner calculations unmodified
+- **Identifier Preservation**: All internal IDs, keys, and system identifiers remain stable
+
+#### Translation Implementation Status
+- ✅ **NavigationMenu.tsx**: Fully translated (menu items, social links, wallet options)
+- ✅ **Discord.tsx**: Complete translation (FAQ questions, community links)
+- ✅ **BookmarksPage.tsx**: Full translation (bookmarks, pot management, user messages)
+- ✅ **MakePredictionsPage.tsx**: **CRITICAL FILE** - Ultra-conservative translation of safe display strings only:
+  - Loading screens and modal text
+  - Timer labels ("Next Question", "Next Elimination") 
+  - Connect wallet prompts and access messages
+  - YES/NO prediction buttons (confirmed safe like LandingPage.tsx)
+  - **Business Logic**: All prediction logic, database operations, and smart contract code untouched
+
+#### Key Translation Discoveries
+- **React Rendering Issue**: aria-label translations break React menu rendering - must remain in English
+- **Cookie Consistency**: All components must use consistent 'language' cookie key (not 'selectedLanguage')
+- **Component Props**: Translation components must receive currentLanguage prop from parent instead of reading cookies directly
+- **Missing Keys**: Incomplete translation keys cause UI elements to disappear - requires systematic verification
+
+#### Translation Guidelines for Future Development
+1. **Display vs Logic Separation**: Only translate what users see, never internal identifiers
+2. **Systematic Testing**: Test each translation individually to isolate breaking points
+3. **Fallback Requirements**: Always provide English fallbacks for missing translation keys
+4. **Database Safety**: Never translate database field names, table names, or query parameters
+5. **Smart Contract Immutability**: Contract function names and parameters must remain unchanged
+6. **Conservative Approach**: When in doubt, leave strings untranslated rather than risk breaking functionality
+
 ### Main Application Flow
 The main app component (`app/page.tsx`) uses a section-based navigation system where different pages are rendered based on `activeSection` state. Navigation is handled through the `NavigationMenu` component.
 
