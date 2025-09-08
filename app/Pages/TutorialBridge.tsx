@@ -449,73 +449,73 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12">
-                    <div className="flex items-start gap-4 p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl w-10 h-10 flex items-center justify-center font-medium text-lg flex-shrink-0">
+                    <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
                         1
                       </div>
-                      <div>
-                        <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2">Global competition</h3>
-                        <p className="text-gray-600 font-light leading-relaxed">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">Global competition</h3>
+                        <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
                           Players worldwide compete in the same prediction tournaments.
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4 p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl w-10 h-10 flex items-center justify-center font-medium text-lg flex-shrink-0">
+                    <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
                         2
                       </div>
-                      <div>
-                        <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2">Daily predictions</h3>
-                        <p className="text-gray-600 font-light leading-relaxed">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">Daily predictions</h3>
+                        <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
                           Predict what's gonna happen tomorrow!
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4 p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl w-10 h-10 flex items-center justify-center font-medium text-lg flex-shrink-0">
+                    <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
                         3
                       </div>
-                      <div>
-                        <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2">Dynamic pricing</h3>
-                        <p className="text-gray-600 font-light leading-relaxed">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">Dynamic pricing</h3>
+                        <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
                           Entry fees rise daily from $0.01 (Sun) to $0.06 (Fri).
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4 p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl w-10 h-10 flex items-center justify-center font-medium text-lg flex-shrink-0">
+                    <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
                         4
                       </div>
-                      <div>
-                        <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2">Second chances</h3>
-                        <p className="text-gray-600 font-light leading-relaxed">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">Second chances</h3>
+                        <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
                           Eliminated? Pay today's fee to re-enter anytime.
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4 p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl w-10 h-10 flex items-center justify-center font-medium text-lg flex-shrink-0">
+                    <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
                         5
                       </div>
-                      <div>
-                        <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2">Final showdown</h3>
-                        <p className="text-gray-600 font-light leading-relaxed">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">Final showdown</h3>
+                        <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
                           Tournament runs until final 10 players remain.
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4 p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl w-10 h-10 flex items-center justify-center font-medium text-lg flex-shrink-0">
+                    <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
                         6
                       </div>
-                      <div>
-                        <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2">Live stats</h3>
-                        <p className="text-gray-600 font-light leading-relaxed">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">Live stats</h3>
+                        <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
                           Stay informed with up-to-date information for each pot.
                         </p>
                       </div>
