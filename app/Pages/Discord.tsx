@@ -7,7 +7,11 @@ interface FAQItem {
   answer: string;
 }
 
-const HowItWorksSection: React.FC = () => {
+interface HowItWorksSectionProps {
+  setActiveSection?: (section: string) => void;
+}
+
+const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ setActiveSection }) => {
   const [openItems, setOpenItems] = useState<Set<number>>(new Set());
 
   const toggleItem = (index: number) => {
@@ -100,6 +104,19 @@ const HowItWorksSection: React.FC = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md border border-gray-300">
+      {/* Back Button - Mobile Only */}
+      {setActiveSection && (
+        <div className="mb-6 md:hidden">
+          <button
+            onClick={() => setActiveSection('home')}
+            className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
+          >
+            <span>←</span>
+            <span>Back to markets</span>
+          </button>
+        </div>
+      )}
+
       <h2 className="text-2xl font-bold text-black text-center mb-8">
        Frequently Asked Questions
       </h2>

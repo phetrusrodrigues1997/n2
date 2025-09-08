@@ -870,7 +870,7 @@ export default function App() {
         {activeSection === "receive" && <ReceiveSection activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "profile" && <ProfilePage activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "messagesPage" && <MessagingPage activeSection={activeSection} setActiveSection={setActiveSection} />}
-        {activeSection === "discord" && <HowItWorksSection />}
+        {activeSection === "discord" && <HowItWorksSection setActiveSection={setActiveSection} />}
         {activeSection === "activity" && <Activity />}
         {/* {activeSection === "notifications" && <CreateMessage />} */}
         {activeSection === "dashboard" && <TutorialBridge activeSection={activeSection} setActiveSection={setActiveSection} />}
@@ -909,7 +909,7 @@ export default function App() {
       </main>
 
       {/* Mobile Bottom Navigation */}
-      {!isLandingPageLoading && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && (
+      {!isLandingPageLoading && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && activeSection !== 'discord' && (
         <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40">
         <div className="flex items-center justify-around py-2">
           <button
@@ -932,6 +932,20 @@ export default function App() {
           </button>
 
           <button
+            onClick={() => setActiveSection('liveMarkets')}
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${activeSection === 'liveMarkets' ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
+              }`}
+          >
+            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${activeSection === 'liveMarkets' ? 'bg-transparent' : ''
+              }`}>
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M3.05 3.05a7 7 0 0 0 0 9.9.5.5 0 0 1-.707.707 8 8 0 0 1 0-11.314.5.5 0 0 1 .707.707m2.122 2.122a4 4 0 0 0 0 5.656.5.5 0 1 1-.708.708 5 5 0 0 1 0-7.072.5.5 0 0 1 .708.708m5.656-.708a.5.5 0 0 1 .708 0 5 5 0 0 1 0 7.072.5.5 0 1 1-.708-.708 4 4 0 0 0 0-5.656.5.5 0 0 1 0-.708m2.122-2.12a.5.5 0 0 1 .707 0 8 8 0 0 1 0 11.313.5.5 0 0 1-.707-.707 7 7 0 0 0 0-9.9.5.5 0 0 1 0-.707zM10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/>
+              </svg>
+            </div>
+            <span className="text-[13px] font-medium translate-y-0.5">Live</span>
+          </button>
+
+              <button
             onClick={(e) => {
               console.log('Mobile SEARCH button clicked');
               if (activeSection === 'home') {
@@ -947,32 +961,15 @@ export default function App() {
                 }, 100);
               }
             }}
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${(activeSection === 'home' && isMobileSearchActive) ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
-              }`}
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 text-gray-500 opacity-70`}
           >
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${(activeSection === 'home' && isMobileSearchActive) ? 'bg-transparent' : ''
-              }`}>
+            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200`}>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
             <span className="text-[13px] font-medium">Search</span>
           </button>
-
-          <button
-            onClick={() => setActiveSection('liveMarkets')}
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${activeSection === 'liveMarkets' ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
-              }`}
-          >
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${activeSection === 'liveMarkets' ? 'bg-transparent' : ''
-              }`}>
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M3.05 3.05a7 7 0 0 0 0 9.9.5.5 0 0 1-.707.707 8 8 0 0 1 0-11.314.5.5 0 0 1 .707.707m2.122 2.122a4 4 0 0 0 0 5.656.5.5 0 1 1-.708.708 5 5 0 0 1 0-7.072.5.5 0 0 1 .708.708m5.656-.708a.5.5 0 0 1 .708 0 5 5 0 0 1 0 7.072.5.5 0 1 1-.708-.708 4 4 0 0 0 0-5.656.5.5 0 0 1 0-.708m2.122-2.12a.5.5 0 0 1 .707 0 8 8 0 0 1 0 11.313.5.5 0 0 1-.707-.707 7 7 0 0 0 0-9.9.5.5 0 0 1 0-.707zM10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/>
-              </svg>
-            </div>
-            <span className="text-[13px] font-medium translate-y-0.5">Live</span>
-          </button>
-
           
           <button
             onClick={(e) => {
@@ -981,10 +978,10 @@ export default function App() {
               console.log('Mobile my markets button clicked - should navigate to bookmarks');
               setActiveSection('bookmarks');
             }}
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${(activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot') ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${(activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile') ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
               }`}
           >
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${(activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot') ? 'bg-transparent' : ''
+            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${(activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile') ? 'bg-transparent' : ''
               }`}>
               <svg className="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>

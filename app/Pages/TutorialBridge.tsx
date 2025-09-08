@@ -296,14 +296,22 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                 <div className="relative max-w-xl mx-auto w-full animate-fade-in-up opacity-0" style={{
                   animation: 'fadeInUp 0.6s ease-out 0.1s forwards'
                 }}>
-                  {/* Back to All Markets Button */}
-                  <div className="mb-6">
+                  {/* Top Navigation Bar */}
+                  <div className="mb-6 flex justify-between items-center">
                     <button
                       onClick={() => setActiveSection('home')}
                       className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
                     >
                       <span>←</span>
                       <span>Back</span>
+                    </button>
+                    
+                    {/* Desktop Skip Button - Top Right */}
+                    <button
+                      onClick={handleSkipEmail}
+                      className="hidden md:block text-purple-600 hover:text-gray-700 transition-colors duration-200 font-light text-sm tracking-wide"
+                    >
+                      Skip for now
                     </button>
                   </div>
 
@@ -367,7 +375,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
 
                         <button
                           onClick={handleSkipEmail}
-                          className="w-full text-purple-600 hover:text-gray-700 font-light py-3 px-6 transition-all duration-200 text-base tracking-wide"
+                          className="w-full md:hidden text-purple-600 hover:text-gray-700 font-light py-3 px-6 transition-all duration-200 text-base tracking-wide"
                         >
                           Skip for now
                         </button>
