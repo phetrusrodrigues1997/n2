@@ -53,7 +53,16 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-md mx-auto px-4 py-8">
-        
+        {/* Purchase Crypto Button */}
+        <div className="mb-6 flex justify-end">
+          <button
+            onClick={() => window.open('https://keys.coinbase.com', '_blank', 'noopener,noreferrer')}
+            className="flex items-center gap-2 text-purple-600 hover:text-purple-700 transition-colors duration-200 font-medium text-sm tracking-wide"
+          >
+            <span>Purchase Crypto</span>
+            <span>→</span>
+          </button>
+        </div>
 
         {!isConnected || !address ? (
           /* Not Connected State */

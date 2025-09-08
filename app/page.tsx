@@ -909,7 +909,7 @@ export default function App() {
       </main>
 
       {/* Mobile Bottom Navigation */}
-      {!isLandingPageLoading && (
+      {!isLandingPageLoading && activeSection !== 'AI' && activeSection !== 'receive' && (
         <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40">
         <div className="flex items-center justify-around py-2">
           <button
@@ -981,10 +981,10 @@ export default function App() {
               console.log('Mobile my markets button clicked - should navigate to bookmarks');
               setActiveSection('bookmarks');
             }}
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${activeSection === 'bookmarks' ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${(activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot') ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
               }`}
           >
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${activeSection === 'bookmarks' ? 'bg-transparent' : ''
+            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${(activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot') ? 'bg-transparent' : ''
               }`}>
               <svg className="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
