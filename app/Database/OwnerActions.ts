@@ -2,7 +2,7 @@
 
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
-import { WrongPredictions, WrongPredictionsCrypto, FeaturedBets, CryptoBets, LivePredictions, LiveQuestions, UsersTable, MarketOutcomes, EvidenceSubmissions, PotInformation } from "../Database/schema";
+import { WrongPredictions, WrongPredictionsCrypto, FeaturedBets, CryptoBets, LivePredictions, LiveQuestions, UsersTable, MarketOutcomes, EvidenceSubmissions, PotInformation, UserPredictionHistory } from "../Database/schema";
 import { eq, inArray, lt, asc, sql, and } from "drizzle-orm";
 import { CONTRACT_TO_TABLE_MAPPING } from "./config";
 
@@ -777,6 +777,41 @@ export async function getWrongPredictions(tableType: string): Promise<string[]> 
   } catch (error) {
     console.error("Error getting wrong predictions:", error);
     return [];
+  }
+}
+
+/**
+ * Resets pot information and clears user prediction history for a specific contract address
+ * @param contractAddress - The contract address to reset data for
+ */
+export async function clearPotInformation(contractAddress: string): Promise<boolean> {
+  try {
+    console.log(`🔄 Resetting pot information and clearing user prediction history for contract: ${contractAddress}`);
+    
+    // Reset pot information to default values (don't delete, just reset)
+    const potInfoResult = await db
+      .update(PotInformation)
+      .set({
+        hasStarted: false,
+        isFinalDay: false,
+        startedOnDate: null,
+        lastDayDate: null
+      })
+      .where(eq(PotInformation.contractAddress, contractAddress));
+    
+    console.log(`✅ Reset pot information for ${contractAddress}, affected rows:`, potInfoResult);
+    
+    // Clear all user prediction history for this contract
+    const predictionHistoryResult = await db
+      .delete(UserPredictionHistory)
+      .where(eq(UserPredictionHistory.contractAddress, contractAddress));
+    
+    console.log(`✅ Cleared user prediction history for ${contractAddress}, affected rows:`, predictionHistoryResult);
+    
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to reset pot data for ${contractAddress}:`, error);
+    throw new Error(`Could not reset pot data: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

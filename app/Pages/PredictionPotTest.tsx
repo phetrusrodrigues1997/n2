@@ -6,7 +6,7 @@ import { formatUnits, parseEther } from 'viem';
 import Cookies from 'js-cookie';
 import { Language, getTranslation, supportedLanguages } from '../Languages/languages';
 import { getPrice } from '../Constants/getPrice';
-import { setDailyOutcome, setProvisionalOutcome, getProvisionalOutcome, determineWinners, clearWrongPredictions, testDatabaseConnection, getUserStats } from '../Database/OwnerActions'; // Adjust path as needed
+import { setDailyOutcome, setProvisionalOutcome, getProvisionalOutcome, determineWinners, clearWrongPredictions, testDatabaseConnection, getUserStats, clearPotInformation } from '../Database/OwnerActions'; // Adjust path as needed
 import { notifyMarketOutcome, notifyEliminatedUsers, notifyWinners, notifyPotDistributed, notifyMarketUpdate } from '../Database/actions';
 import { useQueryClient } from '@tanstack/react-query';
 import { 
@@ -1590,6 +1590,49 @@ useEffect(() => {
         className="bg-indigo-600 text-[#F5F5F5] px-6 py-3 rounded-md font-medium hover:bg-indigo-700 w-full"
       >
         🔍 Admin Evidence Review Page
+      </button>
+    </div>
+
+    {/* Clear Pot Information */}
+    <div className="bg-[#2C2C47] p-4 rounded-lg mb-4 border-2 border-red-500">
+      <h3 className="text-[#F5F5F5] font-medium mb-2">🗑️ Reset Pot Data</h3>
+      <p className="text-[#A0A0B0] text-sm mb-3">
+        Reset pot information and clear all user prediction history for this contract. This will reset pot status, timing data, and remove all prediction records.
+      </p>
+      <button
+        onClick={async () => {
+          if (!contractAddress) {
+            showMessage('No contract address available', true);
+            return;
+          }
+          
+          const confirmClear = window.confirm(`Are you sure you want to reset pot data for contract ${contractAddress}? This will clear pot information AND all user prediction history. This action cannot be undone.`);
+          if (!confirmClear) return;
+          
+          setIsLoading(true);
+          try {
+            await clearPotInformation(contractAddress);
+            showMessage('Pot data reset successfully! Pot information and user prediction history cleared.');
+            
+            // Reset local pot info state
+            setPotInfo({
+              hasStarted: false,
+              isFinalDay: false,
+              startedOnDate: null,
+              lastDayDate: null
+            });
+            setIsFinalDay(false);
+          } catch (error) {
+            console.error('Failed to clear pot information:', error);
+            showMessage('Failed to reset pot data', true);
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        disabled={isActuallyLoading}
+        className="bg-red-600 text-[#F5F5F5] px-6 py-3 rounded-md font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed w-full"
+      >
+        {isActuallyLoading ? "Resetting..." : "🗑️ Reset Pot Data"}
       </button>
     </div>
     
