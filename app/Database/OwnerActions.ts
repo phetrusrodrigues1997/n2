@@ -786,10 +786,46 @@ export async function getWrongPredictions(tableType: string): Promise<string[]> 
  */
 export async function clearPotInformation(contractAddress: string): Promise<boolean> {
   try {
-    console.log(`🔄 Resetting pot information and clearing user prediction history for contract: ${contractAddress}`);
+    console.log(`🔄 Starting clearPotInformation for contract: ${contractAddress}`);
+    console.log(`🔍 Contract address type: ${typeof contractAddress}, length: ${contractAddress.length}`);
     
-    // Reset pot information to default values (don't delete, just reset)
-    const potInfoResult = await db
+    // Normalize contract address to match database format (check both cases)
+    const normalizedAddress = contractAddress.toLowerCase();
+    const upperCaseAddress = contractAddress.toUpperCase();
+    
+    console.log(`🔍 Normalized addresses - Lower: ${normalizedAddress}, Upper: ${upperCaseAddress}`);
+    
+    // First, check what pot information records exist for debugging
+    console.log(`🔍 Checking existing pot information records...`);
+    const allPotInfo = await db.select().from(PotInformation);
+    console.log(`📊 All pot information records:`, allPotInfo);
+    console.log(`📊 Total pot information records: ${allPotInfo.length}`);
+    
+    // Check for exact match
+    const exactMatch = allPotInfo.find(record => record.contractAddress === contractAddress);
+    const lowerMatch = allPotInfo.find(record => record.contractAddress.toLowerCase() === normalizedAddress);
+    const upperMatch = allPotInfo.find(record => record.contractAddress.toUpperCase() === upperCaseAddress);
+    
+    console.log(`🎯 Exact match found:`, !!exactMatch);
+    console.log(`🎯 Lower case match found:`, !!lowerMatch);
+    console.log(`🎯 Upper case match found:`, !!upperMatch);
+    
+    if (exactMatch) {
+      console.log(`✅ Using exact match: ${exactMatch.contractAddress}`);
+    } else if (lowerMatch) {
+      console.log(`✅ Using lower case match: ${lowerMatch.contractAddress}`);
+    } else if (upperMatch) {
+      console.log(`✅ Using upper case match: ${upperMatch.contractAddress}`);
+    } else {
+      console.log(`❌ No matching pot information found for any case variation`);
+    }
+    
+    // Reset pot information to default values - try both case variations
+    console.log(`🔄 Attempting to reset pot information...`);
+    let potInfoResult;
+    
+    // Try exact match first
+    potInfoResult = await db
       .update(PotInformation)
       .set({
         hasStarted: false,
@@ -799,18 +835,100 @@ export async function clearPotInformation(contractAddress: string): Promise<bool
       })
       .where(eq(PotInformation.contractAddress, contractAddress));
     
-    console.log(`✅ Reset pot information for ${contractAddress}, affected rows:`, potInfoResult);
+    console.log(`📊 Pot info reset result (exact):`, potInfoResult);
     
-    // Clear all user prediction history for this contract
-    const predictionHistoryResult = await db
+    // If no rows affected, try lowercase
+    if (potInfoResult.rowCount === 0) {
+      console.log(`🔄 No rows affected with exact match, trying lowercase...`);
+      potInfoResult = await db
+        .update(PotInformation)
+        .set({
+          hasStarted: false,
+          isFinalDay: false,
+          startedOnDate: null,
+          lastDayDate: null
+        })
+        .where(eq(PotInformation.contractAddress, normalizedAddress));
+      
+      console.log(`📊 Pot info reset result (lowercase):`, potInfoResult);
+    }
+    
+    // If still no rows affected, try uppercase
+    if (potInfoResult.rowCount === 0) {
+      console.log(`🔄 No rows affected with lowercase, trying uppercase...`);
+      potInfoResult = await db
+        .update(PotInformation)
+        .set({
+          hasStarted: false,
+          isFinalDay: false,
+          startedOnDate: null,
+          lastDayDate: null
+        })
+        .where(eq(PotInformation.contractAddress, upperCaseAddress));
+      
+      console.log(`📊 Pot info reset result (uppercase):`, potInfoResult);
+    }
+    
+    console.log(`✅ Final pot information reset result - affected rows: ${potInfoResult.rowCount || 0}`);
+    
+    // Check existing user prediction history for debugging
+    console.log(`🔍 Checking existing user prediction history...`);
+    const allPredictionHistory = await db.select().from(UserPredictionHistory);
+    console.log(`📊 Total prediction history records: ${allPredictionHistory.length}`);
+    
+    const matchingPredictions = allPredictionHistory.filter(record => 
+      record.contractAddress === contractAddress ||
+      record.contractAddress.toLowerCase() === normalizedAddress ||
+      record.contractAddress.toUpperCase() === upperCaseAddress
+    );
+    console.log(`📊 Matching prediction history records: ${matchingPredictions.length}`);
+    console.log(`📊 Matching prediction records:`, matchingPredictions);
+    
+    // Clear all user prediction history for this contract - try all case variations
+    console.log(`🔄 Attempting to clear user prediction history...`);
+    let predictionHistoryResult = await db
       .delete(UserPredictionHistory)
       .where(eq(UserPredictionHistory.contractAddress, contractAddress));
     
-    console.log(`✅ Cleared user prediction history for ${contractAddress}, affected rows:`, predictionHistoryResult);
+    console.log(`📊 Prediction history delete result (exact):`, predictionHistoryResult);
+    
+    // Try other case variations if needed
+    const exactDeleted = predictionHistoryResult.rowCount || 0;
+    if (exactDeleted === 0) {
+      console.log(`🔄 No rows deleted with exact match, trying lowercase...`);
+      const lowerResult = await db
+        .delete(UserPredictionHistory)
+        .where(eq(UserPredictionHistory.contractAddress, normalizedAddress));
+      console.log(`📊 Prediction history delete result (lowercase):`, lowerResult);
+      
+      if ((lowerResult.rowCount || 0) === 0) {
+        console.log(`🔄 No rows deleted with lowercase, trying uppercase...`);
+        const upperResult = await db
+          .delete(UserPredictionHistory)
+          .where(eq(UserPredictionHistory.contractAddress, upperCaseAddress));
+        console.log(`📊 Prediction history delete result (uppercase):`, upperResult);
+        predictionHistoryResult = upperResult;
+      } else {
+        predictionHistoryResult = lowerResult;
+      }
+    }
+    
+    console.log(`✅ Final user prediction history delete result - affected rows: ${predictionHistoryResult.rowCount || 0}`);
+    
+    const totalPotInfoRows = potInfoResult.rowCount || 0;
+    const totalPredictionRows = predictionHistoryResult.rowCount || 0;
+    
+    console.log(`🎉 Operation completed successfully!`);
+    console.log(`📊 Summary: Reset ${totalPotInfoRows} pot info records, deleted ${totalPredictionRows} prediction history records`);
     
     return true;
   } catch (error) {
     console.error(`❌ Failed to reset pot data for ${contractAddress}:`, error);
+    console.error(`❌ Error details:`, {
+      contractAddress,
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+      errorStack: error instanceof Error ? error.stack : 'No stack trace'
+    });
     throw new Error(`Could not reset pot data: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
