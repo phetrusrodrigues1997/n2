@@ -6,17 +6,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **PrediWin.com - Predict, Win, Repeat** is a sophisticated Next.js prediction market platform that gamifies forecasting across multiple asset classes and events through blockchain-based prediction competitions. Built on Base network with OnchainKit integration, users compete in weekly prediction cycles covering cryptocurrency, stocks, sports, and other market movements with structured timing for pot entry, prediction periods, and results determination.
 
-### Core Concept & Weekly Schedule
-- Users pay **ETH entry fees** (converted from USD values ~$0.01-0.06 based on day) to enter prediction pots via smart contracts
-- **Structured weekly cycle** with specific timing for different activities:
-  - **Sunday-Friday**: Pot entry period (users can join with increasing daily fees based on USD value)
-  - **Sunday-Friday**: Prediction period (participants make forecasts on various assets)
-  - **Saturday**: Results day (winners determined at midnight UTC, pot distributed) - pot entries CLOSED
+### Core Concept & Dynamic Pricing System
+- Users pay **ETH entry fees** (converted from USD values) to enter prediction pots via smart contracts
+- **Dynamic Pricing**: Entry fees based on days since pot started, NOT day of the week
+  - **Days 1-4**: Fixed early pricing ($0.02, $0.03, $0.04, $0.05 USD in ETH)
+  - **Day 5+**: Doubling system starting at $0.10 USD, doubles each day
+  - **Individual Pot Timers**: Each pot has its own start date and pricing schedule
 - **Prediction Logic**: Users predict next day's asset price movements (positive/negative) across multiple markets
 - **Winners split the pot** equally based on actual price movement outcomes
 - **Wrong predictors get temporarily blocked** from future prediction rounds until re-entry fee is paid
 - **Referral system** rewards users with free pot entries for bringing friends
-- **Re-entry System**: Users who made wrong predictions can pay today's entry fee to re-enter markets
+- **Re-entry System**: Users who made wrong predictions can pay current entry fee to re-enter markets
 - **Minimum Player Requirements**: All pots require a minimum of 2 participants before predictions can begin
 
 ### Private Pot Creation System (New)
@@ -30,16 +30,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Full Lifecycle Implemented**: Create → Join → Predict → Distribute → Database Cleanup (all working)
 - **⚠️ Design Improvement Needed**: Core functionality works but UI/UX requires significant design enhancement
 
-### Complete Weekly Flow
-| Day | Pot Entry | Predictions | Status & Fees |
-|-----|-----------|-------------|---------------|
-| **Saturday** | ❌ Closed | ❌ Closed | Results day - pot distribution |
-| **Sunday** | ✅ Open | ✅ Open | Cheapest entry (~$0.01 USD in ETH) |
-| **Monday** | ✅ Open | ✅ Open | Low entry fee (~$0.02 USD in ETH) |
-| **Tuesday** | ✅ Open | ✅ Open | Medium entry fee (~$0.03 USD in ETH) |
-| **Wednesday** | ✅ Open | ✅ Open | Higher entry fee (~$0.04 USD in ETH) |
-| **Thursday** | ✅ Open | ✅ Open | High entry fee (~$0.05 USD in ETH) |
-| **Friday** | ✅ Open | ✅ Open | Highest entry fee (~$0.06 USD in ETH) |
+### Dynamic Pricing Flow
+- **Pricing Based**: On days since individual pot started, NOT calendar days
+- **Early Days (1-4)**: Fixed pricing at $0.02, $0.03, $0.04, $0.05 USD in ETH
+- **Exponential Growth (5+)**: Starting at $0.10 USD, doubles each subsequent day
+- **Owner-Controlled**: Pot owners decide when pots start and when final day occurs
+- **Individual Schedules**: Each pot operates on its own timeline independent of others
 
 ### Minimum Player Requirements System (2025)
 - **2-Player Minimum**: All prediction pots require a minimum of 2 participants before predictions can begin
@@ -127,19 +123,28 @@ The main app component (`app/page.tsx`) uses a section-based navigation system w
 #### Referral System Tables (New)
 - `ReferralCodes`: Unique 8-character codes per user (walletAddress, referralCode, createdAt)
 - `Referrals`: Tracks referral relationships and confirmation status (referrerWallet, referredWallet, referralCode, potEntryConfirmed, confirmedAt)
-- `FreeEntries`: Manages earned/used free pot entries (walletAddress, earnedFromReferrals, usedEntries)
+- `FreeEntries`: Manages earned/used free pot entries (walletAddress, earnedFromReferrals, earnedFromTrivia, earnedFromWordle, usedEntries)
 
-#### AI Trivia System Tables
-- `TriviaStats`: Tracks AI trivia game statistics (walletAddress, correctAnswers, totalQuestions, currentStreak, bestStreak, discountEarned)
+#### Wordle Game System (NEW)
+- **UsersTable**: Contains `lastWordlePlay`, `wordlePlaysToday` for tracking daily limits and `email` for user contact info
+- **FreeEntries**: Contains `earnedFromWordle` for tracking free entries earned from Wordle wins
+- **Database Functions**: `canPlayWordle()`, `recordWordlePlay()`, `getLastWordlePlay()`, `awardWordleFreeEntry()`
+- **API Routes**: `/api/wordle/award-entry`, `/api/wordle/check-eligibility`, `/api/wordle/record-play`, `/api/wordle/winner`
+- **Daily Word Generation**: Uses word list with daily rotation based on date
+- **One Play Per Day**: Connected wallets limited to one game per 24 hours
+- **Anonymous Play**: Non-connected users can play unlimited games
+- **Free Entry Rewards**: Users earn free pot entries for winning
 
-#### Email Collection System (New)
-- `UserEmails`: Stores user email addresses for marketing and updates (walletAddress, email, sourcePage, createdAt, updatedAt)
-- Comprehensive input validation and SQL injection protection implemented across all database operations
-- Email collection modal system with persistent dismissal state (3-day duration) and permanent opt-out after submission
+#### AI Trivia System
+- **Storage**: Trivia statistics stored in localStorage for non-connected users, with database sync on wallet connection
+- **No Dedicated Table**: Uses existing `UsersTable` for connected wallet users
+- **OpenAI Integration**: Dynamic question generation across 25+ categories
+- **100 Answer Milestone**: Users earn discounts after answering 100 questions correctly
 
 #### User Management
 - `Messages`: User messaging system
-- `ImageURLs`: User profile images
+- `UsersTable`: Complete user profiles (walletAddress, imageUrl, email, potsWon, totalEarningsETH, lastWordlePlay, wordlePlaysToday)
+- **Email Collection**: User emails stored in `UsersTable.email` field with functions `getUserEmail()` and `saveUserEmail()`
 
 ### Blockchain Integration
 - **Smart Contracts**: PredictionPot contracts handle ETH pot entry and winner distribution
@@ -163,18 +168,17 @@ The main app component (`app/page.tsx`) uses a section-based navigation system w
 ## Key Features
 
 ### Prediction Pot System (`PredictionPotTest.tsx`)
-- **Weekly Pot Entry**: Users pay dynamic ETH fees (converted from $0.01-0.06 USD) to enter prediction competitions (Sunday-Friday)
+- **Dynamic Pot Entry**: Users pay dynamic ETH fees based on days since pot started (not day of week)
+- **Individual Pot Schedules**: Each pot has owner-controlled start dates and timing
 - **Minimum Participants**: Requires 2+ participants before "Your Prediction Ready" display appears
-- **Dynamic Pricing**: Entry fees increase daily to incentivize early participation
-- **Dynamic UI**: Shows countdown timers and status messages based on current day
+- **Dynamic Pricing**: Entry fees follow early fixed pricing (days 1-4) then exponential doubling (day 5+)
+- **Owner-Controlled Timing**: Shows UI based on pot information flags (hasStarted, isFinalDay) set by pot owners
 - **Direct ETH Payment**: Single-step process - users send ETH directly to contract
 - **Smart Contract Integration**: Automated pot distribution to winners via blockchain
 - **Participant Tracking**: Real-time display of pot balance and participant count
-- **Re-entry System**: Users with wrong predictions can pay today's entry fee to re-enter
-- **Day-Based Logic**: 
-  - **Sunday**: Shows cheapest entry opportunity
-  - **Monday-Friday**: Shows increasing entry fees with clear pricing
-  - **Saturday**: Shows "results day" with pot closed
+- **Re-entry System**: Users with wrong predictions can pay current entry fee to re-enter
+- **Pot Information System**: Database tracks individual pot status with `PotInformation` table
+- **Reset Pot Data**: Owner action to reset pot information and clear user prediction history
 
 ### Referral Program (New Implementation)
 - **Unique Codes**: Each user gets an 8-character alphanumeric referral code
@@ -192,22 +196,20 @@ The main app component (`app/page.tsx`) uses a section-based navigation system w
 ### Prediction Logic (`MakePredictionsPage.tsx`)
 - **Automatic Participant Check**: Redirects participants to NotReadyPage if pot has insufficient players (< 2)
 - **Auto-Prediction Prevention**: Blocks cookie-based prediction submission when participant count is too low
-- **Weekly Prediction Window**: Users can make predictions Sunday-Friday
+- **Dynamic Prediction Window**: Users can make predictions based on individual pot timing (not fixed weekly schedule)
 - **Same-Day Predictions**: Users can predict starting from their entry day (including same day)
 - **Tomorrow's Predictions**: Users forecast next day's asset price movements
 - **One Prediction Per Day**: System prevents multiple predictions, allows updates before cutoff
 - **Immediate Penalty System**: `checkMissedPredictionPenalty()` runs on page load to instantly block users with missed predictions
 - **Fair Eligibility**: Only penalizes users who were actually eligible for missed predictions (no penalties for pre-entry dates)
-- **Re-entry System**: Wrong predictors must pay today's entry fee to re-enter markets
+- **Re-entry System**: Wrong predictors must pay current entry fee to re-enter markets
 - **Enhanced Prediction History (2025)**: Real-time display of prediction results with visual status indicators
   - **Color-Coded Badges**: ✓ Correct (green), ✗ Wrong (red), ⏳ Pending (gray)
   - **Provisional Indicators**: Asterisk (*) shown during evidence windows
   - **Detailed Results**: Shows actual outcome vs user prediction with transparency
   - **Live Updates**: Results update automatically as market outcomes are determined
-- **Day-Based UI Logic**:
-  - **Sunday-Friday**: Shows normal prediction interface (positive/negative buttons)
-  - **Saturday**: Shows "Results Day" with settlement countdown
-- **Multiple Markets**: Support for Featured (Bitcoin) and general Crypto prediction markets
+- **Owner-Controlled Logic**: UI adapts based on pot owner's final day settings instead of fixed weekly schedule
+- **Multiple Markets**: Support for Featured (Bitcoin), Crypto, Stocks, and Music prediction markets
 - **Clean Terminology**: Uses "predict/prediction" terminology instead of "bet/betting"
 
 #### Updated MakePredictionsPage Layout Structure:
@@ -240,12 +242,15 @@ The main app component (`app/page.tsx`) uses a section-based navigation system w
 - **Real-time Updates**: Chart refreshes every 30 seconds showing live sentiment changes
 - **Market-Specific Data**: Chart shows data for the currently selected pot (Featured/Trending vs Crypto)
 
-### Buy Page System (`BuyPage.tsx`)
-- **ETH Purchase Support**: Users can purchase ETH via Coinbase OnChainKit
-- **ETH for Everything**: Single token for both pot entries and gas fees
-- **Base Network**: Native ETH transactions with low fees (~$0.01-0.05)
-- **Educational UI**: Clear explanations of ETH usage for pot participation
-- **Integrated Purchase Flow**: Seamless buying experience within the app
+### Wordle Daily Game (`wordlePage.tsx`)
+- **Daily Word Challenge**: New word every day with 5 attempts to guess
+- **Connected Wallet Limits**: One game per wallet per 24-hour period
+- **Anonymous Play**: Non-connected users can play unlimited games
+- **Free Entry Rewards**: Winners earn free pot entries for prediction markets
+- **Word Generation**: Uses curated word list with daily rotation based on date
+- **Game Mechanics**: Standard Wordle rules - 5 letters, color-coded feedback
+- **Database Integration**: Tracks play history and prevents multiple daily plays
+- **API Architecture**: RESTful endpoints for eligibility, recording plays, and awarding prizes
 
 ### Re-entry System
 - **Wrong Prediction Recovery**: Users who made incorrect predictions can re-enter markets
@@ -282,30 +287,22 @@ The main app component (`app/page.tsx`) uses a section-based navigation system w
 - **Minimalistic Design**: Black and white UI design with clean typography and responsive layout
 - **Statistics Tracking**: Comprehensive stats including correct answers, accuracy, current streak, and best streak
 - **100 Answer Milestone**: Users earn ~$0.01 USD ETH discount after answering 100 questions correctly
-- **Hybrid Storage System**: 
-  - **Database Storage**: Connected wallet users get persistent stats in PostgreSQL via Drizzle ORM
-  - **localStorage Fallback**: Non-connected users use browser storage with seamless migration on wallet connect
-- **Database Functions**: `getTriviaStats()`, `updateTriviaStats()`, `resetTriviaStats()` with error handling
-- **Real-time Updates**: Immediate stat updates after each question with database synchronization
+- **localStorage Storage**: Non-connected users use browser storage, with potential database sync on wallet connection
+- **No Dedicated Database Table**: Uses existing `UsersTable` for connected wallet users if implemented
+- **Real-time Updates**: Immediate stat updates after each question
 - **Mobile Responsive**: Optimized grid layouts and touch-friendly interface
 - **Question Categories**: Science, History, Geography, Literature, Math, Sports, Technology, Art, Music, Movies, etc.
 - **Fallback System**: Built-in fallback questions if OpenAI API fails
 - **Progress Tracking**: Visual progress bar showing advancement toward 100 correct answers goal
-- **Database Optimization**: Currently updates database immediately per question; future optimization could batch updates on page unload/inactivity for better performance
-- **Email Collection Integration**: Modal appears 2 seconds after wallet connection with dismissible 3-day persistence
 
-### Email Collection System (NEW)
-- **Universal Integration**: Implemented across PredictionPotTest, AIPage, PrivatePotInterface, and CreatePotPage
-- **Smart Timing**: Modal appears 2 seconds after wallet connection on each page
-- **Persistent State Management**: Uses localStorage with 3-day dismissal duration
-- **Hook-Based Architecture**: `useEmailCollection` hook serves as single source of truth for modal state
-- **Database Security**: Comprehensive input validation, sanitization, and SQL injection protection
+### Email Collection System
+- **Database Storage**: User emails stored in `UsersTable.email` field
+- **Database Functions**: `getUserEmail()` and `saveUserEmail()` from actions.ts
+- **Input Validation**: Comprehensive validation and SQL injection protection
 - **User Experience**: 
-  - **Dismissible**: Users can close modal and won't see it again for 3 days
+  - **Dismissible**: Users can close modal and won't see it again for period
   - **One-Time Collection**: After email submission, modal permanently disappears
-  - **Non-Intrusive**: Only appears once per wallet per page with respectful timing
-- **State Synchronization**: Hook state takes precedence over database checks to prevent modal re-appearance after submission
-- **Source Tracking**: Tracks which page collected each email (PredictionPot, AI, PrivatePot, CreatePot)
+  - **Non-Intrusive**: Appears with respectful timing during wallet interaction
 
 ### Performance Optimizations & Database Considerations
 
@@ -600,7 +597,7 @@ getRealPotBalance("music") → "Music Charts" → potBalances["Music Charts"] �
 - **Responsive UI**: Different interfaces and messages shown based on weekly schedule phases
 - **Prediction-Focused Language**: Entire UI uses "predict/prediction" terminology instead of "bet/betting" to avoid gambling associations
 - **ETH Amount Calculation**: All ETH amounts calculated from USD values with proper wei precision handling
-- **Dynamic Pricing System**: Daily entry fees increase from Sunday (~$0.01 USD) to Friday (~$0.06 USD) in ETH
+- **Dynamic Pricing System**: Entry fees based on days since pot started, with early fixed pricing (days 1-4) then exponential doubling (day 5+)
 - **Multi-Asset Support**: Platform designed for predictions beyond crypto (stocks, sports, etc.)
 - **Immediate Penalty System**: Page-level validation prevents delayed surprises and provides instant feedback
 - **Event-Based History Tracking**: Complete audit trail of all pot participation for fair penalty determination

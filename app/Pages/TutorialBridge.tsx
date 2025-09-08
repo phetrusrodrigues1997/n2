@@ -293,50 +293,56 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
             {/* Modern Professional Email Collection UI */}
             {!isLoadingEmail && showEmailCollection && isConnected && (
               <div className="w-full min-h-[70vh] flex items-center justify-center px-4 md:px-8">
-                <div className="relative max-w-lg mx-auto w-full animate-fade-in-up opacity-0" style={{
+                <div className="relative max-w-xl mx-auto w-full animate-fade-in-up opacity-0" style={{
                   animation: 'fadeInUp 0.6s ease-out 0.1s forwards'
                 }}>
                   {/* Modern Sleek Container */}
-                  <div className="bg-white rounded-3xl border-0 p-8 md:p-10">
+                  <div className="bg-white rounded-3xl border border-gray-200/60 shadow-lg p-10 md:p-12">
                     {/* Header Section */}
-                    <div className="text-center mb-10">
-                      <div className="flex items-center justify-center gap-3 mb-4">
+                    <div className="text-center mb-12">
+                      <div className="flex items-center justify-center gap-4 mb-6">
                         <h1 className="text-3xl md:text-4xl font-light text-gray-900 tracking-tight">
                           Ready to Play?
                         </h1>
                         <img
                           src="/ghostie.png"
                           alt="Ghostie"
-                          className="w-8 h-8 md:w-10 md:h-10"
+                          className="w-9 h-9 md:w-11 md:h-11"
                         />
                       </div>
-
+                      <p className="text-gray-600 text-lg font-light leading-relaxed max-w-md mx-auto">
+                        Join the global prediction community and start competing today
+                      </p>
                     </div>
 
                     {/* Input Section */}
-                    <div className="space-y-6">
+                    <div className="space-y-8">
                       <div className="relative group">
                         <input
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          placeholder="user@email.com"
-                          className="w-full px-8 py-4 md:px-6 md:py-4
-           +   text-xl md:text-lg bg-white border-2 border-gray-300 rounded-3xl focus:border-purple-500
-           +  focus:ring-4 focus:ring-purple-100 focus:outline-none transition-all duration-300 ease-out
-           +  placeholder-gray-500 font-normal tracking-normal text-center hover:border-purple-300
-           +  hover:shadow-md focus:shadow-2xl shadow-sm"
+                          placeholder="Enter your email address"
+                          className="w-full px-6 py-5 md:px-7 md:py-5
+                           text-lg bg-gray-50/80 border-2 border-gray-200 rounded-2xl focus:border-purple-500
+                           focus:bg-white focus:ring-4 focus:ring-purple-100 focus:outline-none 
+                           transition-all duration-300 ease-out placeholder-gray-400 font-normal 
+                           tracking-normal text-center hover:border-gray-300 hover:bg-white
+                           hover:shadow-sm focus:shadow-lg"
                           onKeyPress={(e) => e.key === 'Enter' && handleEmailSubmit()}
                         />
-                        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/10 via-transparent to-purple-500/10 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="flex flex-col items-center space-y-4">
+                      <div className="flex flex-col items-center space-y-5">
                         <button
                           onClick={handleEmailSubmit}
                           disabled={emailSubmitting || !email.trim()}
-                          className="w-40 bg-black hover:from-purple-700 hover:to-purple-800 disabled:from-purple-300 disabled:to-purple-400 text-white font-medium py-3 px-8 rounded-2xl transition-all duration-300 text-lg disabled:cursor-not-allowed transform hover:scale-[1.01] active:scale-[0.99] tracking-wide"
+                          className="w-48 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 
+                           disabled:from-gray-300 disabled:to-gray-400 text-white font-medium py-4 px-8 rounded-2xl 
+                           transition-all duration-300 text-lg disabled:cursor-not-allowed transform hover:scale-[1.02] 
+                           active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl"
                         >
                           {emailSubmitting ? (
                             <span className="flex items-center justify-center">
@@ -344,13 +350,13 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                               Joining...
                             </span>
                           ) : (
-                            'Submit'
+                            'Get Started'
                           )}
                         </button>
 
                         <button
                           onClick={handleSkipEmail}
-                          className="w-full text-purple-600 hover:text-gray-600 font-light py-3 px-6 transition-all duration-200 text-base tracking-wide"
+                          className="w-full text-gray-500 hover:text-gray-700 font-light py-3 px-6 transition-all duration-200 text-base tracking-wide"
                         >
                           Skip for now
                         </button>
@@ -359,9 +365,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                     </div>
 
                     {/* Bottom Note */}
-                    <div className="mt-8 pt-6 border-t border-gray-100">
+                    <div className="mt-10 pt-8 border-t border-gray-100">
                       <p className="text-sm text-gray-400 text-center font-light tracking-wide">
-                        We respect your privacy. No spam ever.
+                        We respect your privacy. No spam, ever. 🔒
                       </p>
                     </div>
                   </div>
@@ -442,8 +448,8 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mb-12">
-                    <div className="flex items-start gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12">
+                    <div className="flex items-start gap-4 p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
                       <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl w-10 h-10 flex items-center justify-center font-medium text-lg flex-shrink-0">
                         1
                       </div>
@@ -455,7 +461,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-4 p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
                       <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl w-10 h-10 flex items-center justify-center font-medium text-lg flex-shrink-0">
                         2
                       </div>
@@ -467,7 +473,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-4 p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
                       <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl w-10 h-10 flex items-center justify-center font-medium text-lg flex-shrink-0">
                         3
                       </div>
@@ -479,7 +485,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-4 p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
                       <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl w-10 h-10 flex items-center justify-center font-medium text-lg flex-shrink-0">
                         4
                       </div>
@@ -491,7 +497,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-4 p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
                       <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl w-10 h-10 flex items-center justify-center font-medium text-lg flex-shrink-0">
                         5
                       </div>
@@ -503,7 +509,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-4 p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
                       <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl w-10 h-10 flex items-center justify-center font-medium text-lg flex-shrink-0">
                         6
                       </div>
