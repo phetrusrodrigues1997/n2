@@ -222,7 +222,6 @@ export interface Translations {
   enterPredictionPots: string;
   findPotsToEnter: string;
   potsYouEntered: string;
-  nextQuestion: string;
   participatingInPot: string;
   view: string;
   unknownMarket: string;
@@ -256,7 +255,6 @@ export interface Translations {
   connectToStartPredicting: string;
   accessRequired: string;
   mustJoinPotFirst: string;
-  enterPot: string;
   yesButton: string;
   noButton: string;
 }
@@ -510,14 +508,13 @@ export const translations: Record<Language, Translations> = {
     congratulationsFinal10: 'Congratulations! You are down to the last 10. Make your predictions as you normally would and if you win we will notify you.',
     gotIt: 'Got it! 🎯',
     loadingYourBet: 'Loading your bet...',
-    nextQuestion: 'Next Question',
     nextElimination: 'Next Elimination',
     importantTimers: 'Important Timers',
     connectWalletTitle: 'Connect Wallet',
     connectToStartPredicting: 'Connect to start predicting',
     accessRequired: 'Access Required',
     mustJoinPotFirst: 'You must join the pot first',
-    enterPot: 'Enter Pot',
+
     yesButton: 'YES',
     noButton: 'NO'
   },
@@ -769,14 +766,13 @@ export const translations: Record<Language, Translations> = {
     congratulationsFinal10: 'Parabéns! Você está entre os 10 últimos. Faça suas previsões normalmente e se ganhar, nós te notificaremos.',
     gotIt: 'Entendi! 🎯',
     loadingYourBet: 'Carregando sua aposta...',
-    nextQuestion: 'Próxima Pergunta',
     nextElimination: 'Próxima Eliminação',
     importantTimers: 'Cronômetros Importantes',
     connectWalletTitle: 'Conectar Carteira',
     connectToStartPredicting: 'Conecte para começar a prever',
     accessRequired: 'Acesso Necessário',
     mustJoinPotFirst: 'Você deve entrar no pote primeiro',
-    enterPot: 'Entrar no Pote',
+
     yesButton: 'SIM',
     noButton: 'NÃO'
   },
