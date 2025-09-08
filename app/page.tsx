@@ -918,10 +918,10 @@ export default function App() {
               setActiveSection('home');
               setIsMobileSearchActive(false);
             }}
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${activeSection === 'home' ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${(activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot') ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
               }`}
           >
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${activeSection === 'home' ? 'bg-transparent' : ''
+            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${(activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot') ? 'bg-transparent' : ''
               }`}>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>

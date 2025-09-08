@@ -968,6 +968,17 @@ useEffect(() => {
   return (
     <div className="min-h-screen bg-invisible p-4">
       <div className="max-w-4xl mx-auto">
+        {/* See More Markets Button */}
+        <div className="mb-6">
+          <button
+            onClick={() => setActiveSection('home')}
+            className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
+          >
+            <span>←</span>
+            <span>See more markets</span>
+          </button>
+        </div>
+
         <div className="bg-invisible rounded-lg p-6 mb-6">
           {/* <div className="text-center mb-10">
             <h1 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">

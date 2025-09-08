@@ -27,15 +27,15 @@ const HowItWorksSection: React.FC = () => {
            },
     {
       question: "How does Prediwin work?",
-      answer: "Prediwin.com is a predictions platform that offers two main experiences. The first are Public pots, which are weekly competitions where users make daily predictions on global events. These competitions run from Sunday to Friday, and the entry fee starts low at the beginning of the week and gradually increases. Players get eliminated daily for making a wrong prediction. They may choose to re-enter the tournament by paying a re-entry fee. The second are Private pots, which allow you to create your own custom prediction topics. You can then invite friends to join by sharing a link."
+      answer: "Prediwin.com is a predictions platform that offers two main experiences. The first are Public pots, which are prediction competitions where users make daily predictions on global events. Each pot has its own timeline controlled by the number of participants still in the tournament - tournaments automatically reach their final day once player count drops below 10. Entry fees increase based on days since the pot started (not calendar days). Players get eliminated daily for making a wrong prediction and may choose to re-enter by paying the current entry fee. The second are Private pots, which allow you to create your own custom prediction topics and invite friends to join by sharing a link."
     },
     {
-      question: "What is the weekly schedule for Public pots?",
-      answer: "Sunday-Friday: pot entry and predictions are open. Entry fees increase daily from $0.01 (Sunday) to $0.06 (Friday). Saturday: Results day - pots are closed and winners are determined at midnight UTC with pot distribution. Private pots have no schedule - you control when they open and close."
+      question: "How does dynamic pricing work for Public pots?",
+      answer: "Public pots use individual pot timers with dynamic pricing based on days since each pot started. Entry fees follow this structure: Days 1-4 have fixed early pricing ($0.02, $0.03, $0.04, $0.05 USD in ETH). Starting on day 5, fees begin at $0.10 USD and double each subsequent day. Each pot has its own independent timeline controlled by the number of participants still in the tournament - tournaments automatically reach their final day once player count drops below 10. Private pots let you set any entry fee you want."
     },
     {
       question: "What happens if I make a wrong prediction?",
-      answer: "In Public pots: If you predict incorrectly, you'll be eliminated but can re-enter by paying the current day's entry fee, the goal is to stay in the tournament until friday when the last prediction is made and the winners are determined on Saturday. In Private pots: The pot creator decides the final date, outcome and winners- you cannot re-enter a private pot after the winners have been determined."
+      answer: "In Public pots: If you predict incorrectly, you'll be eliminated but can re-enter by paying the current day's entry fee. The goal is to stay in the tournament until it reaches its final day (which happens automatically when player count drops below 10) and winners are determined. In Private pots: The pot creator decides the final date, outcome and winners - you cannot re-enter a private pot after the winners have been determined."
     },
     {
       question: "What are Private pots and how do they work?",
@@ -60,7 +60,7 @@ const HowItWorksSection: React.FC = () => {
     
     {
       question: "How are entry fees calculated in Public pots?",
-      answer: "Public pots follow a dynamic pricing model to encourage early participation: Sunday ($0.01), Monday ($0.02), Tuesday ($0.03), Wednesday ($0.04), Thursday ($0.05), Friday ($0.06). Saturday is closed for results. Private pots let you set any entry fee you want."
+      answer: "Public pots follow a dynamic pricing model based on days since each pot started (not calendar days). Days 1-4 have fixed pricing: $0.02, $0.03, $0.04, $0.05 USD in ETH. After day 4, fees begin to double starting at $0.10 USD on day 5, then $0.20 on day 6, $0.40 on day 7, and so on. Each pot has its own independent timeline. Private pots let you set any entry fee you want."
     },
   
     {
@@ -77,7 +77,7 @@ const HowItWorksSection: React.FC = () => {
     },
     {
       question: "When and how are winners determined?",
-      answer: "Public pots: Winners are determined every Saturday at midnight UTC based on actual event outcomes. Private pots: The pot creator decides when to close predictions, determines the actual outcome, and distributes rewards to winners through the smart contract."
+      answer: "Public pots: Winners are determined when tournaments reach their final day (automatically triggered when player count drops below 10), based on actual event results. Private pots: The pot creator decides when to close predictions, determines the actual outcome, and distributes rewards to winners through the smart contract."
     },
     {
       question: "How do I get my winnings?",

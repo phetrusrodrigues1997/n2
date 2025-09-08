@@ -296,6 +296,17 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                 <div className="relative max-w-xl mx-auto w-full animate-fade-in-up opacity-0" style={{
                   animation: 'fadeInUp 0.6s ease-out 0.1s forwards'
                 }}>
+                  {/* Back to All Markets Button */}
+                  <div className="mb-6">
+                    <button
+                      onClick={() => setActiveSection('home')}
+                      className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
+                    >
+                      <span>←</span>
+                      <span>Back to all markets</span>
+                    </button>
+                  </div>
+
                   {/* Modern Sleek Container */}
                   <div className="bg-white rounded-3xl border border-gray-200/60 shadow-lg p-10 md:p-12">
                     {/* Header Section */}
@@ -434,6 +445,17 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
             {/* Tutorial Screen - Show when email is collected or skipped */}
             {!isLoadingEmail && !showEmailCollection && isConnected && (
               <div className="max-w-5xl mx-auto opacity-100 px-4">
+                {/* Back to Email Collection Button */}
+                <div className="mb-6">
+                  <button
+                    onClick={() => setShowEmailCollection(true)}
+                    className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
+                  >
+                    <span>←</span>
+                    <span>Back to email collection</span>
+                  </button>
+                </div>
+
                 {/* Tutorial Content */}
                 <div className="bg-white rounded-3xl border-0 p-6 md:p-16 mb-8">
                   <div className="flex items-center justify-between mb-12 relative">
@@ -480,7 +502,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                       <div className="min-w-0 flex-1">
                         <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">Dynamic pricing</h3>
                         <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                          Entry fees rise daily from $0.01 (Sun) to $0.06 (Fri).
+                          Entry fees start low but will double after the 5th day - join early to save!
                         </p>
                       </div>
                     </div>

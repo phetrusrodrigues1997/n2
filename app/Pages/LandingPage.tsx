@@ -1973,10 +1973,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           <div className="max-w-4xl mx-auto text-center">
             <div className="space-y-4 mb-12">
               <h2 className="text-4xl font-light text-gray-900 tracking-tight">
-                <span className="text-purple-700 font-medium">Thousands</span> of winners,
+                <span className="text-purple-700 font-medium">Thousands</span> of players,
               </h2>
               <h3 className="text-3xl font-black text-gray-900 tracking-tight">
-                will you be next?
+                will you be among the last 10 standing?
               </h3>
             </div>
 
@@ -2008,7 +2008,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
               <span className="text-purple-700 font-medium">Thousands</span> of winners,
             </h2>
             <h3 className="text-xl font-black text-gray-900 mb-10 tracking-tight">
-              will you be next?
+              will you be among the last 10 standing?
             </h3>
 
             {/* Minimalist Entry Button - Mobile */}
