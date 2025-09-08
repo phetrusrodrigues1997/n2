@@ -909,7 +909,7 @@ export default function App() {
       </main>
 
       {/* Mobile Bottom Navigation */}
-      {!isLandingPageLoading && activeSection !== 'AI' && activeSection !== 'receive' && (
+      {!isLandingPageLoading && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && (
         <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40">
         <div className="flex items-center justify-around py-2">
           <button

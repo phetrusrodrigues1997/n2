@@ -376,11 +376,11 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                     </div>
 
                     {/* Bottom Note */}
-                    <div className="mt-10 pt-8 border-t border-gray-100">
+                    {/* <div className="mt-10 pt-8 border-t border-gray-100">
                       <p className="text-sm text-gray-400 text-center font-light tracking-wide">
                         We respect your privacy. No spam, ever. 🔒
                       </p>
-                    </div>
+                    </div> */}
                   </div>
 
                 </div>
