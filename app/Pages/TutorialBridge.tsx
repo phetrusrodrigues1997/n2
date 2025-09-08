@@ -303,7 +303,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                       className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
                     >
                       <span>←</span>
-                      <span>Back to all markets</span>
+                      <span>Back</span>
                     </button>
                   </div>
 
@@ -367,7 +367,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
 
                         <button
                           onClick={handleSkipEmail}
-                          className="w-full text-gray-500 hover:text-gray-700 font-light py-3 px-6 transition-all duration-200 text-base tracking-wide"
+                          className="w-full text-purple-600 hover:text-gray-700 font-light py-3 px-6 transition-all duration-200 text-base tracking-wide"
                         >
                           Skip for now
                         </button>
@@ -452,7 +452,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                     className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
                   >
                     <span>←</span>
-                    <span>Back to email collection</span>
+                    <span>Email collection</span>
                   </button>
                 </div>
 

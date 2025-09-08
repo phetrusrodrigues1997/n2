@@ -968,16 +968,7 @@ useEffect(() => {
   return (
     <div className="min-h-screen bg-invisible p-4">
       <div className="max-w-4xl mx-auto">
-        {/* See More Markets Button */}
-        <div className="mb-6">
-          <button
-            onClick={() => setActiveSection('home')}
-            className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
-          >
-            <span>←</span>
-            <span>See more markets</span>
-          </button>
-        </div>
+        
 
         <div className="bg-invisible rounded-lg p-6 mb-6">
           {/* <div className="text-center mb-10">
@@ -1227,7 +1218,7 @@ useEffect(() => {
 
                   {/* Enter Pot - Only show if no free entries available and not loading and not final day */}
                   {freeEntriesAvailable === 0 && !potInfoLoading && !potInfo.isFinalDay && (
-                    <div className="bg-white border-2 border-black rounded-xl p-6 shadow-lg">
+                    <div className="bg-white border-2 border-black rounded-xl p-6 shadow-lg ">
                       {/* Header with icon */}
                       <div className="flex items-center gap-3 mb-4">
                         <div className="w-10 h-10 bg-purple-700 rounded-xl flex items-center justify-center">
@@ -1289,7 +1280,7 @@ useEffect(() => {
                           : (
                             <>
                               <span>🚀</span>
-                              Enter (${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)})
+                              Enter
                             </>
                           )}
                       </button>
