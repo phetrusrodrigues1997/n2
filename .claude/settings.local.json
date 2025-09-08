@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(/C:\\Users\\grasi\\Contracts\\scripts/**)",
+      "Read(/C:\\Users\\grasi\\Contracts\\scripts/**)",
+      "Read(C:\\Users\\grasi\\Downloads/**)",
+      "Read(C:\\Users\\grasi\\Downloads/**)",
+      "Read(C:\\Users\\grasi\\Downloads/**)",
+      "Read(C:\\Users\\grasi\\Downloads/**)",
+      "Read(C:\\Users\\grasi\\Downloads/**)",
+      "WebFetch(domain:basescan.org)",
+      "WebFetch(domain:base.blockscout.com)",
+      "Bash(npx hardhat run:*)",
+      "Bash(npm run build:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(npm run lint)",
+      "Bash(node:*)",
+      "Bash(npx tsc:*)"
+    ],
+    "deny": [],
+    "ask": [],
+    "additionalDirectories": [
+      "C:\\Users\\grasi\\Contracts"
+    ]
+  }
+}
