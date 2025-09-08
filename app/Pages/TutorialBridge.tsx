@@ -300,14 +300,14 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                   <div className="bg-white rounded-3xl border border-gray-200/60 shadow-lg p-10 md:p-12">
                     {/* Header Section */}
                     <div className="text-center mb-12">
-                      <div className="flex items-center justify-center gap-4 mb-6">
-                        <h1 className="text-3xl md:text-4xl font-light text-gray-900 tracking-tight">
+                      <div className="flex items-center justify-center gap-3 mb-6 flex-nowrap">
+                        <h1 className="text-2xl md:text-4xl font-light text-gray-900 tracking-tight flex-shrink-0">
                           Ready to Play?
                         </h1>
                         <img
                           src="/ghostie.png"
                           alt="Ghostie"
-                          className="w-9 h-9 md:w-11 md:h-11"
+                          className="w-7 h-7 md:w-11 md:h-11 flex-shrink-0"
                         />
                       </div>
                       <p className="text-gray-600 text-lg font-light leading-relaxed max-w-md mx-auto">
