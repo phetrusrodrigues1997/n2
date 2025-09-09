@@ -535,8 +535,8 @@ export default function App() {
             <div className="flex items-center justify-end flex-1">
               {/* Balance display removed - ETH balance handled by wallet */}
 
-              {/* Right-side button group - pushed to right edge with tight spacing */}
-              <div className="flex items-center ml-auto -mr-8 md:-mr-16">
+              {/* Right-side button group - adjust positioning based on connection status */}
+              <div className={`flex items-center ml-auto ${isConnected ? '-mr-8 md:-mr-16' : '-mr-2 md:-mr-4'}`}>
                 {/* Tight group: Mobile (Bell first) vs Desktop (Language first) */}
                 <div className="flex items-center gap-0">
                   {/* Bell button - Mobile: leftmost, Desktop: rightmost */}
@@ -559,9 +559,8 @@ export default function App() {
                     </button>
                   )}
 
-                  {/* Language dropdown - Mobile: middle, Desktop: leftmost */}
-                  {isConnected && (
-                    <div className={`relative z-50 ${isMobile ? 'order-2 pl-6' : 'order-1'}`} data-language-dropdown>
+                  {/* Language dropdown - Mobile: middle, Desktop: leftmost - Always visible */}
+                  <div className={`relative z-50 ${isMobile ? (isConnected ? 'order-2 pl-6' : 'order-2 pl-6 -translate-x-6') : (isConnected ? 'order-1' : 'order-1 -translate-x-4')}`} data-language-dropdown>
                     <button
                       className="hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer gap-0"
                       onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
@@ -633,7 +632,6 @@ export default function App() {
                       </div>
                     )}
                   </div>
-                )}
 
                   {/* Balance display - Mobile: rightmost, Desktop: middle */}
                   {isConnected && (
