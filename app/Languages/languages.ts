@@ -126,6 +126,7 @@ export interface Translations {
   searchPotsPlaceholder: string;
   howItWorks: string;
   yourBalance: string;
+  yourBalanceMobile: string;
 
   // Email Collection
   readyToPlay: string;
@@ -385,6 +386,7 @@ export const translations: Record<Language, Translations> = {
     searchPotsPlaceholder: 'Search pots...',
     howItWorks: 'How it works',
     yourBalance: 'Your balance',
+    yourBalanceMobile: 'Balance',
 
     // Email Collection
     readyToPlay: 'Ready to Play?',
@@ -643,6 +645,7 @@ export const translations: Record<Language, Translations> = {
     searchPotsPlaceholder: 'Buscar potes...',
     howItWorks: 'Como funciona',
     yourBalance: 'Seu saldo',
+    yourBalanceMobile: 'Saldo',
 
     // Email Collection
     readyToPlay: 'Pronto para Jogar?',

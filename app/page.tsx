@@ -542,7 +542,7 @@ export default function App() {
               <div className="flex items-center gap-2">
                 {/* Language dropdown - Desktop and Mobile, left of balance */}
                 {isConnected && (
-                  <div className="relative z-50 translate-x-14 md:translate-x-24" data-language-dropdown>
+                  <div className="relative z-50 translate-x-12 md:translate-x-24" data-language-dropdown>
                     <button
                       className="flex items-center gap-1 px-2 py-2 md:px-2 md:py-2 hover:bg-gray-100 rounded-full transition-colors min-w-fit"
                       onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
@@ -551,7 +551,7 @@ export default function App() {
                       <img
                         src={supportedLanguages.find(lang => lang.code === currentLanguage)?.flag}
                         alt={`${currentLanguage} flag`}
-                        className="w-12 h-5 md:w-8 md:h-5 object-cover rounded flex-shrink-0"
+                        className="w-16 h-5 md:w-8 md:h-5 object-cover rounded flex-shrink-0"
                       />
                       {/* Down/Up arrow - Make it more visible on mobile */}
                       <svg
@@ -597,7 +597,7 @@ export default function App() {
                     onClick={() => setActiveSection('receive')}
                     className={`hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-4 py-1 rounded-md min-w-fit translate-x-16 md:translate-x-20 hover:bg-gray-100 cursor-pointer`}
                   >
-                    <div className="text-xs text-gray-500 whitespace-nowrap opacity-70">{t.yourBalance}</div>
+                    <div className="text-xs text-gray-500 whitespace-nowrap opacity-70">{isMobile ? t.yourBalanceMobile : t.yourBalance}</div>
                     <div className="text-sm font-semibold text-purple-700 whitespace-nowrap">
                       {ethBalance.data ? formatBalance(ethBalance.data.value) : '$0.00'}
                     </div>
@@ -643,7 +643,7 @@ export default function App() {
                             }}
                             className="flex flex-col items-center bg-transparent text-gray-700 font-medium text-xs hover:bg-gray-100 cursor-pointer px-2 py-1 rounded-md transition-colors duration-200"
                           >
-                            <div className="text-xs text-gray-500 whitespace-nowrap opacity-70">{t.yourBalance}</div>
+                            <div className="text-xs text-gray-500 whitespace-nowrap opacity-70">{isMobile ? t.yourBalanceMobile : t.yourBalance}</div>
                             <div className="text-sm font-semibold text-purple-700 whitespace-nowrap">
                               {ethBalance.data ? formatBalance(ethBalance.data.value) : '$0.00'}
                             </div>

@@ -16,7 +16,8 @@
       "Bash(find:*)",
       "Bash(npm run lint)",
       "Bash(node:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(sed:*)"
     ],
     "deny": [],
     "ask": [],
