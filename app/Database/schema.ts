@@ -197,7 +197,6 @@ export const PotParticipationHistory = pgTable("pot_participation_history", {
   contractAddress: text("contract_address").notNull(), // Which pot contract
   tableType: text("table_type").notNull(), // featured/crypto/etc - for easier querying
   eventType: text("event_type").notNull(), // 'entry' or 'exit'
-  eventDate: text("event_date").notNull(), // YYYY-MM-DD format when event occurred
   eventTimestamp: timestamp("event_timestamp").defaultNow().notNull(), // Exact timestamp of event
 });
 

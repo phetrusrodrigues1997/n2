@@ -247,10 +247,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
   const t = getTranslation(currentLanguage);
   
-  // Debug translations
-  console.log('🌍 LandingPage currentLanguage:', currentLanguage);
-  console.log('🌍 LandingPage t.heroTitle:', t.heroTitle);
-  console.log('🌍 LandingPage t.comingSoon:', t.comingSoon);
+  
 
   const markets = getMarkets(t, selectedMarket);
   const marketOptions = getMarkets(t, 'options');
@@ -524,12 +521,27 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
   // Helper function to get real pot balance for a market
   const getRealPotBalance = (marketId: string): string => {
+    console.log(`🔍 getRealPotBalance called with marketId: "${marketId}"`);
+    console.log(`🔍 Available potBalances keys:`, Object.keys(potBalances));
+    console.log(`🔍 potBalances object:`, potBalances);
+    
     // Check if we have real balance data
     if (potBalances[marketId]) {
+      console.log(`✅ Found balance for "${marketId}": ${potBalances[marketId]}`);
       return potBalances[marketId];
     }
 
+    // Try to map market ID to display name for lookup
+    const displayName = getMarketDisplayName(marketId);
+    console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}"`);
+    
+    if (potBalances[displayName]) {
+      console.log(`✅ Found balance using display name "${displayName}": ${potBalances[displayName]}`);
+      return potBalances[displayName];
+    }
+
     // Fallback to $0 if no data
+    console.log(`❌ No balance found for "${marketId}" or "${displayName}", returning $0`);
     return '$0';
   };
 
@@ -574,9 +586,32 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     }
   };
 
+  // Helper function to get user prediction for a market (handles naming mismatch)
+  const getUserPrediction = (marketId: string): TodaysBet | null => {
+    console.log(`🔍 getUserPrediction called with marketId: "${marketId}"`);
+    
+    // Check if we have prediction data directly
+    if (userPredictions[marketId]) {
+      console.log(`✅ Found prediction for "${marketId}"`);
+      return userPredictions[marketId];
+    }
+
+    // Try to map market ID to display name for lookup
+    const displayName = getMarketDisplayName(marketId);
+    console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}"`);
+    
+    if (userPredictions[displayName]) {
+      console.log(`✅ Found prediction using display name "${displayName}"`);
+      return userPredictions[displayName];
+    }
+
+    console.log(`❌ No prediction found for "${marketId}" or "${displayName}"`);
+    return null;
+  };
+
   // Helper function to get button content based on user's prediction
   const getButtonContent = (marketId: string, buttonType: 'positive' | 'negative') => {
-    const prediction = userPredictions[marketId];
+    const prediction = getUserPrediction(marketId);
     const contractAddress = getContractAddress(marketId);
     const isParticipant = contractAddress && isUserParticipant(contractAddress);
     const isLoading = voteChangeLoading[marketId];
@@ -610,7 +645,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
   // Helper function to get button styling based on user's prediction
   const getButtonStyles = (marketId: string, buttonType: 'positive' | 'negative', baseClasses: string) => {
-    const prediction = userPredictions[marketId];
+    const prediction = getUserPrediction(marketId);
     const contractAddress = getContractAddress(marketId);
     const isParticipant = contractAddress && isUserParticipant(contractAddress);
     const isEliminated = contractAddress && eliminationStatus[contractAddress];
@@ -715,7 +750,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       e.stopPropagation();
       e.preventDefault();
 
-      const prediction = userPredictions[marketId];
+      const prediction = getUserPrediction(marketId);
       const contractAddress = getContractAddress(marketId);
       const isParticipant = contractAddress && isUserParticipant(contractAddress);
       const enoughParticipants = contractAddress && hasEnoughParticipants(contractAddress);

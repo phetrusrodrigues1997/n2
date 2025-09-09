@@ -2,9 +2,9 @@
 
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
-import { WrongPredictions, WrongPredictionsCrypto, FeaturedBets, CryptoBets, LivePredictions, LiveQuestions, UsersTable, MarketOutcomes, EvidenceSubmissions, PotInformation, UserPredictionHistory } from "../Database/schema";
+import { WrongPredictions, WrongPredictionsCrypto, FeaturedBets, CryptoBets, StocksBets, MusicBets, LivePredictions, LiveQuestions, UsersTable, MarketOutcomes, EvidenceSubmissions, PotInformation, UserPredictionHistory } from "../Database/schema";
 import { eq, inArray, lt, asc, sql, and } from "drizzle-orm";
-import { CONTRACT_TO_TABLE_MAPPING } from "./config";
+import { getBetsTableName, getWrongPredictionsTableFromType, TableType, CONTRACT_TO_TABLE_MAPPING } from "./config";
 
 // Database setup
 const sqlConnection = neon(process.env.DATABASE_URL!);
@@ -54,21 +54,16 @@ const getTableFromType = (tableType: string) => {
       return FeaturedBets;
     case 'crypto':
       return CryptoBets;
+    case 'stocks':
+      return StocksBets;
+    case 'music':
+      return MusicBets;
     default:
-      throw new Error(`Invalid table type: ${tableType}. Must be 'featured' or 'crypto'`);
+      throw new Error(`Invalid table type: ${tableType}. Must be 'featured', 'crypto', 'stocks', or 'music'`);
   }
 };
 
-const getWrongPredictionsTableFromType = (tableType: string) => {
-  switch (tableType) {
-    case 'featured':
-      return WrongPredictions;
-    case 'crypto':
-      return WrongPredictionsCrypto;
-    default:
-      throw new Error(`Invalid table type: ${tableType}. Must be 'featured' or 'crypto'`);
-  }
-};
+
 
 
 export async function setProvisionalOutcome(

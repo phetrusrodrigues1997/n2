@@ -1,4 +1,4 @@
-// Database configuration constants
+import { WrongPredictions, WrongPredictionsCrypto, WrongPredictionsStocks, WrongPredictionsMusic } from "./schema";
 
 // Minimum players required to start a pot
 export const MIN_PLAYERS = 2; // Minimum participants for first market
@@ -74,6 +74,22 @@ export const getBetsTableName = (tableType: TableType): string => {
 
 export const getWrongPredictionsTableName = (tableType: TableType): string => {
   return TABLE_MAPPINGS.WRONG_PREDICTIONS[tableType] || TABLE_MAPPINGS.WRONG_PREDICTIONS.featured;
+};
+
+export const getWrongPredictionsTableFromType = (tableType: string) => {
+  switch (tableType) {
+    case 'featured':
+      return WrongPredictions;
+    case 'crypto':
+      console.log("Using crypto wrong predictions table");
+      return WrongPredictionsCrypto;
+    case 'stocks':
+      return WrongPredictionsStocks;
+    case 'music':
+      return WrongPredictionsMusic;
+    default:
+      throw new Error(`Invalid table type: ${tableType}. Must be 'featured', 'crypto', 'stocks', or 'music'`);
+  }
 };
 
 // Re-export for backwards compatibility and consistency

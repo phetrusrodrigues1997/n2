@@ -321,7 +321,7 @@ export const translations: Record<Language, Translations> = {
     amountBalance: 'Market Balance', // Added for consistency with other sections
     approveSpending: '1. Approve USDC Spending',
     allowContracts: 'Allow the contract to spend your USDC. Current allowance:',
-    enterPot: '2. Enter Prediction Pot',
+    enterPot: 'Enter Prediction Pot',
     pay10USDC: 'Pay 10 USDC to enter the pot. Make sure you have approved USDC spending first.',
     approveProcessing: 'Processing...',
     alreadyApproved: 'Already Approved',
@@ -579,7 +579,7 @@ export const translations: Record<Language, Translations> = {
     amountBalance: 'Saldo do Pote', // Added for consistency with other sections
     approveSpending: '1. Aprovar gastos de USDC',
     allowContracts: 'Permitir que o contrato gaste seu USDC. Limite atual:',
-    enterPot: '2. Entrar no Pote de Previsões',
+    enterPot: 'Entrar no Pote de Previsões',
     pay10USDC: 'Pague 10 USDC para entrar no pote. Certifique-se de ter aprovado os gastos de USDC primeiro.',
     approveProcessing: 'Processando...',
     alreadyApproved: 'Já Aprovado',

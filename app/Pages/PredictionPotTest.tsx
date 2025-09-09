@@ -666,8 +666,7 @@ useEffect(() => {
       
       // Record the pot entry in participation history
       if (address) {
-        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-        recordPotEntry(address, contractAddress, selectedTableType, today).catch(() => {
+        recordPotEntry(address, contractAddress, selectedTableType, 'entry').catch(() => {
           // Silently handle pot entry recording errors
           console.warn('Failed to record pot entry in participation history');
         });
@@ -716,6 +715,9 @@ useEffect(() => {
           }
         }, 3000);
       }
+      setActiveSection('makePrediction'); // Switch to make prediction section after entry
+      setLastAction('');
+      
     } else if (lastAction === 'reEntry') {
       // Handle re-entry confirmation
       const completeReEntry = async () => {
@@ -724,8 +726,7 @@ useEffect(() => {
           const success = await processReEntry(address!, selectedTableType);
           if (success) {
             // Record the re-entry in participation history
-            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-            recordPotEntry(address!, contractAddress, selectedTableType, today).catch(() => {
+            recordPotEntry(address!, contractAddress, selectedTableType, 're-entry').catch(() => {
               // Silently handle pot entry recording errors
               console.warn('Failed to record re-entry in participation history');
             });

@@ -705,6 +705,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
         try {
           // Remove user from wrong predictions table
           const success = await processReEntry(address!, selectedTableType);
+          console.log('SELECTED TABLE TYPE FOR RE-ENTRY:', selectedTableType);
           if (success) {
             setIsReEntryLoading(false);
             showMessage('Re-entry successful! You can now predict again.');

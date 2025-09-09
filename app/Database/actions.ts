@@ -8,7 +8,7 @@ import { WrongPredictions, WrongPredictionsCrypto, WrongPredictionsStocks, Wrong
 import { getBetsTableName, getWrongPredictionsTableName, TableType, CONTRACT_TO_TABLE_MAPPING } from "./config";
 import { ReferralCodes, Referrals, FreeEntries, UsersTable } from "./schema";
 import { EvidenceSubmissions, MarketOutcomes, PredictionIdeas } from "./schema";
-import { recordPotReEntry, recordUserPrediction } from './actions3';
+import { recordPotEntry, recordUserPrediction } from './actions3';
 import { desc } from "drizzle-orm";
 import { getPrice } from '../Constants/getPrice';
 import { getMarkets } from '../Constants/markets';
@@ -323,11 +323,11 @@ export async function getAllMessages(address: string) {
  */
 export async function getReEntryFee(walletAddress: string, typeTable: string): Promise<number | null> {
   try {
-    console.log(`🔍 getReEntryFee: Checking wallet ${walletAddress} for table type: ${typeTable}`);
+    // console.log(`🔍 getReEntryFee: Checking wallet ${walletAddress} for table type: ${typeTable}`);
     const normalizedWalletAddress = walletAddress.toLowerCase(); // Fix case sensitivity!
-    console.log(`🔍 getReEntryFee: Normalized wallet address: ${normalizedWalletAddress}`);
+    // console.log(`🔍 getReEntryFee: Normalized wallet address: ${normalizedWalletAddress}`);
     const wrongPredictionTable = getWrongPredictionsTableFromType(typeTable);
-    console.log(`🔍 getReEntryFee: Using wrong predictions table for query`);
+    // console.log(`🔍 getReEntryFee: Using wrong predictions table for query`);
     
     const result = await db
       .select({ walletAddress: wrongPredictionTable.walletAddress })
@@ -424,7 +424,7 @@ export async function processReEntry(walletAddress: string, typeTable: string): 
   try {
     const wrongPredictionTable = getWrongPredictionsTableFromType(typeTable);
     const normalizedWalletAddress = walletAddress.toLowerCase(); // Normalize for consistency
-    console.log(`Processing re-entry for ${normalizedWalletAddress} in table ${typeTable}`);
+    console.log(`PROCESSING REENTRY FOR ${normalizedWalletAddress} in table ${typeTable}`);
     
     const result = await db
       .delete(wrongPredictionTable)
@@ -443,14 +443,12 @@ export async function processReEntry(walletAddress: string, typeTable: string): 
       }
       
       if (contractAddress) {
-        const today = getUKDateString(); // Use UK timezone for consistency
-        
         // Record the pot re-entry in participation history
-        const historyResult = await recordPotReEntry(
+        const historyResult = await recordPotEntry(
           normalizedWalletAddress,
           contractAddress,
           typeTable,
-          today
+          're-entry'
         );
         
         if (historyResult.success) {
@@ -2185,6 +2183,8 @@ export async function getPredictionPercentages(marketId: string) {
     // Use the SAME date calculation functions that store predictions for consistency
     const tomorrowDateStr = getTomorrowUKDateString(); // Tomorrow's UK date
 
+    console.log(`📊 getPredictionPercentages called with marketId: "${marketId}", tomorrowDate: ${tomorrowDateStr}`);
+
     // Determine which table to query based on market ID
     let totalPositive = 0;
     let totalNegative = 0;
@@ -2237,16 +2237,37 @@ export async function getPredictionPercentages(marketId: string) {
           totalNegative++;
         }
       });
+    } else if (marketId === 'music') {
+      // Query MusicBets table - only for tomorrow's date  
+      const musicBets = await db
+        .select({
+          prediction: MusicBets.prediction
+        })
+        .from(MusicBets)
+        .where(eq(MusicBets.betDate, tomorrowDateStr));
+      
+      musicBets.forEach(bet => {
+        if (bet.prediction === 'positive') {
+          totalPositive++;
+        } else if (bet.prediction === 'negative') {
+          totalNegative++;
+        }
+      });
     }
 
     const totalPredictions = totalPositive + totalNegative;
     
+    console.log(`📊 ${marketId} predictions: ${totalPositive} positive, ${totalNegative} negative, ${totalPredictions} total`);
+    
     if (totalPredictions === 0) {
+      console.log(`📊 ${marketId}: No predictions found, returning 50/50%`);
       return { positivePercentage: 50, negativePercentage: 50, totalPredictions: 0 };
     }
 
     const positivePercentage = Math.round((totalPositive / totalPredictions) * 100);
     const negativePercentage = Math.round((totalNegative / totalPredictions) * 100);
+
+    console.log(`📊 ${marketId} final percentages: ${positivePercentage}% positive, ${negativePercentage}% negative`);
 
     return {
       positivePercentage,

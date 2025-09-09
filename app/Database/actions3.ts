@@ -16,70 +16,39 @@ function getDb() {
 }
 
 /**
- * Records when a user enters a pot
+ * Records when a user enters or re-enters a pot
  */
 export async function recordPotEntry(
   walletAddress: string,
   contractAddress: string,
   tableType: string, // 'featured', 'crypto', etc.
-  eventDate: string // YYYY-MM-DD format
+  eventType: 'entry' | 're-entry' = 'entry' // Defaults to 'entry' for backwards compatibility
 ): Promise<{ success: boolean; message: string }> {
   try {
-    console.log(`📝 Recording pot entry for ${walletAddress} in ${tableType} pot on ${eventDate}`);
+    console.log(`📝 Recording pot ${eventType} for ${walletAddress} in ${tableType} pot`);
     
     await getDb().insert(PotParticipationHistory).values({
       walletAddress: walletAddress.toLowerCase(),
       contractAddress: contractAddress.toLowerCase(),
       tableType,
-      eventType: 'entry',
-      eventDate,
+      eventType,
+      // eventTimestamp will be set automatically by defaultNow()
     });
 
     return { 
       success: true, 
-      message: 'Pot entry recorded successfully' 
+      message: `Pot ${eventType} recorded successfully` 
     };
   } catch (error) {
-    console.error('Error recording pot entry:', error);
+    console.error(`Error recording pot ${eventType}:`, error);
     return { 
       success: false, 
-      message: 'Failed to record pot entry' 
+      message: `Failed to record pot ${eventType}` 
     };
   }
 }
 
-/**
- * Records when a user re-enters a pot after paying penalty
- */
-export async function recordPotReEntry(
-  walletAddress: string,
-  contractAddress: string,
-  tableType: string, // 'featured', 'crypto', etc.
-  eventDate: string // YYYY-MM-DD format
-): Promise<{ success: boolean; message: string }> {
-  try {
-    console.log(`🔄 Recording pot re-entry for ${walletAddress} in ${tableType} pot on ${eventDate}`);
-    
-    await getDb().insert(PotParticipationHistory).values({
-      walletAddress: walletAddress.toLowerCase(),
-      contractAddress: contractAddress.toLowerCase(),
-      tableType,
-      eventType: 're-entry',
-      eventDate,
-    });
-
-    return { 
-      success: true, 
-      message: 'Pot re-entry recorded successfully' 
-    };
-  } catch (error) {
-    console.error('Error recording pot re-entry:', error);
-    return { 
-      success: false, 
-      message: 'Failed to record pot re-entry' 
-    };
-  }
-}
+// recordPotReEntry function removed - now use recordPotEntry(walletAddress, contractAddress, tableType, 're-entry')
 
 /**
  * Records when a user exits a pot
@@ -87,18 +56,17 @@ export async function recordPotReEntry(
 export async function recordPotExit(
   walletAddress: string,
   contractAddress: string,
-  tableType: string,
-  eventDate: string // YYYY-MM-DD format
+  tableType: string
 ): Promise<{ success: boolean; message: string }> {
   try {
-    console.log(`📝 Recording pot exit for ${walletAddress} from ${tableType} pot on ${eventDate}`);
+    console.log(`📝 Recording pot exit for ${walletAddress} from ${tableType} pot`);
     
     await getDb().insert(PotParticipationHistory).values({
       walletAddress: walletAddress.toLowerCase(),
       contractAddress: contractAddress.toLowerCase(),
       tableType,
       eventType: 'exit',
-      eventDate,
+      // eventTimestamp will be set automatically by defaultNow()
     });
 
     return { 
@@ -137,10 +105,15 @@ export async function isUserActiveOnDate(
           eq(PotParticipationHistory.contractAddress, contractAddress.toLowerCase())
         )
       )
-      .orderBy(asc(PotParticipationHistory.eventDate), asc(PotParticipationHistory.eventTimestamp));
+      .orderBy(asc(PotParticipationHistory.eventTimestamp));
 
     // Filter events that happened ON OR BEFORE the target date (users can predict on entry day)
-    const relevantEvents = events.filter(event => event.eventDate <= targetDate);
+    // Since we only have eventTimestamp now, extract date string from timestamp for comparison
+    // This avoids timezone complexity - we just check if the event date <= target date
+    const relevantEvents = events.filter(event => {
+      const eventDateStr = new Date(event.eventTimestamp).toISOString().split('T')[0]; // YYYY-MM-DD
+      return eventDateStr <= targetDate;
+    });
     
     if (relevantEvents.length === 0) {
       console.log(`📊 No events found for ${walletAddress} on/before ${targetDate} - not active`);
@@ -151,7 +124,7 @@ export async function isUserActiveOnDate(
     const mostRecentEvent = relevantEvents[relevantEvents.length - 1];
     const isActive = mostRecentEvent.eventType === 'entry';
     
-    console.log(`📊 Most recent event for ${walletAddress} on/on/before ${targetDate}: ${mostRecentEvent.eventType} on ${mostRecentEvent.eventDate} - Eligible: ${isActive}`);
+    console.log(`📊 Most recent event for ${walletAddress} on/on/before ${targetDate}: ${mostRecentEvent.eventType} on ${mostRecentEvent.eventTimestamp} - Eligible: ${isActive}`);
     
     return isActive;
   } catch (error) {
@@ -177,10 +150,15 @@ export async function getEligiblePredictors(
       .select()
       .from(PotParticipationHistory)
       .where(eq(PotParticipationHistory.contractAddress, contractAddress.toLowerCase()))
-      .orderBy(asc(PotParticipationHistory.eventDate), asc(PotParticipationHistory.eventTimestamp));
+      .orderBy(asc(PotParticipationHistory.eventTimestamp));
 
     // Filter events that happened ON OR BEFORE the target date (users can predict on entry day)
-    const relevantEvents = events.filter(event => event.eventDate <= targetDate);
+    // Since we only have eventTimestamp now, extract date string from timestamp for comparison
+    // This avoids timezone complexity - we just check if the event date <= target date
+    const relevantEvents = events.filter(event => {
+      const eventDateStr = new Date(event.eventTimestamp).toISOString().split('T')[0]; // YYYY-MM-DD
+      return eventDateStr <= targetDate;
+    });
     
     if (relevantEvents.length === 0) {
       console.log(`📊 No events found for pot ${contractAddress} on/before ${targetDate}`);
@@ -193,8 +171,7 @@ export async function getEligiblePredictors(
     for (const event of relevantEvents) {
       const currentEvent = userEventMap.get(event.walletAddress);
       if (!currentEvent || 
-          event.eventDate > currentEvent.eventDate || 
-          (event.eventDate === currentEvent.eventDate && event.eventTimestamp > currentEvent.eventTimestamp)) {
+          new Date(event.eventTimestamp).getTime() > new Date(currentEvent.eventTimestamp).getTime()) {
         userEventMap.set(event.walletAddress, event);
       }
     }
@@ -225,7 +202,7 @@ export async function getUserParticipationHistory(
   contractAddress: string;
   tableType: string;
   eventType: 'entry' | 'exit';
-  eventDate: string;
+  // eventDate removed - only eventTimestamp is used now
   eventTimestamp: Date;
 }>> {
   try {
@@ -245,11 +222,8 @@ export async function getUserParticipationHistory(
       .where(whereConditions);
 
     const sortedEvents = events.sort((a, b) => {
-      // Sort by date first, then by timestamp
-      if (a.eventDate !== b.eventDate) {
-        return b.eventDate.localeCompare(a.eventDate); // Descending date order
-      }
-      return new Date(b.eventTimestamp).getTime() - new Date(a.eventTimestamp).getTime(); // Descending timestamp
+      // Sort by timestamp only (descending order - newest first)
+      return new Date(b.eventTimestamp).getTime() - new Date(a.eventTimestamp).getTime();
     });
 
     console.log(`📋 Found ${sortedEvents.length} participation events for ${walletAddress}`);
@@ -286,32 +260,59 @@ export async function checkMissedPredictionPenalty(
     console.log(`🔍 Contract: ${contractAddress}`);
     console.log(`🔍 Market Type: ${tableType}`);
 
-    // Get today's date and day of week
+    // Get today's date
     const today = new Date();
     const todayString = today.toISOString().split('T')[0]; // YYYY-MM-DD
-    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
 
-    console.log(`🔍 Today: ${todayString}, Day of week: ${dayOfWeek} (0=Sunday, 1=Monday, etc.)`);
-
-    // Only Sunday has no predictions required (fresh start of the week)
-    // Monday-Saturday all require predictions
-    if (dayOfWeek === 0) {
-      console.log(`✅ It's Sunday - no predictions required yet, EXITING`);
-      return;
-    }
-
-    console.log(`🔍 Not Sunday - continuing penalty check...`);
-
-    console.log(`🗓️ Checking if ${walletAddress} made prediction for TODAY: ${todayString} (day ${dayOfWeek})`);
+    console.log(`🔍 Today: ${todayString}`);
 
     const sql = neon(process.env.DATABASE_URL!);
+
+    // STEP 0: Check pot information to see if pot has started and when
+    console.log(`🔍 STEP 0: Checking pot information for contract: ${contractAddress}`);
+    
+    const potInfo = await sql`
+      SELECT has_started, started_on_date, is_final_day 
+      FROM pot_information 
+      WHERE contract_address = ${contractAddress.toLowerCase()}
+      LIMIT 1
+    `;
+    
+    console.log(`🔍 Pot information result:`, potInfo);
+    
+    // If no pot information exists or pot hasn't started, no penalties
+    if (potInfo.length === 0) {
+      console.log(`✅ No pot information found for ${contractAddress} - no penalties required`);
+      return;
+    }
+    
+    const potData = potInfo[0];
+    const hasStarted = potData.has_started;
+    const startedOnDate = potData.started_on_date;
+    
+    console.log(`🔍 Pot has started: ${hasStarted}, Started on: ${startedOnDate}`);
+    
+    if (!hasStarted || !startedOnDate) {
+      console.log(`✅ Pot hasn't started yet (${hasStarted}) or no start date (${startedOnDate}) - no predictions required yet, EXITING`);
+      return;
+    }
+    
+    // Users should not be penalized on the day the pot started
+    if (startedOnDate === todayString) {
+      console.log(`✅ Today is the pot start date (${startedOnDate}) - no prediction penalty for start date, EXITING`);
+      return;
+    }
+    
+    console.log(`🔍 Pot started on ${startedOnDate}, today is ${todayString} - continuing penalty check...`);
+
+    console.log(`🗓️ Checking if ${walletAddress} made prediction for TODAY: ${todayString}`);
 
     // STEP 1: Check if user is currently a participant in this pot
     console.log(`🔍 STEP 1: Checking participation for wallet: ${walletAddress.toLowerCase()}, contract: ${contractAddress}`);
     
     // First, let's see ALL entries for this user/contract combo for debugging
     const allEntries = await sql`
-      SELECT event_type, event_date, event_timestamp, wallet_address, contract_address
+      SELECT event_type, event_timestamp, wallet_address, contract_address
       FROM pot_participation_history
       WHERE wallet_address = ${walletAddress.toLowerCase()} 
       AND contract_address = ${contractAddress.toLowerCase()}
@@ -322,7 +323,7 @@ export async function checkMissedPredictionPenalty(
     
     // Let's also check what entries exist for just this wallet (any contract)
     const walletEntries = await sql`
-      SELECT event_type, event_date, event_timestamp, wallet_address, contract_address
+      SELECT event_type, event_timestamp, wallet_address, contract_address
       FROM pot_participation_history
       WHERE wallet_address = ${walletAddress.toLowerCase()}
       ORDER BY event_timestamp DESC
@@ -333,7 +334,7 @@ export async function checkMissedPredictionPenalty(
     
     // And let's check what entries exist for just this contract (any wallet)
     const contractEntries = await sql`
-      SELECT event_type, event_date, event_timestamp, wallet_address, contract_address
+      SELECT event_type, event_timestamp, wallet_address, contract_address
       FROM pot_participation_history
       WHERE contract_address = ${contractAddress}
       ORDER BY event_timestamp DESC
@@ -399,24 +400,34 @@ export async function checkMissedPredictionPenalty(
     // STEP 3: Get the bets table for this market type
     const tableName = getBetsTableName(tableType);
 
-    // Check if they entered or re-entered the pot today (if so, no penalty for missing today's prediction)
-    console.log(`🔍 STEP 4: Checking if user entered/re-entered today (${todayString})`);
+    // Check if they entered or re-entered the pot within the last 24 hours
+    // This gives users exactly 24 hours from their entry/re-entry timestamp before penalties can apply
+    console.log(`🔍 STEP 4: Checking if user entered/re-entered within the last 24 hours`);
     
-    const entryToday = await sql`
-      SELECT COUNT(*) as entry_count 
+    // Calculate 24 hours ago from now
+    const twentyFourHoursAgo = new Date(today.getTime() - (24 * 60 * 60 * 1000));
+    
+    console.log(`🔍 Current time: ${today.toISOString()}`);
+    console.log(`🔍 24 hours ago: ${twentyFourHoursAgo.toISOString()}`);
+    
+    const recentEntryCheck = await sql`
+      SELECT COUNT(*) as entry_count, MAX(event_timestamp) as latest_entry_timestamp
       FROM pot_participation_history
       WHERE wallet_address = ${walletAddress.toLowerCase()} 
       AND contract_address = ${contractAddress.toLowerCase()}
       AND event_type IN ('entry', 're-entry')
-      AND event_date = ${todayString}
+      AND event_timestamp > ${twentyFourHoursAgo.toISOString()}
     `;
 
-    console.log(`🔍 Entry today query result:`, entryToday);
-    const enteredToday = parseInt(entryToday[0].entry_count) > 0;
-    console.log(`🔍 Entered today? ${enteredToday} (count: ${entryToday[0].entry_count})`);
+    console.log(`🔍 Recent entry query result:`, recentEntryCheck);
+    const enteredWithin24Hours = parseInt(recentEntryCheck[0].entry_count) > 0;
+    const latestEntryTimestamp = recentEntryCheck[0].latest_entry_timestamp;
+    console.log(`🔍 Entered within 24 hours? ${enteredWithin24Hours} (count: ${recentEntryCheck[0].entry_count}, latest: ${latestEntryTimestamp})`);
     
-    if (enteredToday) {
-      console.log(`✅ User ${walletAddress} entered or re-entered today - no prediction penalty required`);
+    if (enteredWithin24Hours) {
+      const entryTime = new Date(latestEntryTimestamp);
+      const hoursAgo = Math.round((today.getTime() - entryTime.getTime()) / (1000 * 60 * 60 * 100)) / 100; // Round to 2 decimals
+      console.log(`✅ User ${walletAddress} entered/re-entered ${hoursAgo} hours ago (${latestEntryTimestamp}) - still within 24-hour grace period`);
       return;
     }
 
