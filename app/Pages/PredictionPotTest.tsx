@@ -1290,7 +1290,7 @@ useEffect(() => {
                           : (
                             <>
                               <span>🚀</span>
-                              Enter (${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)})
+                              Enter
                             </>
                           )}
                       </button>

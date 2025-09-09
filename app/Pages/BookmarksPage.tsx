@@ -7,10 +7,11 @@ import { Bookmark, X, Trophy, Users, TrendingUp } from 'lucide-react';
 import { getUserBookmarks, removeBookmark } from '../Database/actions';
 import { CONTRACT_TO_TABLE_MAPPING, MIN_PLAYERS, MIN_PLAYERS2 } from '../Database/config';
 import { getMarkets } from '../Constants/markets';
-import { getTranslation, Language } from '../Languages/languages';
+import { getTranslation, Language, getMarketDisplayName, translateMarketQuestion } from '../Languages/languages';
 import { useContractData } from '../hooks/useContractData';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
 import LoadingScreen from '../Components/LoadingScreen';
+
 
 interface BookmarksPageProps {
   activeSection: string;
@@ -355,7 +356,10 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                       <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
                         {(() => {
                           const liveData = getCurrentMarketData(bookmark.marketId, bookmark.marketCategory);
-                          return liveData?.question || t.marketNotAvailable;
+                          if (liveData?.question) {
+                            return translateMarketQuestion(liveData.question, currentLanguage);
+                          }
+                          return t.marketNotAvailable;
                         })()}
                       </h3>
 
@@ -363,7 +367,10 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                       <p className="text-gray-600 text-sm">
                         {(() => {
                           const liveData = getCurrentMarketData(bookmark.marketId, bookmark.marketCategory);
-                          return liveData?.name || bookmark.marketId;
+                          if (liveData?.name) {
+                            return getMarketDisplayName(liveData.name, currentLanguage);
+                          }
+                          return bookmark.marketId;
                         })()}
                       </p>
                     </div>
@@ -439,17 +446,17 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {userPots.map((contractAddress) => {
                   const marketType = CONTRACT_TO_TABLE_MAPPING[contractAddress as keyof typeof CONTRACT_TO_TABLE_MAPPING];
-                  // Get proper market display name
-                  const getMarketDisplayName = (type: string) => {
+                  // Get proper market display name using translations
+                  const getLocalMarketDisplayName = (type: string) => {
                     switch (type) {
-                      case 'featured': return 'Trending';
-                      case 'crypto': return 'Crypto';
-                      case 'stocks': return 'Stocks';
-                      case 'music': return 'Music Charts';
+                      case 'featured': return getMarketDisplayName('Trending', currentLanguage);
+                      case 'crypto': return getMarketDisplayName('Crypto', currentLanguage);
+                      case 'stocks': return getMarketDisplayName('Stocks', currentLanguage);
+                      case 'music': return getMarketDisplayName('Music Charts', currentLanguage);
                       default: return t.unknownMarket;
                     }
                   };
-                  const marketName = getMarketDisplayName(marketType);
+                  const marketName = getLocalMarketDisplayName(marketType);
                   
                   return (
                     <button 
@@ -500,10 +507,10 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                 <div className="flex items-start gap-3">
                   <Trophy className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-semibold text-purple-900 mb-1">Your Active Pots</h4>
+                    <h4 className="font-semibold text-purple-900 mb-1">{t.yourActivePots}</h4>
                     <p className="text-purple-700 text-sm">
-                      You're currently participating in {userPots.length} pot{userPots.length !== 1 ? 's' : ''}. 
-                      Click on any pot above to make predictions and compete for the pot.
+                      {t.currentlyParticipatingIn} {userPots.length} {userPots.length !== 1 ? t.pots : t.pot}. 
+                      {t.clickAnyPotAbove}
                     </p>
                   </div>
                 </div>

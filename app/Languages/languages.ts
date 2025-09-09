@@ -274,6 +274,48 @@ export interface Translations {
   mustJoinPotFirst: string;
   yesButton: string;
   noButton: string;
+  
+  // Re-entry and Status
+  reentryRequired: string;
+  dailyOutcomeSet: string;
+  disputeOutcome: string;
+  evidenceSubmitted: string;
+  evidenceWindowClosed: string;
+  resultsDay: string;
+  predictionsClosed: string;
+  youChose: string;
+  for: string;
+  tomorrow: string;
+  managePrediction: string;
+  activePrediction: string;
+  makePrediction: string;
+  underReview: string;
+  status: string;
+  evidenceSubmittedAt: string;
+  submitEvidence: string;
+  evidenceSubmissionTerms: string;
+  provisional: string;
+  actualResult: string;
+  processing: string;
+  evidencePlaceholder: string;
+  submittingEvidence: string;
+  wrongPredictionIn: string;
+  payTodaysEntryFee: string;
+  wrongPredictionsRequireReentry: string;
+  
+  // Date and prediction timing
+  predictingForTomorrow: string;
+  resultsWillBeAvailable: string;
+  resultsReveal: string;
+  tomorrowAtMidnight: string;
+  autoSubmittingChoice: string;
+  
+  // BookmarksPage - Active Pots section
+  yourActivePots: string;
+  currentlyParticipatingIn: string;
+  pot: string;
+  pots: string;
+  clickAnyPotAbove: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -541,7 +583,7 @@ export const translations: Record<Language, Translations> = {
     finalPredictions: 'Final Predictions',
     congratulationsFinal10: 'Congratulations! You are down to the last 10. Make your predictions as you normally would and if you win we will notify you.',
     gotIt: 'Got it! 🎯',
-    loadingYourBet: 'Loading your bet...',
+    loadingYourBet: 'Loading your prediction...',
     nextElimination: 'Next Elimination',
     importantTimers: 'Important Timers',
     connectWalletTitle: 'Connect Wallet',
@@ -550,7 +592,49 @@ export const translations: Record<Language, Translations> = {
     mustJoinPotFirst: 'You must join the pot first',
 
     yesButton: 'YES',
-    noButton: 'NO'
+    noButton: 'NO',
+    
+    // Re-entry and Status
+    reentryRequired: 'Re-entry Required',
+    dailyOutcomeSet: 'Daily Outcome Set',
+    disputeOutcome: 'Dispute the Outcome?',
+    evidenceSubmitted: 'Evidence Submitted',
+    evidenceWindowClosed: 'Evidence Window Closed',
+    resultsDay: 'Results Day! 🎉',
+    predictionsClosed: 'Predictions Closed',
+    youChose: 'You Chose',
+    for: 'For:',
+    tomorrow: 'tomorrow',
+    managePrediction: 'Manage your current prediction',
+    activePrediction: 'Active Prediction',
+    makePrediction: 'Make Prediction',
+    underReview: 'Under Review',
+    status: 'Status:',
+    evidenceSubmittedAt: 'Evidence submitted:',
+    submitEvidence: 'Submit Evidence',
+    evidenceSubmissionTerms: 'Evidence Submission Terms:',
+    provisional: 'provisional',
+    actualResult: 'Actual result',
+    processing: 'Processing...',
+    evidencePlaceholder: 'Provide detailed evidence why this outcome is incorrect. Include links, sources, or explanations...',
+    submittingEvidence: 'Submitting Evidence...',
+    wrongPredictionIn: 'Wrong prediction in',
+    payTodaysEntryFee: 'Pay today\'s entry fee to continue.',
+    wrongPredictionsRequireReentry: 'Wrong predictions will require a re-entry fee to continue.',
+    
+    // Date and prediction timing
+    predictingForTomorrow: 'Predicting for Tomorrow',
+    resultsWillBeAvailable: 'Results will be available the following day',
+    resultsReveal: 'Results Reveal',
+    tomorrowAtMidnight: 'Tomorrow at Midnight',
+    autoSubmittingChoice: 'Auto-Submitting Your Choice',
+    
+    // BookmarksPage - Active Pots section
+    yourActivePots: 'Your Active Pots',
+    currentlyParticipatingIn: 'You\'re currently participating in',
+    pot: 'pot',
+    pots: 'pots',
+    clickAnyPotAbove: 'Click on any pot above to make predictions and compete for the pot.'
   },
   'pt-BR': {
     // Hero Section
@@ -816,7 +900,7 @@ export const translations: Record<Language, Translations> = {
     finalPredictions: 'Previsões Finais',
     congratulationsFinal10: 'Parabéns! Você está entre os 10 últimos. Faça suas previsões normalmente e se ganhar, nós te notificaremos.',
     gotIt: 'Entendi! 🎯',
-    loadingYourBet: 'Carregando sua aposta...',
+    loadingYourBet: 'Carregando sua previsão...',
     nextElimination: 'Próxima Eliminação',
     importantTimers: 'Cronômetros Importantes',
     connectWalletTitle: 'Conectar Carteira',
@@ -825,7 +909,49 @@ export const translations: Record<Language, Translations> = {
     mustJoinPotFirst: 'Você deve entrar no pote primeiro',
 
     yesButton: 'SIM',
-    noButton: 'NÃO'
+    noButton: 'NÃO',
+    
+    // Re-entry and Status
+    reentryRequired: 'Re-entrada Necessária',
+    dailyOutcomeSet: 'Resultado Diário Definido',
+    disputeOutcome: 'Contestar o Resultado?',
+    evidenceSubmitted: 'Evidência Enviada',
+    evidenceWindowClosed: 'Janela de Evidências Fechada',
+    resultsDay: 'Dia dos Resultados! 🎉',
+    predictionsClosed: 'Previsões Fechadas',
+    youChose: 'Você Escolheu',
+    for: 'Para:',
+    tomorrow: 'amanhã',
+    managePrediction: 'Gerenciar sua previsão atual',
+    activePrediction: 'Previsão Ativa',
+    makePrediction: 'Fazer Previsão',
+    underReview: 'Em Análise',
+    status: 'Status:',
+    evidenceSubmittedAt: 'Evidência enviada:',
+    submitEvidence: 'Enviar Evidência',
+    evidenceSubmissionTerms: 'Termos de Envio de Evidência:',
+    provisional: 'provisório',
+    actualResult: 'Resultado real',
+    processing: 'Processando...',
+    evidencePlaceholder: 'Forneça evidência detalhada de por que este resultado está incorreto. Inclua links, fontes ou explicações...',
+    submittingEvidence: 'Enviando Evidência...',
+    wrongPredictionIn: 'Previsão errada em',
+    payTodaysEntryFee: 'Pague a taxa de entrada de hoje para continuar.',
+    wrongPredictionsRequireReentry: 'Previsões erradas exigirão uma taxa de re-entrada para continuar.',
+    
+    // Date and prediction timing
+    predictingForTomorrow: 'Prevendo para Amanhã',
+    resultsWillBeAvailable: 'Resultados estarão disponíveis no dia seguinte',
+    resultsReveal: 'Revelação dos Resultados',
+    tomorrowAtMidnight: 'Amanhã à Meia-noite',
+    autoSubmittingChoice: 'Enviando Sua Escolha Automaticamente',
+    
+    // BookmarksPage - Active Pots section
+    yourActivePots: 'Seus Potes Ativos',
+    currentlyParticipatingIn: 'Você está participando atualmente de',
+    pot: 'pote',
+    pots: 'potes',
+    clickAnyPotAbove: 'Clique em qualquer pote acima para fazer previsões e competir pelo pote.'
   },
 };
 
@@ -925,4 +1051,40 @@ export const getTranslatedMarketQuestion = (market: any, language: Language): st
   
   // Return translated question if available, otherwise return original
   return questionMap[market.name] || questionMap[market.id] || market.question || '';
+};
+
+// Centralized direct question translation function (for actual question text strings)
+export const translateMarketQuestion = (questionText: string, language: Language): string => {
+  if (language === 'en') {
+    return questionText; // Return as-is for English
+  }
+  
+  // Direct mapping of English questions to Portuguese translations
+  const questionTranslations: Record<string, string> = {
+    // Tesla stock question - from English to Portuguese
+    'Will Tesla stock end the day higher?': 'A ação da Tesla vai terminar o dia em alta?',
+    
+    // Music/Espresso question - direct hardcoded mapping
+    'Will "Espresso" be the #1 track on Spotify Global?': 'Será que "Espresso" será a faixa #1 no Spotify Global?',
+    
+    // Trending - this would be a translated version from the Trending market
+    'Will a solo female artist have the #1 song on the global spotify charts?': 'Uma artista solo feminina terá a música #1 nas paradas globais do Spotify?',
+    
+    // Bitcoin (if it appears)
+    'Will Bitcoin end the day higher?': 'O Bitcoin vai terminar o dia em alta?',
+    
+    // Handle case where Tesla question might already be in Portuguese (when markets.ts used Portuguese t)
+    'A ação da Tesla vai terminar o dia em alta?': 'A ação da Tesla vai terminar o dia em alta?',
+    
+    // Add more question translations here as needed
+  };
+  
+  // Debug logging (can be removed in production)
+  console.log('🌍 translateMarketQuestion called:', { questionText, language });
+  console.log('🌍 Available translations:', Object.keys(questionTranslations));
+  
+  // Try to find exact translation, otherwise return original
+  const result = questionTranslations[questionText] || questionText;
+  console.log('🌍 Translation result:', result);
+  return result;
 };

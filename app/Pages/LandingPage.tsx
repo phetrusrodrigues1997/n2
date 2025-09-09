@@ -848,6 +848,12 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       } else if (marketId === 'Crypto') {
         const cryptoMarkets = getMarkets(t, 'Crypto');
         market = cryptoMarkets.find(m => m.id === marketId);
+      } else if (marketId === 'stocks') {
+        const stocksMarkets = getMarkets(t, 'stocks');
+        market = stocksMarkets.find(m => m.id === marketId);
+      } else if (marketId === 'music') {
+        const musicMarkets = getMarkets(t, 'music');
+        market = musicMarkets.find(m => m.id === marketId);
       }
 
       // Fallback: try to find in current markets or options

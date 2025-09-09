@@ -7,11 +7,12 @@ import { getProvisionalOutcome, } from '../Database/OwnerActions';
 import { TrendingUp, TrendingDown, Shield, Zap, AlertTriangle, Clock, FileText, Upload, ChevronDown, ChevronUp, Eye, Trophy } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { getMarkets } from '../Constants/markets';
-import { getTranslation, Language } from '../Languages/languages';
+import { getTranslation, Language, translateMarketQuestion } from '../Languages/languages';
 import { getPrice } from '../Constants/getPrice';
 import { useQueryClient } from '@tanstack/react-query';
 import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, BASE_ENTRY_FEE, calculateEntryFee } from '../Database/config';
 import LoadingScreenAdvanced from '../Components/LoadingScreenAdvanced';
+
 
 // UK timezone helper function (simplified and more reliable)
 const getUKTime = (date: Date = new Date()): Date => {
@@ -130,7 +131,8 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
   const [selectedTableType, setSelectedTableType] = useState<TableType>('featured');
   const [reEntryFee, setReEntryFee] = useState<number | null>(null);
   const [allReEntryFees, setAllReEntryFees] = useState<{market: string, fee: number}[]>([]);
-  const [marketQuestion, setMarketQuestion] = useState<string>('');
+  const [marketQuestion, setMarketQuestion] = useState<string>(''); // Original English question for database operations
+  const [displayQuestion, setDisplayQuestion] = useState<string>(''); // Translated question for display only
   
   // Pot information state
   const [potInfo, setPotInfo] = useState<{
@@ -447,8 +449,12 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
     
     // Set the market question if available
     if (savedQuestion) {
-      setMarketQuestion(savedQuestion);
+      setMarketQuestion(savedQuestion); // Keep original English question for database operations
+      // Create translated version for display with direct question mapping
+      const translatedQuestion = translateMarketQuestion(savedQuestion, currentLanguage || 'en');
+      setDisplayQuestion(translatedQuestion);
       console.log('Loaded pot question:', savedQuestion);
+      console.log('Display question (translated):', translatedQuestion);
     }
     
     // Load voting preference from cookies
@@ -476,6 +482,14 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
     }
   }, []);
 
+  // Retranslate display question when language changes
+  useEffect(() => {
+    if (marketQuestion && currentLanguage) {
+      const translatedQuestion = translateMarketQuestion(marketQuestion, currentLanguage);
+      setDisplayQuestion(translatedQuestion);
+      console.log('Language changed, retranslating question for', currentLanguage, ':', translatedQuestion);
+    }
+  }, [currentLanguage, marketQuestion]); // Retranslate when language or question changes
 
   // Countdown timer effect
   useEffect(() => {
@@ -1008,9 +1022,9 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                 <Shield className="w-6 h-6 text-white" />
               </div>
               
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Re-entry Required</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">{t.reentryRequired || "Re-entry Required"}</h2>
               <p className="text-gray-600 text-sm mb-6">
-                Wrong prediction in {getMarketDisplayName(selectedTableType)}. Pay today&apos;s entry fee to continue.
+{t.wrongPredictionIn || "Wrong prediction in"} {getMarketDisplayName(selectedTableType)}. {t.payTodaysEntryFee || "Pay today's entry fee to continue."}
               </p>
               
               <button
@@ -1021,7 +1035,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                 {isReEntryLoading || isPending || isConfirming ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Processing...
+                    {t.processing || "Processing..."}
                   </>
                 ) : (
                   `${t.enterPot || 'Enter Pot'} (${ethToUsd(getEntryAmount()).toFixed(2)} USD)`
@@ -1055,7 +1069,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                       )}
                     </div>
                     <div className="text-center">
-                      <h2 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">Daily Outcome Set</h2>
+                      <h2 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">{t.dailyOutcomeSet || "Daily Outcome Set"}</h2>
                       <div className={`inline-flex items-center px-6 py-2 rounded-xl bg-gradient-to-br backdrop-blur-sm border shadow-md ${
                         marketOutcome?.outcome === 'positive' 
                           ? 'from-green-50/80 to-white/80 border-green-200/30' 
@@ -1095,7 +1109,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                             <AlertTriangle className="w-8 h-8 text-white" />
                           </div>
                           <div className="text-left">
-                            <h3 className="text-xl font-black text-gray-900 mb-1 tracking-tight">Dispute the Outcome?</h3>
+                            <h3 className="text-xl font-black text-gray-900 mb-1 tracking-tight">{t.disputeOutcome || "Dispute the Outcome?"}</h3>
                             <div className="flex items-center gap-2">
                               <Clock className="w-4 h-4 text-purple-600" />
                               <p className="text-purple-800 font-bold text-sm">
@@ -1132,7 +1146,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                           <textarea
                             value={evidenceText}
                             onChange={(e) => setEvidenceText(e.target.value)}
-                            placeholder="Provide detailed evidence why this outcome is incorrect. Include links, sources, or explanations..."
+                            placeholder={t.evidencePlaceholder || "Provide detailed evidence why this outcome is incorrect. Include links, sources, or explanations..."}
                             className="w-full text-black h-32 p-4 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none transition-all duration-200"
                             disabled={isSubmittingEvidence}
                           />
@@ -1142,7 +1156,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                           <div className="flex items-start gap-3">
                             <AlertTriangle className="w-6 h-6 text-purple-400 flex-shrink-0 mt-1" />
                             <div className="text-white">
-                              <p className="font-bold mb-2 text-purple-300">Evidence Submission Terms:</p>
+                              <p className="font-bold mb-2 text-purple-300">{t.evidenceSubmissionTerms || "Evidence Submission Terms:"}</p>
                               <ul className="text-sm space-y-1 text-gray-300">
                                 <li>• Submit detailed evidence to dispute the outcome</li>
                                 <li>• Include sources, links, or clear explanations</li>
@@ -1161,12 +1175,12 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                           {isSubmittingEvidence ? (
                             <>
                               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              Submitting Evidence...
+                              {t.submittingEvidence || "Submitting Evidence..."}
                             </>
                           ) : (
                             <>
                               <Upload className="w-6 h-6" />
-                              Submit Evidence
+                              {t.submitEvidence || "Submit Evidence"}
                             </>
                           )}
                         </button>
@@ -1182,16 +1196,16 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                       <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
                         <FileText className="w-12 h-12 text-white" />
                       </div>
-                      <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">Evidence Submitted</h3>
+                      <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">{t.evidenceSubmitted || "Evidence Submitted"}</h3>
                       <div className="bg-blue-100 rounded-2xl p-6 border border-blue-200 mb-6">
-                        <p className="text-blue-800 font-bold mb-2">Status: {userEvidenceSubmission?.status === 'pending' ? 'Under Review' : userEvidenceSubmission?.status}</p>
+                        <p className="text-blue-800 font-bold mb-2">{t.status || "Status:"} {userEvidenceSubmission?.status === 'pending' ? (t.underReview || 'Under Review') : userEvidenceSubmission?.status}</p>
                         <p className="text-blue-700 text-sm">
                           Admin will review your evidence within 24 hours
                         </p>
                       </div>
                       <div className="text-gray-600 text-sm">
-                        <p className="mb-1">📄 Evidence submitted: {userEvidenceSubmission?.submittedAt.toLocaleString()}</p>
-                        <p>⏳ Status: {userEvidenceSubmission?.status === 'pending' ? 'Under Review' : userEvidenceSubmission?.status}</p>
+                        <p className="mb-1">📄 {t.evidenceSubmittedAt || "Evidence submitted:"} {userEvidenceSubmission?.submittedAt.toLocaleString()}</p>
+                        <p>⏳ {t.status || "Status:"} {userEvidenceSubmission?.status === 'pending' ? (t.underReview || 'Under Review') : userEvidenceSubmission?.status}</p>
                       </div>
                     </div>
                   </div>
@@ -1204,7 +1218,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                       <div className="w-24 h-24 bg-gradient-to-br from-gray-400 to-gray-500 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
                         <Clock className="w-12 h-12 text-white" />
                       </div>
-                      <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">Evidence Window Closed</h3>
+                      <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">{t.evidenceWindowClosed || "Evidence Window Closed"}</h3>
                       <p className="text-gray-600 text-lg mb-6">
                         The 1-hour evidence submission window has expired
                       </p>
@@ -1221,9 +1235,9 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
               <div className="bg-white border-2 border-black rounded-3xl shadow-2xl overflow-hidden relative">
                 {/* Header Section */}
                 <div className="bg-black text-white px-6 py-4 text-center">
-                  <h2 className="text-2xl font-bold tracking-tight">You Chose</h2>
+                  <h2 className="text-2xl font-bold tracking-tight">{t.youChose || "You Chose"}</h2>
                   {/* <p className="text-gray-300 text-sm mt-1">
-                    For: <span className="text-purple-700">tomorrow</span>
+                    {t.for || "For:"} <span className="text-purple-700">{t.tomorrow || "tomorrow"}</span>
                   </p> */}
                 </div>
 
@@ -1291,7 +1305,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                   <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
                     <Zap className="w-12 h-12 text-white animate-pulse" />
                   </div>
-                  <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Results Day! 🎉</h2>
+                  <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">{t.resultsDay || "Results Day! 🎉"}</h2>
                   
                   <div className="bg-gradient-to-r from-blue-100 to-blue-50 rounded-2xl p-6 border border-blue-200 mb-6">
                     <div className="flex items-center justify-center gap-3 mb-3">
@@ -1330,7 +1344,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                   <div className="w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
                     <Shield className="w-12 h-12 text-gray-600" />
                   </div>
-                  <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Predictions Closed</h2>
+                  <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">{t.predictionsClosed || "Predictions Closed"}</h2>
                   <p className="text-gray-600 text-lg mb-6">
                     Predictions can be placed Sunday through Friday
                   </p>
@@ -1380,12 +1394,12 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <h2 className="text-base sm:text-lg font-black text-gray-900 tracking-tight leading-tight mb-1">
-                          {tomorrowsBet ? 'Active Prediction' : (marketQuestion || 'Make Prediction')}
+                          {tomorrowsBet ? (t.activePrediction || 'Active Prediction') : (displayQuestion || (t.makePrediction || 'Make Prediction'))}
                         </h2>
                         <p className="text-gray-500 text-xs sm:text-sm font-medium">
                           {tomorrowsBet 
-                            ? "Manage your current prediction" 
-                            : <>For <span className="text-purple-700">tomorrow</span></>
+                            ? (t.managePrediction || "Manage your current prediction")
+                            : <>{t.for || "For"} <span className="text-purple-700">{t.tomorrow || "tomorrow"}</span></>
                           }
                         </p>
                       </div>
@@ -1446,13 +1460,15 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                     {/* Prediction Date Information */}
                     <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200/50 rounded-2xl p-4 mb-6 text-center">
                       <div className="flex items-center justify-center gap-2 mb-2">
-                        <h4 className="text-sm font-black text-gray-900">Predicting for Tomorrow</h4>
+                        <h4 className="text-sm font-black text-gray-900">{t.predictingForTomorrow || "Predicting for Tomorrow"}</h4>
                       </div>
                       <p className="text-blue-700 font-semibold text-base sm:text-lg">
                         {(() => {
                           const tomorrow = new Date();
                           tomorrow.setDate(tomorrow.getDate() + 1);
-                          return tomorrow.toLocaleDateString('en-US', { 
+                          // Use appropriate locale based on current language
+                          const locale = currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-US';
+                          return tomorrow.toLocaleDateString(locale, { 
                             weekday: 'long',
                             year: 'numeric', 
                             month: 'long', 
@@ -1461,7 +1477,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                         })()}
                       </p>
                       <p className="text-gray-600 text-xs mt-1">
-                        Results will be available the following day
+                        {t.resultsWillBeAvailable || "Results will be available the following day"}
                       </p>
                     </div>
 
@@ -1469,7 +1485,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                     {votingPreference && !tomorrowsBet && (
                       <div className="mb-6 text-center">
                         <h3 className="text-xl font-black text-purple-700 mb-3 tracking-tight">
-                          Auto-Submitting Your Choice
+                          {t.autoSubmittingChoice || "Auto-Submitting Your Choice"}
                         </h3>
                         <div className="bg-gradient-to-r from-purple-50/80 to-white border border-purple-200/50 rounded-2xl p-4 max-w-sm mx-auto">
                           <p className="text-gray-700 text-sm font-medium">
@@ -1597,9 +1613,9 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                         return (
                           <div className={`${containerClass} rounded-xl p-4`}>
                             <div className="flex items-center justify-between">
-                              <div className={`${textClass} font-semibold text-sm`}>Results Reveal</div>
+                              <div className={`${textClass} font-semibold text-sm`}>{t.resultsReveal || "Results Reveal"}</div>
                               <div className="flex items-center gap-3">
-                               <span className='text-purple-700 font-semibold'>Tomorrow at Midnight</span>
+                               <span className='text-purple-700 font-semibold'>{t.tomorrowAtMidnight || "Tomorrow at Midnight"}</span>
                               </div>
                             </div>
                           </div>
@@ -1662,7 +1678,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                           {prediction.prediction === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
                         </span>
                         <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium">
-                          {new Date(prediction.predictionDate).toLocaleDateString('en-US', { 
+                          {new Date(prediction.predictionDate).toLocaleDateString(currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-US', { 
                             month: 'short', 
                             day: 'numeric'
                           })}
@@ -1672,8 +1688,8 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
                         {prediction.questionName}
                       </p>
                       <p className="text-gray-400 text-xs">
-                        {new Date(prediction.createdAt).toLocaleDateString()} • {' '}
-                        {new Date(prediction.createdAt).toLocaleTimeString('en-GB', {
+                        {new Date(prediction.createdAt).toLocaleDateString(currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-US')} • {' '}
+                        {new Date(prediction.createdAt).toLocaleTimeString(currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-GB', {
                           hour: '2-digit', 
                           minute: '2-digit'
                         })}
@@ -1770,7 +1786,7 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
             </div>
             
             <div className="relative z-10 text-gray-700 text-sm font-bold tracking-wide">
-             Wrong predictions will require a re-entry fee to continue.
+             {t.wrongPredictionsRequireReentry || "Wrong predictions will require a re-entry fee to continue."}
             </div>
           </div>
         )}
