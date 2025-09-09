@@ -535,36 +535,60 @@ export default function App() {
             <div className="flex items-center justify-end flex-1">
               {/* Balance display removed - ETH balance handled by wallet */}
 
-              {/* Spacer to push buttons to the right */}
-              <div className="hidden md:flex flex-1"></div>
-
-              {/* Right-side button group - closer together */}
-              <div className="flex items-center gap-2">
-                {/* Language dropdown - Desktop and Mobile, left of balance */}
-                {isConnected && (
-                  <div className="relative z-50 translate-x-12 md:translate-x-24" data-language-dropdown>
+              {/* Right-side button group - pushed to right edge with tight spacing */}
+              <div className="flex items-center ml-auto -mr-4 md:-mr-16">
+                {/* Tight group: Language + Balance + Bell */}
+                <div className="flex items-center gap-0">
+                  {/* Language dropdown - Desktop and Mobile, left of balance */}
+                  {isConnected && (
+                    <div className="relative z-50" data-language-dropdown>
                     <button
-                      className="flex items-center gap-1 px-2 py-2 md:px-2 md:py-2 hover:bg-gray-100 rounded-full transition-colors min-w-fit"
+                      className="hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer gap-0"
                       onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
                       type="button"
                     >
-                      <img
-                        src={supportedLanguages.find(lang => lang.code === currentLanguage)?.flag}
-                        alt={`${currentLanguage} flag`}
-                        className="w-16 h-5 md:w-8 md:h-5 object-cover rounded flex-shrink-0"
-                      />
-                      {/* Down/Up arrow - Make it more visible on mobile */}
-                      <svg
-                        className={`w-4 h-4 md:w-3 md:h-3 text-gray-600 transition-transform duration-200 flex-shrink-0 ${
-                          isLanguageDropdownOpen ? 'rotate-180' : 'rotate-0'
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        strokeWidth="2.5"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <div className="text-xs text-gray-500 whitespace-nowrap opacity-70 flex items-center gap-1">
+                        Language
+                        <svg
+                          className={`w-3 h-3 text-gray-500 transition-transform duration-200 ${
+                            isLanguageDropdownOpen ? 'rotate-180' : 'rotate-0'
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2.5"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                      <div className="text-sm font-semibold text-purple-700 whitespace-nowrap">
+                        {currentLanguage === 'en' ? 'EN-US' : 'PT-BR'}
+                      </div>
+                    </button>
+                    
+                    {/* Mobile version - same design as desktop */}
+                    <button
+                      className="md:hidden flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer gap-0"
+                      onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
+                      type="button"
+                    >
+                      <div className="text-xs text-gray-500 whitespace-nowrap opacity-70 flex items-center gap-1">
+                        Language
+                        <svg
+                          className={`w-3 h-3 text-gray-500 transition-transform duration-200 ${
+                            isLanguageDropdownOpen ? 'rotate-180' : 'rotate-0'
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2.5"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                      <div className="text-sm font-semibold text-purple-700 whitespace-nowrap">
+                        {currentLanguage === 'en' ? 'EN-US' : 'PT-BR'}
+                      </div>
                     </button>
                     
                     {/* Language dropdown menu */}
@@ -595,7 +619,7 @@ export default function App() {
                 {isConnected && (
                   <button
                     onClick={() => setActiveSection('receive')}
-                    className={`hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-4 py-1 rounded-md min-w-fit translate-x-16 md:translate-x-20 hover:bg-gray-100 cursor-pointer`}
+                    className={`hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer`}
                   >
                     <div className="text-xs text-gray-500 whitespace-nowrap opacity-70">{isMobile ? t.yourBalanceMobile : t.yourBalance}</div>
                     <div className="text-sm font-semibold text-purple-700 whitespace-nowrap">
@@ -604,35 +628,36 @@ export default function App() {
                   </button>
                 )}
 
-                {/* Bell button - separate from wallet */}
-                {isConnected && !(isNavigationMenuOpen && isMobile) && (
-                  <button
-                    className="relative p-2 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-12 md:translate-x-16"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      console.log('Bell button clicked');
-                      setActiveSection('messagesPage');
-                    }}
-                    type="button"
-                  >
-                    <Bell className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors" />
-                    {/* Purple dot indicator for unread announcements */}
-                    {hasUnreadAnnouncementsState && (
-                      <div className="absolute top-1 right-1 w-3 h-3 bg-purple-700 rounded-full border-2 border-white animate-pulse"></div>
-                    )}
-                  </button>
-                )}
+                  {/* Bell button - separate from wallet */}
+                  {isConnected && !(isNavigationMenuOpen && isMobile) && (
+                    <button
+                      className="relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 -mr-4 md:-mr-6"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Bell button clicked');
+                        setActiveSection('messagesPage');
+                      }}
+                      type="button"
+                    >
+                      <Bell className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors" />
+                      {/* Purple dot indicator for unread announcements */}
+                      {hasUnreadAnnouncementsState && (
+                        <div className="absolute top-1 right-1 w-3 h-3 bg-purple-700 rounded-full border-2 border-white animate-pulse"></div>
+                      )}
+                    </button>
+                  )}
+                </div>
 
-                {/* Wallet container */}
-                <div className={`wallet-container ${isMobile ? 'ml-0' : 'ml-0'}`}>
+                {/* Wallet container with spacing */}
+                <div className="wallet-container translate-x-0">
                 <Wallet>
                   <ConnectWallet
                     text={isMobile ? "Sign In" : "Sign In"}
-                    className={`${isConnected ? '!bg-transparent !border-none !shadow-none !p-0' : ''} ${isMobile ? 'bg-purple-700 hover:bg-black !px-4 !py-2 !min-w-0' : 'bg-purple-700 hover:bg-black !px-4 !py-2 !min-w-0 !w-24 !whitespace-nowrap ml-8'}`}
+                    className={`${isConnected ? '!bg-transparent !border-none !shadow-none !p-0' : ''} ${isMobile ? 'bg-purple-700 hover:bg-black !px-4 !py-2 !min-w-0' : 'bg-purple-700 hover:bg-black !px-4 !py-2 !min-w-0 !w-24 !whitespace-nowrap'}`}
                   >
                     {isConnected && (
-                      <div className="flex items-center gap-2 translate-x-6 md:translate-x-0">
+                      <div className="flex items-center gap-2">
                         {/* Show balance on mobile, colorful circle on desktop */}
                         {isMobile ? (
                           <div
