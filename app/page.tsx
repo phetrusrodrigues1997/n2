@@ -476,7 +476,7 @@ export default function App() {
     (activeSection === "home") ? "border-b border-gray-200" : ""
   }`}
 >
-        <div className="max-w-7xl mx-auto flex flex-col">
+        <div className="w-full mx-auto flex flex-col">
           {/* Top row with main header elements */}
           <div className="flex justify-between items-center mt-3 md:mt-0">
             <div className="flex items-center flex-1">
@@ -861,7 +861,7 @@ export default function App() {
       {/* Second Carousel - Personalized Labels (Below mobile search bar) */}
       {!isLandingPageLoading && activeSection === 'home' && (
         <section className="relative z-10 px-4 py-2 md:py-3 bg-white overflow-hidden">
-          <div className="max-w-7xl mx-auto">
+          <div className="w-full mx-auto">
             <div className="flex items-center gap-4 w-full max-w-full">
               {/* Desktop Search Bar - Left side */}
               <div className="hidden md:flex items-center gap-1">
