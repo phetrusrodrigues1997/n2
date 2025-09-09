@@ -588,7 +588,7 @@ export default function App() {
                     
                     {/* Mobile version - same design as desktop but less padding */}
                     <button
-                      className="md:hidden flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-0 py-0 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer gap-0 -mr-3"
+                      className="md:hidden flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-0 py-0 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer gap-0 -mr-4"
                       onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
                       type="button"
                     >
