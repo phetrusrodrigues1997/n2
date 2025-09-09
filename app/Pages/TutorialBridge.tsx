@@ -529,7 +529,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
                 {/* Tutorial Content */}
                 <div className="bg-white rounded-3xl border-0 p-6 md:p-16 mb-8">
                   <div className="flex items-center justify-between mb-12 relative">
-                    <h2 className="text-3xl md:text-5xl font-light text-gray-900 tracking-tight">
+                    <h2 className="text-2xl md:text-4xl font-light text-gray-900 tracking-tight">
                       {t.howItWorksTitle}
                     </h2>
                     <button

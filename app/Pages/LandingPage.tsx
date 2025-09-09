@@ -533,9 +533,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
   // Helper function to get real pot balance for a market
   const getRealPotBalance = (marketId: string): string => {
-    console.log(`🔍 getRealPotBalance called with marketId: "${marketId}"`);
-    console.log(`🔍 Available potBalances keys:`, Object.keys(potBalances));
-    console.log(`🔍 potBalances object:`, potBalances);
+    // console.log(`🔍 getRealPotBalance called with marketId: "${marketId}"`);
+    // console.log(`🔍 Available potBalances keys:`, Object.keys(potBalances));
+    // console.log(`🔍 potBalances object:`, potBalances);
     
     // Check if we have real balance data
     if (potBalances[marketId]) {
@@ -547,7 +547,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     const tableType = getTableTypeFromMarketId(marketId);
     if (tableType) {
       const displayName = getMarketDisplayName(tableType as any); // Type assertion needed
-      console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
+      // console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
       
       if (potBalances[displayName]) {
         console.log(`✅ Found balance using display name "${displayName}": ${potBalances[displayName]}`);
@@ -556,7 +556,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     }
 
     // Fallback to $0 if no data
-    console.log(`❌ No balance found for "${marketId}" or mapped display name, returning $0`);
+    // console.log(`❌ No balance found for "${marketId}" or mapped display name, returning $0`);
     return '$0';
   };
 
@@ -603,7 +603,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
   // Helper function to get user prediction for a market (handles naming mismatch)
   const getUserPrediction = (marketId: string): TodaysBet | null => {
-    console.log(`🔍 getUserPrediction called with marketId: "${marketId}"`);
+    // console.log(`🔍 getUserPrediction called with marketId: "${marketId}"`);
     
     // Check if we have prediction data directly
     if (userPredictions[marketId]) {
@@ -615,7 +615,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     const tableType = getTableTypeFromMarketId(marketId);
     if (tableType) {
       const displayName = getMarketDisplayName(tableType as any); // Type assertion needed
-      console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
+      // console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
       
       if (userPredictions[displayName]) {
         console.log(`✅ Found prediction using display name "${displayName}"`);
@@ -623,7 +623,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       }
     }
 
-    console.log(`❌ No prediction found for "${marketId}" or mapped display name`);
+    // console.log(`❌ No prediction found for "${marketId}" or mapped display name`);
     return null;
   };
 

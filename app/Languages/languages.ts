@@ -121,6 +121,16 @@ export interface Translations {
   personalizedFootball: string;
   personalizedTrump: string;
   personalizedUS2024: string;
+  personalizedTechNews: string;
+  personalizedFashionTrends: string;
+  personalizedAstronomy: string;
+  personalizedPopCulture: string;
+  personalizedGaming: string;
+  personalizedTravelTourism: string;
+  personalizedCelebrityNews: string;
+  personalizedHealthFitness: string;
+  personalizedTVShows: string;
+  personalizedBoxOffice: string;
 
   // Header
   searchPotsPlaceholder: string;
@@ -242,6 +252,12 @@ export interface Translations {
   followOnXNav: string;
   toggleMenu: string;
   closeMenu: string;
+
+  // Bottom Navigation
+  bottomNavHome: string;
+  bottomNavLive: string;
+  bottomNavSearch: string;
+  bottomNavMyPots: string;
 
   // MakePredictionsPage (VERY LIMITED - only safe display strings)
   loadingPredictions: string;
@@ -381,6 +397,16 @@ export const translations: Record<Language, Translations> = {
     personalizedFootball: 'Football',
     personalizedTrump: 'Trump',
     personalizedUS2024: 'US 2024',
+    personalizedTechNews: 'Tech News',
+    personalizedFashionTrends: 'Fashion Trends',
+    personalizedAstronomy: 'Astronomy',
+    personalizedPopCulture: 'Pop Culture',
+    personalizedGaming: 'Gaming',
+    personalizedTravelTourism: 'Travel & Tourism',
+    personalizedCelebrityNews: 'Celebrity News',
+    personalizedHealthFitness: 'Health & Fitness',
+    personalizedTVShows: 'TV Shows',
+    personalizedBoxOffice: 'Box Office',
 
     // Header
     searchPotsPlaceholder: 'Search pots...',
@@ -503,6 +529,12 @@ export const translations: Record<Language, Translations> = {
     followOnXNav: 'Follow on X',
     toggleMenu: 'Toggle menu',
     closeMenu: 'Close menu',
+
+    // Bottom Navigation
+    bottomNavHome: 'Home',
+    bottomNavLive: 'Live',
+    bottomNavSearch: 'Search',
+    bottomNavMyPots: 'My pots',
 
     // MakePredictionsPage (VERY LIMITED - only safe display strings)
     loadingPredictions: 'Loading your predictions...',
@@ -640,6 +672,16 @@ export const translations: Record<Language, Translations> = {
     personalizedFootball: 'Futebol',
     personalizedTrump: 'Trump',
     personalizedUS2024: 'EUA 2024',
+    personalizedTechNews: 'Notícias Tech',
+    personalizedFashionTrends: 'Tendências de Moda',
+    personalizedAstronomy: 'Astronomia',
+    personalizedPopCulture: 'Cultura Pop',
+    personalizedGaming: 'Jogos',
+    personalizedTravelTourism: 'Viagem & Turismo',
+    personalizedCelebrityNews: 'Notícias de Celebridades',
+    personalizedHealthFitness: 'Saúde & Fitness',
+    personalizedTVShows: 'Programas de TV',
+    personalizedBoxOffice: 'Bilheteria',
 
     // Header
     searchPotsPlaceholder: 'Buscar potes...',
@@ -763,6 +805,12 @@ export const translations: Record<Language, Translations> = {
     toggleMenu: 'Alternar menu',
     closeMenu: 'Fechar menu',
 
+    // Bottom Navigation
+    bottomNavHome: 'Início',
+    bottomNavLive: 'Ao Vivo',
+    bottomNavSearch: 'Buscar',
+    bottomNavMyPots: 'Meus potes',
+
     // MakePredictionsPage (VERY LIMITED - only safe display strings)
     loadingPredictions: 'Carregando suas previsões...',
     finalPredictions: 'Previsões Finais',
@@ -833,6 +881,16 @@ export const getPersonalizedLabel = (marketName: string, language: Language): st
     'Sports': t.personalizedFootball,
     'Politics': t.personalizedTrump,
     'Elections': t.personalizedUS2024,
+    'Tech News': t.personalizedTechNews,
+    'Fashion Trends': t.personalizedFashionTrends,
+    'Astronomy': t.personalizedAstronomy,
+    'Pop Culture': t.personalizedPopCulture,
+    'Gaming': t.personalizedGaming,
+    'Travel & Tourism': t.personalizedTravelTourism,
+    'Celebrity News': t.personalizedCelebrityNews,
+    'Health & Fitness': t.personalizedHealthFitness,
+    'TV Shows': t.personalizedTVShows,
+    'Box Office': t.personalizedBoxOffice,
   };
   
   return personalizedMap[marketName] || marketName;

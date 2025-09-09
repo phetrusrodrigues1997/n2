@@ -1039,7 +1039,7 @@ export default function App() {
                 <polyline points="9,22 9,12 15,12 15,22"></polyline>
               </svg>
             </div>
-            <span className="text-[13px] font-medium">Home</span>
+            <span className="text-[13px] font-medium">{t.bottomNavHome}</span>
           </button>
 
           <button
@@ -1053,7 +1053,7 @@ export default function App() {
                 <path d="M3.05 3.05a7 7 0 0 0 0 9.9.5.5 0 0 1-.707.707 8 8 0 0 1 0-11.314.5.5 0 0 1 .707.707m2.122 2.122a4 4 0 0 0 0 5.656.5.5 0 1 1-.708.708 5 5 0 0 1 0-7.072.5.5 0 0 1 .708.708m5.656-.708a.5.5 0 0 1 .708 0 5 5 0 0 1 0 7.072.5.5 0 1 1-.708-.708 4 4 0 0 0 0-5.656.5.5 0 0 1 0-.708m2.122-2.12a.5.5 0 0 1 .707 0 8 8 0 0 1 0 11.313.5.5 0 0 1-.707-.707 7 7 0 0 0 0-9.9.5.5 0 0 1 0-.707zM10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/>
               </svg>
             </div>
-            <span className="text-[13px] font-medium translate-y-0.5">Live</span>
+            <span className="text-[13px] font-medium translate-y-0.5">{t.bottomNavLive}</span>
           </button>
 
               <button
@@ -1079,7 +1079,7 @@ export default function App() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <span className="text-[13px] font-medium">Search</span>
+            <span className="text-[13px] font-medium">{t.bottomNavSearch}</span>
           </button>
           
           <button
@@ -1100,7 +1100,7 @@ export default function App() {
               </svg>
             </div>
             <span className="text-[11px] md:text-[13px] font-medium truncate max-w-[60px]">
-               My pots
+               {t.bottomNavMyPots}
             </span>
           </button>
         </div>
