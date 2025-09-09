@@ -519,6 +519,18 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     return participants.length >= minPlayersRequired;
   };
 
+  // Helper function to map UI market IDs to table types
+  const getTableTypeFromMarketId = (marketId: string): string | null => {
+    const mapping: Record<string, string> = {
+      'Trending': 'featured',
+      'Featured': 'featured',
+      'Crypto': 'crypto',
+      'stocks': 'stocks',
+      'music': 'music'
+    };
+    return mapping[marketId] || null;
+  };
+
   // Helper function to get real pot balance for a market
   const getRealPotBalance = (marketId: string): string => {
     console.log(`🔍 getRealPotBalance called with marketId: "${marketId}"`);
@@ -531,17 +543,20 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       return potBalances[marketId];
     }
 
-    // Try to map market ID to display name for lookup
-    const displayName = getMarketDisplayName(marketId);
-    console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}"`);
-    
-    if (potBalances[displayName]) {
-      console.log(`✅ Found balance using display name "${displayName}": ${potBalances[displayName]}`);
-      return potBalances[displayName];
+    // Try to map market ID to table type, then to display name for lookup
+    const tableType = getTableTypeFromMarketId(marketId);
+    if (tableType) {
+      const displayName = getMarketDisplayName(tableType as any); // Type assertion needed
+      console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
+      
+      if (potBalances[displayName]) {
+        console.log(`✅ Found balance using display name "${displayName}": ${potBalances[displayName]}`);
+        return potBalances[displayName];
+      }
     }
 
     // Fallback to $0 if no data
-    console.log(`❌ No balance found for "${marketId}" or "${displayName}", returning $0`);
+    console.log(`❌ No balance found for "${marketId}" or mapped display name, returning $0`);
     return '$0';
   };
 
@@ -596,16 +611,19 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       return userPredictions[marketId];
     }
 
-    // Try to map market ID to display name for lookup
-    const displayName = getMarketDisplayName(marketId);
-    console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}"`);
-    
-    if (userPredictions[displayName]) {
-      console.log(`✅ Found prediction using display name "${displayName}"`);
-      return userPredictions[displayName];
+    // Try to map market ID to table type, then to display name for lookup
+    const tableType = getTableTypeFromMarketId(marketId);
+    if (tableType) {
+      const displayName = getMarketDisplayName(tableType as any); // Type assertion needed
+      console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
+      
+      if (userPredictions[displayName]) {
+        console.log(`✅ Found prediction using display name "${displayName}"`);
+        return userPredictions[displayName];
+      }
     }
 
-    console.log(`❌ No prediction found for "${marketId}" or "${displayName}"`);
+    console.log(`❌ No prediction found for "${marketId}" or mapped display name`);
     return null;
   };
 
