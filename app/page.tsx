@@ -5,7 +5,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAccount, useReadContract, useBalance } from 'wagmi';
 import { formatUnits } from 'viem';
 import { User, ChevronLeft, ChevronRight, Bell } from 'lucide-react';
-import { hasUnreadAnnouncements } from './Database/actions';
+import { getUnreadAnnouncements } from './Database/actions';
+import { filterUnreadAnnouncements } from './utils/announcementCookies';
 import PredictionPotTest from './Pages/PredictionPotTest';
 import LandingPage from './Pages/LandingPage';
 import MakePredicitions from './Pages/MakePredictionsPage';
@@ -224,8 +225,11 @@ export default function App() {
     }
     
     try {
-      const hasUnread = await hasUnreadAnnouncements(address);
-      setHasUnreadAnnouncementsState(hasUnread);
+      // Get all announcements for the user
+      const allAnnouncements = await getUnreadAnnouncements(address);
+      // Filter using cookies to find truly unread ones
+      const unreadAnnouncements = filterUnreadAnnouncements(allAnnouncements);
+      setHasUnreadAnnouncementsState(unreadAnnouncements.length > 0);
     } catch (error) {
       console.error('Error checking unread announcements:', error);
       setHasUnreadAnnouncementsState(false);
@@ -536,13 +540,13 @@ export default function App() {
               {/* Balance display removed - ETH balance handled by wallet */}
 
               {/* Right-side button group - adjust positioning based on connection status */}
-              <div className={`flex items-center ml-auto ${isConnected ? '-mr-8 md:-mr-16' : '-mr-2 md:-mr-4'}`}>
+              <div className={`flex items-center ml-auto ${isConnected ? '-mr-4 md:-mr-12' : '-mr-2 md:-mr-4'}`}>
                 {/* Tight group: Mobile (Bell first) vs Desktop (Language first) */}
                 <div className="flex items-center gap-0">
                   {/* Bell button - Mobile: leftmost, Desktop: rightmost */}
-                  {isConnected && !(isNavigationMenuOpen && isMobile) && (
+                  {isConnected && (
                     <button
-                      className={`relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 -mr-4 md:-mr-6 ${isMobile ? 'order-1' : 'order-3'}`}
+                      className={`relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-10 md:-mr-6 md:translate-x-0 ${isMobile ? 'order-1 ' : 'order-3'}`}
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -587,7 +591,7 @@ export default function App() {
                     
                     {/* Mobile version - same design as desktop but less padding */}
                     <button
-                      className="md:hidden flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-0 py-0 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer gap-0 -mr-4"
+                      className={`md:hidden ${isNavigationMenuOpen ? 'block mr-8':'hidden'} flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-0 py-0 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer gap-0 -mr-4`}
                       onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
                       type="button"
                     >

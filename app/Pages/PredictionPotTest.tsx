@@ -6,8 +6,8 @@ import { formatUnits, parseEther } from 'viem';
 import Cookies from 'js-cookie';
 import { Language, getTranslation, supportedLanguages } from '../Languages/languages';
 import { getPrice } from '../Constants/getPrice';
-import { setDailyOutcome, setProvisionalOutcome, getProvisionalOutcome, determineWinners, clearWrongPredictions, testDatabaseConnection, getUserStats, clearPotInformation } from '../Database/OwnerActions'; // Adjust path as needed
-import { notifyMarketOutcome, notifyEliminatedUsers, notifyWinners, notifyPotDistributed, notifyMarketUpdate } from '../Database/actions';
+import { setDailyOutcome, setDailyOutcomeWithStats, setProvisionalOutcome, getProvisionalOutcome, determineWinners, clearWrongPredictions, testDatabaseConnection, getUserStats, clearPotInformation } from '../Database/OwnerActions'; // Adjust path as needed
+import { notifyMarketOutcome, notifyEliminatedUsers, notifyWinners, notifyPotDistributed, notifyMarketUpdate, notifyMinimumPlayersReached } from '../Database/actions';
 import { useQueryClient } from '@tanstack/react-query';
 import { 
   recordReferral, 
@@ -20,7 +20,7 @@ import {
   removeBookmark,
 } from '../Database/actions';
 import { recordPotEntry,clearPotParticipationHistory } from '../Database/actions3';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, calculateEntryFee } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, calculateEntryFee, getMinimumPlayersForContract, checkMinimumPlayersThreshold } from '../Database/config';
 import { updateWinnerStats } from '../Database/OwnerActions';
 import { clear } from 'console';
 import LoadingScreenAdvanced from '../Components/LoadingScreenAdvanced';
@@ -688,6 +688,41 @@ useEffect(() => {
       // Refresh contract data
       queryClient.invalidateQueries({ queryKey: ['readContract'] });
       
+      // 🔔 Check for minimum players threshold reached and send notification
+      setTimeout(async () => {
+        try {
+          // Wait for contract data to refresh, then check participant count
+          const currentParticipants = participants ? participants.length : 0;
+          const previousParticipants = currentParticipants > 0 ? currentParticipants - 1 : 0; // Estimate previous count
+          
+          console.log(`📊 Checking minimum players threshold after pot entry:`, {
+            contractAddress,
+            currentParticipants,
+            previousParticipants,
+            selectedTableType
+          });
+          
+          const threshold = checkMinimumPlayersThreshold(contractAddress, currentParticipants);
+          
+          if (threshold.wasJustReached(previousParticipants)) {
+            console.log(`🎯 Minimum players threshold reached! Sending notification...`);
+            
+            const notificationResult = await notifyMinimumPlayersReached(
+              contractAddress, 
+              currentParticipants, 
+              selectedTableType
+            );
+            
+            console.log(`✅ Minimum players notification result:`, notificationResult);
+          } else {
+            console.log(`📊 Minimum players not yet reached: ${currentParticipants}/${threshold.minimumRequired}`);
+          }
+        } catch (notificationError) {
+          console.error("❌ Error checking/sending minimum players notification:", notificationError);
+          // Don't show error to user - notifications are supplementary
+        }
+      }, 2500); // Wait 2.5s for contract data to fully refresh
+      
       // Clear post-entry loading state after a reasonable delay
       setTimeout(() => {
         setPostEntryLoading(false);
@@ -738,11 +773,43 @@ useEffect(() => {
             setIsLoading(false);
             showMessage('Re-entry successful! You can now predict again.');
             setReEntryFee(null); // Clear re-entry fee
+            
             // Refresh contract data and referral data
             setTimeout(() => {
               queryClient.invalidateQueries({ queryKey: ['readContract'] });
               loadReferralData();
             }, 1000);
+            
+            // 🔔 Check for minimum players threshold reached (same logic as regular entry)
+            setTimeout(async () => {
+              try {
+                const currentParticipants = participants ? participants.length : 0;
+                const previousParticipants = currentParticipants > 0 ? currentParticipants - 1 : 0;
+                
+                console.log(`📊 Checking minimum players threshold after re-entry:`, {
+                  contractAddress,
+                  currentParticipants,
+                  previousParticipants,
+                  selectedTableType
+                });
+                
+                const threshold = checkMinimumPlayersThreshold(contractAddress, currentParticipants);
+                
+                if (threshold.wasJustReached(previousParticipants)) {
+                  console.log(`🎯 Minimum players threshold reached via re-entry! Sending notification...`);
+                  
+                  const notificationResult = await notifyMinimumPlayersReached(
+                    contractAddress, 
+                    currentParticipants, 
+                    selectedTableType
+                  );
+                  
+                  console.log(`✅ Re-entry minimum players notification result:`, notificationResult);
+                }
+              } catch (notificationError) {
+                console.error("❌ Error checking/sending minimum players notification after re-entry:", notificationError);
+              }
+            }, 2500);
           } else {
             setIsLoading(false);
             showMessage('Re-entry payment processed but database update failed. Please contact support.', true);
@@ -859,14 +926,14 @@ useEffect(() => {
               const addresses = winnersString.split(',').map(addr => addr.trim()).filter(addr => addr);
               
               if (addresses.length > 0) {
-                // Send winner notification
-                await notifyWinners(contractAddress, addresses);
+                // Send winner notification with duplicate prevention
+                const winnerResult = await notifyWinners(contractAddress, addresses);
                 
-                // Send pot distribution notification
+                // Send pot distribution notification with duplicate prevention
                 const totalAmountETH = (Number(potBalance) / 1000000000000000000).toFixed(6);
-                await notifyPotDistributed(contractAddress, totalAmountETH, addresses.length);
+                const distributionResult = await notifyPotDistributed(contractAddress, totalAmountETH, addresses.length);
                 
-                console.log("✅ Winner and pot distribution notifications sent successfully");
+                console.log(`✅ Distribution notifications - Winners: ${winnerResult.isDuplicate ? 'duplicate prevented' : 'sent'}, Distribution: ${distributionResult.isDuplicate ? 'duplicate prevented' : 'sent'}`);
               }
             }
           } catch (notificationError) {
@@ -1472,32 +1539,31 @@ useEffect(() => {
           try {
             console.log('🔴 Setting daily outcome:', { outcome, dateParam, tableType: selectedTableType });
             
-            // Set daily outcome (this will add new wrong predictions to the table)
+            // Set daily outcome with statistics (this will add new wrong predictions to the table)
             // Note: Non-predictor penalties are now handled at the page level
             const questionName = marketQuestion || getMarketDisplayName(selectedTableType);
-            await setDailyOutcome(outcome as "positive" | "negative", selectedTableType, questionName, dateParam);
+            const outcomeStats = await setDailyOutcomeWithStats(outcome as "positive" | "negative", selectedTableType, questionName, dateParam);
             
-            // 🔔 Send notifications after successful outcome setting
+            // 🔔 Send notifications after successful outcome setting with REAL counts
             try {
-              console.log("📢 Sending pot outcome notifications...");
+              console.log("📢 Sending pot outcome notifications with accurate elimination counts...");
               
               // Notify market outcome
-              await notifyMarketOutcome(
+              const marketOutcomeResult = await notifyMarketOutcome(
                 contractAddress, 
                 outcome as "positive" | "negative", 
                 selectedTableType
               );
               
-              // Get eliminated users count for notification
-              // Note: This is a simplified calculation - you might want to get exact count from setDailyOutcome
-              const totalParticipants = (participants || []).length;
-              const estimatedEliminatedCount = Math.floor(totalParticipants / 2); // Rough estimate
+              // Send elimination notification with REAL count from database
+              const eliminationResult = await notifyEliminatedUsers(
+                contractAddress, 
+                outcomeStats.eliminatedCount, // ✅ Real count instead of estimate!
+                selectedTableType
+              );
               
-              if (estimatedEliminatedCount > 0) {
-                await notifyEliminatedUsers(contractAddress, estimatedEliminatedCount, selectedTableType);
-              }
-              
-              console.log("✅ Pot outcome notifications sent successfully");
+              console.log(`✅ Notifications sent - Market: ${marketOutcomeResult.isDuplicate ? 'duplicate prevented' : 'sent'}, Elimination: ${eliminationResult.isDuplicate ? 'duplicate prevented' : 'sent'}`);
+              console.log(`📊 Real stats: ${outcomeStats.eliminatedCount} eliminated out of ${outcomeStats.totalParticipants} total participants`);
             } catch (notificationError) {
               console.error("❌ Notification failed (core operation still succeeded):", notificationError);
               // Don't show error to user - notifications are supplementary

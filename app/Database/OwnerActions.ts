@@ -4,7 +4,7 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import { WrongPredictions, WrongPredictionsCrypto, FeaturedBets, CryptoBets, StocksBets, MusicBets, LivePredictions, LiveQuestions, UsersTable, MarketOutcomes, EvidenceSubmissions, PotInformation, UserPredictionHistory } from "../Database/schema";
 import { eq, inArray, lt, asc, sql, and } from "drizzle-orm";
-import { getBetsTableName, getWrongPredictionsTableFromType, TableType, CONTRACT_TO_TABLE_MAPPING } from "./config";
+import { getBetsTableName, getWrongPredictionsTableFromType, getTableFromType, TableType, CONTRACT_TO_TABLE_MAPPING } from "./config";
 
 // Database setup
 const sqlConnection = neon(process.env.DATABASE_URL!);
@@ -48,20 +48,6 @@ export async function testDatabaseConnection() {
  * @param targetDate - Optional: YYYY-MM-DD format. If not provided, uses today's date.
  */
 
-const getTableFromType = (tableType: string) => {
-  switch (tableType) {
-    case 'featured':
-      return FeaturedBets;
-    case 'crypto':
-      return CryptoBets;
-    case 'stocks':
-      return StocksBets;
-    case 'music':
-      return MusicBets;
-    default:
-      throw new Error(`Invalid table type: ${tableType}. Must be 'featured', 'crypto', 'stocks', or 'music'`);
-  }
-};
 
 
 
@@ -214,7 +200,26 @@ export async function setDailyOutcome(
   tableType: string,
   questionName: string, // "Bitcoin", "Ethereum", "Tesla", etc.
   targetDate?: string // Optional: YYYY-MM-DD format. If not provided, uses today's date
-) {
+): Promise<void> {
+  // Call the enhanced version but don't return the statistics (for backward compatibility)
+  await setDailyOutcomeWithStats(outcome, tableType, questionName, targetDate);
+}
+
+/**
+ * Sets the final outcome and returns detailed statistics about eliminated users.
+ * This enhanced version provides accurate counts for announcement purposes.
+ */
+export async function setDailyOutcomeWithStats(
+  outcome: "positive" | "negative",
+  tableType: string,
+  questionName: string, // "Bitcoin", "Ethereum", "Tesla", etc.
+  targetDate?: string // Optional: YYYY-MM-DD format. If not provided, uses today's date
+): Promise<{
+  eliminatedCount: number;
+  totalParticipants: number;
+  correctPredictors: number;
+  targetDate: string;
+}> {
   const opposite = outcome === "positive" ? "negative" : "positive";
   const betsTable = getTableFromType(tableType);
   const wrongPredictionTable = getWrongPredictionsTableFromType(tableType);
@@ -347,6 +352,21 @@ export async function setDailyOutcome(
       console.log("Final day detected - keeping correct predictions in table for winner determination");
       console.log(`Wrong predictions for ${finalTargetDate} have been cleared, correct predictions remain`);
     }
+    
+    // Calculate statistics for return
+    const eliminatedCount = allWrongBets.length;
+    const totalParticipants = allPredictors.length;
+    const correctPredictors = totalParticipants - eliminatedCount;
+    
+    console.log(`📊 Outcome Statistics: ${eliminatedCount} eliminated, ${correctPredictors} correct out of ${totalParticipants} total`);
+    
+    // Return detailed statistics
+    return {
+      eliminatedCount,
+      totalParticipants,
+      correctPredictors,
+      targetDate: finalTargetDate
+    };
       
   } catch (error) {
     console.error("Error processing outcome:", error);

@@ -10,6 +10,7 @@ import {
   getUnreadAnnouncements,
   markAnnouncementsAsRead 
 } from '../Database/actions';
+import { markAnnouncementsAsRead as markAnnouncementsAsReadCookie } from '../utils/announcementCookies';
 import LoadingScreen from '../Components/LoadingScreen';
 
 interface Announcement {
@@ -70,13 +71,14 @@ const MessagingPage = ({ setActiveSection }: MessagingPageProps) => {
     }
   };
 
-  // Mark announcements as read when user loads the page
-  const markAllAnnouncementsAsRead = async () => {
-    if (!address || announcements.length === 0) return;
+  // Mark announcements as read when user loads the page (now using cookies)
+  const markAllAnnouncementsAsRead = () => {
+    if (announcements.length === 0) return;
     
     try {
       const announcementIds = announcements.map(a => a.id);
-      await markAnnouncementsAsRead(address, announcementIds);
+      // Use cookie-based tracking instead of database
+      markAnnouncementsAsReadCookie(announcementIds);
     } catch (error) {
       console.error("Error marking announcements as read:", error);
     }
@@ -90,11 +92,11 @@ const MessagingPage = ({ setActiveSection }: MessagingPageProps) => {
 
   // Mark announcements as read immediately when they're loaded
   useEffect(() => {
-    if (address && announcements.length > 0) {
+    if (announcements.length > 0) {
       // Mark as read immediately to prevent flashing purple dot
       markAllAnnouncementsAsRead();
     }
-  }, [address, announcements]);
+  }, [announcements]);
 
   // Removed automatic scroll to bottom behavior
 

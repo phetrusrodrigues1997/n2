@@ -2,7 +2,7 @@
 
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
-import {  Messages, FeaturedBets, CryptoBets, StocksBets, MusicBets, LivePredictions, Bookmarks, UserAnnouncementReads } from "./schema"; // Import the schema
+import {  Messages, FeaturedBets, CryptoBets, StocksBets, MusicBets, LivePredictions, Bookmarks } from "./schema"; // Import the schema
 import { eq, sql, and, inArray, notInArray } from "drizzle-orm";
 import { WrongPredictions  } from "./schema";
 import { getBetsTableName, getWrongPredictionsTableName,getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING } from "./config";
@@ -2312,6 +2312,63 @@ export async function createContractAnnouncement(message: string, contractAddres
 }
 
 /**
+ * Creates a contract-specific announcement with duplicate prevention
+ * Checks for identical announcements in the last 5 minutes to prevent spam
+ */
+export async function createContractAnnouncementSafe(
+  message: string, 
+  contractAddress: string,
+  deduplicationWindow: number = 300000 // 5 minutes in milliseconds
+) {
+  try {
+    console.log(`🔍 Checking for duplicate announcements for contract ${contractAddress}`);
+    
+    // Calculate cutoff time for deduplication window
+    const cutoffTime = new Date(Date.now() - deduplicationWindow);
+    
+    // Check for identical announcements in recent history
+    const recentDuplicate = await db
+      .select()
+      .from(Messages)
+      .where(
+        and(
+          eq(Messages.from, SYSTEM_ANNOUNCEMENT_SENDER),
+          eq(Messages.to, CONTRACT_PARTICIPANTS),
+          eq(Messages.contractAddress, contractAddress),
+          eq(Messages.message, message),
+          sql`${Messages.datetime} > ${cutoffTime.toISOString()}`
+        )
+      )
+      .limit(1);
+
+    if (recentDuplicate.length > 0) {
+      const duplicateAge = Date.now() - new Date(recentDuplicate[0].datetime).getTime();
+      console.log(`🚫 Duplicate announcement prevented (identical message sent ${Math.round(duplicateAge / 1000)}s ago)`);
+      return {
+        isDuplicate: true,
+        originalMessage: recentDuplicate[0],
+        message: "Duplicate announcement prevented"
+      };
+    }
+
+    // No duplicate found, create new announcement
+    console.log(`✅ No duplicate found, creating new announcement`);
+    const result = await createContractAnnouncement(message, contractAddress);
+    
+    return {
+      isDuplicate: false,
+      originalMessage: null,
+      message: "Announcement created successfully",
+      newAnnouncement: result[0]
+    };
+    
+  } catch (error) {
+    console.error("Error in createContractAnnouncementSafe:", error);
+    throw new Error("Failed to create safe contract announcement");
+  }
+}
+
+/**
  * Gets all announcements (global messages only)
  */
 export async function getAllAnnouncements() {
@@ -2457,8 +2514,9 @@ export async function getUserParticipatingContracts(userAddress: string) {
 }
 
 /**
- * Gets unread announcements for a user
- * Returns announcements that haven't been marked as read by this specific user
+ * Gets all announcements for a user (filtering by read status now handled client-side with cookies)
+ * Returns all available announcements - client will filter unread ones using cookies
+ * NOTE: Despite the name, this now returns ALL announcements, not just unread ones
  */
 export async function getUnreadAnnouncements(userAddress: string) {
   try {
@@ -2469,16 +2527,8 @@ export async function getUnreadAnnouncements(userAddress: string) {
     const userContracts = await getUserParticipatingContracts(normalizedUserAddress);
     const contractAddresses = userContracts.map(c => c.contractAddress);
     
-    // Get all announcements that this user has read
-    const userReadAnnouncements = await db
-      .select({ announcementId: UserAnnouncementReads.announcementId })
-      .from(UserAnnouncementReads)
-      .where(eq(UserAnnouncementReads.walletAddress, normalizedUserAddress));
-    
-    const readAnnouncementIds = userReadAnnouncements.map(r => r.announcementId);
-    
-    // Global announcements (excluding ones this user has read)
-    let globalAnnouncementsQuery = db
+    // Get all global announcements
+    const globalAnnouncements = await db
       .select()
       .from(Messages)
       .where(
@@ -2488,26 +2538,10 @@ export async function getUnreadAnnouncements(userAddress: string) {
         )
       );
     
-    // Add exclusion for read announcements if any exist
-    if (readAnnouncementIds.length > 0) {
-      globalAnnouncementsQuery = db
-        .select()
-        .from(Messages)
-        .where(
-          and(
-            eq(Messages.from, SYSTEM_ANNOUNCEMENT_SENDER),
-            eq(Messages.to, ANNOUNCEMENT_RECIPIENT),
-            notInArray(Messages.id, readAnnouncementIds)
-          )
-        );
-    }
-    
-    const globalAnnouncements = await globalAnnouncementsQuery;
-    
-    // Contract-specific announcements (excluding ones this user has read, for user's contracts)
+    // Get contract-specific announcements for user's contracts
     let contractAnnouncements: any[] = [];
     if (contractAddresses.length > 0) {
-      let contractAnnouncementsQuery = db
+      contractAnnouncements = await db
         .select()
         .from(Messages)
         .where(
@@ -2517,88 +2551,50 @@ export async function getUnreadAnnouncements(userAddress: string) {
             inArray(Messages.contractAddress, contractAddresses)
           )
         );
-      
-      // Add exclusion for read announcements if any exist
-      if (readAnnouncementIds.length > 0) {
-        contractAnnouncementsQuery = db
-          .select()
-          .from(Messages)
-          .where(
-            and(
-              eq(Messages.from, SYSTEM_ANNOUNCEMENT_SENDER),
-              eq(Messages.to, CONTRACT_PARTICIPANTS),
-              inArray(Messages.contractAddress, contractAddresses),
-              notInArray(Messages.id, readAnnouncementIds)
-            )
-          );
-      }
-      
-      contractAnnouncements = await contractAnnouncementsQuery;
     }
     
+    // Return all announcements - client-side cookie filtering will handle read status
     return [...globalAnnouncements, ...contractAnnouncements]
       .sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime());
       
   } catch (error) {
-    console.error("Error fetching unread announcements:", error);
+    console.error("Error fetching announcements:", error);
     return [];
   }
 }
 
 /**
  * Marks announcements as read for a specific user
+ * NOTE: This is now handled client-side with cookies. This function exists for API compatibility.
  */
 export async function markAnnouncementsAsRead(userAddress: string, announcementIds: number[]) {
   try {
-    // Normalize wallet address for consistency
-    const normalizedUserAddress = userAddress.toLowerCase();
-    
     if (announcementIds.length === 0) {
       return { success: true };
     }
-
-    // Check which announcements this user hasn't already marked as read
-    const existingReads = await db
-      .select({ announcementId: UserAnnouncementReads.announcementId })
-      .from(UserAnnouncementReads)
-      .where(
-        and(
-          eq(UserAnnouncementReads.walletAddress, normalizedUserAddress),
-          inArray(UserAnnouncementReads.announcementId, announcementIds)
-        )
-      );
-
-    const alreadyReadIds = existingReads.map(r => r.announcementId);
-    const unreadIds = announcementIds.filter(id => !alreadyReadIds.includes(id));
-
-    // Insert read records for announcements not yet read by this user
-    if (unreadIds.length > 0) {
-      const readRecords = unreadIds.map(announcementId => ({
-        walletAddress: normalizedUserAddress,
-        announcementId: announcementId
-      }));
-
-      await db.insert(UserAnnouncementReads).values(readRecords);
-    }
     
-    console.log(`📖 User ${userAddress} marked ${unreadIds.length} new announcements as read (${alreadyReadIds.length} already read)`);
+    // Read status is now tracked client-side with cookies
+    // This function is kept for backward compatibility but doesn't perform database operations
+    console.log(`📖 User ${userAddress} read status tracked client-side via cookies (${announcementIds.length} announcements)`);
     
     return { success: true };
   } catch (error) {
-    console.error("Error marking announcements as read:", error);
+    console.error("Error in markAnnouncementsAsRead:", error);
     return { success: false };
   }
 }
 
 /**
  * Checks if user has unread announcements
+ * NOTE: This now returns all announcements. Client-side cookie filtering determines unread status.
  */
 export async function hasUnreadAnnouncements(userAddress: string): Promise<boolean> {
   try {
-    const unreadAnnouncements = await getUnreadAnnouncements(userAddress);
-    return unreadAnnouncements.length > 0;
+    const allAnnouncements = await getUnreadAnnouncements(userAddress);
+    // Return true if there are any announcements - client will filter by read status using cookies
+    return allAnnouncements.length > 0;
   } catch (error) {
-    console.error("Error checking for unread announcements:", error);
+    console.error("Error checking for announcements:", error);
     return false;
   }
 }
@@ -2625,11 +2621,18 @@ export async function notifyMarketOutcome(
       ? `🎉 Great news! Users who predicted POSITIVE won today's ${marketType} market!`
       : `🎉 Great news! Users who predicted NEGATIVE won today's ${marketType} market!`;
     
-    await createContractAnnouncement(message, contractAddress);
+    const result = await createContractAnnouncementSafe(message, contractAddress);
     
-    console.log(`✅ Market outcome notification sent successfully`);
+    if (result.isDuplicate) {
+      console.log(`🔄 Market outcome notification: ${result.message}`);
+    } else {
+      console.log(`✅ Market outcome notification sent successfully`);
+    }
+    
+    return result;
   } catch (error) {
     console.error("❌ Error sending market outcome notification:", error);
+    return { isDuplicate: false, error: error instanceof Error ? error.message : 'Unknown error' };
     // Don't throw - notifications failing shouldn't break main flow
   }
 }
@@ -2646,11 +2649,18 @@ export async function notifyWinners(contractAddress: string, winnerAddresses: st
       ? `🏆 Congratulations! You won the pot and received your prize!`
       : `🏆 Congratulations! You and ${winnerAddresses.length - 1} other winners split the pot!`;
     
-    await createContractAnnouncement(message, contractAddress);
+    const result = await createContractAnnouncementSafe(message, contractAddress);
     
-    console.log(`✅ Winner notification sent successfully`);
+    if (result.isDuplicate) {
+      console.log(`🔄 Winner notification: ${result.message}`);
+    } else {
+      console.log(`✅ Winner notification sent successfully`);
+    }
+    
+    return result;
   } catch (error) {
     console.error("❌ Error sending winner notification:", error);
+    return { isDuplicate: false, error: error instanceof Error ? error.message : 'Unknown error' };
     // Don't throw - notifications failing shouldn't break main flow
   }
 }
@@ -2667,15 +2677,24 @@ export async function notifyEliminatedUsers(
   try {
     console.log(`📉 Sending elimination notification for ${contractAddress} to ${eliminatedCount} users`);
     
-    const message = eliminatedCount === 1
-      ? `📉 Your prediction was incorrect this time. Pay today's entry fee to re-enter the ${marketType} pot!`
-      : ` 😱 Were you one of the unlucky ones? If you were eliminated, pay today's entry fee to re-enter!`;
+    const message = eliminatedCount === 0
+      ? `🎉 Amazing! No one was eliminated this round - all predictions were correct!`
+      : eliminatedCount === 1
+        ? `📉 Your prediction was incorrect this time. Pay today's entry fee to re-enter the ${marketType} pot!`
+        : `😱 Were you one of the unlucky ones? ${eliminatedCount} users were eliminated. If that's you, pay today's entry fee to re-enter!`;
     
-    await createContractAnnouncement(message, contractAddress);
+    const result = await createContractAnnouncementSafe(message, contractAddress);
     
-    console.log(`✅ Elimination notification sent successfully`);
+    if (result.isDuplicate) {
+      console.log(`🔄 Elimination notification: ${result.message}`);
+    } else {
+      console.log(`✅ Elimination notification sent successfully`);
+    }
+    
+    return result;
   } catch (error) {
     console.error("❌ Error sending elimination notification:", error);
+    return { isDuplicate: false, error: error instanceof Error ? error.message : 'Unknown error' };
     // Don't throw - notifications failing shouldn't break main flow
   }
 }
@@ -2696,11 +2715,18 @@ export async function notifyPotDistributed(
       ? `💰 Pot distributed! ${totalAmount} ETH has been sent to the winner!`
       : `💰 Pot distributed! ${totalAmount} ETH has been split between ${winnerCount} winners!`;
     
-    await createContractAnnouncement(message, contractAddress);
+    const result = await createContractAnnouncementSafe(message, contractAddress);
     
-    console.log(`✅ Pot distribution notification sent successfully`);
+    if (result.isDuplicate) {
+      console.log(`🔄 Pot distribution notification: ${result.message}`);
+    } else {
+      console.log(`✅ Pot distribution notification sent successfully`);
+    }
+    
+    return result;
   } catch (error) {
     console.error("❌ Error sending pot distribution notification:", error);
+    return { isDuplicate: false, error: error instanceof Error ? error.message : 'Unknown error' };
     // Don't throw - notifications failing shouldn't break main flow
   }
 }
@@ -2716,11 +2742,184 @@ export async function notifyMarketUpdate(
   try {
     console.log(`📊 Sending market update notification for ${contractAddress}`);
     
-    await createContractAnnouncement(`📊 ${message}`, contractAddress);
+    const result = await createContractAnnouncementSafe(`📊 ${message}`, contractAddress);
     
-    console.log(`✅ Market update notification sent successfully`);
+    if (result.isDuplicate) {
+      console.log(`🔄 Market update notification: ${result.message}`);
+    } else {
+      console.log(`✅ Market update notification sent successfully`);
+    }
+    
+    return result;
   } catch (error) {
     console.error("❌ Error sending market update notification:", error);
+    return { isDuplicate: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    // Don't throw - notifications failing shouldn't break main flow
+  }
+}
+
+/**
+ * Get participant emails for a specific contract
+ * @param participants Array of participant wallet addresses
+ * @returns Array of email addresses for participants who have provided emails
+ */
+export async function getParticipantEmails(participants: string[]): Promise<string[]> {
+  try {
+    if (!participants || participants.length === 0) {
+      return [];
+    }
+
+    console.log(`📧 Fetching emails for ${participants.length} participants`);
+    
+    // Normalize wallet addresses for consistency
+    const normalizedAddresses = participants.map(addr => addr.toLowerCase());
+    
+    // Get users who have provided emails
+    const usersWithEmails = await db
+      .select({ email: UsersTable.email })
+      .from(UsersTable)
+      .where(
+        and(
+          inArray(UsersTable.walletAddress, normalizedAddresses),
+          sql`${UsersTable.email} IS NOT NULL AND ${UsersTable.email} != ''`
+        )
+      );
+    
+    const emails = usersWithEmails
+      .map(user => user.email)
+      .filter((email): email is string => email !== null && email !== '');
+    
+    console.log(`📧 Found ${emails.length} email addresses out of ${participants.length} participants`);
+    return emails;
+    
+  } catch (error) {
+    console.error("❌ Error fetching participant emails:", error);
+    return [];
+  }
+}
+
+/**
+ * Send email notification when minimum players threshold is reached
+ * @param emails Array of email addresses to notify
+ * @param currentParticipants Number of current participants
+ * @param marketType Type of market (for email subject/content)
+ */
+export async function sendMinimumPlayersEmail(
+  emails: string[], 
+  currentParticipants: number,
+  marketType: string = 'market'
+): Promise<{ success: boolean; sent: number; errors: string[] }> {
+  try {
+    if (!emails || emails.length === 0) {
+      console.log('📧 No email addresses to notify');
+      return { success: true, sent: 0, errors: [] };
+    }
+
+    console.log(`📧 Sending minimum players email to ${emails.length} participants`);
+
+    const subject = `🎉 Your ${marketType} pot is ready! Predictions can now begin`;
+    const htmlContent = `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+          <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">🎉 Great News!</h1>
+        </div>
+        
+        <div style="background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          <h2 style="color: #333; margin-top: 0;">Your pot is ready to start!</h2>
+          
+          <p style="color: #666; font-size: 16px; line-height: 1.6;">
+            Your <strong>${marketType}</strong> prediction pot now has <strong>${currentParticipants} participants</strong> and has reached the minimum threshold.
+          </p>
+          
+          <div style="background: #f8f9ff; border-left: 4px solid #667eea; padding: 20px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+            <p style="margin: 0; color: #333; font-weight: 500;">
+              🚀 Predictions can now begin! Log in to make your predictions and compete for the pot.
+            </p>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://prediwin.com'}" 
+               style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                      color: white; 
+                      text-decoration: none; 
+                      padding: 12px 30px; 
+                      border-radius: 6px; 
+                      font-weight: bold; 
+                      display: inline-block;">
+              Make Predictions Now
+            </a>
+          </div>
+          
+          <div style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px; text-align: center;">
+            <p style="color: #999; font-size: 14px; margin: 0;">
+              Good luck with your predictions! 🍀
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Use Next.js API route to send emails (to be created)
+    const response = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        to: emails,
+        subject,
+        html: htmlContent,
+        type: 'minimum-players-reached'
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Email API responded with status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    
+    console.log(`✅ Email notification sent successfully to ${emails.length} participants`);
+    return { success: true, sent: emails.length, errors: [] };
+    
+  } catch (error) {
+    console.error("❌ Error sending minimum players email:", error);
+    return { 
+      success: false, 
+      sent: 0, 
+      errors: [error instanceof Error ? error.message : 'Unknown email error'] 
+    };
+  }
+}
+
+/**
+ * Sends notification when a contract reaches minimum players threshold
+ * Call this when participant count goes from (minPlayers-1) to minPlayers
+ */
+export async function notifyMinimumPlayersReached(
+  contractAddress: string, 
+  currentParticipants: number,
+  marketType: string = 'market'
+) {
+  try {
+    console.log(`🎯 Sending minimum players reached notification for ${contractAddress}: ${currentParticipants} participants`);
+    
+    const message = currentParticipants === 2
+      ? `🎉 Great news! Your pot now has ${currentParticipants} participants and is ready to start! Predictions can now begin.`
+      : `🎉 Awesome! Your ${marketType} pot now has ${currentParticipants} participants and is ready for action! Let the predictions begin!`;
+    
+    const result = await createContractAnnouncementSafe(message, contractAddress, 600000); // 10-minute deduplication for this type
+    
+    if (result.isDuplicate) {
+      console.log(`🔄 Minimum players notification: ${result.message}`);
+    } else {
+      console.log(`✅ Minimum players notification sent successfully (${currentParticipants} participants)`);
+    }
+    
+    return result;
+  } catch (error) {
+    console.error("❌ Error sending minimum players notification:", error);
+    return { isDuplicate: false, error: error instanceof Error ? error.message : 'Unknown error' };
     // Don't throw - notifications failing shouldn't break main flow
   }
 }

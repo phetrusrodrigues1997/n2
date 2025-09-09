@@ -1,5 +1,5 @@
 import { WrongPredictions, WrongPredictionsCrypto, WrongPredictionsStocks, WrongPredictionsMusic } from "./schema";
-import {  FeaturedBets, CryptoBets, StocksBets, MusicBets, LivePredictions, Bookmarks, UserAnnouncementReads } from "./schema"; // Import the schema
+import {  FeaturedBets, CryptoBets, StocksBets, MusicBets, LivePredictions, Bookmarks } from "./schema"; // Import the schema
 
 // Minimum players required to start a pot
 export const MIN_PLAYERS = 2; // Minimum participants for first market
@@ -48,6 +48,52 @@ export const CONTRACT_TO_TABLE_MAPPING = {
 // Type for contract addresses
 export type ContractAddress = keyof typeof CONTRACT_TO_TABLE_MAPPING;
 export type TableType = typeof CONTRACT_TO_TABLE_MAPPING[ContractAddress];
+
+/**
+ * Get minimum players required for a specific contract
+ * @param contractAddress The contract address to check
+ * @returns The minimum players required (MIN_PLAYERS for first contract, MIN_PLAYERS2 for others)
+ */
+export function getMinimumPlayersForContract(contractAddress: string): number {
+  const contractAddresses = Object.keys(CONTRACT_TO_TABLE_MAPPING);
+  const contractIndex = contractAddresses.indexOf(contractAddress);
+  
+  if (contractIndex === -1) {
+    console.warn(`⚠️ Unknown contract address: ${contractAddress}, defaulting to MIN_PLAYERS`);
+    return MIN_PLAYERS;
+  }
+  
+  return contractIndex === 0 ? MIN_PLAYERS : MIN_PLAYERS2;
+}
+
+/**
+ * Check if a contract has reached its minimum players threshold
+ * @param contractAddress The contract address to check
+ * @param participantCount Current number of participants
+ * @returns Object with threshold status and details
+ */
+export function checkMinimumPlayersThreshold(
+  contractAddress: string, 
+  participantCount: number
+): {
+  hasReachedMinimum: boolean;
+  minimumRequired: number;
+  isExactlyAtThreshold: boolean;
+  wasJustReached: (previousCount: number) => boolean;
+} {
+  const minimumRequired = getMinimumPlayersForContract(contractAddress);
+  const hasReachedMinimum = participantCount >= minimumRequired;
+  const isExactlyAtThreshold = participantCount === minimumRequired;
+  
+  return {
+    hasReachedMinimum,
+    minimumRequired,
+    isExactlyAtThreshold,
+    wasJustReached: (previousCount: number) => {
+      return previousCount < minimumRequired && participantCount >= minimumRequired;
+    }
+  };
+}
 
 export const getTableFromType = (tableType: string) => {
   switch (tableType) {

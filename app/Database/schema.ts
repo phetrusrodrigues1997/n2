@@ -200,13 +200,6 @@ export const PotParticipationHistory = pgTable("pot_participation_history", {
   eventTimestamp: timestamp("event_timestamp").defaultNow().notNull(), // Exact timestamp of event
 });
 
-// User announcement read status - tracks which users have read which announcements
-export const UserAnnouncementReads = pgTable("user_announcement_reads", {
-  id: serial("id").primaryKey(),
-  walletAddress: text("wallet_address").notNull(), // User who read the announcement
-  announcementId: integer("announcement_id").notNull(), // Message ID from Messages table
-  readAt: timestamp("read_at").defaultNow().notNull(), // When the user read it
-});
 
 // User prediction tracking - keeps record of all predictions made by users with question context
 export const UserPredictionHistory = pgTable("user_prediction_history", {
