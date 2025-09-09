@@ -12,6 +12,7 @@ interface DashboardProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
   selectedMarket?: string;
+  currentLanguage?: Language;
 }
 
 // Use centralized contract mapping from config
@@ -49,7 +50,7 @@ const PREDICTION_POT_ABI = [
   }
 ] as const;
 
-const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: DashboardProps) => {
+const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLanguage = 'en' }: DashboardProps) => {
   const [marketInfo, setMarketInfo] = useState({ name: '', section: '', address: '' });
   const [userPots, setUserPots] = useState<string[]>([]);
   const [selectedMarketAddress, setSelectedMarketAddress] = useState<string>('');
@@ -63,17 +64,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
   const [emailSubmitting, setEmailSubmitting] = useState<boolean>(false);
   const [hasUserEmail, setHasUserEmail] = useState<boolean | null>(null);
   const [isLoadingEmail, setIsLoadingEmail] = useState<boolean>(true);
-  const [currentLanguage, setCurrentLanguage] = useState<Language>('en');
 
   const { address, isConnected } = useAccount();
 
-  // Initialize language from cookies
-  useEffect(() => {
-    const savedLang = Cookies.get('language') as Language | undefined;
-    if (savedLang) {
-      setCurrentLanguage(savedLang);
-    }
-  }, []);
 
   // Get translations
   const t = getTranslation(currentLanguage);
@@ -616,7 +609,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
 
                   <div className="mt-12 p-8 bg-gradient-to-r from-purple-50/80 to-blue-50/80 rounded-3xl border-0">
                     <p className="text-center text-lg md:text-xl text-gray-800 font-light leading-relaxed">
-                      🎯 <span className="font-medium">Your Goal:</span> Keep predicting correctly until you're one of the last 10.
+                      🎯 <span className="font-medium text-[#0000aa]">{t.yourGoal}</span> {t.tutorialGoal}
                     </p>
                   </div>
                 </div>

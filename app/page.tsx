@@ -984,12 +984,12 @@ export default function App() {
         {activeSection === "discord" && <HowItWorksSection setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "activity" && <Activity />}
         {/* {activeSection === "notifications" && <CreateMessage />} */}
-        {activeSection === "dashboard" && <TutorialBridge activeSection={activeSection} setActiveSection={setActiveSection} />}
+        {activeSection === "dashboard" && <TutorialBridge key={currentLanguage} activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "notReadyPage" && <NotReadyPage activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "bitcoinPot" && <PredictionPotTest activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "referralProgram" && <ReferralProgram activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "home" && <LandingPage activeSection={activeSection} setActiveSection={setActiveSection} isMobileSearchActive={isMobileSearchActive} searchQuery={searchQuery} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} onLoadingChange={handleLoadingChange} currentLanguage={currentLanguage} />}
-        {activeSection === "makePrediction" && <MakePredicitions activeSection={activeSection} setActiveSection={setActiveSection} />}
+        {activeSection === "makePrediction" && <MakePredicitions activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "AI" && <GamesHub activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "createPot" && <CreatePotPage navigateToPrivatePot={navigateToPrivatePot} />}
         {activeSection === "ideas" && <IdeasPage activeSection={activeSection} setActiveSection={setActiveSection} />}

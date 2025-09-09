@@ -50,6 +50,8 @@ export interface Translations {
   next: string;
   startPlaying: string;
   tutorialTip: string;
+  tutorialGoal: string;
+  yourGoal: string;
 
   // PredictionPotTest specific
   bitcoinPotTitle: string;
@@ -369,6 +371,8 @@ export const translations: Record<Language, Translations> = {
     next: 'Next',
     startPlaying: 'Start Playing',
     tutorialTip: 'The more accurate your predictions, the more you\'ll win!',
+    tutorialGoal: 'Keep predicting correctly until you\'re one of the last 10.',
+    yourGoal: 'Your Goal:',
 
     // PredictionPotTest specific
     bitcoinPotTitle: 'Prediction Market',
@@ -686,6 +690,8 @@ export const translations: Record<Language, Translations> = {
     next: 'Próximo',
     startPlaying: 'Começar a Jogar',
     tutorialTip: 'Quanto mais precisas suas previsões, mais você ganhará!',
+    tutorialGoal: 'Continue prevendo corretamente até ser um dos últimos 10.',
+    yourGoal: 'Seu Objetivo:',
 
     // PredictionPotTest specific
     bitcoinPotTitle: 'Detalhes do Pote',

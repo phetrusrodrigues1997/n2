@@ -105,15 +105,14 @@ interface EvidenceSubmission {
 interface MakePredictionsProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
+  currentLanguage?: Language;
 }
 
-export default function MakePredictions({ activeSection, setActiveSection }: MakePredictionsProps) {
+export default function MakePredictions({ activeSection, setActiveSection, currentLanguage = 'en' }: MakePredictionsProps) {
   const { address, isConnected } = useAccount();
   const { writeContract, data: txHash, isPending } = useWriteContract();
   const queryClient = useQueryClient();
   
-  // Language state
-  const [currentLanguage, setCurrentLanguage] = useState<Language>('en');
   
   // Get translations for safe display strings only
   const t = getTranslation(currentLanguage);
@@ -440,12 +439,6 @@ export default function MakePredictions({ activeSection, setActiveSection }: Mak
   useEffect(() => {
     const savedContract = Cookies.get('selectedMarket');
     const savedQuestion = Cookies.get('selectedMarketQuestion');
-    const savedLanguage = Cookies.get('language') as Language;
-    
-    // Set language
-    if (savedLanguage) {
-      setCurrentLanguage(savedLanguage);
-    }
     
     // Set the market question if available
     if (savedQuestion) {

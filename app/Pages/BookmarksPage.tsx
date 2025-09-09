@@ -51,20 +51,38 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
 
   // Function to get current market data from markets.ts
   const getCurrentMarketData = (marketId: string, marketCategory: string) => {
-    try {
-      const markets = getMarkets(t, marketCategory);
-      const market = markets.find(m => m.id === marketId);
-      
-      if (market) {
-        return {
-          name: market.name,
-          question: market.question
-        };
+    console.log('🔍 getCurrentMarketData called with:', { marketId, marketCategory });
+    
+    // Try different category name variations since bookmarks might store different formats
+    const categoryVariations = [
+      marketCategory,                    // Original category as stored
+      marketCategory.toLowerCase(),      // lowercase version
+      marketId,                          // Sometimes the marketId matches the category (e.g., 'stocks', 'music')
+      marketId.toLowerCase(),            // lowercase marketId
+    ];
+    
+    for (const category of categoryVariations) {
+      try {
+        console.log('🔍 Trying category variation:', category);
+        const markets = getMarkets(t, category);
+        console.log('🔍 Retrieved markets for category:', category, 'Count:', markets.length);
+        
+        const market = markets.find(m => m.id === marketId);
+        console.log('🔍 Looking for marketId:', marketId, 'Found market:', market);
+        
+        if (market) {
+          console.log('✅ Successfully found market data:', { name: market.name, question: market.question });
+          return {
+            name: market.name,
+            question: market.question
+          };
+        }
+      } catch (error) {
+        console.log('❌ Error with category variation:', category, error);
       }
-    } catch (error) {
-      console.log('Could not find live market data for:', marketId, marketCategory);
     }
     
+    console.log('❌ Could not find live market data for:', marketId, marketCategory, 'after trying all variations');
     return null;
   };
 
