@@ -606,7 +606,7 @@ export default function App() {
                         </svg>
                       </div>
                       <div className="text-sm font-semibold text-purple-700 whitespace-nowrap">
-                        {currentLanguage === 'en' ? 'EN-US' : 'PT-BR'}
+                        {currentLanguage === 'en' ? 'en-US' : 'pt-BR'}
                       </div>
                     </button>
                     
