@@ -1,4 +1,5 @@
 import { WrongPredictions, WrongPredictionsCrypto, WrongPredictionsStocks, WrongPredictionsMusic } from "./schema";
+import {  FeaturedBets, CryptoBets, StocksBets, MusicBets, LivePredictions, Bookmarks, UserAnnouncementReads } from "./schema"; // Import the schema
 
 // Minimum players required to start a pot
 export const MIN_PLAYERS = 2; // Minimum participants for first market
@@ -48,6 +49,20 @@ export const CONTRACT_TO_TABLE_MAPPING = {
 export type ContractAddress = keyof typeof CONTRACT_TO_TABLE_MAPPING;
 export type TableType = typeof CONTRACT_TO_TABLE_MAPPING[ContractAddress];
 
+export const getTableFromType = (tableType: string) => {
+  switch (tableType) {
+    case 'featured':
+      return FeaturedBets;
+    case 'crypto':
+      return CryptoBets;
+    case 'stocks':
+      return StocksBets;
+    case 'music':
+      return MusicBets;
+    default:
+      throw new Error(`Invalid table type: ${tableType}. Must be 'featured', 'crypto', 'stocks', or 'music'`);
+  }
+};
 // Centralized table name mappings for database operations
 export const TABLE_MAPPINGS = {
   // Bets tables (predictions/votes)

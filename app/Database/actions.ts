@@ -4,8 +4,8 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import {  Messages, FeaturedBets, CryptoBets, StocksBets, MusicBets, LivePredictions, Bookmarks, UserAnnouncementReads } from "./schema"; // Import the schema
 import { eq, sql, and, inArray, notInArray } from "drizzle-orm";
-import { WrongPredictions, WrongPredictionsCrypto, WrongPredictionsStocks, WrongPredictionsMusic } from "./schema";
-import { getBetsTableName, getWrongPredictionsTableName, TableType, CONTRACT_TO_TABLE_MAPPING } from "./config";
+import { WrongPredictions  } from "./schema";
+import { getBetsTableName, getWrongPredictionsTableName,getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING } from "./config";
 import { ReferralCodes, Referrals, FreeEntries, UsersTable } from "./schema";
 import { EvidenceSubmissions, MarketOutcomes, PredictionIdeas } from "./schema";
 import { recordPotEntry, recordUserPrediction } from './actions3';
@@ -87,36 +87,9 @@ const getTomorrowUKDateString = (date: Date = new Date()): string => {
  * Each entry gets a timestamp automatically.
  */
 
-const getTableFromType = (tableType: string) => {
-  switch (tableType) {
-    case 'featured':
-      return FeaturedBets;
-    case 'crypto':
-      return CryptoBets;
-    case 'stocks':
-      return StocksBets;
-    case 'music':
-      return MusicBets;
-    default:
-      throw new Error(`Invalid table type: ${tableType}. Must be 'featured', 'crypto', 'stocks', or 'music'`);
-  }
-};
 
-const getWrongPredictionsTableFromType = (tableType: string) => {
-  switch (tableType) {
-    case 'featured':
-      return WrongPredictions;
-    case 'crypto':
-      console.log("Using crypto wrong predictions table");
-      return WrongPredictionsCrypto;
-    case 'stocks':
-      return WrongPredictionsStocks;
-    case 'music':
-      return WrongPredictionsMusic;
-    default:
-      throw new Error(`Invalid table type: ${tableType}. Must be 'featured', 'crypto', 'stocks', or 'music'`);
-  }
-};
+
+
 
 // Helper function to get question from contract address using markets data
 const getQuestionFromContract = (contractAddress: string, tableType: string): string => {

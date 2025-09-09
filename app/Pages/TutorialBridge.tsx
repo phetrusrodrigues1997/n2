@@ -140,7 +140,26 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
     query: { enabled: isConnected && !!address }
   });
 
-  const participantsData = useMemo(() => [participants1, participants2], [participants1, participants2]);
+  const { data: participants3 } = useReadContract({
+    address: contractAddresses[2] as `0x${string}`,
+    abi: PREDICTION_POT_ABI,
+    functionName: 'getParticipants',
+    query: { enabled: isConnected && !!address && contractAddresses.length > 2 }
+  });
+
+  const { data: participants4 } = useReadContract({
+    address: contractAddresses[3] as `0x${string}`,
+    abi: PREDICTION_POT_ABI,
+    functionName: 'getParticipants',
+    query: { enabled: isConnected && !!address && contractAddresses.length > 3 }
+  });
+
+  const participantsData = useMemo(() => [
+    participants1, 
+    participants2, 
+    contractAddresses.length > 2 ? participants3 : undefined,
+    contractAddresses.length > 3 ? participants4 : undefined
+  ].filter(data => data !== undefined), [participants1, participants2, participants3, participants4, contractAddresses.length]);
 
   // Set up the selected market address and question from cookies
   useEffect(() => {
@@ -176,25 +195,25 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
   }, []);
 
   // Update userPots when participant data changes
-  useEffect(() => {
-    if (!isConnected || !address) return;
+  // useEffect(() => {
+  //   if (!isConnected || !address) return;
 
-    const participatingPots: string[] = [];
+  //   const participatingPots: string[] = [];
 
-    // Check all contracts
-    participantsData.forEach((participants, index) => {
-      if (participants && Array.isArray(participants)) {
-        const isParticipant = participants.some(
-          (participant: string) => participant.toLowerCase() === address.toLowerCase()
-        );
-        if (isParticipant) {
-          participatingPots.push(contractAddresses[index]);
-        }
-      }
-    });
+  //   // Check all contracts
+  //   participantsData.forEach((participants, index) => {
+  //     if (participants && Array.isArray(participants)) {
+  //       const isParticipant = participants.some(
+  //         (participant: string) => participant.toLowerCase() === address.toLowerCase()
+  //       );
+  //       if (isParticipant) {
+  //         participatingPots.push(contractAddresses[index]);
+  //       }
+  //     }
+  //   });
 
-    setUserPots(participatingPots);
-  }, [participantsData, address, isConnected]);
+  //   setUserPots(participatingPots);
+  // }, [participantsData, address, isConnected]);
 
   // Get selected market from cookie - separate useEffect to avoid infinite loops
   useEffect(() => {
@@ -262,7 +281,31 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket }: Dashboar
 
     // Check if user is participant in the selected market
     const selectedMarketAddress = Cookies.get('selectedMarket');
-    const isParticipantInSelected = userPots.includes(selectedMarketAddress || '');
+    const participatingPots: string[] = [];
+
+    console.log('🔍 TutorialBridge Debug - handleSkipClick:');
+    console.log('  - selectedMarketAddress:', selectedMarketAddress);
+    console.log('  - contractAddresses:', contractAddresses);
+    console.log('  - participantsData:', participantsData);
+
+    // Check all contracts
+    participantsData.forEach((participants, index) => {
+      console.log(`  - Contract ${index} (${contractAddresses[index]}):`, participants);
+      if (participants && Array.isArray(participants)) {
+        const isParticipant = participants.some(
+          (participant: string) => participant.toLowerCase() === address.toLowerCase()
+        );
+        console.log(`    - User ${address} is participant:`, isParticipant);
+        if (isParticipant) {
+          participatingPots.push(contractAddresses[index]);
+        }
+      }
+    });
+
+    console.log('  - participatingPots:', participatingPots);
+    setUserPots(participatingPots);
+    const isParticipantInSelected = participatingPots.includes(selectedMarketAddress || '');
+    console.log('  - isParticipantInSelected:', isParticipantInSelected);
     
     // Check if user is special user (admin)
     const SPECIAL_ADDRESS = '0xA90611B6AFcBdFa9DDFfCB2aa2014446297b6680';
