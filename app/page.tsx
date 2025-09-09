@@ -536,12 +536,32 @@ export default function App() {
               {/* Balance display removed - ETH balance handled by wallet */}
 
               {/* Right-side button group - pushed to right edge with tight spacing */}
-              <div className="flex items-center ml-auto -mr-4 md:-mr-16">
-                {/* Tight group: Language + Balance + Bell */}
+              <div className="flex items-center ml-auto -mr-8 md:-mr-16">
+                {/* Tight group: Mobile (Bell first) vs Desktop (Language first) */}
                 <div className="flex items-center gap-0">
-                  {/* Language dropdown - Desktop and Mobile, left of balance */}
+                  {/* Bell button - Mobile: leftmost, Desktop: rightmost */}
+                  {isConnected && !(isNavigationMenuOpen && isMobile) && (
+                    <button
+                      className={`relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 -mr-4 md:-mr-6 ${isMobile ? 'order-1' : 'order-3'}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Bell button clicked');
+                        setActiveSection('messagesPage');
+                      }}
+                      type="button"
+                    >
+                      <Bell className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors" />
+                      {/* Purple dot indicator for unread announcements */}
+                      {hasUnreadAnnouncementsState && (
+                        <div className="absolute top-1 right-1 w-3 h-3 bg-purple-700 rounded-full border-2 border-white animate-pulse"></div>
+                      )}
+                    </button>
+                  )}
+
+                  {/* Language dropdown - Mobile: middle, Desktop: leftmost */}
                   {isConnected && (
-                    <div className="relative z-50" data-language-dropdown>
+                    <div className={`relative z-50 ${isMobile ? 'order-2 pl-6' : 'order-1'}`} data-language-dropdown>
                     <button
                       className="hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer gap-0"
                       onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
@@ -566,9 +586,9 @@ export default function App() {
                       </div>
                     </button>
                     
-                    {/* Mobile version - same design as desktop */}
+                    {/* Mobile version - same design as desktop but less padding */}
                     <button
-                      className="md:hidden flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer gap-0"
+                      className="md:hidden flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-0 py-0 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer gap-0 -mr-3"
                       onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
                       type="button"
                     >
@@ -615,11 +635,11 @@ export default function App() {
                   </div>
                 )}
 
-                {/* Balance display */}
-                {isConnected && (
-                  <button
-                    onClick={() => setActiveSection('receive')}
-                    className={`hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer`}
+                  {/* Balance display - Mobile: rightmost, Desktop: middle */}
+                  {isConnected && (
+                    <button
+                      onClick={() => setActiveSection('receive')}
+                      className={`hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer order-2`}
                   >
                     <div className="text-xs text-gray-500 whitespace-nowrap opacity-70">{isMobile ? t.yourBalanceMobile : t.yourBalance}</div>
                     <div className="text-sm font-semibold text-purple-700 whitespace-nowrap">
@@ -628,25 +648,6 @@ export default function App() {
                   </button>
                 )}
 
-                  {/* Bell button - separate from wallet */}
-                  {isConnected && !(isNavigationMenuOpen && isMobile) && (
-                    <button
-                      className="relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 -mr-4 md:-mr-6"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Bell button clicked');
-                        setActiveSection('messagesPage');
-                      }}
-                      type="button"
-                    >
-                      <Bell className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors" />
-                      {/* Purple dot indicator for unread announcements */}
-                      {hasUnreadAnnouncementsState && (
-                        <div className="absolute top-1 right-1 w-3 h-3 bg-purple-700 rounded-full border-2 border-white animate-pulse"></div>
-                      )}
-                    </button>
-                  )}
                 </div>
 
                 {/* Wallet container with spacing */}
