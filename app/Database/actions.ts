@@ -7,7 +7,7 @@ import { eq, sql, and, inArray, notInArray } from "drizzle-orm";
 import { WrongPredictions  } from "./schema";
 import { getBetsTableName, getWrongPredictionsTableName,getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING } from "./config";
 import { ReferralCodes, Referrals, FreeEntries, UsersTable } from "./schema";
-import { EvidenceSubmissions, MarketOutcomes, PredictionIdeas } from "./schema";
+import { EvidenceSubmissions, MarketOutcomes, PredictionIdeas, PotParticipationHistory } from "./schema";
 import { recordPotEntry, recordUserPrediction } from './actions3';
 import { desc } from "drizzle-orm";
 import { getPrice } from '../Constants/getPrice';
@@ -2395,12 +2395,15 @@ export async function getAllAnnouncements() {
  */
 export async function getUserContractAnnouncements(userAddress: string) {
   try {
+    console.log(`🔍 getUserContractAnnouncements: Starting for address ${userAddress}`);
     // Normalize wallet address for consistency
     const normalizedUserAddress = userAddress.toLowerCase();
+    console.log(`🔍 getUserContractAnnouncements: Normalized address ${normalizedUserAddress}`);
     
     // 1. Get user's participating contracts (cached/optimized)
     const userContracts = await getUserParticipatingContracts(normalizedUserAddress);
     const contractAddresses = userContracts.map(c => c.contractAddress);
+    console.log(`🔍 getUserContractAnnouncements: User ${normalizedUserAddress} participates in contracts:`, contractAddresses);
     
     // 2. Date filtering - only get recent announcements (last 30 days)
     const thirtyDaysAgo = new Date();
@@ -2442,6 +2445,13 @@ export async function getUserContractAnnouncements(userAddress: string) {
     const combined = [...globalAnnouncements, ...contractAnnouncements]
       .sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime());
       
+    console.log(`🔍 getUserContractAnnouncements: Final combined announcements:`, {
+      globalCount: globalAnnouncements.length,
+      contractCount: contractAnnouncements.length,
+      totalCount: combined.length,
+      first3: combined.slice(0, 3)
+    });
+    
     // Return maximum 100 most recent announcements
     return combined.slice(0, 100);
       
@@ -2462,50 +2472,91 @@ export async function getUserParticipatingContracts(userAddress: string) {
   try {
     // Normalize wallet address for consistency
     const normalizedUserAddress = userAddress.toLowerCase();
+    console.log(`🔍 getUserParticipatingContracts: Checking participation for ${normalizedUserAddress}`);
     const contracts: { contractAddress: string; marketType: string }[] = [];
+    
+    // Debug: Let's see what's in the PotParticipationHistory for this user
+    try {
+      const allPotHistory = await db
+        .select()
+        .from(PotParticipationHistory)
+        .where(eq(PotParticipationHistory.walletAddress, normalizedUserAddress))
+        .limit(10);
+      console.log(`🔍 PotParticipationHistory records for ${normalizedUserAddress}:`, allPotHistory);
+    } catch (historyError) {
+      console.error(`🔍 Error querying PotParticipationHistory:`, historyError);
+    }
     
     // Import config dynamically
     const config = await import('./config');
     const CONTRACT_TO_TABLE_MAPPING = config.CONTRACT_TO_TABLE_MAPPING;
     
-    // Check each contract type for user predictions
-    // This is a reasonable proxy for participation
+    // Check each contract type for user participation (predictions OR pot entry)
     for (const [contractAddress, tableType] of Object.entries(CONTRACT_TO_TABLE_MAPPING)) {
       let userParticipates = false;
       
       try {
-        if (tableType === 'featured') {
-          const predictions = await db
-            .select()
-            .from(FeaturedBets)
-            .where(eq(FeaturedBets.walletAddress, normalizedUserAddress))
-            .limit(1);
-          userParticipates = predictions.length > 0;
-        } else if (tableType === 'crypto') {
-          const predictions = await db
-            .select()
-            .from(CryptoBets)
-            .where(eq(CryptoBets.walletAddress, normalizedUserAddress))
-            .limit(1);
-          userParticipates = predictions.length > 0;
-        } else if (tableType === 'stocks') {
-          const predictions = await db
-            .select()
-            .from(StocksBets)
-            .where(eq(StocksBets.walletAddress, normalizedUserAddress))
-            .limit(1);
-          userParticipates = predictions.length > 0;
+        // First, check if user has entered this pot (via PotParticipationHistory)
+        const potParticipation = await db
+          .select()
+          .from(PotParticipationHistory)
+          .where(
+            and(
+              eq(PotParticipationHistory.walletAddress, normalizedUserAddress),
+              eq(PotParticipationHistory.contractAddress, contractAddress.toLowerCase()), // Normalize contract address
+              eq(PotParticipationHistory.eventType, 'entry')
+            )
+          )
+          .limit(1);
+        
+        console.log(`🔍 Contract ${contractAddress} (${tableType}): PotParticipationHistory found: ${potParticipation.length > 0}`);
+        
+        if (potParticipation.length > 0) {
+          userParticipates = true;
+        } else {
+          // Fallback: check if user has made predictions (original logic)
+          if (tableType === 'featured') {
+            const predictions = await db
+              .select()
+              .from(FeaturedBets)
+              .where(eq(FeaturedBets.walletAddress, normalizedUserAddress))
+              .limit(1);
+            userParticipates = predictions.length > 0;
+          } else if (tableType === 'crypto') {
+            const predictions = await db
+              .select()
+              .from(CryptoBets)
+              .where(eq(CryptoBets.walletAddress, normalizedUserAddress))
+              .limit(1);
+            userParticipates = predictions.length > 0;
+          } else if (tableType === 'stocks') {
+            const predictions = await db
+              .select()
+              .from(StocksBets)
+              .where(eq(StocksBets.walletAddress, normalizedUserAddress))
+              .limit(1);
+            userParticipates = predictions.length > 0;
+          } else if (tableType === 'music') {
+            const predictions = await db
+              .select()
+              .from(MusicBets)
+              .where(eq(MusicBets.walletAddress, normalizedUserAddress))
+              .limit(1);
+            userParticipates = predictions.length > 0;
+          }
         }
       } catch (queryError) {
-        console.error(`Error checking ${tableType} predictions for ${userAddress}:`, queryError);
+        console.error(`Error checking ${tableType} participation for ${userAddress}:`, queryError);
         // Continue with other contracts even if one fails
       }
       
       if (userParticipates) {
+        console.log(`✅ Adding contract ${contractAddress} (${tableType}) to user's participating contracts`);
         contracts.push({ contractAddress, marketType: tableType });
       }
     }
     
+    console.log(`🔍 getUserParticipatingContracts: Final result for ${normalizedUserAddress}:`, contracts);
     return contracts;
   } catch (error) {
     console.error("Error getting user participating contracts:", error);
@@ -2770,6 +2821,7 @@ export async function getParticipantEmails(participants: string[]): Promise<stri
     }
 
     console.log(`📧 Fetching emails for ${participants.length} participants`);
+    console.log(`📧 Participants:`, participants);
     
     // Normalize wallet addresses for consistency
     const normalizedAddresses = participants.map(addr => addr.toLowerCase());
@@ -2859,8 +2911,9 @@ export async function sendMinimumPlayersEmail(
       </div>
     `;
 
-    // Use Next.js API route to send emails (to be created)
-    const response = await fetch('/api/send-email', {
+    // Use Next.js API route to send emails - need absolute URL for server-side fetch
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/send-email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -2917,21 +2970,31 @@ export async function notifyMinimumPlayersReached(
       console.log(`✅ Minimum players notification sent successfully (${currentParticipants} participants)`);
     }
     
-    // Send email notifications to participants if addresses are provided
+    // Send email notifications to participants if addresses are provided  
+    console.log(`📧 Email notification check: ${participantAddresses.length} participant addresses provided for ${currentParticipants} participants`);
+    console.log(`📧 Data freshness: ${participantAddresses.length < currentParticipants ? '❌ STALE (missing participants)' : '✅ FRESH'}`);
+    
     if (participantAddresses && participantAddresses.length > 0) {
       try {
         console.log(`📧 Attempting to send email notifications to ${participantAddresses.length} participants`);
         
         // Get email addresses for participants
+        console.log(`📧 Attempting to get emails for ${participantAddresses.length} participants:`, participantAddresses);
         const emails = await getParticipantEmails(participantAddresses);
+        
+        console.log(`📧 Found ${emails.length} email addresses:`, emails.length > 0 ? emails : 'none');
         
         if (emails.length > 0) {
           // Send email notifications using the existing email function
+          console.log(`📧 Sending email notifications to ${emails.length} participants with emails`);
           const emailResult = await sendMinimumPlayersEmail(emails, currentParticipants, marketType);
           
           console.log(`📧 Email notification result:`, emailResult);
+          if (!emailResult.success) {
+            console.error(`📧 Email sending failed:`, emailResult.errors);
+          }
         } else {
-          console.log(`📧 No email addresses found for participants`);
+          console.log(`📧 No email addresses found for ${participantAddresses.length} participants - check if users have provided emails in their profiles`);
         }
       } catch (emailError) {
         console.error("❌ Error sending email notifications:", emailError);

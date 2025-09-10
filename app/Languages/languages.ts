@@ -78,6 +78,36 @@ export interface Translations {
   amazonQuestion?: string; // Added for the Amazon stock question
   metaQuestion?: string; // Added for the Meta stock question
   dogecoinQuestion?: string; // Added for the Dogecoin question
+  
+  // PredictionPotTest interface elements
+  processingYourEntry?: string;
+  preparingYourPots?: string;
+  fundYourAccount?: string;
+  fundAccountMessage?: string;
+  letsFundAccount?: string;
+  backToHome?: string;
+  back?: string;
+  waitingWalletConfirmation?: string;
+  transactionConfirming?: string;
+  viewOnBasescan?: string;
+  reEntryRequired?: string;
+  reEntryDescription?: string;
+  payReEntryFee?: string;
+  processingReEntry?: string;
+  payToReEnter?: string;
+  loadingTournamentInfo?: string;
+  checkingTournamentStatus?: string;
+  specialDiscountAvailable?: string;
+  congratulations?: string;
+  regularPrice?: string;
+  yourPrice?: string;
+  saveAmount?: string;
+  usingDiscount?: string;
+  payToEnter?: string;
+  joinPredictionsTournament?: string;
+  competeForPot?: string;
+  enterCode?: string;
+  enterButton?: string;
   cardanoQuestion?: string; // Added for the Cardano question
   xrpQuestion?: string; // Added for the XRP question
   ftse100Question?: string; // Added for the FTX token question
@@ -411,6 +441,36 @@ export const translations: Record<Language, Translations> = {
     litecoinQuestion: 'Will Litecoin end the day higher?',
     polkadotQuestion: 'Will Polkadot end the day higher?',
     chainlinkQuestion: 'Will Chainlink end the day higher?',
+    
+    // PredictionPotTest interface elements
+    processingYourEntry: 'Processing your entry...',
+    preparingYourPots: 'Preparing your pots...',
+    fundYourAccount: 'Fund Your Account',
+    fundAccountMessage: 'You need at least $0.01 worth of ETH to participate in prediction pots.',
+    letsFundAccount: "Let's fund your account →",
+    backToHome: '← Back to Home',
+    back: 'Back',
+    waitingWalletConfirmation: 'Waiting for wallet confirmation...',
+    transactionConfirming: 'Transaction confirming on blockchain...',
+    viewOnBasescan: 'View on BaseScan →',
+    reEntryRequired: '⚠️ Re-entry Required',
+    reEntryDescription: 'You made a wrong prediction and need to pay today\'s entry fee to re-enter this specific pot.',
+    payReEntryFee: 'Pay the re-entry fee to resume predicting in this pot',
+    processingReEntry: 'Processing Re-entry...',
+    payToReEnter: 'Pay to Re-enter',
+    loadingTournamentInfo: 'Loading Tournament Info...',
+    checkingTournamentStatus: 'Checking tournament status',
+    specialDiscountAvailable: 'Special Discount Available',
+    congratulations: 'Congratulations!!!',
+    regularPrice: 'Regular',
+    yourPrice: 'Your Price',
+    saveAmount: 'SAVE',
+    usingDiscount: 'Using Discount...',
+    payToEnter: 'Pay to Enter',
+    joinPredictionsTournament: 'Join Predictions Tournament',
+    competeForPot: 'Compete for the pot',
+    enterCode: 'Enter code...',
+    enterButton: 'Enter',
 
     // Market Names
     marketTrending: 'Trending',
@@ -730,6 +790,36 @@ export const translations: Record<Language, Translations> = {
     litecoinQuestion: 'O Litecoin vai terminar o dia em alta?',
     polkadotQuestion: 'O Polkadot vai terminar o dia em alta?',
     chainlinkQuestion: 'O Chainlink vai terminar o dia em alta?',
+    
+    // PredictionPotTest interface elements
+    processingYourEntry: 'Processando sua entrada...',
+    preparingYourPots: 'Preparando seus potes...',
+    fundYourAccount: 'Financie Sua Conta',
+    fundAccountMessage: 'Você precisa de pelo menos $0,01 em ETH para participar de potes de previsão.',
+    letsFundAccount: "Vamos financiar sua conta →",
+    backToHome: '← Voltar ao Início',
+    back: 'Voltar',
+    waitingWalletConfirmation: 'Aguardando confirmação da carteira...',
+    transactionConfirming: 'Transação confirmando na blockchain...',
+    viewOnBasescan: 'Ver no BaseScan →',
+    reEntryRequired: '⚠️ Reentrada Necessária',
+    reEntryDescription: 'Você fez uma previsão errada e precisa pagar a taxa de entrada de hoje para reentrar neste pote específico.',
+    payReEntryFee: 'Pague a taxa de reentrada para continuar prevendo neste pote',
+    processingReEntry: 'Processando Reentrada...',
+    payToReEnter: 'Pagar para Reentrar',
+    loadingTournamentInfo: 'Carregando Informações do Torneio...',
+    checkingTournamentStatus: 'Verificando status do torneio',
+    specialDiscountAvailable: 'Desconto Especial Disponível',
+    congratulations: 'Parabéns!!!',
+    regularPrice: 'Regular',
+    yourPrice: 'Seu Preço',
+    saveAmount: 'ECONOMIZE',
+    usingDiscount: 'Usando Desconto...',
+    payToEnter: 'Pagar para Entrar',
+    joinPredictionsTournament: 'Participar do Torneio de Previsões',
+    competeForPot: 'Concorra ao pote',
+    enterCode: 'Digite o código...',
+    enterButton: 'Entrar',
 
     // Market Names
     marketTrending: 'Em Alta',

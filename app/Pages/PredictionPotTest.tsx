@@ -688,46 +688,13 @@ useEffect(() => {
       // Refresh contract data
       queryClient.invalidateQueries({ queryKey: ['readContract'] });
       
-      // 🔔 Check for minimum players threshold reached and send notification
-      setTimeout(async () => {
-        try {
-          // Wait for contract data to refresh, then check participant count
-          const currentParticipants = participants ? participants.length : 0;
-          const previousParticipants = currentParticipants > 0 ? currentParticipants - 1 : 0; // Estimate previous count
-          
-          console.log(`📊 Checking minimum players threshold after pot entry:`, {
-            contractAddress,
-            currentParticipants,
-            previousParticipants,
-            selectedTableType
-          });
-          
-          const threshold = checkMinimumPlayersThreshold(contractAddress, currentParticipants);
-          
-          if (threshold.wasJustReached(previousParticipants)) {
-            console.log(`🎯 Minimum players threshold reached! Sending notification...`);
-            
-            const notificationResult = await notifyMinimumPlayersReached(
-              contractAddress, 
-              currentParticipants, 
-              selectedTableType,
-              participants || []
-            );
-            
-            console.log(`✅ Minimum players notification result:`, notificationResult);
-          } else {
-            console.log(`📊 Minimum players not yet reached: ${currentParticipants}/${threshold.minimumRequired}`);
-          }
-        } catch (notificationError) {
-          console.error("❌ Error checking/sending minimum players notification:", notificationError);
-          // Don't show error to user - notifications are supplementary
-        }
-      }, 2500); // Wait 2.5s for contract data to fully refresh
       
       // Clear post-entry loading state after a reasonable delay
       setTimeout(() => {
         setPostEntryLoading(false);
+        console.log(`🔄 Additional contract data refresh after pot entry`);
         queryClient.invalidateQueries({ queryKey: ['readContract'] });
+        queryClient.invalidateQueries({ queryKey: ['balance'] });
       }, 2000);
       
       // Clear the "just entered" state after showing success for a while
@@ -751,7 +718,10 @@ useEffect(() => {
           }
         }, 3000);
       }
-      setActiveSection('makePrediction'); // Switch to make prediction section after entry
+      
+      
+      // Always redirect to make prediction section after entry (regardless of participant count)
+      setActiveSection('makePrediction');
       setLastAction('');
       
     } else if (lastAction === 'reEntry') {
@@ -784,34 +754,50 @@ useEffect(() => {
             // 🔔 Check for minimum players threshold reached (same logic as regular entry)
             setTimeout(async () => {
               try {
-                const currentParticipants = participants ? participants.length : 0;
-                const previousParticipants = currentParticipants > 0 ? currentParticipants - 1 : 0;
+                // Force refresh contract data first
+                await queryClient.invalidateQueries({ queryKey: ['readContract'] });
+                await queryClient.invalidateQueries({ queryKey: ['balance'] });
                 
-                console.log(`📊 Checking minimum players threshold after re-entry:`, {
-                  contractAddress,
-                  currentParticipants,
-                  previousParticipants,
-                  selectedTableType
-                });
-                
-                const threshold = checkMinimumPlayersThreshold(contractAddress, currentParticipants);
-                
-                if (threshold.wasJustReached(previousParticipants)) {
-                  console.log(`🎯 Minimum players threshold reached via re-entry! Sending notification...`);
-                  
-                  const notificationResult = await notifyMinimumPlayersReached(
-                    contractAddress, 
-                    currentParticipants, 
-                    selectedTableType,
-                    participants || []
-                  );
-                  
-                  console.log(`✅ Re-entry minimum players notification result:`, notificationResult);
-                }
+                // Wait for refresh to complete
+                setTimeout(async () => {
+                  try {
+                    // Use the same logic as hasEnoughParticipants() function
+                    const currentParticipants = participants ? participants.length : 0;
+                    const contractAddresses = Object.keys(CONTRACT_TO_TABLE_MAPPING);
+                    const contractIndex = contractAddresses.indexOf(contractAddress);
+                    const minPlayersRequired = contractIndex === 0 ? MIN_PLAYERS : MIN_PLAYERS2;
+                    
+                    console.log(`📊 Checking minimum players after re-entry (using same logic as redirect):`, {
+                      contractAddress,
+                      currentParticipants,
+                      minPlayersRequired,
+                      hasEnoughNow: currentParticipants >= minPlayersRequired,
+                      selectedTableType
+                    });
+                    
+                    // Check if we just reached minimum players
+                    if (currentParticipants >= minPlayersRequired && currentParticipants === minPlayersRequired) {
+                      console.log(`🎯 Minimum players threshold reached via re-entry! Sending notification...`);
+                      
+                      const notificationResult = await notifyMinimumPlayersReached(
+                        contractAddress, 
+                        currentParticipants, 
+                        selectedTableType,
+                        participants || []
+                      );
+                      
+                      console.log(`✅ Re-entry minimum players notification result:`, notificationResult);
+                    } else {
+                      console.log(`📊 Re-entry minimum players status: ${currentParticipants}/${minPlayersRequired} - ${currentParticipants >= minPlayersRequired ? 'sufficient' : 'insufficient'}`);
+                    }
+                  } catch (innerError) {
+                    console.error("❌ Error in re-entry inner notification check:", innerError);
+                  }
+                }, 2000); // Additional 2s wait after refresh
               } catch (notificationError) {
                 console.error("❌ Error checking/sending minimum players notification after re-entry:", notificationError);
               }
-            }, 2500);
+            }, 4000); // Initial 4s delay for re-entry check
           } else {
             setIsLoading(false);
             showMessage('Re-entry payment processed but database update failed. Please contact support.', true);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatUnits, parseEther } from 'viem';
-import { placeBitcoinBet, getTomorrowsBet, getTodaysBet, getReEntryFee, submitEvidence, getUserEvidenceSubmission, getAllEvidenceSubmissions, processReEntry } from '../Database/actions';
+import { placeBitcoinBet, getTomorrowsBet, getTodaysBet, getReEntryFee, submitEvidence, getUserEvidenceSubmission, getAllEvidenceSubmissions, processReEntry, notifyMinimumPlayersReached } from '../Database/actions';
 import { getUserPredictionsByContract, getUserPredictionsWithResults } from '../Database/actions3';
 import { getProvisionalOutcome, } from '../Database/OwnerActions';
 import { TrendingUp, TrendingDown, Shield, Zap, AlertTriangle, Clock, FileText, Upload, ChevronDown, ChevronUp, Eye, Trophy } from 'lucide-react';
@@ -518,6 +518,53 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       }
     }
   }, [isParticipant, participants, contractAddress, setActiveSection]);
+
+  // Check for minimum players threshold and send notification
+  useEffect(() => {
+    const checkAndNotifyMinimumPlayers = async () => {
+      if (!participants || !Array.isArray(participants) || !contractAddress) return;
+      
+      // Determine minimum players requirement
+      const contractAddresses = Object.keys(CONTRACT_TO_TABLE_MAPPING);
+      const contractIndex = contractAddresses.indexOf(contractAddress);
+      const minPlayersRequired = contractIndex === 0 ? MIN_PLAYERS : MIN_PLAYERS2;
+      const currentParticipants = participants.length;
+      
+      console.log(`🎯 MakePredictionsPage: Checking minimum players for contract ${contractAddress}:`, {
+        currentParticipants,
+        minPlayersRequired,
+        hasEnoughNow: currentParticipants >= minPlayersRequired,
+        tableType: CONTRACT_TO_TABLE_MAPPING[contractAddress as keyof typeof CONTRACT_TO_TABLE_MAPPING]
+      });
+      
+      // Send notification if minimum players reached
+      // The notification system has built-in deduplication to prevent spam
+      if (currentParticipants >= minPlayersRequired) {
+        try {
+          console.log(`🎯 Minimum players reached! Sending notification from MakePredictionsPage...`);
+          
+          const tableType = CONTRACT_TO_TABLE_MAPPING[contractAddress as keyof typeof CONTRACT_TO_TABLE_MAPPING];
+          const notificationResult = await notifyMinimumPlayersReached(
+            contractAddress,
+            currentParticipants,
+            tableType || 'market',
+            participants
+          );
+          
+          console.log(`✅ MakePredictionsPage notification result:`, notificationResult);
+        } catch (error) {
+          console.error(`❌ Error sending minimum players notification from MakePredictionsPage:`, error);
+        }
+      } else {
+        console.log(`📊 Not enough players yet: ${currentParticipants}/${minPlayersRequired} - no notification sent`);
+      }
+    };
+
+    // Only run if we have fresh participant data
+    if (participants && participants.length > 0) {
+      checkAndNotifyMinimumPlayers();
+    }
+  }, [participants, contractAddress]); // Trigger when participants or contract changes
 
   // Auto-submission effect for voting preference
   useEffect(() => {

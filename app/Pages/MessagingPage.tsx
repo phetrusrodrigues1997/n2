@@ -50,7 +50,19 @@ const MessagingPage = ({ setActiveSection }: MessagingPageProps) => {
       setLoading(true);
       
       // Get both global and contract-specific announcements for this user
+      console.log(`🔍 MessagingPage: Loading announcements for address: ${address}`);
+      
+      // Let's also try getting ALL announcements to see if any exist
+      try {
+        const allAnnouncementsTest = await getAllAnnouncements();
+        console.log(`🔍 MessagingPage: Total announcements in DB:`, allAnnouncementsTest?.length || 0);
+        console.log(`🔍 MessagingPage: First 3 announcements:`, allAnnouncementsTest?.slice(0, 3) || []);
+      } catch (testError) {
+        console.log(`🔍 MessagingPage: Error getting all announcements:`, testError);
+      }
+      
       const allAnnouncements = await getUserContractAnnouncements(address);
+      console.log(`🔍 MessagingPage: Raw announcements from DB:`, allAnnouncements);
       
       // Convert database format to component format
       const formattedAnnouncements: Announcement[] = allAnnouncements.map(announcement => ({
@@ -61,6 +73,7 @@ const MessagingPage = ({ setActiveSection }: MessagingPageProps) => {
         isContractSpecific: !!announcement.contractAddress,
       }));
       
+      console.log(`🔍 MessagingPage: Formatted announcements:`, formattedAnnouncements);
       setAnnouncements(formattedAnnouncements);
     } catch (error) {
       console.error("Error loading announcements:", error);
