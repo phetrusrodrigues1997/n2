@@ -478,14 +478,14 @@ export default function App() {
         <header
   className={`z-50 bg-white px-4 md:py-2 sticky top-0 ${
     (activeSection === "home") ? "border-b border-gray-200" : ""
-  }`}
+  } ${isNavigationMenuOpen ? 'pointer-events-none' : ''}`}
 >
         <div className="w-full mx-auto flex flex-col">
           {/* Top row with main header elements */}
           <div className="flex justify-between items-center mt-3 md:mt-0">
             <div className="flex items-center flex-1">
               {/* Hamburger menu - shows on both desktop and mobile at left edge */}
-              <div className="">
+              <div className={isNavigationMenuOpen ? 'pointer-events-auto' : ''}>
                 <NavigationMenu 
                   activeSection={activeSection} 
                   setActiveSection={setActiveSection} 
@@ -977,7 +977,7 @@ export default function App() {
         </section>
       )}
 
-      <main className="flex-grow bg-white pb-16 md:pb-0">
+      <main className={`flex-grow bg-white pb-16 md:pb-0 ${isNavigationMenuOpen ? 'pointer-events-none' : ''}`}>
 
 
 
@@ -1025,7 +1025,7 @@ export default function App() {
 
       {/* Mobile Bottom Navigation */}
       {!isLandingPageLoading && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'ideas' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && activeSection !== 'discord' && (
-        <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40">
+        <div className={`fixed bottom-0 left-0 right-0 md:hidden bg-white z-40 ${isNavigationMenuOpen ? 'pointer-events-none' : ''}`}>
         <div className="flex items-center justify-around py-2">
           <button
             onClick={(e) => {
