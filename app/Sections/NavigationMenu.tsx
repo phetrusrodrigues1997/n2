@@ -48,22 +48,22 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
   // Menu items - testing translations one by one
   const mobileMenuItems = [
     { id: 'home', label: t.home || 'Home' },
-    { id: 'createPot', label: t.privateMarkets || 'Private Markets' },
+    { id: 'createPot', label: t.privateMarkets || 'Private Pots' },
     { id: 'receive', label: t.fundAccount || 'Fund Account' },
     { id: 'profile', label: t.statsRankings || 'Stats & Rankings' },
     { id: 'AI', label: t.games || 'Games' },
-    { id: 'discord', label: t.howItWorksTitle || 'How it works' },
+    { id: 'discord', label: t.howItWorksTitle || 'How It Works' },
     { id: 'ideas', label: t.ideas || 'Ideas' },
   ];
 
   const desktopMenuItems = [
     { id: 'home', label: t.home || 'Home' },
-    { id: 'createPot', label: t.privateMarkets || 'Private Markets' },
+    { id: 'createPot', label: t.privateMarkets || 'Private Pots' },
     { id: 'receive', label: t.fundAccount || 'Fund Account' },
     { id: 'AI', label: t.games || 'Games' },
     { id: 'profile', label: t.statsRankings || 'Stats & Rankings' },
-    { id: 'bookmarks', label: t.myPots || 'My pots' },
-    { id: 'discord', label: t.howItWorksTitle || 'How it works' },
+    { id: 'bookmarks', label: t.myPots || 'My Pots' },
+    { id: 'discord', label: t.howItWorksTitle || 'How It Works' },
     { id: 'ideas', label: t.ideas || 'Ideas' },
     { id: 'liveMarkets', label: t.liveMarkets || 'Live Markets' },
   ];
