@@ -35,7 +35,6 @@ import { getMarkets } from './Constants/markets';
 import { Language, getTranslation, supportedLanguages, getMarketDisplayName, getPersonalizedLabel } from './Languages/languages';
 import { getPrice } from './Constants/getPrice';
 import Cookies from 'js-cookie';
-import { initializeMobileFeatures, triggerHapticFeedback, isMobileApp } from './utils/capacitor';
 
 
 
@@ -81,7 +80,7 @@ export default function App() {
   const t = getTranslation(currentLanguage);
   const marketOptions = getMarkets(t, 'options');
 
-  // Mobile detection and mobile app initialization
+  // Mobile detection
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.matchMedia('(max-width: 787px)').matches);
@@ -89,9 +88,6 @@ export default function App() {
   
     // Initial check
     checkIfMobile();
-  
-    // Initialize mobile app features
-    initializeMobileFeatures();
   
     // Listen for window resize events
     window.addEventListener('resize', checkIfMobile);
@@ -481,18 +477,14 @@ export default function App() {
         <header
   className={`z-50 bg-white px-4 md:py-2 sticky top-0 ${
     (activeSection === "home") ? "border-b border-gray-200" : ""
-  } ${isNavigationMenuOpen ? 'pointer-events-none isolate' : ''}`}
-  style={{
-    contain: isNavigationMenuOpen ? 'layout style' : 'none',
-    willChange: isNavigationMenuOpen ? 'contents' : 'auto'
-  }}
+  }`}
 >
         <div className="w-full mx-auto flex flex-col">
           {/* Top row with main header elements */}
           <div className="flex justify-between items-center mt-3 md:mt-0">
             <div className="flex items-center flex-1">
               {/* Hamburger menu - shows on both desktop and mobile at left edge */}
-              <div className={isNavigationMenuOpen ? 'pointer-events-auto' : ''}>
+              <div className="">
                 <NavigationMenu 
                   activeSection={activeSection} 
                   setActiveSection={setActiveSection} 
@@ -547,7 +539,7 @@ export default function App() {
               {/* Balance display removed - ETH balance handled by wallet */}
 
               {/* Right-side button group - adjust positioning based on connection status */}
-              <div className={`flex items-center ml-auto ${isConnected ? '-mr-4 md:-mr-12' : '-mr-2 md:-mr-4'} ${isNavigationMenuOpen ? 'relative z-10' : ''}`} style={{ contain: isNavigationMenuOpen ? 'layout' : 'none' }}>
+              <div className={`flex items-center ml-auto ${isConnected ? '-mr-4 md:-mr-12' : '-mr-2 md:-mr-4'}`}>
                 {/* Tight group: Mobile (Bell first) vs Desktop (Language first) */}
                 <div className="flex items-center gap-0">
                   {/* Bell button - Mobile: leftmost, Desktop: rightmost */}
@@ -660,10 +652,7 @@ export default function App() {
                 </div>
 
                 {/* Wallet container with spacing */}
-                <div className={`wallet-container translate-x-0 ${isNavigationMenuOpen ? 'relative z-20 transform-gpu' : ''}`} style={{ 
-                  isolation: isNavigationMenuOpen ? 'isolate' : 'auto',
-                  contain: isNavigationMenuOpen ? 'layout style' : 'none'
-                }}>
+                <div className="wallet-container translate-x-0">
                 <Wallet>
                   <ConnectWallet
                     text={isMobile ? "Sign In" : "Sign In"}
@@ -887,7 +876,7 @@ export default function App() {
                   </div>
                   <input
                     type="text"
-                    placeholder={t.searchPotsPlaceholder}
+                    placeholder="Search"
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:bg-white focus:border-2 focus:border-purple-700 transition-colors duration-200"
@@ -987,7 +976,7 @@ export default function App() {
         </section>
       )}
 
-      <main className={`flex-grow bg-white pb-16 md:pb-0 ${isNavigationMenuOpen ? 'pointer-events-none' : ''}`}>
+      <main className="flex-grow bg-white pb-16 md:pb-0">
 
 
 
@@ -1034,12 +1023,11 @@ export default function App() {
 
       {/* Mobile Bottom Navigation */}
       {!isLandingPageLoading && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'ideas' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && activeSection !== 'discord' && (
-        <div className={`fixed bottom-0 left-0 right-0 md:hidden bg-white z-40 ${isNavigationMenuOpen ? 'pointer-events-none' : ''}`}>
+        <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40">
         <div className="flex items-center justify-around py-2">
           <button
             onClick={(e) => {
               console.log('Mobile HOME button clicked');
-              triggerHapticFeedback();
               setActiveSection('home');
               setIsMobileSearchActive(false);
             }}

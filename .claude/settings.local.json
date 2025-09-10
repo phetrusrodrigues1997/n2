@@ -29,7 +29,9 @@
       "Bash(npx cap add:*)",
       "Bash(timeout 60 npm run build)",
       "Bash(npm uninstall:*)",
-      "Bash(npx cap:*)"
+      "Bash(npx cap:*)",
+      "Bash(java:*)",
+      "Bash(./gradlew:*)"
     ],
     "deny": [],
     "ask": [],
