@@ -14,12 +14,14 @@ const MAX_ATTEMPTS = 5;
 const WORD_LENGTH = 5;
 
 interface WordleProps {
-  activeSection: string;
-  setActiveSection: (section: string) => void;
+  activeSection?: string;
+  setActiveSection?: (section: string) => void;
   selectedMarket?: string;
+  onBack?: () => void;
+  showBackButton?: boolean;
 }
 
-export default function Wordle({ activeSection, setActiveSection, selectedMarket }: WordleProps) {
+export default function Wordle({ activeSection, setActiveSection, selectedMarket, onBack, showBackButton }: WordleProps) {
   const { address, isConnected } = useAccount();
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState("");
@@ -207,6 +209,28 @@ export default function Wordle({ activeSection, setActiveSection, selectedMarket
   if (isCheckingEligibility) {
     return (
       <div style={styles.container}>
+        {showBackButton && onBack && (
+          <button
+            onClick={onBack}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              left: '20px',
+              backgroundColor: '#7c3aed',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '10px 15px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px'
+            }}
+          >
+            ← Back
+          </button>
+        )}
         <h1 style={styles.title}>Wordle</h1>
         <div style={styles.loading}>
           <p>Checking game eligibility...</p>
@@ -219,6 +243,28 @@ export default function Wordle({ activeSection, setActiveSection, selectedMarket
   if (canPlay === false && isConnected) {
     return (
       <div style={styles.container}>
+        {showBackButton && onBack && (
+          <button
+            onClick={onBack}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              left: '20px',
+              backgroundColor: '#7c3aed',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '10px 15px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px'
+            }}
+          >
+            ← Back
+          </button>
+        )}
         <h1 style={styles.title}>Wordle</h1>
         <div style={styles.cooldownMessage}>
           <h2>🕐 Come back later!</h2>
@@ -236,6 +282,28 @@ export default function Wordle({ activeSection, setActiveSection, selectedMarket
 
   return (
     <div style={styles.container}>
+      {showBackButton && onBack && (
+        <button
+          onClick={onBack}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            backgroundColor: '#7c3aed',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '10px 15px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px'
+          }}
+        >
+          ← Back
+        </button>
+      )}
       <h1 style={styles.title}>Wordle</h1>
 
       {guesses.map((guess, i) => (
