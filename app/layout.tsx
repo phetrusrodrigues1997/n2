@@ -6,21 +6,41 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
-  title: 'Prediwin - Predict, Win, Repeat',
-  description: 'Focused on building the best prediction market services.',
+  title: 'PrediWin - Predict, Win, Repeat',
+  description: 'Blockchain prediction market platform on Base network. Predict crypto, stocks, sports movements and win ETH rewards.',
+  manifest: '/manifest.json',
   icons: {
-    icon: '/favicon.jpg',
+    icon: [
+      { url: '/icon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon-16x16.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/icon-180x180.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
   viewport: {
     width: 'device-width',
     initialScale: 1,
     maximumScale: 1,
     userScalable: false,
+    viewportFit: 'cover',
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'PrediWin',
+  },
+  formatDetection: {
+    telephone: false,
   },
   other: {
+    'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-status-bar-style': 'light-content',
-    'theme-color': '#ffffff',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-title': 'PrediWin',
+    'theme-color': '#7c3aed',
+    'msapplication-TileColor': '#7c3aed',
+    'msapplication-config': '/browserconfig.xml',
   },
 };
 

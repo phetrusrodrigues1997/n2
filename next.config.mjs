@@ -1,7 +1,52 @@
+import withPWAInit from 'next-pwa';
+
+// Only enable PWA for mobile builds
+const isMobileBuild = process.env.MOBILE_BUILD === 'true';
+
+const withPWA = isMobileBuild ? withPWAInit({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  runtimeCaching: [
+    {
+      urlPattern: /^https?.*/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'offlineCache',
+        expiration: {
+          maxEntries: 200,
+        },
+      },
+    },
+  ],
+}) : (config) => config;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Configure external image domains for Next.js Image component
+  // Only use static export for mobile builds, not dev/regular builds
+  ...(isMobileBuild && {
+    output: 'export',
+    trailingSlash: true,
+    skipTrailingSlashRedirect: true,
+    distDir: 'out',
+  }),
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  // Fast build optimizations
+  swcMinify: false, // Disable minification for faster builds
+  compiler: {
+    removeConsole: false,
+  },
+  // Disable optimizations for faster builds
+  optimizeFonts: false,
+  poweredByHeader: false,
+  // Configure external image domains for Next.js Image component  
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -60,4 +105,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);

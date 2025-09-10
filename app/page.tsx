@@ -36,6 +36,7 @@ import { getMarkets } from './Constants/markets';
 import { Language, getTranslation, supportedLanguages, getMarketDisplayName, getPersonalizedLabel } from './Languages/languages';
 import { getPrice } from './Constants/getPrice';
 import Cookies from 'js-cookie';
+import { initializeMobileFeatures, triggerHapticFeedback, isMobileApp } from './utils/capacitor';
 
 
 
@@ -81,7 +82,7 @@ export default function App() {
   const t = getTranslation(currentLanguage);
   const marketOptions = getMarkets(t, 'options');
 
-  // Mobile detection
+  // Mobile detection and mobile app initialization
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.matchMedia('(max-width: 787px)').matches);
@@ -89,6 +90,9 @@ export default function App() {
   
     // Initial check
     checkIfMobile();
+  
+    // Initialize mobile app features
+    initializeMobileFeatures();
   
     // Listen for window resize events
     window.addEventListener('resize', checkIfMobile);
@@ -1037,6 +1041,7 @@ export default function App() {
           <button
             onClick={(e) => {
               console.log('Mobile HOME button clicked');
+              triggerHapticFeedback();
               setActiveSection('home');
               setIsMobileSearchActive(false);
             }}
