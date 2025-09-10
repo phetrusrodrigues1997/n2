@@ -14,9 +14,7 @@ import ProfilePage from './Pages/ProfilePage';
 import TutorialBridge from './Pages/TutorialBridge';
 import NotReadyPage from './Pages/NotReadyPage';
 import ReferralProgram from './Pages/ReferralProgram';
-// import { cryptoTokens, stablecoinTokens, ETHToken, USDCToken, CbBTCToken, BRZToken, CADCToken, EURCToken } from './Token Lists/coins';
 import ReceiveSection from "./Pages/ReceivePage";
-// import CurrencyDisplay from './Pages/Charts';
 import NavigationMenu from "./Sections/NavigationMenu";
 import ResponsiveLogo from './Sections/ResponsiveLogo';
 import HowItWorksSection from './Pages/Discord';
@@ -102,6 +100,18 @@ export default function App() {
     if (savedLang && supportedLanguages.some(lang => lang.code === savedLang)) {
       setCurrentLanguage(savedLang);
     }
+  }, []);
+
+  // Listen for language change events from mobile menu
+  useEffect(() => {
+    const handleLanguageChange = (event: CustomEvent) => {
+      const newLanguage = event.detail as Language;
+      setCurrentLanguage(newLanguage);
+      Cookies.set('language', newLanguage, { expires: 365 });
+    };
+
+    window.addEventListener('changeLanguage' as any, handleLanguageChange);
+    return () => window.removeEventListener('changeLanguage' as any, handleLanguageChange);
   }, []);
 
   // Language switching function
@@ -545,7 +555,7 @@ export default function App() {
                   {/* Bell button - Mobile: leftmost, Desktop: rightmost */}
                   {isConnected && (
                     <button
-                      className={`relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-10 md:-mr-6 md:translate-x-0 ${isMobile ? 'order-1 ' : 'order-3'}`}
+                      className={`relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-4 md:-mr-6 md:translate-x-0 ${isMobile ? 'order-1 ' : 'order-3'}`}
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -563,7 +573,7 @@ export default function App() {
                   )}
 
                   {/* Language dropdown - Mobile: middle, Desktop: leftmost - Always visible */}
-                  <div className={`relative z-50 ${isMobile ? (isConnected ? 'order-2 pl-6' : 'order-2 pl-6 -translate-x-6') : (isConnected ? 'order-1' : 'order-1 -translate-x-4')}`} data-language-dropdown>
+                  <div className={`relative z-50 ${isMobile ? 'order-2' : (isConnected ? 'order-1' : 'order-1 -translate-x-4')}`} data-language-dropdown>
                     <button
                       className="hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer gap-0"
                       onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
@@ -588,34 +598,10 @@ export default function App() {
                       </div>
                     </button>
                     
-                    {/* Mobile version - same design as desktop but less padding */}
-                    <button
-                      className={`md:hidden ${isNavigationMenuOpen ? 'block mr-8':'hidden'} flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-0 py-0 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer gap-0 -mr-4`}
-                      onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
-                      type="button"
-                    >
-                      <div className="text-xs text-gray-500 whitespace-nowrap opacity-70 flex items-center gap-1">
-                        Language
-                        <svg
-                          className={`w-3 h-3 text-gray-500 transition-transform duration-200 ${
-                            isLanguageDropdownOpen ? 'rotate-180' : 'rotate-0'
-                          }`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth="2.5"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                      <div className="text-sm font-semibold text-purple-700 whitespace-nowrap">
-                        {currentLanguage === 'en' ? 'en-US' : 'pt-BR'}
-                      </div>
-                    </button>
                     
                     {/* Language dropdown menu */}
                     {isLanguageDropdownOpen && (
-                      <div className="absolute right-0 mt-1 w-52 md:w-44 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+                      <div className="absolute right-0 mt-1 w-52 md:w-44 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-[80]">
                         {supportedLanguages.map((language) => (
                           <button
                             key={language.code}

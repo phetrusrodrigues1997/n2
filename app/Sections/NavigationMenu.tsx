@@ -3,7 +3,7 @@ import { Menu, X } from 'lucide-react';
 import { useAccount, useDisconnect } from 'wagmi';
 import { FaDiscord } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
-import { getTranslation, Language } from '../Languages/languages';
+import { getTranslation, Language, supportedLanguages } from '../Languages/languages';
 
 interface NavigationMenuProps {
   activeSection: string;
@@ -16,6 +16,7 @@ interface NavigationMenuProps {
 const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTriggerWallet, currentLanguage = 'en' }: NavigationMenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   
@@ -110,7 +111,62 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                 </button>
               </div>
               
-              {/* Menu items - pushed higher */}
+              {/* Language dropdown positioned absolutely to not affect menu layout */}
+              <div className="absolute top-4 right-6 z-10">
+                <div className="relative">
+                  <button
+                    onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
+                    className="flex items-center gap-2 px-3 py-2 bg-purple-50 text-purple-700 font-semibold rounded-md hover:bg-purple-800 hover:text-white transition-colors border border-purple-200"
+                  >
+                    <img
+                      src={supportedLanguages.find(lang => lang.code === currentLanguage)?.flag}
+                      alt="Current language"
+                      className={`${currentLanguage === 'en' ? 'w-5' : 'w-4'} h-3 object-cover rounded`}
+                    />
+                    <span className="text-sm font-medium">
+                      {supportedLanguages.find(lang => lang.code === currentLanguage)?.name}
+                    </span>
+                    <svg
+                      className={`w-4 h-4 text-purple-600 hover:text-white transition-transform duration-200 ${
+                        isLanguageDropdownOpen ? 'rotate-180' : 'rotate-0'
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  
+                  {/* Language dropdown menu */}
+                  {isLanguageDropdownOpen && (
+                    <div className="absolute top-full right-0 mt-1 w-40 bg-white rounded-md shadow-lg border border-gray-200 z-20">
+                      {supportedLanguages.map((language) => (
+                        <button
+                          key={language.code}
+                          onClick={() => {
+                            const event = new CustomEvent('changeLanguage', { detail: language.code });
+                            window.dispatchEvent(event);
+                            setIsLanguageDropdownOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors ${
+                            currentLanguage === language.code ? 'bg-purple-50 text-purple-700' : 'text-gray-700'
+                          }`}
+                        >
+                          <img
+                            src={language.flag}
+                            alt={`${language.name} flag`}
+                            className="w-4 h-3 object-cover rounded"
+                          />
+                          <span className="text-sm">{language.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Menu items */}
               <div className="flex flex-col justify-start px-6 -mt-16">
                 {mobileMenuItems.map((item) => (
                   <button
