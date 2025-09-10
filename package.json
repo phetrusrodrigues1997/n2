@@ -47,6 +47,7 @@
     "react-slick": "^0.30.3",
     "react-toastify": "^11.0.5",
     "recharts": "^2.15.2",
+    "resend": "^6.0.3",
     "slick-carousel": "^1.8.1",
     "viem": "^2.22.2",
     "wagmi": "^2.14.12"
