@@ -108,18 +108,15 @@ export interface Translations {
   competeForPot?: string;
   enterCode?: string;
   enterButton?: string;
+  referralProgram?: string; // Added for referral navigation links
+  referralCode?: string; // Added for referral code input label
   cardanoQuestion?: string; // Added for the Cardano question
   xrpQuestion?: string; // Added for the XRP question
   ftse100Question?: string; // Added for the FTX token question
   goldQuestion?: string; // Added for the Gold question
   howItWorksLink?: string; // Added for the link to the How It Works section
   chelseaManUtdQuestion?: string; // Added for the Chelsea
-  barcaMadridQuestion?: string; // Added for the Barcelona vs Real Madrid question
-  lakersCelticsQuestion?: string; // Added for the Lakers vs Celtics question
-  brazilArgentinaQuestion?: string; // Added for the Brazil vs Argentina question
-  litecoinQuestion?: string; // Added for the Litecoin question
-  polkadotQuestion?: string; // Added for the Polkadot question
-  chainlinkQuestion?: string; // Added for the Chainlink question
+
   
   
   // Market Names
@@ -435,12 +432,7 @@ export const translations: Record<Language, Translations> = {
     goldQuestion: 'Will Gold end the day higher?',
     howItWorksLink: 'How it works >', // Added for the link to the How It Works section
     chelseaManUtdQuestion: 'Will Chelsea vs Manchester United end with a higher score for Chelsea?',
-    barcaMadridQuestion: 'Will Barcelona vs Real Madrid end with a higher score for Barcelona?',
-    lakersCelticsQuestion: 'Will Lakers vs Celtics end with a higher score for Lakers?',
-    brazilArgentinaQuestion: 'Will Brazil vs Argentina end with a higher score for Brazil?',
-    litecoinQuestion: 'Will Litecoin end the day higher?',
-    polkadotQuestion: 'Will Polkadot end the day higher?',
-    chainlinkQuestion: 'Will Chainlink end the day higher?',
+    
     
     // PredictionPotTest interface elements
     processingYourEntry: 'Processing your entry...',
@@ -471,6 +463,8 @@ export const translations: Record<Language, Translations> = {
     competeForPot: 'Compete for the pot',
     enterCode: 'Enter code...',
     enterButton: 'Enter',
+    referralProgram: 'Referrals', // Added for referral navigation links
+    referralCode: 'Referral Code (Optional)', // Added for referral code input label
 
     // Market Names
     marketTrending: 'Trending',
@@ -784,13 +778,9 @@ export const translations: Record<Language, Translations> = {
     goldQuestion: 'O Ouro vai terminar o dia em alta?',
     howItWorksLink: 'Como funciona?', // Added for the link to the How It Works section
     chelseaManUtdQuestion: 'Chelsea vai ganhar do Machester United?',
-    barcaMadridQuestion: 'Barcelona vai ganhar do Real Madrid?',
-    lakersCelticsQuestion: 'Lakers vai ganhar do Celtics?',
-    brazilArgentinaQuestion: 'Brasil vai ganhar da Argentina?',
-    litecoinQuestion: 'O Litecoin vai terminar o dia em alta?',
-    polkadotQuestion: 'O Polkadot vai terminar o dia em alta?',
-    chainlinkQuestion: 'O Chainlink vai terminar o dia em alta?',
-    
+   
+    referralProgram: 'Indicações', // Added for referral navigation links
+    referralCode: 'Código de Indicação (Opcional)', // Added for referral code input label
     // PredictionPotTest interface elements
     processingYourEntry: 'Processando sua entrada...',
     preparingYourPots: 'Preparando seus potes...',

@@ -352,7 +352,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                       className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
                     >
                       <span>←</span>
-                      <span>Back</span>
+                      <span>{t.back}</span>
                     </button>
                     
                     {/* Desktop Skip Button - Top Right */}

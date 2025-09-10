@@ -877,7 +877,7 @@ export default function App() {
                   </div>
                   <input
                     type="text"
-                    placeholder="Search"
+                    placeholder={t.searchPotsPlaceholder}
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:bg-white focus:border-2 focus:border-purple-700 transition-colors duration-200"

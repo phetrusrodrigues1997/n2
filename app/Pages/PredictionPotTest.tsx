@@ -978,7 +978,7 @@ useEffect(() => {
   if (isInitialLoading || postEntryLoading) {
     return (
       <LoadingScreenAdvanced 
-        subtitle={postEntryLoading ? "Processing your entry..." : "Preparing your pots..."} 
+        subtitle={postEntryLoading ? (t.processingYourEntry || "Processing your entry...") : (t.preparingYourPots || "Preparing your pots...")} 
       />
     );
   }
@@ -993,9 +993,9 @@ useEffect(() => {
               <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Wallet className="w-8 h-8 text-orange-500" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Fund Your Account</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">{t.fundYourAccount || 'Fund Your Account'}</h2>
               <p className="text-gray-600 mb-6">
-                You need at least $0.01 worth of ETH to participate in prediction pots. 
+                {t.fundAccountMessage || 'You need at least $0.01 worth of ETH to participate in prediction pots.'} 
                 Current balance: <span className="font-semibold text-red-500">
                   ${ethBalance.data ? ethToUsd(ethBalance.data.value).toFixed(4) : '$0.00'}
                 </span>
@@ -1004,14 +1004,14 @@ useEffect(() => {
                 onClick={() => setActiveSection('receive')}
                 className="w-full bg-purple-700 text-white px-6 py-3 rounded-lg hover:bg-black transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
               >
-                Let's fund your account →
+                {t.letsFundAccount || "Let's fund your account →"}
               </button>
               <div className="mt-4">
                 <button 
                   onClick={() => setActiveSection('home')}
                   className="text-sm text-gray-500 hover:text-black transition-colors"
                 >
-                  ← Back to Home
+                  {t.backToHome || '← Back to Home'}
                 </button>
               </div>
             </div>
@@ -1031,7 +1031,7 @@ useEffect(() => {
             className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
           >
             <span>←</span>
-            <span>Back</span>
+            <span>{t.back || 'Back'}</span>
           </button>
         </div>
 
@@ -1060,7 +1060,7 @@ useEffect(() => {
                       onClick={() => setActiveSection('referralProgram')}
                       className="absolute top-5 md:top-1 right-0 text-xs text-gray-600 hover:text-gray-800 md:hidden z-10"
                     >
-                      Referrals →
+{t.referralProgram || 'Referrals'} →
                     </button>
                   )}
                   
@@ -1072,7 +1072,7 @@ useEffect(() => {
                       onClick={() => setActiveSection('referralProgram')}
                       className="absolute top-5  md:top-1 right-0 text-xs text-gray-600 hover:text-gray-800 hidden md:block z-10"
                     >
-                      Referrals →
+{t.referralProgram || 'Referrals'} →
                     </button>
                   )}
                   {/* <div className="bg-[#ffffff] p-4 rounded-lg border border-[#dedede]">
@@ -1096,8 +1096,8 @@ useEffect(() => {
                 <div className="flex items-center justify-center space-x-3">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#d3c81a]"></div>
                   <div className="text-[#F5F5F5]">
-                    {isPending && 'Waiting for wallet confirmation...'}
-                    {isConfirming && 'Transaction confirming on blockchain...'}
+                    {isPending && (t.waitingWalletConfirmation || 'Waiting for wallet confirmation...')}
+                    {isConfirming && (t.transactionConfirming || 'Transaction confirming on blockchain...')}
                   </div>
                 </div>
                 {txHash && (
@@ -1108,7 +1108,7 @@ useEffect(() => {
                       rel="noopener noreferrer"
                       className="text-[#d3c81a] text-sm hover:underline"
                     >
-                      View on BaseScan →
+                      {t.viewOnBasescan || 'View on BaseScan →'}
                     </a>
                   </div>
                 )}
@@ -1122,16 +1122,16 @@ useEffect(() => {
             <div className="mb-6">
               <div className="bg-white rounded-xl border border-gray-200 p-8 hover:border-gray-300 transition-all duration-300 text-center">
                 <div className="text-2xl font-light text-gray-900 mb-3">
-                  ⚠️ Re-entry Required
+                  {t.reEntryRequired || '⚠️ Re-entry Required'}
                 </div>
                 <div className="text-gray-600 font-light mb-4 leading-relaxed">
-                  You made a wrong prediction in <span className="font-medium">{selectedTableType === 'featured' ? 'Trending' : 'Crypto'}</span> and need to pay <span className="font-medium">today's entry fee</span> to re-enter this specific pot.
+                  {t.reEntryDescription || `You made a wrong prediction in ${selectedTableType === 'featured' ? 'Trending' : 'Crypto'} and need to pay today's entry fee to re-enter this specific pot.`}
                 </div>
                 
                 
                 
                 <div className="text-gray-500 text-sm mb-6 font-light">
-                  Pay the re-entry fee to resume predicting in this pot
+                  {t.payReEntryFee || 'Pay the re-entry fee to resume predicting in this pot'}
                 </div>
                 
                 <button
@@ -1140,8 +1140,8 @@ useEffect(() => {
                   className="px-8 py-3 bg-gray-900 text-white font-light rounded-lg hover:bg-gray-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isActuallyLoading && lastAction === 'reEntry'
-                    ? 'Processing Re-entry...'
-                    : `Pay ${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)} USD to Re-enter`}
+                    ? (t.processingReEntry || 'Processing Re-entry...')
+                    : (t.payToReEnter || `Pay ${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)} USD to Re-enter`)}
                 </button>
                 
                 
@@ -1213,8 +1213,8 @@ useEffect(() => {
                           <span className="text-gray-400 text-lg">⏳</span>
                         </div>
                         <div>
-                          <h3 className="text-gray-600 font-medium text-lg">Loading Tournament Info...</h3>
-                          <p className="text-gray-400 text-sm">Checking tournament status</p>
+                          <h3 className="text-gray-600 font-medium text-lg">{t.loadingTournamentInfo || 'Loading Tournament Info...'}</h3>
+                          <p className="text-gray-400 text-sm">{t.checkingTournamentStatus || 'Checking tournament status'}</p>
                         </div>
                       </div>
                     </div>
@@ -1236,8 +1236,8 @@ useEffect(() => {
                             <span className="text-white text-lg font-bold">✨</span>
                           </div>
                           <div>
-                            <h3 className="text-emerald-900 text-lg font-bold leading-tight">Special Discount Available</h3>
-                            <p className="text-emerald-700/80 text-sm">Congratulations!!!</p>
+                            <h3 className="text-emerald-900 text-lg font-bold leading-tight">{t.specialDiscountAvailable || 'Special Discount Available'}</h3>
+                            <p className="text-emerald-700/80 text-sm">{t.congratulations || 'Congratulations!!!'}</p>
                           </div>
                         </div>
                         
@@ -1245,13 +1245,13 @@ useEffect(() => {
                         <div className="bg-white/60 backdrop-blur-sm p-4 rounded-xl mb-4 border border-emerald-100">
                           <div className="flex items-center justify-between">
                             <div>
-                              <span className="text-gray-500 text-sm line-through">Regular: ${(Number(baseEntryAmount) / 1000000).toFixed(2)} ({formatETH(usdToEth(Number(baseEntryAmount) / 1000000))} ETH)</span>
+                              <span className="text-gray-500 text-sm line-through">{t.regularPrice || 'Regular'}: ${(Number(baseEntryAmount) / 1000000).toFixed(2)} ({formatETH(usdToEth(Number(baseEntryAmount) / 1000000))} ETH)</span>
                               <div className="text-emerald-800 text-xl font-bold">
-                                Your Price: ${(Number(entryAmount) / 1000000).toFixed(2)} ({formatETH(usdToEth(Number(entryAmount) / 1000000))} ETH)
+                                {t.yourPrice || 'Your Price'}: ${(Number(entryAmount) / 1000000).toFixed(2)} ({formatETH(usdToEth(Number(entryAmount) / 1000000))} ETH)
                               </div>
                             </div>
                             <div className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                              SAVE ${((Number(baseEntryAmount) - Number(entryAmount)) / 1000000).toFixed(2)}
+                              {t.saveAmount || 'SAVE'} ${((Number(baseEntryAmount) - Number(entryAmount)) / 1000000).toFixed(2)}
                             </div>
                           </div>
                         </div>
@@ -1269,10 +1269,10 @@ useEffect(() => {
                               ? (
                                 <div className="flex items-center justify-center gap-2">
                                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                  Using Discount...
+                                  {t.usingDiscount || 'Using Discount...'}
                                 </div>
                               )
-                              : `Pay ${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)} USD to Enter`}
+                              : (t.payToEnter || `Pay ${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)} USD to Enter`)}
                           </button>
                           
                         </div>
@@ -1290,8 +1290,8 @@ useEffect(() => {
                           <span className="text-white text-lg">🎯</span>
                         </div>
                         <div>
-                          <h3 className="text-black font-bold text-lg">Join Predictions Tournament</h3>
-                          <p className="text-black text-sm">Compete for the pot</p>
+                          <h3 className="text-black font-bold text-lg">{t.joinPredictionsTournament || 'Join Predictions Tournament'}</h3>
+                          <p className="text-black text-sm">{t.competeForPot || 'Compete for the pot'}</p>
                         </div>
                       </div>
                       
@@ -1305,7 +1305,7 @@ useEffect(() => {
                                 ${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)}
                               </div>
                               <div className="text-green-400 text-sm">
-                              Dynamic Pricing ⚡
+                              {t.dynamicPricing || 'Dynamic Pricing'} ⚡
                               </div>
                             </div>
                           </div>
@@ -1317,11 +1317,11 @@ useEffect(() => {
                       <div className="mb-4">
                         <label className="text-black text-sm mb-2 block flex items-center gap-2">
                           <span>🎁</span>
-                          Referral Code (Optional)
+{t.referralCode || 'Referral Code (Optional)'}
                         </label>
                         <input
                           type="text"
-                          placeholder="Enter code..."
+                          placeholder={t.enterCode || 'Enter code...'}
                           value={inputReferralCode}
                           onChange={(e) => setInputReferralCode(e.target.value.toUpperCase())}
                           className="w-full px-4 py-3 bg-white border-2 border-black rounded-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-700 focus:border-purple-700 transition-all duration-200"
@@ -1339,13 +1339,13 @@ useEffect(() => {
                           ? (
                             <div className="flex items-center gap-2">
                               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                              Processing...
+                              {t.processingYourEntry || 'Processing...'}
                             </div>
                           )
                           : (
                             <>
                               <span>🚀</span>
-                              Enter
+                              {t.enterButton || 'Enter'}
                             </>
                           )}
                       </button>
