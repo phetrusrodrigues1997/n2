@@ -85,15 +85,19 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
             <>
               {/* Backdrop to prevent clicks on background elements */}
               <div 
-                className="fixed inset-0 bg-black bg-opacity-50 z-40"
+                className="fixed inset-0 bg-black bg-opacity-50 z-[60]"
                 onClick={() => setIsMenuOpen(false)}
                 style={{ touchAction: 'none' }}
               />
               {/* Mobile overlay */}
               <div 
                 id="mobile-menu-overlay" 
-                className="fixed top-0 left-0 w-4/5 h-full bg-white z-50 flex flex-col shadow-lg"
+                className="fixed top-0 left-0 w-4/5 h-full bg-white z-[70] flex flex-col shadow-lg"
                 onClick={(e) => e.stopPropagation()}
+                style={{ 
+                  transform: 'translateX(0)',
+                  transition: 'transform 0.3s ease-in-out'
+                }}
               >
               {/* Header with close button */}
               <div className="flex justify-end p-4">
@@ -181,7 +185,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
             </>
           ) : (
             // Desktop dropdown (unchanged)
-            <div className="absolute bg-white top-12 z-50 w-48 mt-2 rounded-md shadow-lg left-0">
+            <div className="absolute bg-white top-12 z-[60] w-48 mt-2 rounded-md shadow-lg left-0 border border-gray-200">
               <div className="py-2">
                 {desktopMenuItems.map((item) => (
                   <button

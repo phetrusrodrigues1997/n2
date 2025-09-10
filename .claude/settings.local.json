@@ -19,7 +19,8 @@
       "Bash(npx tsc:*)",
       "Bash(sed:*)",
       "Bash(npm install:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Read(//c/Users/grasi/Downloads/**)"
     ],
     "deny": [],
     "ask": [],

@@ -478,7 +478,11 @@ export default function App() {
         <header
   className={`z-50 bg-white px-4 md:py-2 sticky top-0 ${
     (activeSection === "home") ? "border-b border-gray-200" : ""
-  } ${isNavigationMenuOpen ? 'pointer-events-none' : ''}`}
+  } ${isNavigationMenuOpen ? 'pointer-events-none isolate' : ''}`}
+  style={{
+    contain: isNavigationMenuOpen ? 'layout style' : 'none',
+    willChange: isNavigationMenuOpen ? 'contents' : 'auto'
+  }}
 >
         <div className="w-full mx-auto flex flex-col">
           {/* Top row with main header elements */}
@@ -540,7 +544,7 @@ export default function App() {
               {/* Balance display removed - ETH balance handled by wallet */}
 
               {/* Right-side button group - adjust positioning based on connection status */}
-              <div className={`flex items-center ml-auto ${isConnected ? '-mr-4 md:-mr-12' : '-mr-2 md:-mr-4'}`}>
+              <div className={`flex items-center ml-auto ${isConnected ? '-mr-4 md:-mr-12' : '-mr-2 md:-mr-4'} ${isNavigationMenuOpen ? 'relative z-10' : ''}`} style={{ contain: isNavigationMenuOpen ? 'layout' : 'none' }}>
                 {/* Tight group: Mobile (Bell first) vs Desktop (Language first) */}
                 <div className="flex items-center gap-0">
                   {/* Bell button - Mobile: leftmost, Desktop: rightmost */}
@@ -653,7 +657,10 @@ export default function App() {
                 </div>
 
                 {/* Wallet container with spacing */}
-                <div className="wallet-container translate-x-0">
+                <div className={`wallet-container translate-x-0 ${isNavigationMenuOpen ? 'relative z-20 transform-gpu' : ''}`} style={{ 
+                  isolation: isNavigationMenuOpen ? 'isolate' : 'auto',
+                  contain: isNavigationMenuOpen ? 'layout style' : 'none'
+                }}>
                 <Wallet>
                   <ConnectWallet
                     text={isMobile ? "Sign In" : "Sign In"}
