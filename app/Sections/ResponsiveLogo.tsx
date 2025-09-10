@@ -37,7 +37,7 @@ const ResponsiveLogo = ({ onClick }: ResponsiveLogoProps) => {
             <span className="text-purple-700">Prediwin</span>
             {/* <span className="text-black">.com</span> */}
            <Image
-  src="/ghostie.png"
+  src="/ghostienobg.png"
   alt="Icon"
   width={38}
   height={26}
@@ -51,7 +51,7 @@ const ResponsiveLogo = ({ onClick }: ResponsiveLogoProps) => {
             <span className="text-purple-700">Prediwin</span>
             {/* <span className="text-black">.com</span> */}
             <Image
-  src="/ghostie.png"
+  src="/ghostienobg.png"
   alt="Icon"
   width={38}
   height={26}

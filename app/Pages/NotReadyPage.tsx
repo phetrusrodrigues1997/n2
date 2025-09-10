@@ -132,7 +132,7 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
               <div className="flex flex-col items-center space-y-6">
                 {/* Ghostie Image */}
                 <img 
-                  src="/ghostie.png" 
+                  src="/ghostienobg.png" 
                   alt="Not ready yet" 
                   className="w-24 h-24 md:w-32 md:h-32 opacity-80"
                 />

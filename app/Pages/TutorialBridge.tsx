@@ -373,7 +373,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                           {t.readyToPlay}
                         </h1>
                         <img
-                          src="/ghostie.png"
+                          src="/ghostienobg.png"
                           alt="Ghostie"
                           className="w-7 h-7 md:w-11 md:h-11 flex-shrink-0"
                         />

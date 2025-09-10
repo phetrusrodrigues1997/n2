@@ -22,7 +22,7 @@
       "Bash(git add:*)",
       "Read(//c/Users/grasi/Downloads/**)",
       "Bash(for size in 72 96 128 144 152 192 384)",
-      "Bash(do cp ghostie.png icon-$sizex$size.png)",
+      "Bash(do cp ghostienobg.png icon-$sizex$size.png)",
       "Bash(done)",
       "Bash(for size in 16 32 180)",
       "Bash(npx cap init:*)",
@@ -31,7 +31,11 @@
       "Bash(npm uninstall:*)",
       "Bash(npx cap:*)",
       "Bash(java:*)",
-      "Bash(./gradlew:*)"
+      "Bash(./gradlew:*)",
+      "Bash(echo $ANDROID_HOME)",
+      "Bash(where android)",
+      "Read(//c/Program Files/**)",
+      "Bash(keytool:*)"
     ],
     "deny": [],
     "ask": [],

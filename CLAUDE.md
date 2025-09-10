@@ -69,6 +69,10 @@ npm start
 
 # Run linter
 npm run lint
+
+# Build Android APK (requires Android SDK)
+cd android && ./gradlew assembleRelease
+# Signed APK output: android/app/build/outputs/apk/release/app-release.apk
 ```
 
 ## Architecture
@@ -190,7 +194,7 @@ The main app component (`app/page.tsx`) uses a section-based navigation system w
 - Drizzle ORM is used for database operations
 - Python script for token launching in `LaunchToken/newtoken.py`
 - **OpenAI Integration**: Uses `OPENAI_API_KEY` environment variable for AI trivia question generation
-- **Branding**: Ghostie.png logo integrated across loading screens (LoadingScreen component and LandingPage loading state)
+- **Branding**: ghostienobg.png logo integrated across loading screens (LoadingScreen component and LandingPage loading state)
 
 ## Key Features
 

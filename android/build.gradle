@@ -15,6 +15,20 @@ buildscript {
     }
 }
 
+// Configure all modules to use Java 17
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
+                }
+            }
+        }
+    }
+}
+
 apply from: "variables.gradle"
 
 allprojects {
