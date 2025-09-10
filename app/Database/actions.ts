@@ -2899,7 +2899,8 @@ export async function sendMinimumPlayersEmail(
 export async function notifyMinimumPlayersReached(
   contractAddress: string, 
   currentParticipants: number,
-  marketType: string = 'market'
+  marketType: string = 'market',
+  participantAddresses: string[] = []
 ) {
   try {
     console.log(`🎯 Sending minimum players reached notification for ${contractAddress}: ${currentParticipants} participants`);
@@ -2914,6 +2915,28 @@ export async function notifyMinimumPlayersReached(
       console.log(`🔄 Minimum players notification: ${result.message}`);
     } else {
       console.log(`✅ Minimum players notification sent successfully (${currentParticipants} participants)`);
+    }
+    
+    // Send email notifications to participants if addresses are provided
+    if (participantAddresses && participantAddresses.length > 0) {
+      try {
+        console.log(`📧 Attempting to send email notifications to ${participantAddresses.length} participants`);
+        
+        // Get email addresses for participants
+        const emails = await getParticipantEmails(participantAddresses);
+        
+        if (emails.length > 0) {
+          // Send email notifications using the existing email function
+          const emailResult = await sendMinimumPlayersEmail(emails, currentParticipants, marketType);
+          
+          console.log(`📧 Email notification result:`, emailResult);
+        } else {
+          console.log(`📧 No email addresses found for participants`);
+        }
+      } catch (emailError) {
+        console.error("❌ Error sending email notifications:", emailError);
+        // Don't let email errors affect the main notification flow
+      }
     }
     
     return result;

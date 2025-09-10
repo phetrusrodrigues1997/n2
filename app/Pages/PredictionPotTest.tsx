@@ -710,7 +710,8 @@ useEffect(() => {
             const notificationResult = await notifyMinimumPlayersReached(
               contractAddress, 
               currentParticipants, 
-              selectedTableType
+              selectedTableType,
+              participants || []
             );
             
             console.log(`✅ Minimum players notification result:`, notificationResult);
@@ -801,7 +802,8 @@ useEffect(() => {
                   const notificationResult = await notifyMinimumPlayersReached(
                     contractAddress, 
                     currentParticipants, 
-                    selectedTableType
+                    selectedTableType,
+                    participants || []
                   );
                   
                   console.log(`✅ Re-entry minimum players notification result:`, notificationResult);
