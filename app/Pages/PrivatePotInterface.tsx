@@ -3,7 +3,8 @@ import { useAccount, useWriteContract, useReadContract, useWaitForTransactionRec
 import { formatUnits, parseEther } from 'viem';
 import { useQueryClient } from '@tanstack/react-query';
 import { getPrice } from '../Constants/getPrice';
-import { TrendingUp, TrendingDown, Users, DollarSign, Calendar, Settings, Share2, ArrowLeft, CheckCircle2, Clock, Vote, Target, Info } from 'lucide-react';
+import { TrendingUp, TrendingDown, Users, DollarSign, Calendar, Settings, Share2, ArrowLeft, CheckCircle2, Clock, Vote, Target, Info, BookOpen, ChevronRight, ChevronLeft, X } from 'lucide-react';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { CustomAlert, useCustomAlert } from '../Components/CustomAlert';
 import LoadingScreen from '../Components/LoadingScreen';
 
@@ -170,6 +171,10 @@ const PrivatePotInterface: React.FC<PrivatePotInterfaceProps> = ({
   const [outcomeVotingStatus, setOutcomeVotingStatus] = useState<any>(null); // Outcome voting status
   const [hasVotedOutcome, setHasVotedOutcome] = useState<any>(null); // Track user's outcome vote
   const [isVotingOutcome, setIsVotingOutcome] = useState(false); // Loading state for outcome voting
+  const [isOutcomeVotingOpen, setIsOutcomeVotingOpen] = useState(false); // Track outcome voting dropdown state
+  const [showTutorial, setShowTutorial] = useState(false); // Show tutorial modal
+  const [tutorialStep, setTutorialStep] = useState(0); // Current tutorial step
+  const [tutorialType, setTutorialType] = useState<'user' | 'owner'>('user'); // Tutorial type
   const { alertState, showAlert, closeAlert } = useCustomAlert();
   
   const { address, isConnected } = useAccount();
@@ -521,6 +526,108 @@ const PrivatePotInterface: React.FC<PrivatePotInterfaceProps> = ({
     setEditingDescription('');
   };
 
+  // Tutorial data
+  const userTutorialSteps = [
+    {
+      title: "Welcome to Private Pots!",
+      content: "Private pots are custom prediction markets created by users. Let's learn how to participate!",
+      icon: <BookOpen className="w-6 h-6" />
+    },
+    {
+      title: "Step 1: Enter the Pot",
+      content: "Pay the entry fee in ETH to join this prediction pot. The entry amount is set by the pot creator.",
+      icon: <DollarSign className="w-6 h-6" />
+    },
+    {
+      title: "Step 2: Make Your Prediction",
+      content: "Choose YES or NO based on what you think will happen. You can update your prediction anytime before the pot owner announces the voting period.",
+      icon: <Target className="w-6 h-6" />
+    },
+    {
+      title: "Step 3: Vote on Outcome",
+      content: "When the pot owner opens voting, participants decide what actually happened. The pot owner should communicate when voting begins and ends.",
+      icon: <Vote className="w-6 h-6" />
+    },
+    {
+      title: "Step 4: Win or Lose",
+      content: "If your prediction matches the majority-voted outcome, you win! Winners split the entire pot equally.",
+      icon: <CheckCircle2 className="w-6 h-6" />
+    },
+    {
+      title: "Ready to Play!",
+      content: "That's it! Private pots are social, fair, and completely transparent. Good luck with your predictions!",
+      icon: <TrendingUp className="w-6 h-6" />
+    }
+  ];
+
+  const ownerTutorialSteps = [
+    {
+      title: "Welcome Pot Creator!",
+      content: "You've created a private pot! Here's how to manage it effectively.",
+      icon: <Settings className="w-6 h-6" />
+    },
+    {
+      title: "Share Your Pot",
+      content: "Use the Share button to get a link and invite friends. More participants = bigger prize pool!",
+      icon: <Share2 className="w-6 h-6" />
+    },
+    {
+      title: "Manage Entry Fee",
+      content: "You can update the entry amount anytime in the Creator Panel. Entry fees are paid in ETH.",
+      icon: <DollarSign className="w-6 h-6" />
+    },
+    {
+      title: "Edit Pot Details",
+      content: "Update the pot name and description to make it clearer for participants what they're predicting.",
+      icon: <Info className="w-6 h-6" />
+    },
+    {
+      title: "Monitor Participation",
+      content: "Watch the participants count and see who has made predictions. Click on participant count for details.",
+      icon: <Users className="w-6 h-6" />
+    },
+    {
+      title: "Manage Voting Timeline",
+      content: "You control when voting begins and ends. Communicate clearly with participants about prediction and voting deadlines to ensure fair participation.",
+      icon: <Vote className="w-6 h-6" />
+    },
+    {
+      title: "Distribute Rewards",
+      content: "When majority outcome is achieved, you can distribute the pot to winners. This sends ETH directly to winner wallets.",
+      icon: <TrendingUp className="w-6 h-6" />
+    },
+    {
+      title: "You're All Set!",
+      content: "Your pot will run automatically! Participants predict, vote on outcome, and winners get paid. Enjoy!",
+      icon: <CheckCircle2 className="w-6 h-6" />
+    }
+  ];
+
+  // Tutorial functions
+  const startTutorial = (type: 'user' | 'owner') => {
+    setTutorialType(type);
+    setTutorialStep(0);
+    setShowTutorial(true);
+  };
+
+  const nextTutorialStep = () => {
+    const steps = tutorialType === 'user' ? userTutorialSteps : ownerTutorialSteps;
+    if (tutorialStep < steps.length - 1) {
+      setTutorialStep(tutorialStep + 1);
+    }
+  };
+
+  const prevTutorialStep = () => {
+    if (tutorialStep > 0) {
+      setTutorialStep(tutorialStep - 1);
+    }
+  };
+
+  const closeTutorial = () => {
+    setShowTutorial(false);
+    setTutorialStep(0);
+  };
+
   
 
   // Handle the two-step distribution process
@@ -735,26 +842,37 @@ const PrivatePotInterface: React.FC<PrivatePotInterfaceProps> = ({
             </div>
             
             {/* Action Buttons */}
-            {(userParticipant || isCreator) && (
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={copyShareUrl}
-                  className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-200 font-medium transition-colors flex items-center justify-center gap-2"
-                >
-                  <Share2 className="w-4 h-4" />
-                  {shareUrlCopied ? 'Copied!' : 'Share'}
-                </button>
-                {isCreator && (
+            <div className="flex flex-col sm:flex-row gap-3">
+              {/* Tutorial button - always visible */}
+              <button
+                onClick={() => startTutorial(isCreator ? 'owner' : 'user')}
+                className="bg-purple-100 text-purple-700 px-4 py-2 rounded-lg hover:bg-purple-200 font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                <BookOpen className="w-4 h-4" />
+                {isCreator ? 'Owner Guide' : 'How to Play'}
+              </button>
+              
+              {(userParticipant || isCreator) && (
+                <>
                   <button
-                    onClick={() => setShowCreatorPanel(!showCreatorPanel)}
-                    className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 font-medium transition-colors flex items-center justify-center gap-2"
+                    onClick={copyShareUrl}
+                    className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-200 font-medium transition-colors flex items-center justify-center gap-2"
                   >
-                    <Settings className="w-4 h-4" />
-                    {showCreatorPanel ? 'Hide' : 'Manage'}
+                    <Share2 className="w-4 h-4" />
+                    {shareUrlCopied ? 'Copied!' : 'Share'}
                   </button>
-                )}
-              </div>
-            )}
+                  {isCreator && (
+                    <button
+                      onClick={() => setShowCreatorPanel(!showCreatorPanel)}
+                      className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 font-medium transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Settings className="w-4 h-4" />
+                      {showCreatorPanel ? 'Hide' : 'Manage'}
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -1031,7 +1149,7 @@ const PrivatePotInterface: React.FC<PrivatePotInterfaceProps> = ({
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Enter Market */}
           {!userParticipant && isAcceptingEntries && (
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6 lg:p-8">
+            <div className={`bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6 lg:p-8 ${!isCreator ? 'lg:col-span-2 lg:max-w-lg lg:mx-auto' : ''}`}>
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">Enter Pot</h2>
               
               <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 space-y-3">
@@ -1046,13 +1164,7 @@ const PrivatePotInterface: React.FC<PrivatePotInterfaceProps> = ({
                   <span className="text-sm sm:text-base font-medium text-gray-900">ETH (wallet balance)</span>
                 </div>
                 
-                {/* ETH Amount Display */}
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-2 pt-2 border-t border-gray-200">
-                  <span className="text-xs sm:text-sm text-gray-500">ETH Amount:</span>
-                  <span className="text-xs sm:text-sm text-gray-700 font-mono break-all">
-                    {formatETH(potDetails?.entryAmount)} ETH
-                  </span>
-                </div>
+                
               </div>
 
               <div>
@@ -1122,105 +1234,130 @@ const PrivatePotInterface: React.FC<PrivatePotInterfaceProps> = ({
 
           {/* Outcome Voting Section - Full Width */}
           {userParticipant && outcomeVotingStatus && (
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 sm:p-8 lg:col-span-2">
-              <div className="text-center mb-6 sm:mb-8">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Target className="w-6 h-6 text-purple-600" />
-                </div>
-                <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">Vote on Outcome</h2>
-                <p className="text-gray-600 text-sm sm:text-base">What outcome do you think this pot should have?</p>
-              </div>
-
-              {/* Outcome Voting Progress */}
-              <div className="max-w-2xl mx-auto mb-6 sm:mb-8">
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="bg-green-50 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-green-800">{outcomeVotingStatus.positiveVotes}</div>
-                    <div className="text-sm text-green-600">YES Votes</div>
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm lg:col-span-2">
+              {/* Dropdown Header */}
+              <button
+                onClick={() => setIsOutcomeVotingOpen(!isOutcomeVotingOpen)}
+                className="w-full px-6 py-4 text-left bg-gray-50 hover:bg-gray-100 transition-colors duration-200 flex justify-between items-center rounded-t-xl"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Target className="w-4 h-4 text-purple-600" />
                   </div>
-                  <div className="bg-purple-100 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-purple-800">{outcomeVotingStatus.negativeVotes}</div>
-                    <div className="text-sm text-purple-700">NO Votes</div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Vote on Outcome</h3>
+                    <p className="text-sm text-gray-600">What outcome do you think this pot should have?</p>
                   </div>
                 </div>
-                
-                <div className="text-center text-sm text-gray-600 mb-4">
-                  {outcomeVotingStatus.majorityAchieved ? (
-                    <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">
-                      ✓ Majority achieved: {outcomeVotingStatus.majorityOutcome?.toUpperCase()}
-                    </span>
-                  ) : (
-                    <span>
-                      {outcomeVotingStatus.totalOutcomeVotes} / {outcomeVotingStatus.requiredVotes} votes for majority
+                <div className="flex items-center gap-2">
+                  {outcomeVotingStatus.majorityAchieved && (
+                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                      ✓ {outcomeVotingStatus.majorityOutcome?.toUpperCase()}
                     </span>
                   )}
+                  {isOutcomeVotingOpen ? (
+                    <FaChevronUp className="text-gray-600 flex-shrink-0" />
+                  ) : (
+                    <FaChevronDown className="text-gray-600 flex-shrink-0" />
+                  )}
                 </div>
-              </div>
+              </button>
+              
+              {/* Dropdown Content */}
+              {isOutcomeVotingOpen && (
+                <div className="p-6 sm:p-8 border-t border-gray-200">
+                  {/* Outcome Voting Progress */}
+                  <div className="max-w-2xl mx-auto mb-6 sm:mb-8">
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="bg-green-50 rounded-lg p-4 text-center">
+                        <div className="text-2xl font-bold text-green-800">{outcomeVotingStatus.positiveVotes}</div>
+                        <div className="text-sm text-green-600">YES Votes</div>
+                      </div>
+                      <div className="bg-purple-100 rounded-lg p-4 text-center">
+                        <div className="text-2xl font-bold text-purple-800">{outcomeVotingStatus.negativeVotes}</div>
+                        <div className="text-sm text-purple-700">NO Votes</div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-center text-sm text-gray-600 mb-4">
+                      {outcomeVotingStatus.majorityAchieved ? (
+                        <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">
+                          ✓ Majority achieved: {outcomeVotingStatus.majorityOutcome?.toUpperCase()}
+                        </span>
+                      ) : (
+                        <span>
+                          {outcomeVotingStatus.totalOutcomeVotes} / {outcomeVotingStatus.requiredVotes} votes for majority
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-              {/* Outcome Vote Buttons */}
-              <div className="text-center">
-                {hasVotedOutcome ? (
-                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 sm:p-8 max-w-md mx-auto">
-                    <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 mx-auto mb-3" />
-                    <h3 className="text-lg sm:text-xl font-semibold text-blue-800 mb-2">Outcome Vote Cast</h3>
-                    <p className="text-blue-700 text-sm sm:text-base">
-                      You voted: <span className="font-bold">{hasVotedOutcome.outcome_vote === 'positive' ? 'YES' : 'NO'}</span>
-                    </p>
-                    <div className="mt-4 space-y-2">
-                      <button
-                        onClick={() => handleOutcomeVote('positive')}
-                        disabled={isVotingOutcome}
-                        className="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:bg-green-400 font-medium transition-colors"
-                      >
-                        {isVotingOutcome ? 'Updating...' : 'Change to YES'}
-                      </button>
-                      <button
-                        onClick={() => handleOutcomeVote('negative')}
-                        disabled={isVotingOutcome}
-                        className="w-full bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-700 disabled:bg-purple-400 font-medium transition-colors"
-                      >
-                        {isVotingOutcome ? 'Updating...' : 'Change to NO'}
-                      </button>
-                    </div>
+                  {/* Outcome Vote Buttons */}
+                  <div className="text-center">
+                    {hasVotedOutcome ? (
+                      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 sm:p-8 max-w-md mx-auto">
+                        <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 mx-auto mb-3" />
+                        <h3 className="text-lg sm:text-xl font-semibold text-blue-800 mb-2">Outcome Vote Cast</h3>
+                        <p className="text-blue-700 text-sm sm:text-base">
+                          You voted: <span className="font-bold">{hasVotedOutcome.outcome_vote === 'positive' ? 'YES' : 'NO'}</span>
+                        </p>
+                        <div className="mt-4 space-y-2">
+                          <button
+                            onClick={() => handleOutcomeVote('positive')}
+                            disabled={isVotingOutcome}
+                            className="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:bg-green-400 font-medium transition-colors"
+                          >
+                            {isVotingOutcome ? 'Updating...' : 'Change to YES'}
+                          </button>
+                          <button
+                            onClick={() => handleOutcomeVote('negative')}
+                            disabled={isVotingOutcome}
+                            className="w-full bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-700 disabled:bg-purple-400 font-medium transition-colors"
+                          >
+                            {isVotingOutcome ? 'Updating...' : 'Change to NO'}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+                          <button
+                            onClick={() => handleOutcomeVote('positive')}
+                            disabled={isVotingOutcome}
+                            className="bg-green-600 text-white px-6 py-4 rounded-lg hover:bg-green-700 disabled:bg-green-400 font-medium transition-all duration-200 flex items-center justify-center gap-2 transform hover:scale-105 disabled:hover:scale-100"
+                          >
+                            {isVotingOutcome ? (
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <>
+                                <TrendingUp className="w-5 h-5" />
+                                <span>Vote YES</span>
+                              </>
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleOutcomeVote('negative')}
+                            disabled={isVotingOutcome}
+                            className="bg-purple-700 text-white px-6 py-4 rounded-lg hover:bg-purple-700 disabled:bg-purple-400 font-medium transition-all duration-200 flex items-center justify-center gap-2 transform hover:scale-105 disabled:hover:scale-100"
+                          >
+                            {isVotingOutcome ? (
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <>
+                                <TrendingDown className="w-5 h-5" />
+                                <span>Vote NO</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                        <p className="text-xs sm:text-sm text-gray-500 max-w-md mx-auto">
+                          Your vote helps determine the final outcome of this pot
+                        </p>
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
-                      <button
-                        onClick={() => handleOutcomeVote('positive')}
-                        disabled={isVotingOutcome}
-                        className="bg-green-600 text-white px-6 py-4 rounded-lg hover:bg-green-700 disabled:bg-green-400 font-medium transition-all duration-200 flex items-center justify-center gap-2 transform hover:scale-105 disabled:hover:scale-100"
-                      >
-                        {isVotingOutcome ? (
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <>
-                            <TrendingUp className="w-5 h-5" />
-                            <span>Vote YES</span>
-                          </>
-                        )}
-                      </button>
-                      <button
-                        onClick={() => handleOutcomeVote('negative')}
-                        disabled={isVotingOutcome}
-                        className="bg-purple-700 text-white px-6 py-4 rounded-lg hover:bg-purple-700 disabled:bg-purple-400 font-medium transition-all duration-200 flex items-center justify-center gap-2 transform hover:scale-105 disabled:hover:scale-100"
-                      >
-                        {isVotingOutcome ? (
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <>
-                            <TrendingDown className="w-5 h-5" />
-                            <span>Vote NO</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                    <p className="text-xs sm:text-sm text-gray-500 max-w-md mx-auto">
-                      Your vote helps determine the final outcome of this pot
-                    </p>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -1325,6 +1462,92 @@ const PrivatePotInterface: React.FC<PrivatePotInterfaceProps> = ({
                 >
                   Close
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tutorial Modal */}
+      {showTutorial && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600">
+                  {(tutorialType === 'user' ? userTutorialSteps : ownerTutorialSteps)[tutorialStep].icon}
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {tutorialType === 'user' ? 'Player Tutorial' : 'Owner Guide'}
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Step {tutorialStep + 1} of {(tutorialType === 'user' ? userTutorialSteps : ownerTutorialSteps).length}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={closeTutorial}
+                className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 p-6">
+              <div className="text-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  {(tutorialType === 'user' ? userTutorialSteps : ownerTutorialSteps)[tutorialStep].title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {(tutorialType === 'user' ? userTutorialSteps : ownerTutorialSteps)[tutorialStep].content}
+                </p>
+              </div>
+              
+              {/* Progress Dots */}
+              <div className="flex justify-center gap-2 mt-8">
+                {(tutorialType === 'user' ? userTutorialSteps : ownerTutorialSteps).map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      index === tutorialStep ? 'bg-purple-600' : 'bg-gray-300'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="border-t border-gray-200 p-6">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={prevTutorialStep}
+                  disabled={tutorialStep === 0}
+                  className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </button>
+                
+                {tutorialStep === (tutorialType === 'user' ? userTutorialSteps : ownerTutorialSteps).length - 1 ? (
+                  <button
+                    onClick={closeTutorial}
+                    className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    Got it!
+                  </button>
+                ) : (
+                  <button
+                    onClick={nextTutorialStep}
+                    className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                )}
               </div>
             </div>
           </div>

@@ -3,6 +3,8 @@
 import { db2, getTableName } from "./db2";
 import { PrivatePots } from "./schema2";
 import { eq, sql } from "drizzle-orm";
+import { parseEther } from "viem";
+import { getPrice } from "../Constants/getPrice";
 
 // Security validation functions
 const isValidEthereumAddress = (address: string): boolean => {
@@ -282,7 +284,7 @@ export async function getWrongPredictors(contractAddress: string) {
 export async function updatePotEntryAmount(
   contractAddress: string,
   creatorAddress: string,
-  entryAmount: number // Amount in USDC micros (e.g., 10000 = 0.01 USDC)
+  entryAmount: number // Amount in USD (e.g., 0.02 for $0.02)
 ) {
   try {
     // Verify the caller is the pot creator
@@ -294,8 +296,24 @@ export async function updatePotEntryAmount(
       return { success: false, error: "Not authorized - only pot creator can update entry amount" };
     }
 
+    // Get current ETH price and convert USD to ETH (wei)
+    const usdToEth = async (usdAmount: number): Promise<bigint> => {
+      try {
+        const currentEthPrice = await getPrice('ETH');
+        const ethAmount = usdAmount / currentEthPrice;
+        return parseEther(ethAmount.toString());
+      } catch (error) {
+        // Fallback to default ETH price if API fails
+        const fallbackEthPrice = 4700;
+        const ethAmount = usdAmount / fallbackEthPrice;
+        return parseEther(ethAmount.toString());
+      }
+    };
+
+    const entryAmountWei = await usdToEth(entryAmount);
+
     await db2.update(PrivatePots)
-      .set({ entryAmount })
+      .set({ entryAmount: entryAmountWei })
       .where(eq(PrivatePots.contractAddress, contractAddress.toLowerCase()));
 
     return { success: true };
