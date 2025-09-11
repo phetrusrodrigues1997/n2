@@ -235,7 +235,8 @@ export async function sendMessage(from: string, to: string, message: string, dat
   return createMessage(from, to, message, datetime);
 }
 
-// Function to get unread messages for a recipient
+// Function to get all messages for a recipient
+// NOTE: Name is legacy - this returns ALL messages, not filtering by read status
 export async function getUnreadMessages(to: string) {
   return db
     .select()
@@ -243,19 +244,8 @@ export async function getUnreadMessages(to: string) {
     .where(and(eq(Messages.to, to)));
 }
 
-// Function to set a message's read status to true
-export async function updateMessageReadStatus(id: number) {
-  return db
-    .update(Messages)
-    .set({ read: true })
-    .where(eq(Messages.id, id))
-    .returning();
-}
-
-// Alias for updateMessageReadStatus to match MessagingPage import
-export async function markAsRead(id: number) {
-  return updateMessageReadStatus(id);
-}
+// Note: Message read status is now tracked client-side with cookies
+// updateMessageReadStatus and markAsRead functions have been removed
 
 // New function to delete a message
 export async function deleteMessage(id: number) {
@@ -2276,7 +2266,6 @@ export async function createAnnouncement(message: string) {
         from: SYSTEM_ANNOUNCEMENT_SENDER,
         to: ANNOUNCEMENT_RECIPIENT,
         message: message,
-        read: false,
         datetime: datetime,
         contractAddress: null,
       })
@@ -2300,7 +2289,6 @@ export async function createContractAnnouncement(message: string, contractAddres
         from: SYSTEM_ANNOUNCEMENT_SENDER,
         to: CONTRACT_PARTICIPANTS,
         message: message,
-        read: false,
         datetime: datetime,
         contractAddress: contractAddress,
       })
@@ -2565,9 +2553,9 @@ export async function getUserParticipatingContracts(userAddress: string) {
 }
 
 /**
- * Gets all announcements for a user (filtering by read status now handled client-side with cookies)
- * Returns all available announcements - client will filter unread ones using cookies
- * NOTE: Despite the name, this now returns ALL announcements, not just unread ones
+ * Gets all announcements for a user
+ * Returns all available announcements - client filters unread ones using cookies
+ * NOTE: Name is legacy - this returns ALL announcements, filtering is done client-side
  */
 export async function getUnreadAnnouncements(userAddress: string) {
   try {
@@ -2615,34 +2603,25 @@ export async function getUnreadAnnouncements(userAddress: string) {
 }
 
 /**
- * Marks announcements as read for a specific user
- * NOTE: This is now handled client-side with cookies. This function exists for API compatibility.
+ * Legacy compatibility function for marking announcements as read
+ * NOTE: Read status is now handled client-side with cookies. This function is a no-op stub.
+ * @deprecated Use markAnnouncementsAsReadCookie from utils/announcementCookies.ts instead
  */
 export async function markAnnouncementsAsRead(userAddress: string, announcementIds: number[]) {
-  try {
-    if (announcementIds.length === 0) {
-      return { success: true };
-    }
-    
-    // Read status is now tracked client-side with cookies
-    // This function is kept for backward compatibility but doesn't perform database operations
-    console.log(`📖 User ${userAddress} read status tracked client-side via cookies (${announcementIds.length} announcements)`);
-    
-    return { success: true };
-  } catch (error) {
-    console.error("Error in markAnnouncementsAsRead:", error);
-    return { success: false };
-  }
+  // This is a no-op function kept for backward compatibility
+  // All read tracking is now done client-side with cookies
+  console.log(`📖 Legacy function called - read status handled client-side (${announcementIds.length} announcements)`);
+  return { success: true };
 }
 
 /**
- * Checks if user has unread announcements
- * NOTE: This now returns all announcements. Client-side cookie filtering determines unread status.
+ * Checks if user has any announcements available
+ * NOTE: Name is legacy - this returns true if ANY announcements exist, client-side filtering determines unread status
  */
 export async function hasUnreadAnnouncements(userAddress: string): Promise<boolean> {
   try {
     const allAnnouncements = await getUnreadAnnouncements(userAddress);
-    // Return true if there are any announcements - client will filter by read status using cookies
+    // Return true if there are any announcements - client filters by read status using cookies
     return allAnnouncements.length > 0;
   } catch (error) {
     console.error("Error checking for announcements:", error);
@@ -2975,9 +2954,26 @@ export async function notifyMinimumPlayersReached(
       };
     }
     
+    // Function to get next calendar day in UTC
+    const getNextCalendarDayUTC = (): string => {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setUTCDate(now.getUTCDate() + 1);
+      
+      const options: Intl.DateTimeFormatOptions = { 
+        weekday: 'long', 
+        month: 'long', 
+        day: 'numeric',
+        timeZone: 'UTC'
+      };
+      
+      return tomorrow.toLocaleDateString('en-US', options);
+    };
+
+    const nextDay = getNextCalendarDayUTC();
     const message = currentParticipants === 2
-      ? `🎉 Great news! Your pot is ready with ${currentParticipants} participants! Starting in 24 hours when the pot officially begins.`
-      : `🎉 Awesome! Your ${marketType} pot is ready with ${currentParticipants} participants! Starting in 24 hours when the pot officially begins.`;
+      ? `🎉 Great news! Your pot is ready with ${currentParticipants} participants! Starting on ${nextDay} when the pot officially begins.`
+      : `🎉 Awesome! Your ${marketType} pot is ready with ${currentParticipants} participants! Starting on ${nextDay} when the pot officially begins.`;
     
     // Create the announcement directly since we've already checked for duplicates
     const announcementResult = await createContractAnnouncement(message, contractAddress);

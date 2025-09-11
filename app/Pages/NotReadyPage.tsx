@@ -22,6 +22,22 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
   const { address } = useAccount();
   const { contractAddresses, participantsData } = useContractData();
 
+  // Function to get next calendar day in UTC
+  const getNextCalendarDayUTC = (): string => {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setUTCDate(now.getUTCDate() + 1);
+    
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'long', 
+      month: 'long', 
+      day: 'numeric',
+      timeZone: 'UTC'
+    };
+    
+    return tomorrow.toLocaleDateString('en-US', options);
+  };
+
   // Pot information state (same as MakePredictionsPage)
   const [potInfo, setPotInfo] = useState<{
     hasStarted: boolean;
@@ -214,7 +230,7 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                       : hasEnoughPlayers && potInfo.hasStarted
                         ? "🚀 This pot is now live and accepting predictions! You shouldn't be seeing this page - try refreshing or navigating back."
                         : hasEnoughPlayers && !potInfo.hasStarted
-                          ? "🎉 Great news! This pot has enough players and is ready to start. Predictions will begin in 24 hours when the pot officially opens!"
+                          ? `🎉 Great news! This pot has enough players and is ready to start. Predictions will begin on ${getNextCalendarDayUTC()} when the pot officially opens!`
                           : "👻 Invite your friends! We'll notify you via email when there are enough players to start the predictions tournament!"
                     }
                   </p>
@@ -240,7 +256,7 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                           <Clock className="w-3 h-3 md:w-4 md:h-4 text-green-600" />
                         </div>
                         <div className="flex items-center gap-1 md:gap-2">
-                          <span className="text-xs md:text-sm text-green-700 font-medium">Ready to start in 24 hours</span>
+                          <span className="text-xs md:text-sm text-green-700 font-medium">Starts {getNextCalendarDayUTC()}</span>
                         </div>
                       </div>
                     ) : (

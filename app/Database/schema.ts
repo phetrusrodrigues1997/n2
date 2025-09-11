@@ -6,7 +6,6 @@ export const Messages = pgTable("Messages", {
   from: text("from").notNull(), // Sender's address or identifier
   to: text("to").notNull(), // Recipient's address or identifier
   message: text("message").notNull(), // The message content
-  read: boolean("read").default(false).notNull(), // Read status, default to false
   datetime: text("datetime").notNull(), // Timestamp of when the message was sent
   contractAddress: text("contract_address"), // Optional: For contract-specific announcements
 });

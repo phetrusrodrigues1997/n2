@@ -323,6 +323,10 @@ export interface Translations {
   evidenceSubmittedAt: string;
   submitEvidence: string;
   evidenceSubmissionTerms: string;
+
+  // Timer Messages
+  entered: string;
+  beginsSoon: string;
   provisional: string;
   actualResult: string;
   processing: string;
@@ -671,6 +675,10 @@ export const translations: Record<Language, Translations> = {
     evidenceSubmittedAt: 'Evidence submitted:',
     submitEvidence: 'Submit Evidence',
     evidenceSubmissionTerms: 'Evidence Submission Terms:',
+
+    // Timer Messages
+    entered: 'Waiting',
+    beginsSoon: 'Begins soon',
     provisional: 'provisional',
     actualResult: 'Actual result',
     processing: 'Processing...',
@@ -1016,6 +1024,10 @@ export const translations: Record<Language, Translations> = {
     evidenceSubmittedAt: 'Evidência enviada:',
     submitEvidence: 'Enviar Evidência',
     evidenceSubmissionTerms: 'Termos de Envio de Evidência:',
+
+    // Timer Messages  
+    entered: 'Aguardando',
+    beginsSoon: 'Inicia em breve',
     provisional: 'provisório',
     actualResult: 'Resultado real',
     processing: 'Processando...',

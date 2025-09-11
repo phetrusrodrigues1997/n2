@@ -24,7 +24,8 @@ export async function POST(request: NextRequest) {
         hasStarted: false,
         isFinalDay: false,
         startedOnDate: null,
-        lastDayDate: null
+        lastDayDate: null,
+        announcementSent: false
       });
     }
 
@@ -33,7 +34,8 @@ export async function POST(request: NextRequest) {
       hasStarted: info.hasStarted,
       isFinalDay: info.isFinalDay,
       startedOnDate: info.startedOnDate,
-      lastDayDate: info.lastDayDate
+      lastDayDate: info.lastDayDate,
+      announcementSent: info.announcementSent || false
     });
 
   } catch (error) {

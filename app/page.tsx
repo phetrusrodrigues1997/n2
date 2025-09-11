@@ -262,7 +262,13 @@ export default function App() {
     }
   }, [isConnected, address]);
 
-  // Clear unread state immediately when user visits announcements page
+  // Function for MessagingPage to notify when announcements are marked as read
+  const onAnnouncementsMarkedAsRead = () => {
+    setHasUnreadAnnouncementsState(false);
+    console.log('📖 Announcements marked as read - clearing notification dot');
+  };
+
+  // Clear unread state when user visits announcements page (immediate UI feedback)
   useEffect(() => {
     if (activeSection === 'messagesPage') {
       setHasUnreadAnnouncementsState(false);
@@ -973,7 +979,7 @@ export default function App() {
         {/* {activeSection === "usernamePage" && <UsernameSetup />} */}
         {activeSection === "receive" && <ReceiveSection activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "profile" && <ProfilePage activeSection={activeSection} setActiveSection={setActiveSection} />}
-        {activeSection === "messagesPage" && <MessagingPage activeSection={activeSection} setActiveSection={setActiveSection} />}
+        {activeSection === "messagesPage" && <MessagingPage activeSection={activeSection} setActiveSection={setActiveSection} onAnnouncementsMarkedAsRead={onAnnouncementsMarkedAsRead} />}
         {activeSection === "discord" && <HowItWorksSection setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {/* {activeSection === "notifications" && <CreateMessage />} */}
         {activeSection === "dashboard" && <TutorialBridge key={currentLanguage} activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}

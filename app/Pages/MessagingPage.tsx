@@ -24,9 +24,10 @@ interface Announcement {
 interface MessagingPageProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
+  onAnnouncementsMarkedAsRead?: () => void;
 }
 
-const MessagingPage = ({ setActiveSection }: MessagingPageProps) => {
+const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead }: MessagingPageProps) => {
   const { address, isConnected } = useAccount();
   
   // Special admin wallet address
@@ -92,6 +93,13 @@ const MessagingPage = ({ setActiveSection }: MessagingPageProps) => {
       const announcementIds = announcements.map(a => a.id);
       // Use cookie-based tracking instead of database
       markAnnouncementsAsReadCookie(announcementIds);
+      
+      // Notify parent component that announcements have been marked as read
+      if (onAnnouncementsMarkedAsRead) {
+        onAnnouncementsMarkedAsRead();
+      }
+      
+      console.log('📖 Marked announcements as read and notified parent component');
     } catch (error) {
       console.error("Error marking announcements as read:", error);
     }

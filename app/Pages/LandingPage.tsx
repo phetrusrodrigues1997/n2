@@ -91,6 +91,13 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   // Elimination status for each market (contract address -> boolean)
   const [eliminationStatus, setEliminationStatus] = useState<Record<string, boolean>>({});
 
+  // Pot information state for each market (contract address -> pot info)
+  const [potInformation, setPotInformation] = useState<Record<string, {
+    hasStarted: boolean;
+    announcementSent: boolean;
+    isFinalDay: boolean;
+  }>>({});
+
   // Vote change loading states
   const [voteChangeLoading, setVoteChangeLoading] = useState<Record<string, boolean>>({});
 
@@ -515,6 +522,57 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
     runPenaltyChecks();
   }, [isConnected, address]);
+
+  // Fetch pot information for all contracts
+  useEffect(() => {
+    const fetchAllPotInformation = async () => {
+      if (contractAddresses.length === 0) return;
+
+      console.log('🔍 Fetching pot information for all contracts...');
+      const newPotInformation: Record<string, { hasStarted: boolean; announcementSent: boolean; isFinalDay: boolean }> = {};
+
+      for (const contractAddress of contractAddresses) {
+        try {
+          const response = await fetch('/api/pot-info', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contractAddress })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            newPotInformation[contractAddress] = {
+              hasStarted: data.hasStarted || false,
+              announcementSent: data.announcementSent || false,
+              isFinalDay: data.isFinalDay || false
+            };
+            console.log(`🔍 Pot info for ${contractAddress}:`, newPotInformation[contractAddress]);
+          } else {
+            console.error(`❌ Failed to fetch pot info for ${contractAddress}`);
+            // Set defaults on error
+            newPotInformation[contractAddress] = {
+              hasStarted: false,
+              announcementSent: false,
+              isFinalDay: false
+            };
+          }
+        } catch (error) {
+          console.error(`❌ Error fetching pot info for ${contractAddress}:`, error);
+          // Set defaults on error
+          newPotInformation[contractAddress] = {
+            hasStarted: false,
+            announcementSent: false,
+            isFinalDay: false
+          };
+        }
+      }
+
+      setPotInformation(newPotInformation);
+      console.log('✅ Pot information loaded for all contracts:', newPotInformation);
+    };
+
+    fetchAllPotInformation();
+  }, [contractAddresses]);
 
   // Handle bookmark toggle
   const handleBookmarkToggle = async (market: any, event: React.MouseEvent) => {
@@ -1494,23 +1552,34 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 const contractAddress = getContractAddress(market.id);
                                 const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
                                 const enoughParticipants = contractAddress ? hasEnoughParticipants(contractAddress) : false;
+                                const potInfo = contractAddress ? potInformation[contractAddress] : null;
 
-                                if (userIsParticipant && enoughParticipants) {
+                                if (userIsParticipant) {
                                   // Check if user is eliminated for this specific market
-                                  const contractAddress = getContractAddress(market.id);
                                   const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
-                                  if (isEliminated) {
+                                  // Priority: Timer > "Begins soon" > "Entered"
+                                  if (potInfo?.hasStarted) {
+                                    // Case 3: Show timer when pot has started
                                     return (
-                                      /* Show timer placeholder for eliminated users - button is positioned as overlay */
-                                      <div className="px-2 py-1 bg-gray-100 text-purple-700 rounded-lg text-xs font-medium flex items-center gap-1">
+                                      <div className={`px-2 py-1 bg-gray-100 rounded-lg text-xs font-medium flex items-center gap-1 ${
+                                        isEliminated ? 'text-gray-500' : 'text-purple-700'
+                                      }`}>
                                         {timeUntilMidnight}
                                       </div>
                                     );
-                                  } else {
+                                  } else if (potInfo?.announcementSent) {
+                                    // Case 2: Show "Begins soon" when announcement sent but not started
                                     return (
-                                      <div className="px-2 py-1 bg-gray-100 text-purple-700 rounded-lg text-xs font-medium flex items-center gap-1">
-                                        {timeUntilMidnight}
+                                      <div className="px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-medium flex items-center gap-1">
+                                        {t.beginsSoon || "Begins soon"}
+                                      </div>
+                                    );
+                                  } else {
+                                    // Case 1: Show "Waiting" when participant but pot not ready
+                                    return (
+                                      <div className="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium flex items-center gap-1">
+                                        {t.entered || "Waiting"}
                                       </div>
                                     );
                                   }
@@ -1988,23 +2057,34 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const contractAddress = getContractAddress(market.id);
                               const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
                               const enoughParticipants = contractAddress ? hasEnoughParticipants(contractAddress) : false;
+                              const potInfo = contractAddress ? potInformation[contractAddress] : null;
 
-                              if (userIsParticipant && enoughParticipants) {
+                              if (userIsParticipant) {
                                 // Check if user is eliminated for this specific market
-                                const contractAddress = getContractAddress(market.id);
                                 const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
-                                if (isEliminated) {
+                                // Priority: Timer > "Begins soon" > "Entered"
+                                if (potInfo?.hasStarted) {
+                                  // Case 3: Show timer when pot has started
                                   return (
-                                    /* Show timer placeholder for eliminated users - button is positioned as overlay */
-                                    <div className="px-2 py-1 bg-gray-100 text-gray-500 rounded-lg text-xs font-medium flex items-center gap-1">
+                                    <div className={`px-2 py-1 bg-gray-100 rounded-lg text-xs font-medium flex items-center gap-1 ${
+                                      isEliminated ? 'text-gray-500' : 'text-purple-700'
+                                    }`}>
                                       {timeUntilMidnight}
                                     </div>
                                   );
-                                } else {
+                                } else if (potInfo?.announcementSent) {
+                                  // Case 2: Show "Begins soon" when announcement sent but not started
                                   return (
-                                    <div className="px-2 py-1 bg-gray-100 text-purple-700 rounded-lg text-xs font-medium flex items-center gap-1">
-                                      {timeUntilMidnight}
+                                    <div className="px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-medium flex items-center gap-1">
+                                      {t.beginsSoon || "Begins soon"}
+                                    </div>
+                                  );
+                                } else {
+                                  // Case 1: Show "Waiting" when participant but pot not ready
+                                  return (
+                                    <div className="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium flex items-center gap-1">
+                                      {t.entered || "Waiting"}
                                     </div>
                                   );
                                 }
@@ -2215,7 +2295,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                       className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
                     >
                       <CheckCircle2 className="w-4 h-4" />
-                      {t.getStarted || "Get Started!"}
+                      {t.startPlaying || "Get Started!"}
                     </button>
                   ) : (
                     <button
