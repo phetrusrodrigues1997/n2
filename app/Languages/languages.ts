@@ -334,11 +334,9 @@ export interface Translations {
   submittingEvidence: string;
   wrongPredictionIn: string;
   payTodaysEntryFee: string;
-  wrongPredictionsRequireReentry: string;
   
   // Date and prediction timing
   predictingForTomorrow: string;
-  resultsWillBeAvailable: string;
   resultsReveal: string;
   tomorrowAtMidnight: string;
   autoSubmittingChoice: string;
@@ -686,11 +684,9 @@ export const translations: Record<Language, Translations> = {
     submittingEvidence: 'Submitting Evidence...',
     wrongPredictionIn: 'Wrong prediction in',
     payTodaysEntryFee: 'Pay today\'s entry fee to continue.',
-    wrongPredictionsRequireReentry: 'Wrong predictions will require a re-entry fee to continue.',
     
     // Date and prediction timing
     predictingForTomorrow: 'Predicting for Tomorrow',
-    resultsWillBeAvailable: 'Results will be available the following day',
     resultsReveal: 'Results Reveal',
     tomorrowAtMidnight: 'Tomorrow at Midnight',
     autoSubmittingChoice: 'Auto-Submitting Your Choice',
@@ -1035,11 +1031,9 @@ export const translations: Record<Language, Translations> = {
     submittingEvidence: 'Enviando Evidência...',
     wrongPredictionIn: 'Previsão errada em',
     payTodaysEntryFee: 'Pague a taxa de entrada de hoje para continuar.',
-    wrongPredictionsRequireReentry: 'Previsões erradas exigirão uma taxa de re-entrada para continuar.',
     
     // Date and prediction timing
     predictingForTomorrow: 'Prevendo para Amanhã',
-    resultsWillBeAvailable: 'Resultados estarão disponíveis no dia seguinte',
     resultsReveal: 'Revelação dos Resultados',
     tomorrowAtMidnight: 'Amanhã à Meia-noite',
     autoSubmittingChoice: 'Enviando Sua Escolha Automaticamente',

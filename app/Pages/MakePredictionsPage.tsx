@@ -176,7 +176,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     // Complete loading after 4 seconds
     const timer = setTimeout(() => {
       setIsInitialLoading(false);
-    }, 5000);
+    }, 6000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -1066,6 +1066,11 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     );
   }
 
+  // Show initial loading screen first
+  if (isInitialLoading) {
+    return <LoadingScreenAdvanced subtitle={t.loadingPredictions || "Loading your predictions..."} />;
+  }
+
   // If user is not a participant in the pot
   if (!isParticipant) {
     return (
@@ -1091,10 +1096,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     );
   }
 
-  // Show initial loading screen first
-  if (isInitialLoading) {
-    return <LoadingScreenAdvanced subtitle={t.loadingPredictions || "Loading your predictions..."} />;
-  }
+  
 
   return (
     <>
@@ -1138,44 +1140,58 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
         <div className="absolute top-2/3 left-1/2 w-32 h-32 bg-gray-600 rounded-full blur-2xl animate-pulse delay-1000"></div>
       </div>
 
-      {/* Eligible Participants Display - Mobile: Top Left, Desktop: Top Right */}
-      <div className="absolute top-16 left-4 md:top-4 md:left-auto md:right-4 z-20">
-        {/* Mobile Version - Match Next Question Timer Style */}
-        <div className="md:hidden bg-white border border-gray-300 rounded-lg px-3 py-2">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
-              <Users className="w-1.5 h-1.5 text-white" />
+      {/* Eligible Participants Display - Mobile: Top Left, Desktop: Top Right - Hidden while loading */}
+      {!(isBetLoading || !isDataLoaded) && (
+        <div className={`absolute top-16 left-4 md:top-4 md:left-auto md:right-4 z-20 ${
+      isMainSectionCollapsed ? "" : "-translate-y-10"
+    }`}>
+          {/* Mobile Version - Match Next Question Timer Style */}
+          <div className="md:hidden bg-white border border-gray-300 rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
+                <Users className="w-1.5 h-1.5 text-white" />
+              </div>
+              <span className={'font-black text-purple-700 text-xs tracking-wider'}>
+                {participantStats.eligibleParticipants}/{participantStats.uniqueAddresses} <span className='text-purple-900'>players left</span>
+              </span>
             </div>
-            <span className="text-gray-700 font-medium text-xs">Players</span>
-            <span className="font-black text-gray-900 text-xs tracking-wider">
-              {participantStats.eligibleParticipants} left/{participantStats.uniqueAddresses} total
-            </span>
+          </div>
+          
+          {/* Desktop Version - Original Design */}
+          <div className="hidden md:inline-flex items-center gap-2 md:gap-3 px-3 py-2 md:px-6 md:py-3 bg-gray-50 rounded-xl md:rounded-2xl border border-gray-200 shadow-lg">
+            <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-purple-100 to-purple-50 rounded-full flex items-center justify-center">
+              <Users className="w-3 h-3 md:w-4 md:h-4 text-purple-600" />
+            </div>
+            <div className="flex items-center gap-1 md:gap-2">
+              <span className="text-lg md:text-2xl font-semibold text-gray-900">{participantStats.eligibleParticipants}</span>
+              <span className="text-xs text-gray-500">left</span>
+              <span className="text-gray-400 text-sm md:text-lg font-light">/</span>
+              <span className="text-md md:text-lg font-medium text-gray-600">{participantStats.uniqueAddresses}</span>
+              <span className="text-xs text-gray-500">total</span>
+            </div>
           </div>
         </div>
-        
-        {/* Desktop Version - Original Design */}
-        <div className="hidden md:inline-flex items-center gap-2 md:gap-3 px-3 py-2 md:px-6 md:py-3 bg-gray-50 rounded-xl md:rounded-2xl border border-gray-200 shadow-lg">
-          <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-purple-100 to-purple-50 rounded-full flex items-center justify-center">
-            <Users className="w-3 h-3 md:w-4 md:h-4 text-purple-600" />
-          </div>
-          <div className="flex items-center gap-1 md:gap-2">
-            <span className="text-lg md:text-2xl font-semibold text-gray-900">{participantStats.eligibleParticipants}</span>
-            <span className="text-xs text-gray-500">left</span>
-            <span className="text-gray-400 text-sm md:text-lg font-light">/</span>
-            <span className="text-md md:text-lg font-medium text-gray-600">{participantStats.uniqueAddresses}</span>
-            <span className="text-xs text-gray-500">total</span>
-          </div>
-        </div>
-      </div>
+      )}
       
       <div className="max-w-lg mx-auto pt-12 relative z-10">
         {(isBetLoading || !isDataLoaded) ? (
-          <div className="bg-white/70 backdrop-blur-xl border border-gray-200/50 rounded-3xl p-10 mb-8 shadow-2xl shadow-gray-900/10 text-center">
-            <div className="inline-flex items-center gap-3 text-gray-600">
-              <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
-              <span className="font-medium">{t.loadingYourBet || "Loading your bet..."}</span>
-            </div>
-          </div>
+           <div className="relative bg-white/80 backdrop-blur-xl border border-purple-200/40 rounded-3xl p-10 mb-8
+  shadow-2xl shadow-purple-900/20 text-center overflow-hidden">
+
+  {/* Subtle gradient glow border */}
+  <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/20 via-purple-300/10 to-purple-500/20 blur-2xl"></div>
+
+  <div className="relative inline-flex items-center gap-3 text-purple-700">
+    {/* Loader: dual ring spinner */}
+    <div className="w-6 h-6 border-2 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+    
+    {/* Animated text */}
+    <span className="font-semibold tracking-wide text-sm animate-pulse">
+      {t.loadingYourBet || "Loading your prediction..."}
+    </span>
+  </div>
+</div>
+
         ) : reEntryFee && reEntryFee > 0 && !potInfo.isFinalDay ? (
           // Re-entry Required Message
           <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8 shadow-sm">
@@ -1638,9 +1654,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                           });
                         })()}
                       </p>
-                      <p className="text-gray-600 text-xs mt-1">
-                        {t.resultsWillBeAvailable || "Results will be available the following day"}
-                      </p>
+                      
                     </div>
 
                     {/* Auto-submission status */}
@@ -1968,9 +1982,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
               <div className="absolute inset-0 bg-gradient-to-r from-gray-900/10 via-transparent to-gray-900/10"></div>
             </div>
             
-            <div className="relative z-10 text-gray-700 text-sm font-bold tracking-wide">
-             {t.wrongPredictionsRequireReentry || "Wrong predictions will require a re-entry fee to continue."}
-            </div>
+            
           </div>
         )}
 

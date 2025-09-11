@@ -1300,14 +1300,20 @@ useEffect(() => {
                   {/* Enter Pot - Only show if no free entries available and not loading and not final day */}
                   {freeEntriesAvailable === 0 && !potInfoLoading && !potInfo.isFinalDay && (
                     <div className="bg-white border-2 border-black rounded-xl p-6 shadow-lg ">
-                      {/* Header with icon */}
+                      {/* Header with icon - responsive text */}
                       <div className="flex items-center gap-3 mb-4">
                         <div className="w-10 h-10 bg-purple-700 rounded-xl flex items-center justify-center">
                           <span className="text-white text-lg">🎯</span>
                         </div>
                         <div>
-                          <h3 className="text-black font-bold text-lg">{t.joinPredictionsTournament || 'Join Predictions Tournament'}</h3>
-                          <p className="text-black text-sm">{t.competeForPot || 'Compete for the pot'}</p>
+                          <h3 className="text-black font-bold text-lg">
+                            <span className="md:hidden">{t.joinTournament || 'Join Tournament'}</span>
+                            <span className="hidden md:block">{t.joinPredictionsTournament || 'Join Predictions Tournament'}</span>
+                          </h3>
+                          <p className="text-black text-sm">
+                            <span className="md:hidden">{t.competeMobile || 'Compete & win'}</span>
+                            <span className="hidden md:block">{t.competeForPot || 'Compete for the pot'}</span>
+                          </p>
                         </div>
                       </div>
                       
@@ -1329,11 +1335,12 @@ useEffect(() => {
                         </div>
                       </div>
                         
-                      {/* Referral Code Input */}
+                      {/* Referral Code Input - responsive text */}
                       <div className="mb-4">
                         <label className="text-black text-sm mb-2 block flex items-center gap-2">
                           <span>🎁</span>
-{t.referralCode || 'Referral Code (Optional)'}
+                          <span className="md:hidden">{t.referralCodeShort || 'Referral Code'}</span>
+                          <span className="hidden md:block">{t.referralCode || 'Referral Code (Optional)'}</span>
                         </label>
                         <input
                           type="text"
@@ -1345,7 +1352,7 @@ useEffect(() => {
                         />
                       </div>
                         
-                      {/* Action button */}
+                      {/* Action button - responsive text */}
                       <button
                         onClick={() => handleEnterPot(false)}
                         disabled={isActuallyLoading}
@@ -1355,13 +1362,15 @@ useEffect(() => {
                           ? (
                             <div className="flex items-center gap-2">
                               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                              {t.processingYourEntry || 'Processing...'}
+                              <span className="md:hidden">{t.processingMobile || 'Processing...'}</span>
+                              <span className="hidden md:block">{t.processingYourEntry || 'Processing...'}</span>
                             </div>
                           )
                           : (
                             <>
                               <span>🚀</span>
-                              {t.enterButton || 'Enter'}
+                              <span className="md:hidden">{t.enterButtonShort || 'Enter'}</span>
+                              <span className="hidden md:block">{t.enterButton || 'Enter'}</span>
                             </>
                           )}
                       </button>
