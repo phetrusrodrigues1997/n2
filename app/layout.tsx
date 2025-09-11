@@ -38,8 +38,8 @@ export const metadata: Metadata = {
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
     'apple-mobile-web-app-title': 'PrediWin',
-    'theme-color': '#7c3aed',
-    'msapplication-TileColor': '#7c3aed',
+    'theme-color': '#ffffff',
+    'msapplication-TileColor': '#ffffff',
     'msapplication-config': '/browserconfig.xml',
   },
 };
