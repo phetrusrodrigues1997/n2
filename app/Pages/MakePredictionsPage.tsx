@@ -4,13 +4,13 @@ import { formatUnits, parseEther } from 'viem';
 import { placeBitcoinBet, getTomorrowsBet, getTodaysBet, getReEntryFee, submitEvidence, getUserEvidenceSubmission, getAllEvidenceSubmissions, processReEntry, notifyMinimumPlayersReached } from '../Database/actions';
 import { getUserPredictionsByContract, getUserPredictionsWithResults } from '../Database/actions3';
 import { getProvisionalOutcome, } from '../Database/OwnerActions';
-import { TrendingUp, TrendingDown, Shield, Zap, AlertTriangle, Clock, FileText, Upload, ChevronDown, ChevronUp, Eye, Trophy } from 'lucide-react';
+import { TrendingUp, TrendingDown, Shield, Zap, AlertTriangle, Clock, FileText, Upload, ChevronDown, ChevronUp, Eye, Trophy, Users } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { getMarkets } from '../Constants/markets';
 import { getTranslation, Language, translateMarketQuestion } from '../Languages/languages';
 import { getPrice } from '../Constants/getPrice';
 import { useQueryClient } from '@tanstack/react-query';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, BASE_ENTRY_FEE, calculateEntryFee } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, BASE_ENTRY_FEE, calculateEntryFee, loadWrongPredictionsData, calculateParticipantStats } from '../Database/config';
 import LoadingScreenAdvanced from '../Components/LoadingScreenAdvanced';
 
 
@@ -127,7 +127,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   const [todaysBet, setTodaysBet] = useState<TodaysBet | null>(null);
   const [isBetLoading, setIsBetLoading] = useState<boolean>(true);
   const [contractAddress, setContractAddress] = useState<string>('');
-  const [selectedTableType, setSelectedTableType] = useState<TableType>('featured');
+  const [selectedTableType, setSelectedTableType] = useState<TableType | null>(null);
   const [reEntryFee, setReEntryFee] = useState<number | null>(null);
   const [allReEntryFees, setAllReEntryFees] = useState<{market: string, fee: number}[]>([]);
   const [marketQuestion, setMarketQuestion] = useState<string>(''); // Original English question for database operations
@@ -190,7 +190,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
   useEffect(() => {
   const checkFinalDayRedirect = async () => {
-    if (potInfo.isFinalDay && address) {
+    if (potInfo.isFinalDay && address && selectedTableType) {
       const fee = await getReEntryFee(address, selectedTableType);
       if (fee && fee > 0) {
         console.log(`🚫 Final day detected with elimination - redirecting ${address} to NotReadyPage`);
@@ -232,6 +232,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   // New state for collapsible sections and prediction history
   const [isMainSectionCollapsed, setIsMainSectionCollapsed] = useState<boolean>(true); // Start closed by default
   const [showFinalDayPopup, setShowFinalDayPopup] = useState<boolean>(false);
+  const [isPredictionHistoryCollapsed, setIsPredictionHistoryCollapsed] = useState<boolean>(true); // Start closed by default
   const [predictionHistory, setPredictionHistory] = useState<Array<{
     questionName: string;
     prediction: 'positive' | 'negative';
@@ -241,6 +242,16 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     actualOutcome?: string;
     isProvisional?: boolean;
   }>>([]);
+
+  // Wrong predictions and participant statistics state
+  const [wrongPredictionsAddresses, setWrongPredictionsAddresses] = useState<string[]>([]);
+  const [participantStats, setParticipantStats] = useState({
+    totalEntries: 0,
+    uniqueAddresses: 0,
+    eligibleParticipants: 0,
+    uniqueParticipantsList: [] as string[],
+    eligibleParticipantsList: [] as string[]
+  });
   
   // Wait for transaction receipt
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
@@ -463,21 +474,29 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     setSelectedMarketForVoting(marketForVoting || null);
     console.log('Loaded voting preference:', preference, 'for market:', marketForVoting);
     
+    console.log('🍪 MakePredictionsPage - Cookie initialization:', {
+      savedContract,
+      tableMapping,
+      isValidContract: savedContract && tableMapping[savedContract as keyof typeof tableMapping]
+    });
+
     // Validate contract address is in our allowed list
     if (savedContract && tableMapping[savedContract as keyof typeof tableMapping]) {
       setContractAddress(savedContract);
       const tableType = tableMapping[savedContract as keyof typeof tableMapping];
       setSelectedTableType(tableType);
+      console.log('✅ Set selectedTableType from cookie:', tableType, 'for contract:', savedContract);
       // Fetch pot information for the contract
       fetchPotInfo(savedContract);
     } else {
       // Fallback to default contract if no valid cookie is found
       const defaultContract = '0x4Ff2bBB26CC30EaD90251dd224b641989Fa24e22';
       setContractAddress(defaultContract);
-      setSelectedTableType('featured');
+      setSelectedTableType('featured' as TableType);
+      console.log('🔧 Set selectedTableType to default: featured for contract:', defaultContract);
+      console.log('No valid contract cookie found, using default');
       // Fetch pot information for the default contract
       fetchPotInfo(defaultContract);
-      console.log('No valid contract cookie found, using default');
     }
   }, []);
 
@@ -627,6 +646,56 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     autoSubmitPrediction();
   }, [votingPreference, selectedMarketForVoting, address, isParticipant, tomorrowsBet, isDataLoaded, isLoading, hasAutoSubmitted, participants, contractAddress]);
 
+  // Load wrong predictions data and calculate participant statistics
+  useEffect(() => {
+    console.log('🔍 MakePredictionsPage - useEffect triggered:', {
+      selectedTableType,
+      participants: participants?.length || 0,
+      participantsArray: participants,
+      contractAddress
+    });
+
+    const loadWrongPredictionsAndStats = async () => {
+      if (!selectedTableType || !contractAddress) {
+        console.log('❌ selectedTableType or contractAddress is null/undefined, skipping load:', {
+          selectedTableType,
+          contractAddress
+        });
+        return;
+      }
+      
+      console.log('🔄 Loading wrong predictions data for:', selectedTableType);
+      
+      try {
+        const addresses = await loadWrongPredictionsData(selectedTableType);
+        setWrongPredictionsAddresses(addresses);
+        
+        console.log('✅ Wrong predictions loaded:', addresses);
+        
+        // Calculate participant statistics
+        const stats = calculateParticipantStats(participants, addresses);
+        setParticipantStats(stats);
+        
+        console.log(`📊 MakePredictionsPage - Participant Stats for ${selectedTableType}:`, {
+          selectedTableType,
+          participantsInput: participants,
+          wrongPredictions: addresses.length,
+          stats: {
+            totalEntries: stats.totalEntries,
+            uniqueAddresses: stats.uniqueAddresses,
+            eligibleParticipants: stats.eligibleParticipants,
+            uniqueParticipantsList: stats.uniqueParticipantsList,
+            eligibleParticipantsList: stats.eligibleParticipantsList
+          }
+        });
+      } catch (error) {
+        console.error('❌ Error loading wrong predictions data:', error);
+      }
+    };
+
+    loadWrongPredictionsAndStats();
+  }, [selectedTableType, participants, contractAddress]);
+
   // Load user's evidence submission if any - now takes outcomeDate parameter to avoid race condition
   const loadUserEvidenceSubmission = useCallback(async (outcomeDate: string) => {
     if (!address || !selectedTableType) return null;
@@ -772,6 +841,10 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       const completeReEntry = async () => {
         try {
           // Remove user from wrong predictions table
+          if (!selectedTableType) {
+            console.error('Cannot process re-entry: selectedTableType is null');
+            return;
+          }
           const success = await processReEntry(address!, selectedTableType);
           console.log('SELECTED TABLE TYPE FOR RE-ENTRY:', selectedTableType);
           if (success) {
@@ -827,6 +900,11 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     setIsLoading(true);
     try {
       // Pass the table type string instead of the table object, include the market question and contract address
+      if (!selectedTableType) {
+        console.error('Cannot place bet: selectedTableType is null');
+        setIsLoading(false);
+        return;
+      }
       await placeBitcoinBet(address, prediction, selectedTableType, marketQuestion, contractAddress);
       
       
@@ -1059,6 +1137,36 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
         <div className="absolute bottom-1/3 right-1/6 w-48 h-48 bg-gray-700 rounded-full blur-3xl animate-pulse delay-700"></div>
         <div className="absolute top-2/3 left-1/2 w-32 h-32 bg-gray-600 rounded-full blur-2xl animate-pulse delay-1000"></div>
       </div>
+
+      {/* Eligible Participants Display - Mobile: Top Left, Desktop: Top Right */}
+      <div className="absolute top-16 left-4 md:top-4 md:left-auto md:right-4 z-20">
+        {/* Mobile Version - Match Next Question Timer Style */}
+        <div className="md:hidden bg-white border border-gray-300 rounded-lg px-3 py-2">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
+              <Users className="w-1.5 h-1.5 text-white" />
+            </div>
+            <span className="text-gray-700 font-medium text-xs">Players</span>
+            <span className="font-black text-gray-900 text-xs tracking-wider">
+              {participantStats.eligibleParticipants} left/{participantStats.uniqueAddresses} total
+            </span>
+          </div>
+        </div>
+        
+        {/* Desktop Version - Original Design */}
+        <div className="hidden md:inline-flex items-center gap-2 md:gap-3 px-3 py-2 md:px-6 md:py-3 bg-gray-50 rounded-xl md:rounded-2xl border border-gray-200 shadow-lg">
+          <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-purple-100 to-purple-50 rounded-full flex items-center justify-center">
+            <Users className="w-3 h-3 md:w-4 md:h-4 text-purple-600" />
+          </div>
+          <div className="flex items-center gap-1 md:gap-2">
+            <span className="text-lg md:text-2xl font-semibold text-gray-900">{participantStats.eligibleParticipants}</span>
+            <span className="text-xs text-gray-500">left</span>
+            <span className="text-gray-400 text-sm md:text-lg font-light">/</span>
+            <span className="text-md md:text-lg font-medium text-gray-600">{participantStats.uniqueAddresses}</span>
+            <span className="text-xs text-gray-500">total</span>
+          </div>
+        </div>
+      </div>
       
       <div className="max-w-lg mx-auto pt-12 relative z-10">
         {(isBetLoading || !isDataLoaded) ? (
@@ -1078,7 +1186,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
               
               <h2 className="text-xl font-semibold text-gray-900 mb-2">{t.reentryRequired || "Re-entry Required"}</h2>
               <p className="text-gray-600 text-sm mb-6">
-{t.wrongPredictionIn || "Wrong prediction in"} {getMarketDisplayName(selectedTableType)}. {t.payTodaysEntryFee || "Pay today's entry fee to continue."}
+{t.wrongPredictionIn || "Wrong prediction in"} {selectedTableType ? getMarketDisplayName(selectedTableType) : 'this market'}. {t.payTodaysEntryFee || "Pay today's entry fee to continue."}
               </p>
               
               <button
@@ -1696,108 +1804,129 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
           </div>
         )}
 
-        {/* Prediction History Dashboard */}
+        {/* Prediction History Dashboard - Collapsible */}
         {predictionHistory.length > 0 && (
-          <div className="bg-gradient-to-br from-white via-purple-50/20 to-white border border-gray-200/50 rounded-3xl p-6 mb-8 shadow-lg">
-            <div className="mb-6">
-              <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight">Prediction History</h3>
-            </div>
-            
-            <div className="space-y-3">
-              {predictionHistory.slice(0, 5).map((prediction, index) => (
-                <div 
-                  key={index}
-                  className="bg-white border border-gray-100 rounded-2xl p-4 hover:border-purple-200 hover:shadow-md transition-all duration-200"
-                >
-                  <div className="flex items-center gap-4">
-                    {/* Prediction Icon */}
-                    <div className={`p-2 rounded-xl ${
-                      prediction.prediction === 'positive' 
-                        ? 'bg-gradient-to-br from-purple-600 to-purple-700' 
-                        : 'bg-gradient-to-br from-gray-600 to-gray-700'
-                    }`}>
-                      {prediction.prediction === 'positive' ? (
-                        <TrendingUp className="w-4 h-4 text-white" />
-                      ) : (
-                        <TrendingDown className="w-4 h-4 text-white" />
-                      )}
-                    </div>
-                    
-                    {/* Prediction Details */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className={`font-black text-base ${
-                          prediction.prediction === 'positive' ? 'text-purple-700' : 'text-gray-700'
-                        }`}>
-                          {prediction.prediction === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
-                        </span>
-                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium">
-                          {new Date(prediction.predictionDate).toLocaleDateString(currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-US', { 
-                            month: 'short', 
-                            day: 'numeric'
-                          })}
-                        </span>
-                      </div>
-                      <p className="text-gray-700 text-sm font-medium line-clamp-1 mb-1">
-                        {prediction.questionName}
-                      </p>
-                      <p className="text-gray-400 text-xs">
-                        {new Date(prediction.createdAt).toLocaleDateString(currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-US')} • {' '}
-                        {new Date(prediction.createdAt).toLocaleTimeString(currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-GB', {
-                          hour: '2-digit', 
-                          minute: '2-digit'
-                        })}
-                      </p>
-                    </div>
-
-                    {/* Result Status */}
-                    <div className="flex-shrink-0">
-                      {prediction.status === 'correct' && (
-                        <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                          <span>✓</span> Correct
-                          {prediction.isProvisional && (
-                            <span className="text-green-600 ml-1">*</span>
-                          )}
-                        </div>
-                      )}
-                      {prediction.status === 'incorrect' && (
-                        <div className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                          <span>✗</span> Wrong
-                          {prediction.isProvisional && (
-                            <span className="text-red-600 ml-1">*</span>
-                          )}
-                        </div>
-                      )}
-                      {prediction.status === 'pending' && (
-                        <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> Pending
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Additional Result Details */}
-                  {prediction.actualOutcome && prediction.status !== 'pending' && (
-                    <div className="mt-2 pt-2 border-t border-gray-100">
-                      <p className="text-xs text-gray-500">
-                        Actual result: <span className="font-medium text-gray-700">
-                          {prediction.actualOutcome === 'positive' ? 'Positive' : 'Negative'}
-                        </span>
-                        {prediction.isProvisional && (
-                          <span className="text-gray-400 ml-1">(provisional)</span>
-                        )}
-                      </p>
-                    </div>
-                  )}
+          <div className="bg-gradient-to-br from-white via-purple-50/20 to-white border border-gray-200/50 rounded-3xl mb-8 shadow-lg overflow-hidden">
+            {/* Collapsible Header */}
+            <div 
+              className="cursor-pointer hover:bg-purple-50/50 p-6 transition-colors duration-200"
+              onClick={() => setIsPredictionHistoryCollapsed(!isPredictionHistoryCollapsed)}
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-black text-gray-900 tracking-tight">Prediction History</h3>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500 font-medium">
+                    {predictionHistory.length} prediction{predictionHistory.length !== 1 ? 's' : ''}
+                  </span>
+                  <ChevronDown 
+                    className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
+                      isPredictionHistoryCollapsed ? 'transform rotate-0' : 'transform rotate-180'
+                    }`} 
+                  />
                 </div>
-              ))}
+              </div>
             </div>
             
-            {predictionHistory.length > 5 && (
-              <div className="mt-4 pt-4 border-t border-gray-100 text-center">
-                <p className="text-gray-500 text-xs font-medium">
-                  Showing latest 5 of {predictionHistory.length} predictions
-                </p>
+            {/* Collapsible Content */}
+            {!isPredictionHistoryCollapsed && (
+              <div className="px-6 pb-6">
+                <div className="space-y-3">
+                  {predictionHistory.slice(0, 5).map((prediction, index) => (
+                    <div 
+                      key={index}
+                      className="bg-white border border-gray-100 rounded-2xl p-4 hover:border-purple-200 hover:shadow-md transition-all duration-200"
+                    >
+                      <div className="flex items-center gap-4">
+                        {/* Prediction Icon */}
+                        <div className={`p-2 rounded-xl ${
+                          prediction.prediction === 'positive' 
+                            ? 'bg-gradient-to-br from-purple-600 to-purple-700' 
+                            : 'bg-gradient-to-br from-gray-600 to-gray-700'
+                        }`}>
+                          {prediction.prediction === 'positive' ? (
+                            <TrendingUp className="w-4 h-4 text-white" />
+                          ) : (
+                            <TrendingDown className="w-4 h-4 text-white" />
+                          )}
+                        </div>
+                        
+                        {/* Prediction Details */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 mb-1">
+                            <span className={`font-black text-base ${
+                              prediction.prediction === 'positive' ? 'text-purple-700' : 'text-gray-700'
+                            }`}>
+                              {prediction.prediction === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
+                            </span>
+                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium">
+                              {new Date(prediction.predictionDate).toLocaleDateString(currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-US', { 
+                                month: 'short', 
+                                day: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                          <p className="text-gray-700 text-sm font-medium line-clamp-1 mb-1">
+                            {prediction.questionName}
+                          </p>
+                          <p className="text-gray-400 text-xs">
+                            {new Date(prediction.createdAt).toLocaleDateString(currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-US')} • {' '}
+                            {new Date(prediction.createdAt).toLocaleTimeString(currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-GB', {
+                              hour: '2-digit', 
+                              minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
+
+                        {/* Result Status */}
+                        <div className="flex-shrink-0">
+                          {prediction.status === 'correct' && (
+                            <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                              <span>✓</span> Correct
+                              {prediction.isProvisional && (
+                                <span className="text-green-600 ml-1">*</span>
+                              )}
+                            </div>
+                          )}
+                          {prediction.status === 'incorrect' && (
+                            <div className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                              <span>✗</span> Wrong
+                              {prediction.isProvisional && (
+                                <span className="text-red-600 ml-1">*</span>
+                              )}
+                            </div>
+                          )}
+                          {prediction.status === 'pending' && (
+                            <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                              <Clock className="w-3 h-3" /> Pending
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Additional Result Details */}
+                      {prediction.actualOutcome && prediction.status !== 'pending' && (
+                        <div className="mt-2 pt-2 border-t border-gray-100">
+                          <p className="text-xs text-gray-500">
+                            Actual result: <span className="font-medium text-gray-700">
+                              {prediction.actualOutcome === 'positive' ? 'Positive' : 'Negative'}
+                            </span>
+                            {prediction.isProvisional && (
+                              <span className="text-gray-400 ml-1">(provisional)</span>
+                            )}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                
+                {predictionHistory.length > 5 && (
+                  <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+                    <p className="text-gray-500 text-xs font-medium">
+                      Showing latest 5 of {predictionHistory.length} predictions
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>

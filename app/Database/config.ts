@@ -225,3 +225,79 @@ export const getTimeUntilMidnight = (): string => {
     return formatTime(timeLeft);
   }
 };
+
+// ========================================
+// PARTICIPANT ANALYTICS UTILITIES
+// ========================================
+
+/**
+ * Load wrong predictions data for a specific table type
+ * Centralized function to fetch wrong prediction addresses
+ */
+export const loadWrongPredictionsData = async (tableType: string): Promise<string[]> => {
+  try {
+    const response = await fetch('/api/wrong-predictions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ tableType }),
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      const addresses = data.wrongPredictions?.map((wp: any) => wp.walletAddress) || [];
+      console.log(`📊 Loaded ${addresses.length} wrong prediction addresses for ${tableType}`);
+      return addresses;
+    } else {
+      console.error('Failed to fetch wrong predictions:', response.statusText);
+      return [];
+    }
+  } catch (error) {
+    console.error('Error loading wrong predictions data:', error);
+    return [];
+  }
+};
+
+/**
+ * Calculate participant statistics from participants array and wrong predictions
+ * @param participants - Array of participant addresses (may contain duplicates)
+ * @param wrongPredictionsAddresses - Array of addresses with wrong predictions
+ * @returns Object with total, unique, and eligible participant counts
+ */
+export const calculateParticipantStats = (
+  participants: string[] | undefined,
+  wrongPredictionsAddresses: string[]
+): {
+  totalEntries: number;
+  uniqueAddresses: number;
+  eligibleParticipants: number;
+  uniqueParticipantsList: string[];
+  eligibleParticipantsList: string[];
+} => {
+  if (!participants || participants.length === 0) {
+    return {
+      totalEntries: 0,
+      uniqueAddresses: 0,
+      eligibleParticipants: 0,
+      uniqueParticipantsList: [],
+      eligibleParticipantsList: []
+    };
+  }
+
+  // Get unique participants
+  const uniqueParticipantsList = [...new Set(participants)];
+  
+  // Filter out those with wrong predictions (case insensitive)
+  const eligibleParticipantsList = uniqueParticipantsList.filter(addr => 
+    !wrongPredictionsAddresses.includes(addr.toLowerCase())
+  );
+
+  return {
+    totalEntries: participants.length,
+    uniqueAddresses: uniqueParticipantsList.length,
+    eligibleParticipants: eligibleParticipantsList.length,
+    uniqueParticipantsList,
+    eligibleParticipantsList
+  };
+};

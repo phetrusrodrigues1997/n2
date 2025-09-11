@@ -20,7 +20,7 @@ import {
   removeBookmark,
 } from '../Database/actions';
 import { recordPotEntry,clearPotParticipationHistory } from '../Database/actions3';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, calculateEntryFee, getMinimumPlayersForContract, checkMinimumPlayersThreshold } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, calculateEntryFee, getMinimumPlayersForContract, checkMinimumPlayersThreshold, loadWrongPredictionsData } from '../Database/config';
 import { updateWinnerStats } from '../Database/OwnerActions';
 import { clear } from 'console';
 import LoadingScreenAdvanced from '../Components/LoadingScreenAdvanced';
@@ -151,6 +151,7 @@ const PredictionPotTest =  ({ activeSection, setActiveSection }: PredictionPotPr
   const [reEntryFee, setReEntryFee] = useState<number | null>(null);
   const [allReEntryFees, setAllReEntryFees] = useState<{market: string, fee: number}[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
+  const [wrongPredictionsAddresses, setWrongPredictionsAddresses] = useState<string[]>([]);
   
   
   // Note: Countdown states kept for potential future use
@@ -325,6 +326,17 @@ const PredictionPotTest =  ({ activeSection, setActiveSection }: PredictionPotPr
     }
   }, [address, selectedTableType]);
 
+  // Load wrong predictions data when table type changes
+  useEffect(() => {
+    if (selectedTableType) {
+      const loadData = async () => {
+        const addresses = await loadWrongPredictionsData(selectedTableType);
+        setWrongPredictionsAddresses(addresses);
+      };
+      loadData();
+    }
+  }, [selectedTableType]);
+
   // Initial loading screen effect with progressive steps
   useEffect(() => {
     // Complete loading after 4 seconds (same duration as LoadingScreenAdvanced)
@@ -380,11 +392,15 @@ const PredictionPotTest =  ({ activeSection, setActiveSection }: PredictionPotPr
       // Note: getAllReEntryFees was removed since we now use dynamic pricing
       setAllReEntryFees([]);
       
+      // Load wrong predictions addresses for current table type
+      const addresses = await loadWrongPredictionsData(selectedTableType);
+      setWrongPredictionsAddresses(addresses);
       
     } catch (error) {
       console.error("Error loading referral data:", error);
     }
   };
+
 
   
 
@@ -1418,6 +1434,49 @@ useEffect(() => {
           />
           <span className="text-sm text-[#cc0000]">Is Final Day</span>
         </label>
+      </div>
+    </div>
+    
+    {/* Participants Dropdown */}
+    <div className="bg-[#2C2C47] p-4 rounded-lg mb-4 border-2 border-cyan-500">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-[#F5F5F5] font-medium">👥 Pot Participants</h3>
+        <div className="text-sm font-semibold space-x-3">
+          <span className="text-red-500">
+            {participants ? Array.from(new Set(participants)).length : 0} unique
+          </span>
+          <span className="text-green-500">
+            {participants ? 
+              Array.from(new Set(participants)).filter(addr => 
+                !wrongPredictionsAddresses.includes(addr.toLowerCase())
+              ).length : 0} eligible
+          </span>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <div className="text-sm text-[#A0A0B0]">
+          {participants?.length || 0} total entries • {participants ? Array.from(new Set(participants)).length : 0} unique addresses • {participants ? 
+            Array.from(new Set(participants)).filter(addr => 
+              !wrongPredictionsAddresses.includes(addr.toLowerCase())
+            ).length : 0} eligible to predict
+        </div>
+        {participants && participants.length > 0 ? (
+          <select 
+            className="w-full px-3 py-2 bg-black/50 border border-cyan-500 rounded-md text-[#F5F5F5] focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            defaultValue=""
+          >
+            <option value="" disabled className="bg-black text-[#888888]">
+              Select participant to view address
+            </option>
+            {Array.from(new Set(participants)).map((participant, index) => (
+              <option key={participant} value={participant} className="bg-black text-[#F5F5F5]">
+                Participant {index + 1}: {participant}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <div className="text-[#888888] text-sm italic">No participants yet</div>
+        )}
       </div>
     </div>
     
