@@ -494,7 +494,7 @@ export default function App() {
           <div className="flex justify-between items-center mt-3 md:mt-0">
             <div className="flex items-center flex-1">
               {/* Hamburger menu - shows on both desktop and mobile at left edge */}
-              <div className="">
+              <div className="translate-x-3 md:translate-x-0">
                 <NavigationMenu 
                   activeSection={activeSection} 
                   setActiveSection={setActiveSection} 
@@ -505,7 +505,7 @@ export default function App() {
               </div>
 
               {/* Logo */}
-              <div className="relative -ml-2">
+              <div className="relative -ml-2 translate-x-3 md:translate-x-0">
                 <div className="absolute -inset-1 rounded-full blur-md"></div>
                 <ResponsiveLogo onClick={() => setActiveSection('home')} />
               </div>
