@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAccount } from 'wagmi';
 import { Copy, Check, QrCode, Wallet, ArrowLeft } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ReceiveSectionProps {
   activeSection?: string;
@@ -10,6 +11,16 @@ interface ReceiveSectionProps {
 const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiveSection }) => {
   const { address, isConnected } = useAccount();
   const [copied, setCopied] = useState(false);
+  const queryClient = useQueryClient();
+
+  // Refresh balance when component mounts
+  useEffect(() => {
+    if (isConnected && address) {
+      console.log('🔄 ReceivePage: Refreshing balance in header');
+      queryClient.invalidateQueries({ queryKey: ['balance'] });
+      queryClient.invalidateQueries({ queryKey: ['readContract'] });
+    }
+  }, [isConnected, address, queryClient]);
 
   const copyAddressToClipboard = async () => {
     if (address) {

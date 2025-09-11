@@ -221,6 +221,9 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   const [isReEntryLoading, setIsReEntryLoading] = useState<boolean>(false);
   const [ethPrice, setEthPrice] = useState<number | null>(null);
 
+  // Announcement sending state to prevent race conditions
+  const [isSendingAnnouncement, setIsSendingAnnouncement] = useState<boolean>(false);
+
   // Voting preference from cookies
   const [votingPreference, setVotingPreference] = useState<string | null>(null);
   const [selectedMarketForVoting, setSelectedMarketForVoting] = useState<string | null>(null);
@@ -546,10 +549,11 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       });
       
       // Send notification if minimum players reached
-      // The notification system has built-in deduplication to prevent spam
-      if (currentParticipants >= minPlayersRequired) {
+      // The notification system has database-level deduplication to prevent spam
+      if (currentParticipants >= minPlayersRequired && !isSendingAnnouncement) {
         try {
           console.log(`🎯 Minimum players reached! Sending notification from MakePredictionsPage...`);
+          setIsSendingAnnouncement(true);
           
           const tableType = CONTRACT_TO_TABLE_MAPPING[contractAddress as keyof typeof CONTRACT_TO_TABLE_MAPPING];
           const notificationResult = await notifyMinimumPlayersReached(
@@ -562,6 +566,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
           console.log(`✅ MakePredictionsPage notification result:`, notificationResult);
         } catch (error) {
           console.error(`❌ Error sending minimum players notification from MakePredictionsPage:`, error);
+        } finally {
+          setIsSendingAnnouncement(false);
         }
       } else {
         console.log(`📊 Not enough players yet: ${currentParticipants}/${minPlayersRequired} - no notification sent`);

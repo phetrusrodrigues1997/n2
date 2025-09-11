@@ -7,7 +7,7 @@ import { eq, sql, and, inArray, notInArray } from "drizzle-orm";
 import { WrongPredictions  } from "./schema";
 import { getBetsTableName, getWrongPredictionsTableName,getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING } from "./config";
 import { ReferralCodes, Referrals, FreeEntries, UsersTable } from "./schema";
-import { EvidenceSubmissions, MarketOutcomes, PredictionIdeas, PotParticipationHistory } from "./schema";
+import { EvidenceSubmissions, MarketOutcomes, PredictionIdeas, PotParticipationHistory, PotInformation } from "./schema";
 import { recordPotEntry, recordUserPrediction } from './actions3';
 import { desc } from "drizzle-orm";
 import { getPrice } from '../Constants/getPrice';
@@ -2958,27 +2958,20 @@ export async function notifyMinimumPlayersReached(
   try {
     console.log(`🎯 Sending minimum players reached notification for ${contractAddress}: ${currentParticipants} participants`);
     
-    // Check if we've already sent a minimum players reached message for this contract
-    // This provides permanent deduplication, not just time-based
-    const existingMessage = await db
-      .select()
-      .from(Messages)
-      .where(
-        and(
-          eq(Messages.from, SYSTEM_ANNOUNCEMENT_SENDER),
-          eq(Messages.to, CONTRACT_PARTICIPANTS),
-          eq(Messages.contractAddress, contractAddress),
-          sql`${Messages.message} LIKE '%pot is ready with%participants%'`
-        )
-      )
+    // Check if we've already sent a minimum players reached announcement for this contract
+    // Use database flag for robust deduplication
+    const potInfo = await db
+      .select({ announcementSent: PotInformation.announcementSent })
+      .from(PotInformation)
+      .where(eq(PotInformation.contractAddress, contractAddress))
       .limit(1);
     
-    if (existingMessage.length > 0) {
-      console.log(`🔄 Minimum players notification already sent for contract ${contractAddress} - skipping duplicate`);
+    if (potInfo.length > 0 && potInfo[0].announcementSent) {
+      console.log(`🔄 Minimum players notification already sent for contract ${contractAddress} - skipping duplicate (database flag)`);
       return {
         isDuplicate: true,
-        message: "Minimum players notification already exists for this contract",
-        existingMessage: existingMessage[0]
+        message: "Minimum players notification already sent for this contract (database flag)",
+        existingFlag: true
       };
     }
     
@@ -2990,10 +2983,33 @@ export async function notifyMinimumPlayersReached(
     const announcementResult = await createContractAnnouncement(message, contractAddress);
     console.log(`✅ Minimum players notification sent successfully (${currentParticipants} participants)`);
     
+    // Set the announcement flag to prevent future duplicates
+    // Use upsert pattern - either update existing record or create new one
+    if (potInfo.length > 0) {
+      // Update existing pot info
+      await db
+        .update(PotInformation)
+        .set({ announcementSent: true })
+        .where(eq(PotInformation.contractAddress, contractAddress));
+      console.log(`🎯 Updated announcementSent flag for existing pot info`);
+    } else {
+      // Create new pot info record with announcement flag set
+      await db
+        .insert(PotInformation)
+        .values({
+          contractAddress,
+          announcementSent: true,
+          hasStarted: false,
+          isFinalDay: false
+        });
+      console.log(`🎯 Created new pot info record with announcementSent flag`);
+    }
+    
     const result = {
       isDuplicate: false,
       message: "New minimum players notification created successfully",
-      newAnnouncement: announcementResult[0]
+      newAnnouncement: announcementResult[0],
+      flagSet: true
     };
     
     // Send email notifications to participants if addresses are provided (only for new announcements)

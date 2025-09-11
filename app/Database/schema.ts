@@ -220,6 +220,7 @@ export const PotInformation = pgTable("pot_information", {
   isFinalDay: boolean("is_final_day").default(false).notNull(), // Whether it's the final day
   startedOnDate: text("started_on_date"), // Date when pot started (YYYY-MM-DD format, nullable until started)
   lastDayDate: text("last_day_date"), // Date when final day was enabled (YYYY-MM-DD format, nullable until final day)
+  announcementSent: boolean("announcement_sent").default(false).notNull(), // Whether minimum players announcement was sent
   createdAt: timestamp("created_at").defaultNow().notNull(), // When the record was created
 });
 
