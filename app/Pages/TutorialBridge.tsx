@@ -154,6 +154,52 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
     contractAddresses.length > 3 ? participants4 : undefined
   ].filter(data => data !== undefined), [participants1, participants2, participants3, participants4, contractAddresses.length]);
 
+  // Check if user has already seen the tutorial and redirect automatically
+  useEffect(() => {
+    const hasSeenTutorial = Cookies.get('tutorialBridgeSeen');
+    
+    if (hasSeenTutorial) {
+      console.log('User has already seen tutorial, performing smart routing...');
+      
+      if (!isConnected || !address) {
+        // Not connected, send to pot entry page which will prompt for wallet connection
+        console.log('Not connected - redirecting to bitcoinPot');
+        setActiveSection('bitcoinPot');
+        return;
+      }
+
+      // Check if user is participant in the selected market (same logic as handleSkipClick)
+      const selectedMarketAddress = Cookies.get('selectedMarket');
+      const participatingPots: string[] = [];
+
+      // Check all contracts
+      participantsData.forEach((participants, index) => {
+        if (participants && Array.isArray(participants)) {
+          const isParticipant = participants.some(
+            (participant: string) => participant.toLowerCase() === address.toLowerCase()
+          );
+          if (isParticipant) {
+            participatingPots.push(contractAddresses[index]);
+          }
+        }
+      });
+
+      const isParticipantInSelected = participatingPots.includes(selectedMarketAddress || '');
+      
+      // Check if user is special user (admin)
+      const SPECIAL_ADDRESS = '0xA90611B6AFcBdFa9DDFfCB2aa2014446297b6680';
+      const isSpecialUser = address && address.toLowerCase() === SPECIAL_ADDRESS.toLowerCase();
+      
+      if (isParticipantInSelected && !isSpecialUser) {
+        console.log('User is already a participant, redirecting to makePrediction');
+        setActiveSection('makePrediction');
+      } else {
+        console.log('User is not a participant, redirecting to bitcoinPot');
+        setActiveSection('bitcoinPot');
+      }
+    }
+  }, [setActiveSection, isConnected, address, participantsData, contractAddresses]);
+
   // Set up the selected market address and question from cookies
   useEffect(() => {
     const savedMarket = Cookies.get('selectedMarket');
@@ -265,6 +311,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
 
   // Handle skip button click - smart routing based on participation status
   const handleSkipClick = () => {
+    // Set cookie to remember user has seen the tutorial (expires in 1 week)
+    Cookies.set('tutorialBridgeSeen', 'true', { expires: 7 });
+    
     if (!isConnected || !address) {
       // Not connected, send to pot entry page which will prompt for wallet connection
       console.log('Skip clicked but user not connected - sending to predictionPotTest');
