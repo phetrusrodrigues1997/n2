@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
 import { formatUnits } from 'viem';
 import { checkMissedPredictionPenalty } from '../Database/actions3';
-import { ArrowRight, Bookmark, Check } from 'lucide-react';
+import { ArrowRight, Bookmark, Check, BookOpen, ChevronRight, ChevronLeft, X, CheckCircle2, DollarSign, Target, TrendingUp, Users, Calendar, BarChart2 } from 'lucide-react';
 import { Language, getTranslation, supportedLanguages, getTranslatedMarketQuestion } from '../Languages/languages';
 import { getMarkets, Market } from '../Constants/markets';
 import { CustomAlert, useCustomAlert } from '../Components/CustomAlert';
@@ -108,6 +108,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     toIndex: number;
     isAnimating: boolean;
   } | null>(null);
+
+  // Tutorial state
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [tutorialStep, setTutorialStep] = useState(0);
 
 
 
@@ -220,6 +224,41 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
 
 
+  // Tutorial functions
+  const nextTutorialStep = () => {
+    if (tutorialStep < tutorialSteps.length - 1) {
+      setTutorialStep(tutorialStep + 1);
+    }
+  };
+
+  const prevTutorialStep = () => {
+    if (tutorialStep > 0) {
+      setTutorialStep(tutorialStep - 1);
+    }
+  };
+
+  const closeTutorial = () => {
+    setShowTutorial(false);
+    setTutorialStep(0);
+    // Set cookie to remember user has seen tutorial (expires in 1 week)
+    Cookies.set('landingPageTutorialSeen', 'true', { expires: 7 });
+  };
+
+  // Check if user has seen tutorial before and show automatically
+  useEffect(() => {
+    const hasSeenTutorial = Cookies.get('landingPageTutorialSeen');
+    
+    // Only show tutorial if user hasn't seen it before and loading is complete
+    if (!hasSeenTutorial && !isLoading) {
+      // Delay showing tutorial by 1 second after loading completes for better UX
+      const tutorialTimer = setTimeout(() => {
+        setShowTutorial(true);
+      }, 1000);
+      
+      return () => clearTimeout(tutorialTimer);
+    }
+  }, [isLoading]);
+
   // Loading effect
   useEffect(() => {
     // Notify parent that loading started
@@ -246,6 +285,40 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
 
   const t = getTranslation(currentLanguage);
+
+  // Tutorial steps data (using the content from TutorialBridge.tsx)
+  const tutorialSteps = [
+    {
+      title: t.globalCompetition || "Global Competition",
+      content: t.globalCompetitionDesc || "Join thousands of users worldwide in predicting market movements. Every prediction counts towards building a global community of forecasters.",
+      icon: <Users className="w-6 h-6" />
+    },
+    {
+      title: t.dailyPredictions || "Daily Predictions",
+      content: t.dailyPredictionsDesc || "Make your prediction each day before midnight. Will Bitcoin go up or down tomorrow? Simple yes/no predictions with real rewards.",
+      icon: <Calendar className="w-6 h-6" />
+    },
+    {
+      title: t.dynamicPricing || "Dynamic Pricing",
+      content: t.dynamicPricingDesc || "Entry fees start low and increase daily. Early predictors pay less, while late entries face higher stakes. Time is money!",
+      icon: <DollarSign className="w-6 h-6" />
+    },
+    {
+      title: t.secondChances || "Second Chances",
+      content: t.secondChancesDesc || "Made a wrong prediction? Pay a re-entry fee to get back in the game. No permanent eliminations - just strategic comebacks.",
+      icon: <Target className="w-6 h-6" />
+    },
+    {
+      title: t.finalShowdown || "Final Showdown",
+      content: t.finalShowdownDesc || "Saturday night is elimination time. Correct predictors stay in and share the prize. Wrong predictors face the music.",
+      icon: <TrendingUp className="w-6 h-6" />
+    },
+    {
+      title: t.liveStats || "Live Statistics",
+      content: t.liveStatsDesc || "Track your performance, view global prediction trends, and see real-time market sentiment. Data drives decisions.",
+      icon: <BarChart2 className="w-6 h-6" />
+    }
+  ];
   
   
 
@@ -2072,6 +2145,92 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           type={alertState.type}
           autoClose={alertState.autoClose}
         />
+
+        {/* Tutorial Modal */}
+        {showTutorial && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600">
+                    {tutorialSteps[tutorialStep].icon}
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      {t.howItWorksTitle || "How It Works"}
+                    </h2>
+                    <p className="text-sm text-gray-500">
+                      Step {tutorialStep + 1} of {tutorialSteps.length}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={closeTutorial}
+                  className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="flex-1 p-6">
+                <div className="text-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    {tutorialSteps[tutorialStep].title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {tutorialSteps[tutorialStep].content}
+                  </p>
+                </div>
+                
+                {/* Progress Dots */}
+                <div className="flex justify-center gap-2 mt-8">
+                  {tutorialSteps.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`w-2 h-2 rounded-full transition-colors ${
+                        index === tutorialStep ? 'bg-purple-600' : 'bg-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="border-t border-gray-200 p-6">
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={prevTutorialStep}
+                    disabled={tutorialStep === 0}
+                    className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    {t.previous || "Previous"}
+                  </button>
+                  
+                  {tutorialStep === tutorialSteps.length - 1 ? (
+                    <button
+                      onClick={closeTutorial}
+                      className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      {t.getStarted || "Get Started!"}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={nextTutorialStep}
+                      className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+                    >
+                      {t.next || "Next"}
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
