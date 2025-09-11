@@ -44,11 +44,10 @@ import Cookies from 'js-cookie';
 const LIVE_POT_ADDRESS = '0xDc6725F0E3D654c3Fde0480428b194ab19F20a9E';
 
 // Coming Soon Mode - Set to true to show coming soon page
-const COMING_SOON_MODE = false;
 
 export default function App() {
   const { address, isConnected } = useAccount();
-  const [activeSection, setActiveSection] = useState('home'); // Default section
+  const [activeSection, setActiveSection] = useState('comingsoon'); // Default section
   const [privatePotAddress, setPrivatePotAddress] = useState<string>(''); // For routing to private pots
   const [hasEnteredLivePot, setHasEnteredLivePot] = useState(false); // Track live pot entry
   const [isMobileSearchActive, setIsMobileSearchActive] = useState(false); // Track mobile search state
@@ -976,7 +975,7 @@ export default function App() {
 
 
 
-        {/* {activeSection === "usernamePage" && <UsernameSetup />} */}
+        {activeSection === "comingsoon" && <ComingSoonPage />} 
         {activeSection === "receive" && <ReceiveSection activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "profile" && <ProfilePage activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "messagesPage" && <MessagingPage activeSection={activeSection} setActiveSection={setActiveSection} onAnnouncementsMarkedAsRead={onAnnouncementsMarkedAsRead} />}
