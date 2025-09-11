@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Mail, Users } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Mail, Users, Clock } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { saveUserEmail } from '../Database/actions';
 import { useContractData } from '../hooks/useContractData';
@@ -21,6 +21,17 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
   const [isEliminated, setIsEliminated] = useState<boolean>(false);
   const { address } = useAccount();
   const { contractAddresses, participantsData } = useContractData();
+
+  // Pot information state (same as MakePredictionsPage)
+  const [potInfo, setPotInfo] = useState<{
+    hasStarted: boolean;
+    isFinalDay: boolean;
+    startedOnDate: string | null;
+  }>({
+    hasStarted: false,
+    isFinalDay: false,
+    startedOnDate: null
+  });
 
   // Get current participant count and required minimum
   const getParticipantCounts = () => {
@@ -47,6 +58,54 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
   };
 
   const { current, required } = getParticipantCounts();
+
+  // Fetch pot information (same logic as MakePredictionsPage)
+  useEffect(() => {
+    const fetchPotInfo = async () => {
+      const savedContract = Cookies.get('selectedMarket');
+      const contractAddress = savedContract || contractAddresses[0];
+      
+      if (!contractAddress) return;
+      
+      try {
+        const response = await fetch('/api/pot-info', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contractAddress })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setPotInfo({
+            hasStarted: data.hasStarted || false,
+            isFinalDay: data.isFinalDay || false,
+            startedOnDate: data.startedOnDate || null
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching pot info:', error);
+      }
+    };
+    
+    if (contractAddresses.length > 0) {
+      fetchPotInfo();
+    }
+  }, [contractAddresses]);
+
+  // Determine what state we're in
+  const hasEnoughPlayers = current >= required;
+  const isPotReady = hasEnoughPlayers && potInfo.hasStarted;
+  
+  // Debug logging (can be removed in production)
+  // console.log('🔍 NotReadyPage Debug:', {
+  //   current,
+  //   required,
+  //   hasEnoughPlayers,
+  //   potInfoHasStarted: potInfo.hasStarted,
+  //   isPotReady,
+  //   isFinalDay,
+  //   isEliminated
+  // });
 
   if(Cookies.get('finalDayRedirect')){
     const eliminationStatus = Cookies.get('finalDayRedirect');
@@ -142,31 +201,62 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                   <h1 className="text-2xl md:text-3xl font-light text-gray-900">
                     {isFinalDay && isEliminated 
                       ? "Tournament Complete - You Were Eliminated" 
-                      : "This pot isn't ready to begin yet"
+                      : hasEnoughPlayers && potInfo.hasStarted
+                        ? "Pot is Active! Ready to Predict"
+                        : hasEnoughPlayers && !potInfo.hasStarted
+                          ? "Pot is Ready! Starting Soon"
+                          : "This pot isn't ready to begin yet"
                     }
                   </h1>
                   <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
                     {isFinalDay && isEliminated
                       ? "🏆 The final day has arrived and winners are being determined. Unfortunately, you were eliminated earlier in the tournament. Better luck next time!"
-                      : "👻 Invite your friends! We'll notify you via email when there are enough players to start the predictions tournament!"
+                      : hasEnoughPlayers && potInfo.hasStarted
+                        ? "🚀 This pot is now live and accepting predictions! You shouldn't be seeing this page - try refreshing or navigating back."
+                        : hasEnoughPlayers && !potInfo.hasStarted
+                          ? "🎉 Great news! This pot has enough players and is ready to start. Predictions will begin in 24 hours when the pot officially opens!"
+                          : "👻 Invite your friends! We'll notify you via email when there are enough players to start the predictions tournament!"
                     }
                   </p>
                 </div>
 
-                {/* Player Count Display - Only show if not eliminated on final day */}
+                {/* Status Display - Only show if not eliminated on final day */}
                 {!(isFinalDay && isEliminated) && (
                   <div className="flex justify-center">
-                    <div className="inline-flex items-center gap-2 md:gap-3 px-3 py-2 md:px-6 md:py-3 bg-gray-50 rounded-xl md:rounded-2xl border border-gray-200">
-                    <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-purple-100 to-purple-50 rounded-full flex items-center justify-center">
-                      <Users className="w-3 h-3 md:w-4 md:h-4 text-purple-600" />
-                    </div>
-                    <div className="flex items-center gap-1 md:gap-2">
-                      <span className="text-lg md:text-2xl font-semibold text-gray-900">{current}</span>
-                      <span className="text-gray-400 text-sm md:text-lg font-light">/</span>
-                      <span className="text-md md:text-lg font-medium text-gray-600">{required}</span>
-                      <span className="text-xs md:text-sm text-gray-500 ml-0.5 md:ml-1">Players</span>
-                    </div>
-                  </div>
+                    {hasEnoughPlayers && potInfo.hasStarted ? (
+                      // Pot is active
+                      <div className="inline-flex items-center gap-2 md:gap-3 px-3 py-2 md:px-6 md:py-3 bg-blue-50 rounded-xl md:rounded-2xl border border-blue-200">
+                        <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-blue-100 to-blue-50 rounded-full flex items-center justify-center">
+                          <Users className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
+                        </div>
+                        <div className="flex items-center gap-1 md:gap-2">
+                          <span className="text-xs md:text-sm text-blue-700 font-medium">Pot is live with {current} players!</span>
+                        </div>
+                      </div>
+                    ) : hasEnoughPlayers && !potInfo.hasStarted ? (
+                      // Pot ready, waiting to start
+                      <div className="inline-flex items-center gap-2 md:gap-3 px-3 py-2 md:px-6 md:py-3 bg-green-50 rounded-xl md:rounded-2xl border border-green-200">
+                        <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-green-100 to-green-50 rounded-full flex items-center justify-center">
+                          <Clock className="w-3 h-3 md:w-4 md:h-4 text-green-600" />
+                        </div>
+                        <div className="flex items-center gap-1 md:gap-2">
+                          <span className="text-xs md:text-sm text-green-700 font-medium">Ready to start in 24 hours</span>
+                        </div>
+                      </div>
+                    ) : (
+                      // Waiting for more players
+                      <div className="inline-flex items-center gap-2 md:gap-3 px-3 py-2 md:px-6 md:py-3 bg-gray-50 rounded-xl md:rounded-2xl border border-gray-200">
+                        <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-purple-100 to-purple-50 rounded-full flex items-center justify-center">
+                          <Users className="w-3 h-3 md:w-4 md:h-4 text-purple-600" />
+                        </div>
+                        <div className="flex items-center gap-1 md:gap-2">
+                          <span className="text-lg md:text-2xl font-semibold text-gray-900">{current}</span>
+                          <span className="text-gray-400 text-sm md:text-lg font-light">/</span>
+                          <span className="text-md md:text-lg font-medium text-gray-600">{required}</span>
+                          <span className="text-xs md:text-sm text-gray-500 ml-0.5 md:ml-1">Players</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
                 

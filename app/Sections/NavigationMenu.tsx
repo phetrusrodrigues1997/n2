@@ -59,13 +59,14 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
   const desktopMenuItems = [
     { id: 'home', label: t.home || 'Home' },
     { id: 'createPot', label: t.privateMarkets || 'Private Pots' },
+    { id: 'liveMarkets', label: t.liveMarkets || 'Live Markets' },
     { id: 'receive', label: t.fundAccount || 'Fund Account' },
     { id: 'AI', label: t.games || 'Games' },
     { id: 'profile', label: t.statsRankings || 'Stats & Rankings' },
     { id: 'bookmarks', label: t.myPots || 'My Pots' },
     { id: 'discord', label: t.howItWorksTitle || 'How It Works' },
     { id: 'ideas', label: t.ideas || 'Ideas' },
-    { id: 'liveMarkets', label: t.liveMarkets || 'Live Markets' },
+    
   ];
 
   return (
@@ -121,7 +122,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                     <img
                       src={supportedLanguages.find(lang => lang.code === currentLanguage)?.flag}
                       alt="Current language"
-                      className={`${currentLanguage === 'en' ? 'w-5' : 'w-4'} h-3 object-cover rounded`}
+                      className=" object-cover rounded w-6 h-4"
                     />
                     <span className="text-sm font-medium">
                       {supportedLanguages.find(lang => lang.code === currentLanguage)?.name}

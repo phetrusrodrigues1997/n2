@@ -143,6 +143,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     isFinalDay: false,
     startedOnDate: null
   });
+  
+  const [potInfoLoaded, setPotInfoLoaded] = useState(false);
 
   // Functions for pot information management
   const fetchPotInfo = async (contractAddr: string) => {
@@ -162,6 +164,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
           isFinalDay: data.isFinalDay || false,
           startedOnDate: data.startedOnDate || null
         });
+        setPotInfoLoaded(true);
       }
     } catch (error) {
       console.error('Failed to fetch pot info:', error);
@@ -504,20 +507,25 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     ? participants.some(participant => participant.toLowerCase() === address.toLowerCase())
     : false;
 
-  // Redirect to NotReadyPage if user is participant but not enough players
+  // Redirect to NotReadyPage if user is participant but pot is not ready for predictions
   useEffect(() => {
-    if (isParticipant && participants && Array.isArray(participants)) {
+    // Only run redirect logic after pot info is loaded to avoid race conditions
+    if (isParticipant && participants && Array.isArray(participants) && potInfoLoaded) {
       // Determine which minimum players requirement to use
       const contractAddresses = Object.keys(CONTRACT_TO_TABLE_MAPPING);
       const contractIndex = contractAddresses.indexOf(contractAddress);
       const minPlayersRequired = contractIndex === 0 ? MIN_PLAYERS : MIN_PLAYERS2;
       
-      // If user is participant but not enough players, redirect to NotReadyPage
-      if (participants.length < minPlayersRequired) {
+      // Redirect to NotReadyPage if:
+      // 1. Not enough players, OR
+      // 2. Enough players but pot hasn't officially started yet
+      const shouldRedirect = participants.length < minPlayersRequired || !potInfo.hasStarted;
+      
+      if (shouldRedirect) {
         setActiveSection('notReadyPage');
       }
     }
-  }, [isParticipant, participants, contractAddress, setActiveSection]);
+  }, [isParticipant, participants, contractAddress, potInfo.hasStarted, potInfoLoaded, setActiveSection]);
 
   // Check for minimum players threshold and send notification
   useEffect(() => {

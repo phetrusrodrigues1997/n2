@@ -44,7 +44,7 @@ import Cookies from 'js-cookie';
 const LIVE_POT_ADDRESS = '0xDc6725F0E3D654c3Fde0480428b194ab19F20a9E';
 
 // Coming Soon Mode - Set to true to show coming soon page
-const COMING_SOON_MODE = true;
+const COMING_SOON_MODE = false;
 
 export default function App() {
   const { address, isConnected } = useAccount();
@@ -482,11 +482,6 @@ export default function App() {
   }, [activeSection]);
 
 
-  // Show coming soon page if COMING_SOON_MODE is true
-  if (COMING_SOON_MODE) {
-    return <ComingSoonPage />;
-  }
-
   return (
     <div className="min-h-screen bg-white text-white">
 
@@ -503,7 +498,7 @@ export default function App() {
           <div className="flex justify-between items-center mt-3 md:mt-0">
             <div className="flex items-center flex-1">
               {/* Hamburger menu - shows on both desktop and mobile at left edge */}
-              <div className="translate-x-1.5 md:translate-x-0">
+              <div className="ml-1.5 md:ml-0">
                 <NavigationMenu 
                   activeSection={activeSection} 
                   setActiveSection={setActiveSection} 
@@ -514,7 +509,7 @@ export default function App() {
               </div>
 
               {/* Logo */}
-              <div className="relative -ml-2 translate-x-1.5 md:translate-x-0">
+              <div className="relative -ml-2">
                 <div className="absolute -inset-1 rounded-full blur-md"></div>
                 <ResponsiveLogo onClick={() => setActiveSection('home')} />
               </div>
@@ -564,7 +559,7 @@ export default function App() {
                   {/* Bell button - Mobile: leftmost, Desktop: rightmost */}
                   {isConnected && (
                     <button
-                      className={`relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-4 md:-mr-6 md:translate-x-0 ${isMobile ? 'order-1 ' : 'order-3'}`}
+                      className={`relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-4 md:translate-x-0 md:-mr-6 ${isMobile ? 'order-1 ' : 'order-3'}`}
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -582,7 +577,7 @@ export default function App() {
                   )}
 
                   {/* Language dropdown - Mobile: middle, Desktop: leftmost - Always visible */}
-                  <div className={`relative z-50 ${isMobile ? 'order-2' : (isConnected ? 'order-1' : 'order-1 -translate-x-4')}`} data-language-dropdown>
+                  <div className={`relative z-50 ${isMobile ? 'order-2' : (isConnected ? 'order-1' : 'order-1 -ml-4')}`} data-language-dropdown>
                     <button
                       className="hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer gap-0"
                       onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}

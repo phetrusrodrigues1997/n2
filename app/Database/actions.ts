@@ -2958,7 +2958,7 @@ export async function notifyMinimumPlayersReached(
   try {
     console.log(`🎯 Sending minimum players reached notification for ${contractAddress}: ${currentParticipants} participants`);
     
-    // Check if we've already sent a "Predictions can now begin" message for this contract
+    // Check if we've already sent a minimum players reached message for this contract
     // This provides permanent deduplication, not just time-based
     const existingMessage = await db
       .select()
@@ -2968,7 +2968,7 @@ export async function notifyMinimumPlayersReached(
           eq(Messages.from, SYSTEM_ANNOUNCEMENT_SENDER),
           eq(Messages.to, CONTRACT_PARTICIPANTS),
           eq(Messages.contractAddress, contractAddress),
-          sql`${Messages.message} LIKE '%Predictions can now begin.%'`
+          sql`${Messages.message} LIKE '%pot is ready with%participants%'`
         )
       )
       .limit(1);
@@ -2983,8 +2983,8 @@ export async function notifyMinimumPlayersReached(
     }
     
     const message = currentParticipants === 2
-      ? `🎉 Great news! Your pot now has ${currentParticipants} participants and is ready to start! Predictions can now begin.`
-      : `🎉 Awesome! Your ${marketType} pot now has ${currentParticipants} participants and is ready for action! Let the predictions begin!`;
+      ? `🎉 Great news! Your pot is ready with ${currentParticipants} participants! Starting in 24 hours when the pot officially begins.`
+      : `🎉 Awesome! Your ${marketType} pot is ready with ${currentParticipants} participants! Starting in 24 hours when the pot officially begins.`;
     
     // Create the announcement directly since we've already checked for duplicates
     const announcementResult = await createContractAnnouncement(message, contractAddress);

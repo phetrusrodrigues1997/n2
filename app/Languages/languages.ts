@@ -620,7 +620,7 @@ export const translations: Record<Language, Translations> = {
     fundAccount: 'Fund Account',
     statsRankings: 'Stats & Rankings',
     games: 'Games',
-    myPots: 'My pots',
+    myPots: 'My Pots',
     ideas: 'Ideas',
     liveMarkets: 'Live Markets',
     wallet: 'Wallet',
@@ -634,7 +634,7 @@ export const translations: Record<Language, Translations> = {
     bottomNavHome: 'Home',
     bottomNavLive: 'Live',
     bottomNavSearch: 'Search',
-    bottomNavMyPots: 'My pots',
+    bottomNavMyPots: 'My Pots',
 
     // MakePredictionsPage (VERY LIMITED - only safe display strings)
     loadingPredictions: 'Loading your predictions...',
@@ -962,10 +962,10 @@ export const translations: Record<Language, Translations> = {
     // Navigation Menu
     home: 'Início',
     privateMarkets: 'Mercados Privados',
-    fundAccount: 'Financiar Conta',
+    fundAccount: 'Depositar',
     statsRankings: 'Estatísticas e Rankings',
     games: 'Jogos',
-    myPots: 'Meus potes',
+    myPots: 'Meus Potes',
     ideas: 'Ideias',
     liveMarkets: 'Mercados Ao Vivo',
     wallet: 'Carteira',
