@@ -1,9 +1,17 @@
 import '@coinbase/onchainkit/styles.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from './providers';
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+};
 
 export const metadata: Metadata = {
   title: 'PrediWin - Predict, Win, Repeat',
@@ -17,13 +25,6 @@ export const metadata: Metadata = {
     apple: [
       { url: '/icon-180x180.png', sizes: '180x180', type: 'image/png' },
     ],
-  },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-    viewportFit: 'cover',
   },
   appleWebApp: {
     capable: true,

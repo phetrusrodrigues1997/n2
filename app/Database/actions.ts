@@ -2958,23 +2958,53 @@ export async function notifyMinimumPlayersReached(
   try {
     console.log(`🎯 Sending minimum players reached notification for ${contractAddress}: ${currentParticipants} participants`);
     
+    // Check if we've already sent a "Predictions can now begin" message for this contract
+    // This provides permanent deduplication, not just time-based
+    const existingMessage = await db
+      .select()
+      .from(Messages)
+      .where(
+        and(
+          eq(Messages.from, SYSTEM_ANNOUNCEMENT_SENDER),
+          eq(Messages.to, CONTRACT_PARTICIPANTS),
+          eq(Messages.contractAddress, contractAddress),
+          sql`${Messages.message} LIKE '%Predictions can now begin.%'`
+        )
+      )
+      .limit(1);
+    
+    if (existingMessage.length > 0) {
+      console.log(`🔄 Minimum players notification already sent for contract ${contractAddress} - skipping duplicate`);
+      return {
+        isDuplicate: true,
+        message: "Minimum players notification already exists for this contract",
+        existingMessage: existingMessage[0]
+      };
+    }
+    
     const message = currentParticipants === 2
       ? `🎉 Great news! Your pot now has ${currentParticipants} participants and is ready to start! Predictions can now begin.`
       : `🎉 Awesome! Your ${marketType} pot now has ${currentParticipants} participants and is ready for action! Let the predictions begin!`;
     
-    const result = await createContractAnnouncementSafe(message, contractAddress, 600000); // 10-minute deduplication for this type
+    // Create the announcement directly since we've already checked for duplicates
+    const announcementResult = await createContractAnnouncement(message, contractAddress);
+    console.log(`✅ Minimum players notification sent successfully (${currentParticipants} participants)`);
     
-    if (result.isDuplicate) {
-      console.log(`🔄 Minimum players notification: ${result.message}`);
+    const result = {
+      isDuplicate: false,
+      message: "New minimum players notification created successfully",
+      newAnnouncement: announcementResult[0]
+    };
+    
+    // Send email notifications to participants if addresses are provided (only for new announcements)
+    if (!result.isDuplicate) {
+      console.log(`📧 Email notification check: ${participantAddresses.length} participant addresses provided for ${currentParticipants} participants`);
+      console.log(`📧 Data freshness: ${participantAddresses.length < currentParticipants ? '❌ STALE (missing participants)' : '✅ FRESH'}`);
     } else {
-      console.log(`✅ Minimum players notification sent successfully (${currentParticipants} participants)`);
+      console.log(`📧 Skipping email notifications - announcement already sent previously`);
     }
     
-    // Send email notifications to participants if addresses are provided  
-    console.log(`📧 Email notification check: ${participantAddresses.length} participant addresses provided for ${currentParticipants} participants`);
-    console.log(`📧 Data freshness: ${participantAddresses.length < currentParticipants ? '❌ STALE (missing participants)' : '✅ FRESH'}`);
-    
-    if (participantAddresses && participantAddresses.length > 0) {
+    if (!result.isDuplicate && participantAddresses && participantAddresses.length > 0) {
       try {
         console.log(`📧 Attempting to send email notifications to ${participantAddresses.length} participants`);
         

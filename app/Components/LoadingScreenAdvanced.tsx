@@ -9,7 +9,7 @@ interface LoadingScreenAdvancedProps {
 export default function LoadingScreenAdvanced({ 
   title = "Prediwin", 
   subtitle = "Preparing your pots...",
-  duration = 4000 
+  duration = 2000 
 }: LoadingScreenAdvancedProps) {
   const [loadingProgress, setLoadingProgress] = useState(0);
 
@@ -23,7 +23,7 @@ export default function LoadingScreenAdvanced({
         { progress: 70, delay: 500, label: 'Processing data...' },
         { progress: 85, delay: 600, label: 'Finalizing...' },
         { progress: 95, delay: 700, label: 'Almost ready...' },
-        { progress: 100, delay: 400, label: 'Ready!' }
+        { progress: 100, delay: duration, label: 'Ready!' }
       ];
 
       for (const step of loadingSteps) {

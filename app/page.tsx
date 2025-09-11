@@ -29,6 +29,7 @@ import LiveMarketPotEntry from './Pages/LiveMarketPotEntry';
 import MessagingPage from './Pages/MessagingPage';
 import IdeasPage from './Pages/IdeasPage';
 import AdminEvidenceReviewPage from './Pages/AdminEvidenceReviewPage';
+import ComingSoonPage from './Pages/ComingSoonPage';
 import { getMarkets } from './Constants/markets';
 import { Language, getTranslation, supportedLanguages, getMarketDisplayName, getPersonalizedLabel } from './Languages/languages';
 import { getPrice } from './Constants/getPrice';
@@ -41,6 +42,9 @@ import Cookies from 'js-cookie';
 
 // Contract now uses ETH directly - no USDC needed
 const LIVE_POT_ADDRESS = '0xDc6725F0E3D654c3Fde0480428b194ab19F20a9E';
+
+// Coming Soon Mode - Set to true to show coming soon page
+const COMING_SOON_MODE = true;
 
 export default function App() {
   const { address, isConnected } = useAccount();
@@ -477,6 +481,11 @@ export default function App() {
     }
   }, [activeSection]);
 
+
+  // Show coming soon page if COMING_SOON_MODE is true
+  if (COMING_SOON_MODE) {
+    return <ComingSoonPage />;
+  }
 
   return (
     <div className="min-h-screen bg-white text-white">

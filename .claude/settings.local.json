@@ -35,7 +35,8 @@
       "Bash(echo $ANDROID_HOME)",
       "Bash(where android)",
       "Read(//c/Program Files/**)",
-      "Bash(keytool:*)"
+      "Bash(keytool:*)",
+      "Bash(npm run lint:*)"
     ],
     "deny": [],
     "ask": [],
