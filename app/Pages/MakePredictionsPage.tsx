@@ -1819,7 +1819,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
         )}
 
         {/* Prediction History Dashboard - Collapsible */}
-        {predictionHistory.length > 0 && (
+        {predictionHistory && predictionHistory.length > 0 && (
           <div className="bg-gradient-to-br from-white via-purple-50/20 to-white border border-gray-200/50 rounded-3xl mb-8 shadow-lg overflow-hidden">
             {/* Collapsible Header */}
             <div 
@@ -1975,7 +1975,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
         )}
 
         {/* Premium Rules Section - Only show when no provisional outcome is set */}
-        {!hasOutcomeBeenSet() && (
+        {false && !hasOutcomeBeenSet() && (
           <div className="bg-gradient-to-r from-gray-50/80 via-white/80 to-gray-50/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-6 text-center shadow-xl shadow-gray-900/5 relative overflow-hidden">
             {/* Subtle pattern */}
             <div className="absolute inset-0 opacity-5">
