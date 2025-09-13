@@ -1,7 +1,7 @@
 // src/data/markets.ts
 import { getTranslation } from '../Languages/languages'
 
-// “Translation” is whatever shape getTranslation returns
+// "Translation" is whatever shape getTranslation returns
 type Translation = ReturnType<typeof getTranslation>
 
 export interface Market {
@@ -18,43 +18,29 @@ export interface Market {
   tabId?: string
 }
 
-export const getMarkets = (t: Translation, category: string): Market[] => {
+// ============================================
+// CENTRALIZED MARKET DEFINITIONS - DRY PRINCIPLE
+// Each market defined ONCE with all its properties
+// ============================================
 
-  if (category === 'sports') {
-    return [
-  // Football (Soccer)
-  {
-    id: 'chelsea-manutd',
-    name: 'Chelsea vs Man United',
-    symbol: '⚽️',
-    color: '#034694',
-    question: 'Will Chelsea beat Man United?',
-    icon: 'https://www.nbc.com/sites/nbcblog/files/2024/07/paris-2024-olympics-soccer.jpg',
-    currentPrice: '-',
-    participants: 210,
-    potSize: '$2,100',
-  }
-  
-]
-  }
-
-  else if (category === 'options') {
-    return [
-      {
+const MARKET_DEFINITIONS: Record<string, Market> = {
+  // ACTIVE CONTRACTS - Markets with deployed smart contracts
+  trending: {
     id: 'Trending',
-    name: 'Trending',
-    symbol: '',
+    name: 'Random Topics',
+    symbol: 'Trending',
     contractAddress: '0xd1547F5bC0390F5020B2A80F262e28ccfeF2bf9c',
-    color: '#FF5733',
-    question: '',
-    icon: '',
-    currentPrice: '$100',
-    participants: 50,
-    potSize: '$500',
+    color: '#1DB954',
+    question: 'Will a solo female artist have the #1 song on the global spotify charts?',
+    icon: 'https://upload.wikimedia.org/wikipedia/en/9/96/Adele_-_25_%28Official_Album_Cover%29.png',
+    currentPrice: '$150',
+    participants: 42,
+    potSize: '$420',
   },
-  {
+
+  crypto: {
     id: 'Crypto',
-    name: 'Crypto',
+    name: 'crypto',
     symbol: '',
     contractAddress: '0xe9b69d0EA3a6E018031931d300319769c6629866',
     color: '#FF5733',
@@ -64,19 +50,21 @@ export const getMarkets = (t: Translation, category: string): Market[] => {
     participants: 50,
     potSize: '$500',
   },
-  {
+
+  stocks: {
     id: 'stocks',
-    name: 'Stocks',
-    symbol: '',
+    name: 'Tesla',
+    symbol: 'TSLA',
     contractAddress: '0xf07E717e1dB49dDdB207C68cCb433BaE4Bc65fC9',
-    color: '#228B22',
-    question: 'Will Tesla stock end the day higher?',
+    color: '#E31837',
+    question: '', // Will be populated with translation
     icon: 'https://assets.finbold.com/uploads/2025/03/Short-squeeze-alert-for-Tesla-stock-1024x682.jpg',
-    currentPrice: '$190',
-    participants: 49,
-    potSize: '$490',
+    currentPrice: '$248.50',
+    participants: 156,
+    potSize: '$1,560',
   },
-  {
+
+  music: {
     id: 'music',
     name: 'Music Charts',
     symbol: '',
@@ -88,30 +76,9 @@ export const getMarkets = (t: Translation, category: string): Market[] => {
     participants: 42,
     potSize: '$420',
   },
-  {
-  id: 'xtrends',
-  name: 'X Trending Topics',
-  symbol: '',
-  color: '#FF4500',
-  question: 'Which topic will rank #1 on X trending topics in the United States by 21:00 UTC today?',
-  icon: '',
-  currentPrice: '$250',
-  participants: 62,
-  potSize: '$620',
-},
-  {
-    id: 'weather',
-    name: 'Weather',
-    symbol: '',
-    color: '#87CEEB',
-    question: '',
-    icon: '',
-    currentPrice: '$90',
-    participants: 38,
-    potSize: '$380',
-  }
-,
-  {
+
+  // COMING SOON - Markets without deployed contracts yet
+  sports: {
     id: 'sports',
     name: 'Sports',
     symbol: '',
@@ -122,181 +89,32 @@ export const getMarkets = (t: Translation, category: string): Market[] => {
     participants: 75,
     potSize: '$750',
   },
-  {
-    id: 'politics',
-    name: 'Politics',
+
+  xtrends: {
+    id: 'xtrends',
+    name: 'X Trending Topics',
     symbol: '',
-    color: '#1E90FF',
-    question: '',
+    color: '#FF4500',
+    question: 'Which topic will rank #1 on X trending topics in the United States by 21:00 UTC today?',
     icon: '',
-    currentPrice: '$310',
+    currentPrice: '$250',
     participants: 62,
     potSize: '$620',
   },
-  
-  {
-    id: 'elections',
-    name: 'Elections',
-    symbol: '',
-    color: '#FF4500',
-    question: '',
-    icon: '',
-    currentPrice: '$470',
-    participants: 94,
-    potSize: '$940',
-  },
-  {
-    id: 'tvshows',
-    name: 'TV Shows',
-    symbol: '',
-    color: '#8A2BE2',
-    question: '',
-    icon: '',
-    currentPrice: '$180',
-    participants: 51,
-    potSize: '$510',
-  },
-  {
-    id: 'popculture',
-    name: 'Pop Culture',
-    symbol: '',
-    color: '#FF69B4',
-    question: '',
-    icon: '',
-    currentPrice: '$150',
-    participants: 45,
-    potSize: '$450',
-  },
-  {
-    id: 'technews',
-    name: 'Tech News',
-    symbol: '',
-    color: '#00CED1',
-    question: '',
-    icon: '',
-    currentPrice: '$225',
-    participants: 60,
-    potSize: '$600',
-  },
-  
-  {
-    id: 'movies',
-    name: 'Box Office',
-    symbol: '',
-    color: '#FFD700',
-    question: '',
-    icon: '',
-    currentPrice: '$270',
-    participants: 58,
-    potSize: '$580',
-  },
-  {
-    id: 'space',
-    name: 'Astronomy',
-    symbol: '',
-    color: '#7B68EE',
-    question: '',
-    icon: '',
-    currentPrice: '$140',
-    participants: 36,
-    potSize: '$360',
-  },
-  {
-    id: 'fashion',
-    name: 'Fashion Trends',
-    symbol: '',
-    color: '#FFB6C1',
-    question: '',
-    icon: '',
-    currentPrice: '$110',
-    participants: 30,
-    potSize: '$300',
-  },
-  {
-    id: 'celebs',
-    name: 'Celebrity News',
-    symbol: '',
-    color: '#FFA500',
-    question: '',
-    icon: '',
-    currentPrice: '$160',
-    participants: 47,
-    potSize: '$470',
-  },
-  
-  {
-    id: 'health',
-    name: 'Health & Fitness',
-    symbol: '',
-    color: '#32CD32',
-    question: '',
-    icon: '',
-    currentPrice: '$175',
-    participants: 44,
-    potSize: '$440',
-  },
-  {
-    id: 'gaming',
-    name: 'Gaming',
-    symbol: '',
-    color: '#6A5ACD',
-    question: '',
-    icon: '',
-    currentPrice: '$205',
-    participants: 53,
-    potSize: '$530',
-  },
-  {
-    id: 'travel',
-    name: 'Travel & Tourism',
-    symbol: '',
-    color: '#00BFFF',
-    question: '',
-    icon: '',
-    currentPrice: '$185',
-    participants: 40,
-    potSize: '$400',
-  }
-]
 
- }
+  weather: {
+    id: 'weather',
+    name: 'Weather',
+    symbol: '',
+    color: '#87CEEB',
+    question: '',
+    icon: '',
+    currentPrice: '$90',
+    participants: 38,
+    potSize: '$380',
+  },
 
- else if (category === 'Trending') {
-  return [{
-  id: 'Trending',
-  name: 'Random Topics',
-  symbol: 'Trending',
-  contractAddress: '0xd1547F5bC0390F5020B2A80F262e28ccfeF2bf9c',
-  color: '#1DB954',
-  question: 'Will a solo female artist have the #1 song on the global spotify charts?',
-  icon: 'https://upload.wikimedia.org/wikipedia/en/9/96/Adele_-_25_%28Official_Album_Cover%29.png',
-  currentPrice: '$150',
-  participants: 42,
-  potSize: '$420',
-}
-]
- }
-
- else if (category === 'music') {
-  return [
-    {
-  id: 'music',
-  name: 'Music Charts',
-  symbol: '',
-  contractAddress: '0xb85D3aE374b8098A6cA553dB90C0978401a34f71',
-  color: '#DA70D6',
-  question: 'Will "Espresso" be the #1 track on Spotify Global?',
-  icon: 'https://hips.hearstapps.com/hmg-prod/images/sabrina-carpenter-2-67d15874f2a23.jpg?crop=1xw:0.4999663797740721xh;center,top&resize=1200:*',
-  currentPrice: '$130',
-  participants: 42,
-  potSize: '$420',
-}
-
-  ]}
-
-  else if (category === 'politics') {
-    return [
-        {
+  politics: {
     id: 'politics',
     name: 'Politics',
     symbol: '🏛️',
@@ -306,12 +124,9 @@ export const getMarkets = (t: Translation, category: string): Market[] => {
     currentPrice: '$310',
     participants: 62,
     potSize: '$620',
-  }
-    ]
-  }
-else if (category === 'elections') {
-  return [ 
-    {
+  },
+
+  elections: {
     id: 'elections',
     name: 'Elections',
     symbol: '🗳️',
@@ -321,13 +136,9 @@ else if (category === 'elections') {
     currentPrice: '$470',
     participants: 94,
     potSize: '$940',
-  } 
-  ]
-}
+  },
 
-else if (category === 'tvshows') {
-  return [
-{
+  tvshows: {
     id: 'tvshows',
     name: 'TV Shows',
     symbol: '📺',
@@ -337,13 +148,9 @@ else if (category === 'tvshows') {
     currentPrice: '$180',
     participants: 51,
     potSize: '$510',
-  }
-  ]
-}
+  },
 
-else if (category === 'popculture') {
-  return [
-    {
+  popculture: {
     id: 'popculture',
     name: 'Pop Culture',
     symbol: '🎤',
@@ -353,13 +160,9 @@ else if (category === 'popculture') {
     currentPrice: '$150',
     participants: 45,
     potSize: '$450',
-  }
-  ]
-}
+  },
 
-else if (category === 'technews') {
-  return [
-    {
+  technews: {
     id: 'technews',
     name: 'Tech News',
     symbol: '💻',
@@ -369,12 +172,9 @@ else if (category === 'technews') {
     currentPrice: '$225',
     participants: 60,
     potSize: '$600',
-  }
-  ] }
+  },
 
-  else if (category === 'movies') {
-  return [
-    {
+  movies: {
     id: 'movies',
     name: 'Box Office',
     symbol: '🎬',
@@ -384,11 +184,9 @@ else if (category === 'technews') {
     currentPrice: '$270',
     participants: 58,
     potSize: '$580',
-  }
-  ] }
-  else if (category === 'space') {
-  return [  
-    {
+  },
+
+  space: {
     id: 'space',
     name: 'Astronomy',
     symbol: '🚀',
@@ -398,11 +196,9 @@ else if (category === 'technews') {
     currentPrice: '$140',
     participants: 36,
     potSize: '$360',
-  }
-  ] }
-  else if (category === 'fashion') {
-  return [
-    {
+  },
+
+  fashion: {
     id: 'fashion',
     name: 'Fashion Trends',
     symbol: '👗',
@@ -412,12 +208,9 @@ else if (category === 'technews') {
     currentPrice: '$110',
     participants: 30,
     potSize: '$300',
-  }
-  ] }
+  },
 
-  else if (category === 'celebs') {
-  return [
-    {
+  celebs: {
     id: 'celebs',
     name: 'Celebrity News',
     symbol: '🌟',
@@ -427,12 +220,9 @@ else if (category === 'technews') {
     currentPrice: '$160',
     participants: 47,
     potSize: '$470',
-  }
-  ] }
+  },
 
-  else if (category === 'health') {
-  return [
-    {
+  health: {
     id: 'health',
     name: 'Health & Fitness',
     symbol: '💪',
@@ -442,12 +232,9 @@ else if (category === 'technews') {
     currentPrice: '$175',
     participants: 44,
     potSize: '$440',
-  }
-  ] }
-  
-else if (category === 'gaming') {
-  return [
-    {
+  },
+
+  gaming: {
     id: 'gaming',
     name: 'Gaming',
     symbol: '🎮',
@@ -457,12 +244,9 @@ else if (category === 'gaming') {
     currentPrice: '$205',
     participants: 53,
     potSize: '$530',
-  }
-  ] }
+  },
 
-  else if (category === 'travel') {
-  return [
-    {
+  travel: {
     id: 'travel',
     name: 'Travel & Tourism',
     symbol: '✈️',
@@ -472,82 +256,102 @@ else if (category === 'gaming') {
     currentPrice: '$185',
     participants: 40,
     potSize: '$400',
-  }
-  ] } 
-
-
- else if (category === 'weather') {
-  return [
-    {
-      id: 'london-temp-3pm',
-      name: 'London 3PM ≥ 22°C',
-      symbol: '',
-      color: '#4682B4',
-      question: 'Will the temperature at London Heathrow at 15:00 UTC today be 22°C or higher?',
-      icon: 'https://cdn.mos.cms.futurecdn.net/ZcS3oG3vjPb4mnVcRYGbmk.jpg',
-      currentPrice: '-',
-      participants: 94,
-      potSize: '$940',
-    },
-    
-  ]
-}
-
-
- else if (category === 'stocks') {
-  return [
-    {
-    id: 'stocks',
-    name: 'Tesla',
-    symbol: 'TSLA',
-    contractAddress: '0xf07E717e1dB49dDdB207C68cCb433BaE4Bc65fC9',
-    color: '#E31837',
-    question: t.teslaQuestion ?? '',
-    icon: 'https://assets.finbold.com/uploads/2025/03/Short-squeeze-alert-for-Tesla-stock-1024x682.jpg',
-    currentPrice: '$248.50',
-    participants: 156,
-    potSize: '$1,560',
   },
-  
-  ]
-}
 
-else if (category === 'Crypto'){
-  return [
-    {
-    id: 'Crypto',
-    name: 'crypto',
+  // Special markets with unique definitions
+  chelseaManutd: {
+    id: 'chelsea-manutd',
+    name: 'Chelsea vs Man United',
+    symbol: '⚽️',
+    color: '#034694',
+    question: 'Will Chelsea beat Man United?',
+    icon: 'https://www.nbc.com/sites/nbcblog/files/2024/07/paris-2024-olympics-soccer.jpg',
+    currentPrice: '-',
+    participants: 210,
+    potSize: '$2,100',
+  },
+
+  londonTemp: {
+    id: 'london-temp-3pm',
+    name: 'London 3PM ≥ 22°C',
     symbol: '',
-    contractAddress: '0xe9b69d0EA3a6E018031931d300319769c6629866',
-    color: '#FF5733',
-    question: 'Will Bitcoin close the day higher than it opened?',
-    icon: 'https://imagenes.elpais.com/resizer/v2/RHT44JJG7YLJUGQUHJZYYMVIDM.jpg?auth=660c11fcb0487f91edb65bc9c3ee0feaf3e584d22c991318625202b52722555a&width=1200',
-    currentPrice: '$100',
-    participants: 50,
-    potSize: '$500',
-  }]
-}
+    color: '#4682B4',
+    question: 'Will the temperature at London Heathrow at 15:00 UTC today be 22°C or higher?',
+    icon: 'https://cdn.mos.cms.futurecdn.net/ZcS3oG3vjPb4mnVcRYGbmk.jpg',
+    currentPrice: '-',
+    participants: 94,
+    potSize: '$940',
+  },
 
-else if (category === 'xtrends') {
-  return [
-    {
-      id: 'us-sports-top',
-      name: 'Sports',
-      symbol: '',
-      color: '#1DA1F2',
-      question: 'Will a sports-related topic be the #1 trending topic on X in the United States at 21:00 UTC today?',
-      icon: 'https://cdn.mos.cms.futurecdn.net/Pwh2dVaGJY9yDxznmn8vEg.jpg',
-      currentPrice: '-',
-      participants: 112,
-      potSize: '$1120',
-    }
-  ] }
+  usSportsTop: {
+    id: 'us-sports-top',
+    name: 'Sports',
+    symbol: '',
+    color: '#1DA1F2',
+    question: 'Will a sports-related topic be the #1 trending topic on X in the United States at 21:00 UTC today?',
+    icon: 'https://cdn.mos.cms.futurecdn.net/Pwh2dVaGJY9yDxznmn8vEg.jpg',
+    currentPrice: '-',
+    participants: 112,
+    potSize: '$1120',
+  },
+};
 
-  // Default category (financial/crypto/etc)
-  return [
-  
-]
-}
+// ============================================
+// CATEGORY MAPPINGS - Define which markets belong to each category
+// ============================================
 
+const CATEGORY_MAPPINGS: Record<string, string[]> = {
+  // Main categories
+  'options': ['trending', 'crypto', 'stocks', 'music', 'xtrends', 'weather', 'sports', 'politics', 'elections', 'tvshows', 'popculture', 'technews', 'movies', 'space', 'fashion', 'celebs', 'health', 'gaming', 'travel'],
 
+  // Individual market categories
+  'Trending': ['trending'],
+  'Crypto': ['crypto'],
+  'stocks': ['stocks'],
+  'music': ['music'],
+  'sports': ['chelseaManutd'],
+  'politics': ['politics'],
+  'elections': ['elections'],
+  'tvshows': ['tvshows'],
+  'popculture': ['popculture'],
+  'technews': ['technews'],
+  'movies': ['movies'],
+  'space': ['space'],
+  'fashion': ['fashion'],
+  'celebs': ['celebs'],
+  'health': ['health'],
+  'gaming': ['gaming'],
+  'travel': ['travel'],
+  'weather': ['londonTemp'],
+  'xtrends': ['usSportsTop'],
+};
 
+// ============================================
+// OPTIMIZED getMarkets FUNCTION - No more if/else chains!
+// ============================================
+
+export const getMarkets = (t: Translation, category: string): Market[] => {
+  // Get the market keys for this category
+  const marketKeys = CATEGORY_MAPPINGS[category] || [];
+
+  // Map keys to actual market objects and apply translations
+  return marketKeys
+    .map(key => {
+      const market = MARKET_DEFINITIONS[key];
+      if (!market) {
+        console.warn(`Market definition not found for key: ${key}`);
+        return null;
+      }
+
+      // Apply dynamic translations for specific markets
+      let translatedMarket = { ...market };
+
+      // Apply Tesla question translation for stocks
+      if (key === 'stocks') {
+        translatedMarket.question = t.teslaQuestion || market.question;
+      }
+
+      return translatedMarket;
+    })
+    .filter((market): market is Market => market !== null);
+};

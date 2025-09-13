@@ -1,14 +1,9 @@
 "use server";
 
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
 import { WrongPredictions, WrongPredictionsCrypto, FeaturedBets, CryptoBets, StocksBets, MusicBets, LivePredictions, LiveQuestions, UsersTable, MarketOutcomes, EvidenceSubmissions, PotInformation, UserPredictionHistory } from "../Database/schema";
 import { eq, inArray, lt, asc, sql, and } from "drizzle-orm";
 import { getBetsTableName, getWrongPredictionsTableFromType, getTableFromType, TableType, CONTRACT_TO_TABLE_MAPPING } from "./config";
-
-// Database setup
-const sqlConnection = neon(process.env.DATABASE_URL!);
-const db = drizzle(sqlConnection);
+import { db, readDb, getDbForWrite, getDbForRead } from "./db";
 
 // Test database connectivity
 export async function testDatabaseConnection() {
@@ -16,12 +11,12 @@ export async function testDatabaseConnection() {
     console.log('🔍 Testing database connection...');
     
     // Simple connectivity test
-    const testQuery = await db.select().from(FeaturedBets).limit(1);
+    const testQuery = await getDbForRead().select().from(FeaturedBets).limit(1);
     console.log('✅ Database connection successful');
-    
+
     // Check if MarketOutcomes table exists
     try {
-      const marketOutcomesTest = await db.select().from(MarketOutcomes).limit(1);
+      const marketOutcomesTest = await getDbForRead().select().from(MarketOutcomes).limit(1);
       console.log('✅ MarketOutcomes table exists and accessible');
       return { success: true, message: 'Database and MarketOutcomes table accessible' };
     } catch (tableError) {

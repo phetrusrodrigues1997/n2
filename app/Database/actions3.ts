@@ -1,19 +1,9 @@
 "use server";
 
-import { drizzle } from 'drizzle-orm/neon-http';
-import { neon } from '@neondatabase/serverless';
 import { eq, and, desc, asc } from 'drizzle-orm';
-import { PotParticipationHistory, FeaturedBets, CryptoBets, StocksBets, UserPredictionHistory } from './schema';
+import { PotParticipationHistory, UserPredictionHistory } from './schema';
 import { getBetsTableName, getWrongPredictionsTableName, TableType } from './config';
-
-// Initialize database connection only when needed (server-side)
-function getDb() {
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL is not set');
-  }
-  const sql = neon(process.env.DATABASE_URL);
-  return drizzle(sql);
-}
+import { getDbForWrite, getDbForRead, getDb } from "./db";
 
 /**
  * Records when a user enters or re-enters a pot
@@ -96,7 +86,7 @@ export async function isUserActiveOnDate(
     console.log(`🔍 Checking if ${walletAddress} was active on ${targetDate} in pot ${contractAddress}`);
     
     // Get all entry/exit events for this user and contract up to the target date
-    const events = await getDb()
+    const events = await getDbForRead()
       .select()
       .from(PotParticipationHistory)
       .where(
@@ -146,7 +136,7 @@ export async function getEligiblePredictors(
     console.log(`🎯 Getting eligible predictors for pot ${contractAddress} on ${targetDate}`);
     
     // Get all entry/exit events for this contract up to the target date
-    const events = await getDb()
+    const events = await getDbForRead()
       .select()
       .from(PotParticipationHistory)
       .where(eq(PotParticipationHistory.contractAddress, contractAddress.toLowerCase()))

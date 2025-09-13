@@ -67,6 +67,7 @@ export default function App() {
 
   // Carousel state
   const [selectedMarket, setSelectedMarket] = useState('Trending');
+  const [activeCarousel, setActiveCarousel] = useState<'first' | 'second'>('first'); // Track which carousel was last used
   const [isMoreDropdownOpen, setIsMoreDropdownOpen] = useState(false);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
@@ -694,11 +695,14 @@ export default function App() {
                 {(isMobile ? marketOptions : marketOptions.slice(0, 14)).map((market) => (
                   <button
   key={market.id}
-  onClick={() => setSelectedMarket(market.id)}
+  onClick={() => {
+    setSelectedMarket(market.id);
+    setActiveCarousel('first');
+  }}
   className={`
     flex-shrink-0 flex items-center px-1.5 py-0.5 cursor-pointer whitespace-nowrap
     transition-opacity duration-200
-    ${selectedMarket === market.id
+    ${selectedMarket === market.id && activeCarousel === 'first'
       ? 'text-[rgba(0,0,0,0.9)] font-semibold opacity-100'
       : 'text-[rgba(0,0,0,0.9)] font-medium opacity-70 hover:opacity-100'
     }
@@ -928,13 +932,16 @@ export default function App() {
                 {shuffledMarkets.map((market) => (
                   <button
                     key={`personalized-${market.id}`}
-                    onClick={() => setSelectedMarket(market.id)}
-                    className={`group flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 transition-all duration-300 ${selectedMarket === market.id
+                    onClick={() => {
+                      setSelectedMarket(market.id);
+                      setActiveCarousel('second');
+                    }}
+                    className={`group flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 transition-all duration-300 ${selectedMarket === market.id && activeCarousel === 'second'
                         ? 'text-purple-700 bg-purple-100 border border-purple-200 rounded-full'
                         : 'text-black border border-gray-300 rounded-full hover:text-gray-600'
                       }`}
                     style={{
-                      fontWeight: selectedMarket === market.id ? '500' : '500',
+                      fontWeight: selectedMarket === market.id && activeCarousel === 'second' ? '500' : '500',
                       minWidth: 'fit-content',
                       height: 'auto',
                       // fontFamily: 'Inter, system-ui, -apple-system, sans-serif'

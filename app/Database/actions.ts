@@ -1,11 +1,8 @@
 "use server";
 
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
-import {  Messages, FeaturedBets, CryptoBets, StocksBets, MusicBets, LivePredictions, Bookmarks } from "./schema"; // Import the schema
-import { eq, sql, and, inArray, notInArray } from "drizzle-orm";
-import { WrongPredictions  } from "./schema";
-import { getBetsTableName, getWrongPredictionsTableName,getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING, getTableTypeFromMarketId } from "./config";
+import {  Messages, LivePredictions, Bookmarks } from "./schema"; // Import the schema
+import { eq, sql, and, inArray } from "drizzle-orm";
+import { getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING, getTableTypeFromMarketId } from "./config";
 import { ReferralCodes, Referrals, FreeEntries, UsersTable } from "./schema";
 import { EvidenceSubmissions, MarketOutcomes, PredictionIdeas, PotParticipationHistory, PotInformation } from "./schema";
 import { recordPotEntry, recordUserPrediction } from './actions3';
@@ -13,65 +10,50 @@ import { desc } from "drizzle-orm";
 import { getPrice } from '../Constants/getPrice';
 import { getMarkets } from '../Constants/markets';
 import { getTranslation } from '../Languages/languages';
+import { db, getDbForRead } from "./db";
 
-// Initialize database connection
-const sqlConnection = neon(process.env.DATABASE_URL!);
-const db = drizzle(sqlConnection);
-
-// UK timezone helper functions
-const getUKOffset = (date: Date): number => {
-  // Create a date in UK timezone and compare to UTC
-  const ukDateString = date.toLocaleString('en-GB', { 
-    timeZone: 'Europe/London',
-    year: 'numeric', 
-    month: '2-digit', 
-    day: '2-digit', 
-    hour: '2-digit', 
-    minute: '2-digit', 
-    second: '2-digit',
-    hour12: false
-  });
-  
-  const utcDateString = date.toLocaleString('en-GB', { 
-    timeZone: 'UTC',
-    year: 'numeric', 
-    month: '2-digit', 
-    day: '2-digit', 
-    hour: '2-digit', 
-    minute: '2-digit', 
-    second: '2-digit',
-    hour12: false
-  });
-  
-  // Parse both dates and find the difference
-  const ukTime = new Date(ukDateString.replace(/(\d{2})\/(\d{2})\/(\d{4}), (.+)/, '$3-$2-$1 $4'));
-  const utcTime = new Date(utcDateString.replace(/(\d{2})\/(\d{2})\/(\d{4}), (.+)/, '$3-$2-$1 $4'));
-  
-  return ukTime.getTime() - utcTime.getTime(); // Difference in milliseconds
-};
-
-const getUKTime = (date: Date = new Date()): Date => {
-  const ukOffsetMs = getUKOffset(date);
-  return new Date(date.getTime() + ukOffsetMs);
-};
-
+// UK timezone helper functions - Simplified approach using native JS timezone support
 const getUKDateString = (date: Date = new Date()): string => {
-  const ukTime = getUKTime(date);
-  return ukTime.toLocaleDateString('en-GB', {
-    year: 'numeric', 
-    month: '2-digit', 
-    day: '2-digit' 
-  }).split('/').reverse().join('-'); // Convert DD/MM/YYYY to YYYY-MM-DD
+  // Use toLocaleDateString with Europe/London timezone for accurate BST/GMT handling
+  const ukDateString = date.toLocaleDateString('en-CA', {
+    timeZone: 'Europe/London',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }); // en-CA gives YYYY-MM-DD format directly
+
+  return ukDateString;
 };
 
 const getTomorrowUKDateString = (date: Date = new Date()): string => {
-  const ukTime = getUKTime(date);
-  ukTime.setDate(ukTime.getDate() + 1); // Add 1 day to UK time
-  return ukTime.toLocaleDateString('en-GB', {
-    year: 'numeric', 
-    month: '2-digit', 
-    day: '2-digit' 
-  }).split('/').reverse().join('-'); // Convert DD/MM/YYYY to YYYY-MM-DD
+  // Create a new date object to avoid mutating the original
+  const tomorrow = new Date(date.getTime() + 24 * 60 * 60 * 1000); // Add 1 day in milliseconds
+
+  // Get tomorrow's date in UK timezone
+  const tomorrowUK = tomorrow.toLocaleDateString('en-CA', {
+    timeZone: 'Europe/London',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+
+  return tomorrowUK;
+};
+
+const getUKTime = (date: Date = new Date()): Date => {
+  // Convert to UK timezone and return as Date object
+  const ukTimeString = date.toLocaleString('en-US', {
+    timeZone: 'Europe/London',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+
+  return new Date(ukTimeString);
 };
 
 
@@ -476,15 +458,13 @@ export async function placeBitcoinBet(walletAddress: string, prediction: 'positi
     // 4. Otherwise, insert new bet for tomorrow
     // Create UK timezone timestamp for created_at
     const ukCreatedAt = getUKTime(now);
-    
+
     // DEBUG: Log timezone information
-    const ukOffsetMs = getUKOffset(now);
     console.log('=== TIMEZONE DEBUG ===');
     console.log('Server time (now):', now.toISOString());
     console.log('UK time (calculated):', ukCreatedAt.toISOString());
-    console.log('UK offset detected:', ukOffsetMs / (60 * 60 * 1000), 'hours');
-    console.log('Current UK timezone:', ukOffsetMs === 0 ? 'GMT' : 'BST');
-    console.log('Prediction date:', predictionDate);
+    console.log('Today UK date:', getUKDateString(now));
+    console.log('Tomorrow UK date (bet_date):', predictionDate);
     console.log('======================');
     
     const result = await db
@@ -1296,7 +1276,7 @@ export async function getUserStats(walletAddress: string) {
     // Normalize wallet address to lowercase for consistency
     const normalizedAddress = walletAddress.toLowerCase();
     
-    const user = await db
+    const user = await getDbForRead()
       .select({
         potsWon: UsersTable.potsWon,
         totalEarningsETH: UsersTable.totalEarningsETH, // ETH values in wei (18 decimals)
@@ -2043,7 +2023,7 @@ export async function getUserBookmarks(walletAddress: string) {
     // Normalize wallet address for consistency
     const normalizedWalletAddress = walletAddress.toLowerCase();
     
-    const bookmarks = await db
+    const bookmarks = await getDbForRead()
       .select({
         id: Bookmarks.id,
         walletAddress: Bookmarks.walletAddress,
@@ -2081,7 +2061,7 @@ export async function isMarketBookmarked(walletAddress: string, marketId: string
     // console.log(`📑 Checking bookmark for wallet: ${normalizedWalletAddress}, marketIds: ${searchIds.join(', ')}`);
 
     // Select only essential columns to avoid issues with missing contract_address column
-    const bookmark = await db
+    const bookmark = await getDbForRead()
       .select({
         id: Bookmarks.id,
         marketId: Bookmarks.marketId,
@@ -2121,7 +2101,7 @@ export async function getPredictionPercentages(marketId: string) {
     console.log(`📊 Using table type: "${tableType}" for market: "${marketId}"`);
 
     // Query the appropriate table - only for tomorrow's date
-    const bets = await db
+    const bets = await getDbForRead()
       .select({
         prediction: BetsTable.prediction
       })
