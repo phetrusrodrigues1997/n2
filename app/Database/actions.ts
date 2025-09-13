@@ -300,23 +300,9 @@ export async function getReEntryFee(walletAddress: string, typeTable: string): P
     
     console.log(`🔍 getReEntryFee: Query result length: ${result.length}`);
     
-    // If user has wrong prediction, return today's dynamic entry fee
+    // If user has wrong prediction, return 1 (simple elimination indicator)
     if (result.length > 0) {
-      const now = new Date();
-      const ukNow = getUKTime(now);
-      const day = ukNow.getDay(); // 0 = Sunday, 1 = Monday, etc.
-      
-      const basePrices = {
-        0: 10000, // Sunday: 0.01 USDC
-        1: 10000, // Monday: 0.02 USDC  
-        2: 10000, // Tuesday: 0.03 USDC
-        3: 10000, // Wednesday: 0.04 USDC
-        4: 10000, // Thursday: 0.05 USDC
-        5: 10000, // Friday: 0.06 USDC
-        6: 10000, // Saturday: Fallback to Sunday price
-      };
-      
-      return basePrices[day as keyof typeof basePrices];
+      return 1;
     }
     
     return null;
@@ -2141,6 +2127,24 @@ export async function isMarketBookmarked(walletAddress: string, marketId: string
   }
 }
 
+// Helper function to map market ID to table type
+function getTableTypeFromMarketId(marketId: string): string {
+  // Map market IDs to table types
+  switch (marketId.toLowerCase()) {
+    case 'trending':
+    case 'featured':
+      return 'featured';
+    case 'crypto':
+      return 'crypto';
+    case 'stocks':
+      return 'stocks';
+    case 'music':
+      return 'music';
+    default:
+      return 'featured'; // Default fallback
+  }
+}
+
 export async function getPredictionPercentages(marketId: string) {
   try {
     // Use the SAME date calculation functions that store predictions for consistency
@@ -2148,75 +2152,33 @@ export async function getPredictionPercentages(marketId: string) {
 
     console.log(`📊 getPredictionPercentages called with marketId: "${marketId}", tomorrowDate: ${tomorrowDateStr}`);
 
-    // Determine which table to query based on market ID
+    // Get table type from market ID
+    const tableType = getTableTypeFromMarketId(marketId);
+    
+    // Get the appropriate table using the existing getTableFromType function
+    const BetsTable = getTableFromType(tableType);
+
+    console.log(`📊 Using table type: "${tableType}" for market: "${marketId}"`);
+
+    // Query the appropriate table - only for tomorrow's date
+    const bets = await db
+      .select({
+        prediction: BetsTable.prediction
+      })
+      .from(BetsTable)
+      .where(eq(BetsTable.betDate, tomorrowDateStr));
+    
+    // Count positive and negative predictions
     let totalPositive = 0;
     let totalNegative = 0;
-
-    if (marketId === 'Trending' || marketId === 'Featured') {
-      // Query FeaturedBets table - only for tomorrow's date
-      const featuredBets = await db
-        .select({
-          prediction: FeaturedBets.prediction
-        })
-        .from(FeaturedBets)
-        .where(eq(FeaturedBets.betDate, tomorrowDateStr));
-      
-      featuredBets.forEach(bet => {
-        if (bet.prediction === 'positive') {
-          totalPositive++;
-        } else if (bet.prediction === 'negative') {
-          totalNegative++;
-        }
-      });
-    } else if (marketId === 'Crypto') {
-      // Query CryptoBets table - only for tomorrow's date  
-      const cryptoBets = await db
-        .select({
-          prediction: CryptoBets.prediction
-        })
-        .from(CryptoBets)
-        .where(eq(CryptoBets.betDate, tomorrowDateStr));
-      
-      cryptoBets.forEach(bet => {
-        if (bet.prediction === 'positive') {
-          totalPositive++;
-        } else if (bet.prediction === 'negative') {
-          totalNegative++;
-        }
-      });
-    } else if (marketId === 'stocks') {
-      // Query StocksBets table - only for tomorrow's date  
-      const stocksBets = await db
-        .select({
-          prediction: StocksBets.prediction
-        })
-        .from(StocksBets)
-        .where(eq(StocksBets.betDate, tomorrowDateStr));
-      
-      stocksBets.forEach(bet => {
-        if (bet.prediction === 'positive') {
-          totalPositive++;
-        } else if (bet.prediction === 'negative') {
-          totalNegative++;
-        }
-      });
-    } else if (marketId === 'music') {
-      // Query MusicBets table - only for tomorrow's date  
-      const musicBets = await db
-        .select({
-          prediction: MusicBets.prediction
-        })
-        .from(MusicBets)
-        .where(eq(MusicBets.betDate, tomorrowDateStr));
-      
-      musicBets.forEach(bet => {
-        if (bet.prediction === 'positive') {
-          totalPositive++;
-        } else if (bet.prediction === 'negative') {
-          totalNegative++;
-        }
-      });
-    }
+    
+    bets.forEach(bet => {
+      if (bet.prediction === 'positive') {
+        totalPositive++;
+      } else if (bet.prediction === 'negative') {
+        totalNegative++;
+      }
+    });
 
     const totalPredictions = totalPositive + totalNegative;
     
@@ -2502,35 +2464,19 @@ export async function getUserParticipatingContracts(userAddress: string) {
         if (potParticipation.length > 0) {
           userParticipates = true;
         } else {
-          // Fallback: check if user has made predictions (original logic)
-          if (tableType === 'featured') {
+          // Fallback: check if user has made predictions using scalable approach
+          try {
+            const BetsTable = getTableFromType(tableType);
             const predictions = await db
               .select()
-              .from(FeaturedBets)
-              .where(eq(FeaturedBets.walletAddress, normalizedUserAddress))
+              .from(BetsTable)
+              .where(eq(BetsTable.walletAddress, normalizedUserAddress))
               .limit(1);
             userParticipates = predictions.length > 0;
-          } else if (tableType === 'crypto') {
-            const predictions = await db
-              .select()
-              .from(CryptoBets)
-              .where(eq(CryptoBets.walletAddress, normalizedUserAddress))
-              .limit(1);
-            userParticipates = predictions.length > 0;
-          } else if (tableType === 'stocks') {
-            const predictions = await db
-              .select()
-              .from(StocksBets)
-              .where(eq(StocksBets.walletAddress, normalizedUserAddress))
-              .limit(1);
-            userParticipates = predictions.length > 0;
-          } else if (tableType === 'music') {
-            const predictions = await db
-              .select()
-              .from(MusicBets)
-              .where(eq(MusicBets.walletAddress, normalizedUserAddress))
-              .limit(1);
-            userParticipates = predictions.length > 0;
+            console.log(`🔍 Contract ${contractAddress} (${tableType}): Predictions found: ${predictions.length > 0}`);
+          } catch (tableError) {
+            console.error(`Error getting table for type ${tableType}:`, tableError);
+            userParticipates = false;
           }
         }
       } catch (queryError) {
