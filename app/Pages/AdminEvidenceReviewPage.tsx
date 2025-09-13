@@ -20,7 +20,7 @@ const getTableTypeFromContract = (contractAddress: string): TableType => {
   return mappedType || contractAddress.slice(2, 8).toLowerCase();
 };
 
-type TableType = "featured" | "crypto" | string;
+type TableType = "featured" | "crypto" | "stocks" | "music";
 
 interface EvidenceSubmission {
   id: number;

@@ -16,7 +16,6 @@ import {
   consumeFreeEntry, 
   getReEntryFee,
   processReEntry,
-  debugWrongPredictions,
   removeBookmark,
 } from '../Database/actions';
 import { recordPotEntry,clearPotParticipationHistory } from '../Database/actions3';
@@ -376,11 +375,6 @@ const PredictionPotTest =  ({ activeSection, setActiveSection }: PredictionPotPr
     if (!address) return;
     
     try {
-      
-      
-      // Debug wrong predictions tables
-      await debugWrongPredictions(address);
-      
       // Load available free entries
       const freeEntries = await getAvailableFreeEntries(address);
       setFreeEntriesAvailable(freeEntries);

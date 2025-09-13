@@ -104,9 +104,14 @@ export interface Translations {
   saveAmount?: string;
   usingDiscount?: string;
   payToEnter?: string;
+  joinTournament?: string;
   joinPredictionsTournament?: string;
+  competeMobile?: string;
   competeForPot?: string;
+  referralCodeShort?: string;
   enterCode?: string;
+  processingMobile?: string;
+  enterButtonShort?: string;
   enterButton?: string;
   referralProgram?: string; // Added for referral navigation links
   referralCode?: string; // Added for referral code input label
@@ -461,9 +466,14 @@ export const translations: Record<Language, Translations> = {
     saveAmount: 'SAVE',
     usingDiscount: 'Using Discount...',
     payToEnter: 'Pay to Enter',
+    joinTournament: 'Join Tournament',
     joinPredictionsTournament: 'Join Predictions Tournament',
+    competeMobile: 'Compete & win',
     competeForPot: 'Compete for the pot',
+    referralCodeShort: 'Referral Code',
     enterCode: 'Enter code...',
+    processingMobile: 'Processing...',
+    enterButtonShort: 'Enter',
     enterButton: 'Enter',
     referralProgram: 'Referrals', // Added for referral navigation links
     referralCode: 'Referral Code (Optional)', // Added for referral code input label
@@ -810,9 +820,14 @@ export const translations: Record<Language, Translations> = {
     saveAmount: 'ECONOMIZE',
     usingDiscount: 'Usando Desconto...',
     payToEnter: 'Pagar para Entrar',
+    joinTournament: 'Participar do Torneio',
     joinPredictionsTournament: 'Participar do Torneio de Previsões',
+    competeMobile: 'Concorra e ganhe',
     competeForPot: 'Concorra ao pote',
+    referralCodeShort: 'Código de Referência',
     enterCode: 'Digite o código...',
+    processingMobile: 'Processando...',
+    enterButtonShort: 'Entrar',
     enterButton: 'Entrar',
 
     // Market Names
@@ -1059,8 +1074,9 @@ export const supportedLanguages: { code: Language; name: string; flag: string }[
 // Helper function to translate market names
 export const getMarketDisplayName = (marketName: string, language: Language): string => {
   const t = getTranslation(language);
-  
+
   const marketNameMap: Record<string, string> = {
+    // Friendly display names (original)
     'Trending': t.marketTrending,
     'Crypto': t.marketCrypto,
     'Stocks': t.marketStocks,
@@ -1080,8 +1096,14 @@ export const getMarketDisplayName = (marketName: string, language: Language): st
     'Health & Fitness': t.marketHealthFitness,
     'Gaming': t.marketGaming,
     'Travel & Tourism': t.marketTravelTourism,
+
+    // Table type aliases (for easier lookup from config.ts types)
+    'featured': t.marketTrending,     // Maps to same as 'Trending'
+    'crypto': t.marketCrypto,        // Maps to same as 'Crypto'
+    'stocks': t.marketStocks,        // Maps to same as 'Stocks'
+    'music': t.marketMusicCharts,    // Maps to same as 'Music Charts'
   };
-  
+
   return marketNameMap[marketName] || marketName;
 };
 

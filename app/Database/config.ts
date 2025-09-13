@@ -40,14 +40,40 @@ export const calculateEntryFee = (hasStarted: boolean, startedOnDate: string | n
 // Used across PredictionPotTest, MakePredictionsPage, LandingPage, BookmarksPage, TutorialBridge, AdminEvidenceReviewPage
 export const CONTRACT_TO_TABLE_MAPPING = {
   "0xd1547F5bC0390F5020B2A80F262e28ccfeF2bf9c": "featured",
-  "0xe9b69d0EA3a6E018031931d300319769c6629866": "crypto", 
+  "0xe9b69d0EA3a6E018031931d300319769c6629866": "crypto",
   "0xf07E717e1dB49dDdB207C68cCb433BaE4Bc65fC9": "stocks",
   "0xb85D3aE374b8098A6cA553dB90C0978401a34f71": "music",
 } as const;
 
+// Markets that have deployed smart contracts and support prediction percentages
+// Used for loading thermometer data and live percentage updates
+export const MARKETS_WITH_CONTRACTS = ['Trending', 'Crypto', 'stocks', 'music'] as const;
+
 // Type for contract addresses
 export type ContractAddress = keyof typeof CONTRACT_TO_TABLE_MAPPING;
 export type TableType = typeof CONTRACT_TO_TABLE_MAPPING[ContractAddress];
+
+/**
+ * Centralized function to map market IDs to table types
+ * Used across LandingPage.tsx, actions.ts, and other components
+ * @param marketId The market ID to map (case-insensitive)
+ * @returns The corresponding table type
+ */
+export function getTableTypeFromMarketId(marketId: string): TableType {
+  switch (marketId.toLowerCase()) {
+    case 'trending':
+    case 'featured':
+      return 'featured';
+    case 'crypto':
+      return 'crypto';
+    case 'stocks':
+      return 'stocks';
+    case 'music':
+      return 'music';
+    default:
+      return 'featured'; // Default fallback
+  }
+}
 
 /**
  * Get minimum players required for a specific contract

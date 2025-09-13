@@ -5,7 +5,7 @@ import { drizzle } from "drizzle-orm/neon-http";
 import {  Messages, FeaturedBets, CryptoBets, StocksBets, MusicBets, LivePredictions, Bookmarks } from "./schema"; // Import the schema
 import { eq, sql, and, inArray, notInArray } from "drizzle-orm";
 import { WrongPredictions  } from "./schema";
-import { getBetsTableName, getWrongPredictionsTableName,getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING } from "./config";
+import { getBetsTableName, getWrongPredictionsTableName,getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING, getTableTypeFromMarketId } from "./config";
 import { ReferralCodes, Referrals, FreeEntries, UsersTable } from "./schema";
 import { EvidenceSubmissions, MarketOutcomes, PredictionIdeas, PotParticipationHistory, PotInformation } from "./schema";
 import { recordPotEntry, recordUserPrediction } from './actions3';
@@ -313,29 +313,6 @@ export async function getReEntryFee(walletAddress: string, typeTable: string): P
 }
 
 
-/**
- * Debug function to check wrong predictions table usage
- */
-export async function debugWrongPredictions(walletAddress: string): Promise<void> {
-  try {
-    // Normalize wallet address for consistency
-    const normalizedWalletAddress = walletAddress.toLowerCase();
-    
-    // Check featured market (WrongPredictions table)
-    const featuredResult = await db
-      .select()
-      .from(WrongPredictions)
-      .where(eq(WrongPredictions.walletAddress, normalizedWalletAddress));
-    
-    
-    
-    
-    
-    
-  } catch (error) {
-    console.error("Error in debugWrongPredictions:", error);
-  }
-}
 
 
 /**
@@ -2127,23 +2104,6 @@ export async function isMarketBookmarked(walletAddress: string, marketId: string
   }
 }
 
-// Helper function to map market ID to table type
-function getTableTypeFromMarketId(marketId: string): string {
-  // Map market IDs to table types
-  switch (marketId.toLowerCase()) {
-    case 'trending':
-    case 'featured':
-      return 'featured';
-    case 'crypto':
-      return 'crypto';
-    case 'stocks':
-      return 'stocks';
-    case 'music':
-      return 'music';
-    default:
-      return 'featured'; // Default fallback
-  }
-}
 
 export async function getPredictionPercentages(marketId: string) {
   try {

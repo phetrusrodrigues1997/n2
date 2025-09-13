@@ -466,13 +466,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                   const marketType = CONTRACT_TO_TABLE_MAPPING[contractAddress as keyof typeof CONTRACT_TO_TABLE_MAPPING];
                   // Get proper market display name using translations
                   const getLocalMarketDisplayName = (type: string) => {
-                    switch (type) {
-                      case 'featured': return getMarketDisplayName('Trending', currentLanguage);
-                      case 'crypto': return getMarketDisplayName('Crypto', currentLanguage);
-                      case 'stocks': return getMarketDisplayName('Stocks', currentLanguage);
-                      case 'music': return getMarketDisplayName('Music Charts', currentLanguage);
-                      default: return t.unknownMarket;
-                    }
+                    return getMarketDisplayName(type, currentLanguage) || t.unknownMarket;
                   };
                   const marketName = getLocalMarketDisplayName(marketType);
                   

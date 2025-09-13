@@ -300,6 +300,9 @@ export async function updatePotEntryAmount(
     const usdToEth = async (usdAmount: number): Promise<bigint> => {
       try {
         const currentEthPrice = await getPrice('ETH');
+        if (currentEthPrice === null) {
+          throw new Error('ETH price is null');
+        }
         const ethAmount = usdAmount / currentEthPrice;
         return parseEther(ethAmount.toString());
       } catch (error) {
@@ -313,7 +316,7 @@ export async function updatePotEntryAmount(
     const entryAmountWei = await usdToEth(entryAmount);
 
     await db2.update(PrivatePots)
-      .set({ entryAmount: entryAmountWei })
+      .set({ entryAmount: Number(entryAmountWei) })
       .where(eq(PrivatePots.contractAddress, contractAddress.toLowerCase()));
 
     return { success: true };

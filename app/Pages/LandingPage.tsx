@@ -9,7 +9,7 @@ import { Language, getTranslation, supportedLanguages, getTranslatedMarketQuesti
 import { getMarkets, Market } from '../Constants/markets';
 import { CustomAlert, useCustomAlert } from '../Components/CustomAlert';
 import { addBookmark, removeBookmark, isMarketBookmarked, getPredictionPercentages, getTomorrowsBet, placeBitcoinBet, getReEntryFee } from '../Database/actions';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2 } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, getTableTypeFromMarketId, MARKETS_WITH_CONTRACTS } from '../Database/config';
 import { getPrice } from '../Constants/getPrice';
 import { useContractData } from '../hooks/useContractData';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
@@ -418,8 +418,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       try {
         console.log('📊 Loading prediction percentages...');
 
-        const marketsWithContracts = ['Trending', 'Crypto', 'stocks', 'music']; // Markets that have prediction data
-        const percentagePromises = marketsWithContracts.map(async (marketId) => {
+        // Markets that have prediction data (imported from config.ts)
+        const percentagePromises = MARKETS_WITH_CONTRACTS.map(async (marketId) => {
           const percentages = await getPredictionPercentages(marketId);
           return { marketId, percentages };
         });
@@ -650,17 +650,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     return participants.length >= minPlayersRequired;
   };
 
-  // Helper function to map UI market IDs to table types
-  const getTableTypeFromMarketId = (marketId: string): string | null => {
-    const mapping: Record<string, string> = {
-      'Trending': 'featured',
-      'Featured': 'featured',
-      'Crypto': 'crypto',
-      'stocks': 'stocks',
-      'music': 'music'
-    };
-    return mapping[marketId] || null;
-  };
 
   // Helper function to get real pot balance for a market
   const getRealPotBalance = (marketId: string): string => {
@@ -676,14 +665,12 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
     // Try to map market ID to table type, then to display name for lookup
     const tableType = getTableTypeFromMarketId(marketId);
-    if (tableType) {
-      const displayName = getMarketDisplayName(tableType as any); // Type assertion needed
-      // console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
-      
-      if (potBalances[displayName]) {
-        console.log(`✅ Found balance using display name "${displayName}": ${potBalances[displayName]}`);
-        return potBalances[displayName];
-      }
+    const displayName = getMarketDisplayName(tableType as any); // Type assertion needed
+    // console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
+
+    if (potBalances[displayName]) {
+      console.log(`✅ Found balance using display name "${displayName}": ${potBalances[displayName]}`);
+      return potBalances[displayName];
     }
 
     // Fallback to $0 if no data
@@ -744,14 +731,12 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
     // Try to map market ID to table type, then to display name for lookup
     const tableType = getTableTypeFromMarketId(marketId);
-    if (tableType) {
-      const displayName = getMarketDisplayName(tableType as any); // Type assertion needed
-      // console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
-      
-      if (userPredictions[displayName]) {
-        console.log(`✅ Found prediction using display name "${displayName}"`);
-        return userPredictions[displayName];
-      }
+    const displayName = getMarketDisplayName(tableType as any); // Type assertion needed
+    // console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
+
+    if (userPredictions[displayName]) {
+      console.log(`✅ Found prediction using display name "${displayName}"`);
+      return userPredictions[displayName];
     }
 
     // console.log(`❌ No prediction found for "${marketId}" or mapped display name`);
@@ -973,19 +958,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       let market: Market | undefined = undefined;
 
       // Try to find the market in the specific category first
-      if (marketId === 'Trending') {
-        const trendingMarkets = getMarkets(t, 'Trending');
-        market = trendingMarkets.find(m => m.id === marketId);
-      } else if (marketId === 'Crypto') {
-        const cryptoMarkets = getMarkets(t, 'Crypto');
-        market = cryptoMarkets.find(m => m.id === marketId);
-      } else if (marketId === 'stocks') {
-        const stocksMarkets = getMarkets(t, 'stocks');
-        market = stocksMarkets.find(m => m.id === marketId);
-      } else if (marketId === 'music') {
-        const musicMarkets = getMarkets(t, 'music');
-        market = musicMarkets.find(m => m.id === marketId);
-      }
+      const marketCategory = getMarkets(t, marketId);
+      market = marketCategory.find(m => m.id === marketId);
 
       // Fallback: try to find in current markets or options
       if (!market) {

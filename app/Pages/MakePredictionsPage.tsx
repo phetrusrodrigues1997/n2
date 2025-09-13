@@ -32,18 +32,18 @@ const getUKTime = (date: Date = new Date()): Date => {
   return new Date(ukTimeString.replace(', ', 'T'));
 };
 
-// Helper function to get table type from contract address using markets.ts
-const getTableTypeFromContract = (contractAddress: string): string => {
-  const marketOptions = getMarkets(getTranslation('en'), 'options');
-  const market = marketOptions.find(m => m.contractAddress === contractAddress);
+// // Helper function to get table type from contract address using markets.ts
+// const getTableTypeFromContract = (contractAddress: string): string => {
+//   const marketOptions = getMarkets(getTranslation('en'), 'options');
+//   const market = marketOptions.find(m => m.contractAddress === contractAddress);
   
-  if (market?.id === 'Trending') return 'featured';
-  if (market?.id === 'crypto') return 'crypto';
-  if (market?.id === 'stocks') return 'stocks';
+//   if (market?.id === 'Trending') return 'featured';
+//   if (market?.id === 'crypto') return 'crypto';
+//   if (market?.id === 'stocks') return 'stocks';
   
-  // Fallback for unknown contracts
-  return 'featured';
-};
+//   // Fallback for unknown contracts
+//   return 'featured';
+// };
 
 // Use centralized table mapping from config
 const tableMapping = CONTRACT_TO_TABLE_MAPPING;

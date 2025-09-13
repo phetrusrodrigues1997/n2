@@ -201,22 +201,6 @@ export default function App() {
     }
   }, []);
 
-  // Personalized labels for the second carousel
-  const personalizedLabels = {
-    'Trending': 'For you',
-    'Crypto': 'Bitcoin',
-    'Stocks': 'Tesla',
-    'Music Charts': 'Sabrina Carpenter',
-    'X Trending Topics': 'Popular Hashtags',
-    'Weather': 'Climate',
-    'Sports': 'Football',
-    'Politics': 'Trump',
-    'Elections': 'US 2024',
-    'TV Shows': 'Netflix',
-    'Pop Culture': 'Celebrities',
-    'Tech News': 'OpenAI',
-    'Boxing': 'UFC'
-  } as const;
 
   // Function to navigate to a private pot
   const navigateToPrivatePot = (contractAddress: string) => {
@@ -436,9 +420,6 @@ export default function App() {
   }, [selectedMarket]);
 
 
-  // Removed USDC balance reading - now using ETH directly
-
-  // Removed USDC balance formatting - now using ETH directly
 
 
 
