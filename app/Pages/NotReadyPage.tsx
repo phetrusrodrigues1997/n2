@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Users, Clock } from 'lucide-react';
 import { useAccount } from 'wagmi';
-import { saveUserEmail } from '../Database/actions';
+import { saveUserEmail, notifyMinimumPlayersReached } from '../Database/actions';
 import { useContractData } from '../hooks/useContractData';
 import { CONTRACT_TO_TABLE_MAPPING, MIN_PLAYERS, MIN_PLAYERS2 } from '../Database/config';
 import Cookies from 'js-cookie';
@@ -19,6 +19,7 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
   const [emailSubmitting, setEmailSubmitting] = useState<boolean>(false);
   const [isFinalDay, setIsFinalDay] = useState<boolean>(false);
   const [isEliminated, setIsEliminated] = useState<boolean>(false);
+  const [isSendingNotification, setIsSendingNotification] = useState<boolean>(false);
   const { address } = useAccount();
   const { contractAddresses, participantsData } = useContractData();
 
@@ -112,6 +113,90 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
   const hasEnoughPlayers = current >= required;
   const isPotReady = hasEnoughPlayers && potInfo.hasStarted;
   
+  // Send notification if minimum players threshold is reached
+  useEffect(() => {
+    const triggerMinimumPlayersNotification = async () => {
+      console.log(`🔍 NotReadyPage notification check:`, {
+        hasEnoughPlayers,
+        current,
+        required,
+        contractAddressesLength: contractAddresses.length,
+        isSendingNotification,
+        address: address ? `${address.slice(0,6)}...${address.slice(-4)}` : 'null',
+        participantsDataLength: participantsData.length
+      });
+
+      // Only trigger if:
+      // 1. We have enough players
+      // 2. We have valid contract data
+      // 3. We're not already sending a notification
+      // 4. User is connected (to ensure we have participant data)
+      if (hasEnoughPlayers && contractAddresses.length > 0 && !isSendingNotification && address) {
+        const savedContract = Cookies.get('selectedMarket');
+        const contractAddress = savedContract || contractAddresses[0];
+
+        console.log(`🔍 Contract details:`, {
+          savedContract,
+          contractAddress,
+          isValidContract: contractAddress in CONTRACT_TO_TABLE_MAPPING
+        });
+
+        if (!contractAddress || !(contractAddress in CONTRACT_TO_TABLE_MAPPING)) {
+          console.log(`❌ Invalid contract address: ${contractAddress}`);
+          return;
+        }
+
+        try {
+          console.log(`🎯 NotReadyPage detected minimum players threshold reached! Sending notification...`);
+          setIsSendingNotification(true);
+
+          const typedContractAddress = contractAddress as keyof typeof CONTRACT_TO_TABLE_MAPPING;
+          const contractIndex = contractAddresses.indexOf(typedContractAddress);
+          const participants = participantsData[contractIndex];
+          const tableType = CONTRACT_TO_TABLE_MAPPING[typedContractAddress];
+
+          console.log(`🔍 Notification data:`, {
+            contractAddress,
+            contractIndex,
+            participantsCount: participants?.length || 0,
+            tableType,
+            current
+          });
+
+          const notificationResult = await notifyMinimumPlayersReached(
+            contractAddress,
+            current,
+            tableType || 'market',
+            participants ? [...participants] : []
+          );
+
+          console.log(`✅ NotReadyPage notification result:`, notificationResult);
+
+          if (!notificationResult.isDuplicate) {
+            console.log(`🎉 New minimum players notification sent successfully from NotReadyPage`);
+          } else {
+            console.log(`🔄 Notification already sent previously - no duplicate created`);
+          }
+
+        } catch (error) {
+          console.error(`❌ Error sending minimum players notification from NotReadyPage:`, error);
+        } finally {
+          setIsSendingNotification(false);
+        }
+      } else {
+        console.log(`⏭️ Skipping notification trigger:`, {
+          hasEnoughPlayers,
+          hasContractData: contractAddresses.length > 0,
+          notCurrentlySending: !isSendingNotification,
+          hasAddress: !!address
+        });
+      }
+    };
+
+    // Trigger the notification check
+    triggerMinimumPlayersNotification();
+  }, [hasEnoughPlayers, current, contractAddresses.length, participantsData.length, address]);
+
   // Debug logging (can be removed in production)
   // console.log('🔍 NotReadyPage Debug:', {
   //   current,

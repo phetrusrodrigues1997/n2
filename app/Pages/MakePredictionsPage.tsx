@@ -531,21 +531,46 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
   // Redirect to NotReadyPage if user is participant but pot is not ready for predictions
   useEffect(() => {
+    console.log(`🔍 MakePredictionsPage redirect check:`, {
+      isParticipant,
+      hasParticipants: !!participants,
+      participantsIsArray: Array.isArray(participants),
+      participantsLength: participants?.length,
+      potInfoLoaded,
+      contractAddress,
+      potInfoHasStarted: potInfo.hasStarted,
+      potInfoObject: potInfo
+    });
+
     // Only run redirect logic after pot info is loaded to avoid race conditions
     if (isParticipant && participants && Array.isArray(participants) && potInfoLoaded) {
       // Determine which minimum players requirement to use
       const contractAddresses = Object.keys(CONTRACT_TO_TABLE_MAPPING);
       const contractIndex = contractAddresses.indexOf(contractAddress);
       const minPlayersRequired = contractIndex === 0 ? MIN_PLAYERS : MIN_PLAYERS2;
-      
+
       // Redirect to NotReadyPage if:
       // 1. Not enough players, OR
       // 2. Enough players but pot hasn't officially started yet
       const shouldRedirect = participants.length < minPlayersRequired || !potInfo.hasStarted;
-      
+
+      console.log(`🔍 MakePredictionsPage redirect decision:`, {
+        participantsLength: participants.length,
+        minPlayersRequired,
+        hasEnoughPlayers: participants.length >= minPlayersRequired,
+        potHasStarted: potInfo.hasStarted,
+        shouldRedirect,
+        redirectReason: participants.length < minPlayersRequired ? 'not enough players' : !potInfo.hasStarted ? 'pot not started' : 'none'
+      });
+
       if (shouldRedirect) {
+        console.log(`🚨 MakePredictionsPage: Redirecting to NotReadyPage`);
         setActiveSection('notReadyPage');
+      } else {
+        console.log(`✅ MakePredictionsPage: User can stay on predictions page`);
       }
+    } else {
+      console.log(`⏭️ MakePredictionsPage: Skipping redirect check - conditions not met`);
     }
   }, [isParticipant, participants, contractAddress, potInfo.hasStarted, potInfoLoaded, setActiveSection]);
 

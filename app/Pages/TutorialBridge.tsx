@@ -65,6 +65,18 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
   const [hasUserEmail, setHasUserEmail] = useState<boolean | null>(null);
   const [isLoadingEmail, setIsLoadingEmail] = useState<boolean>(true);
 
+  // Pot info state
+  const [potInfo, setPotInfo] = useState<{
+    hasStarted: boolean;
+    isFinalDay: boolean;
+    startedOnDate: string | null;
+  }>({
+    hasStarted: false,
+    isFinalDay: false,
+    startedOnDate: null
+  });
+  const [potInfoLoaded, setPotInfoLoaded] = useState<boolean>(false);
+
   const { address, isConnected } = useAccount();
 
 
@@ -108,6 +120,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
     checkUserEmail();
   }, [address, isConnected]);
 
+
   // Check user participation in pots
   useEffect(() => {
     if (!isConnected || !address) {
@@ -148,11 +161,55 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
   });
 
   const participantsData = useMemo(() => [
-    participants1, 
-    participants2, 
+    participants1,
+    participants2,
     contractAddresses.length > 2 ? participants3 : undefined,
     contractAddresses.length > 3 ? participants4 : undefined
   ].filter(data => data !== undefined), [participants1, participants2, participants3, participants4, contractAddresses.length]);
+
+  // Load pot info for selected market
+  useEffect(() => {
+    const fetchPotInfo = async () => {
+      const savedContract = Cookies.get('selectedMarket');
+      const contractAddress = savedContract || contractAddresses[0];
+
+      if (!contractAddress) {
+        console.log('🔍 TutorialBridge: No contract address available for pot info');
+        return;
+      }
+
+      console.log('🔍 TutorialBridge: Fetching pot info for:', contractAddress);
+      setPotInfoLoaded(false);
+
+      try {
+        const response = await fetch('/api/pot-info', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contractAddress })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setPotInfo({
+            hasStarted: data.hasStarted || false,
+            isFinalDay: data.isFinalDay || false,
+            startedOnDate: data.startedOnDate || null
+          });
+          console.log('✅ TutorialBridge: Pot info loaded:', data);
+        } else {
+          console.error('❌ TutorialBridge: Failed to fetch pot info');
+        }
+      } catch (error) {
+        console.error('❌ TutorialBridge: Error fetching pot info:', error);
+      }
+
+      setPotInfoLoaded(true);
+    };
+
+    if (contractAddresses.length > 0) {
+      fetchPotInfo();
+    }
+  }, [contractAddresses]);
 
   // Check if user has already seen the tutorial and redirect automatically
   useEffect(() => {
@@ -160,11 +217,17 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
     
     if (hasSeenTutorial) {
       console.log('User has already seen tutorial, performing smart routing...');
-      
+
       if (!isConnected || !address) {
         // Not connected, send to pot entry page which will prompt for wallet connection
         console.log('Not connected - redirecting to bitcoinPot');
         setActiveSection('bitcoinPot');
+        return;
+      }
+
+      // Wait for pot info to load before making routing decisions
+      if (!potInfoLoaded) {
+        console.log('Pot info not loaded yet, waiting before routing...');
         return;
       }
 
@@ -191,14 +254,23 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
       const isSpecialUser = address && address.toLowerCase() === SPECIAL_ADDRESS.toLowerCase();
       
       if (isParticipantInSelected && !isSpecialUser) {
-        console.log('User is already a participant, redirecting to makePrediction');
-        setActiveSection('makePrediction');
+        // User is a participant, but check if pot has started before redirecting
+        if (potInfoLoaded && potInfo.hasStarted) {
+          console.log('User is participant and pot has started, redirecting to makePrediction');
+          setActiveSection('makePrediction');
+        } else if (potInfoLoaded && !potInfo.hasStarted) {
+          console.log('User is participant but pot has not started, redirecting to notReadyPage');
+          setActiveSection('notReadyPage');
+        } else {
+          console.log('User is participant but pot info not loaded yet, redirecting to notReadyPage for safety');
+          setActiveSection('notReadyPage');
+        }
       } else {
         console.log('User is not a participant, redirecting to bitcoinPot');
         setActiveSection('bitcoinPot');
       }
     }
-  }, [setActiveSection, isConnected, address, participantsData, contractAddresses]);
+  }, [setActiveSection, isConnected, address, participantsData, contractAddresses, potInfoLoaded, potInfo.hasStarted]);
 
   // Set up the selected market address and question from cookies
   useEffect(() => {
