@@ -1059,45 +1059,7 @@ useEffect(() => {
             </div>
           )}
 
-          {/* Contract Info */}
-          {contractAddress && (
-            <div className="mb-6">
-              <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-4">
-                <div className="relative">
-                  {/* Referral link - visible on mobile only - above the box */}
-                  {isConnected && address && (
-                    <button
-                      onClick={() => setActiveSection('referralProgram')}
-                      className="absolute top-5 md:top-1 right-0 text-xs text-gray-600 hover:text-gray-800 md:hidden z-10"
-                    >
-{t.referralProgram || 'Referrals'} →
-                    </button>
-                  )}
-                  
-                </div>
-                <div className="relative">
-                  {/* Referral link - visible on desktop only - above the box */}
-                  {isConnected && address && (
-                    <button
-                      onClick={() => setActiveSection('referralProgram')}
-                      className="absolute top-5  md:top-1 right-0 text-xs text-gray-600 hover:text-gray-800 hidden md:block z-10"
-                    >
-{t.referralProgram || 'Referrals'} →
-                    </button>
-                  )}
-                  {/* <div className="bg-[#ffffff] p-4 rounded-lg border border-[#dedede]">
-                    <div className="text-sm text-[#111111] font-semibold">{t.amountBalance || 'Balance'}</div>
-                    <div className="text-[#666666] font-semibold text-lg">
-                      ${ethToUsd(potBalance ?? BigInt(0)).toFixed(2)} USD
-                    </div>
-                    <div className="text-xs text-[#888888] mt-1">
-                      Total pool amount
-                    </div>
-                  </div> */}
-                </div>
-              </div>
-            </div>
-          )}
+          
 
           {/* Transaction Status */}
           {(isPending || isConfirming) && (
@@ -1304,10 +1266,9 @@ useEffect(() => {
                             <span className="md:hidden">{t.joinTournament || 'Join Tournament'}</span>
                             <span className="hidden md:block">{t.joinPredictionsTournament || 'Join Predictions Tournament'}</span>
                           </h3>
-                          <p className="text-black text-sm">
+                          {/* <p className="text-black text-sm">
                             <span className="md:hidden">{t.competeMobile || 'Compete & win'}</span>
-                            <span className="hidden md:block">{t.competeForPot || 'Compete for the pot'}</span>
-                          </p>
+                          </p> */}
                         </div>
                       </div>
                       

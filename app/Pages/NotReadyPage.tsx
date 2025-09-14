@@ -107,7 +107,7 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
     if (contractAddresses.length > 0) {
       fetchPotInfo();
     }
-  }, [contractAddresses]);
+  }, [contractAddresses]); // Only trigger when contractAddresses changes
 
   // Determine what state we're in
   const hasEnoughPlayers = current >= required;

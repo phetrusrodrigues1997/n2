@@ -209,7 +209,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
     if (contractAddresses.length > 0) {
       fetchPotInfo();
     }
-  }, [contractAddresses]);
+  }, [contractAddresses]); // Only trigger when contractAddresses changes
 
   // Check if user has already seen the tutorial and redirect automatically
   useEffect(() => {
@@ -529,9 +529,12 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                           onClick={handleEmailSubmit}
                           disabled={emailSubmitting || !email.trim()}
                           className="w-48 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 
-                           disabled:from-gray-300 disabled:to-gray-400 text-white font-medium py-4 px-8 rounded-2xl 
-                           transition-all duration-300 text-lg disabled:cursor-not-allowed transform hover:scale-[1.02] 
-                           active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl"
+           disabled:from-purple-300 disabled:to-purple-400 disabled:text-purple-100 
+           text-white font-medium py-4 px-8 rounded-2xl 
+           transition-all duration-300 text-lg disabled:cursor-not-allowed transform hover:scale-[1.02] 
+           active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl 
+           disabled:opacity-80 disabled:shadow-inner disabled:shadow-purple-200"
+
                         >
                           {emailSubmitting ? (
                             <span className="flex items-center justify-center">
@@ -641,7 +644,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                 </div>
 
                 {/* Tutorial Content */}
-                <div className="bg-white rounded-3xl border-0 p-6 md:p-16 mb-8">
+                <div className="bg-white rounded-3xl border-0 p-6 md:mb-8 mb-16">
                   <div className="flex items-center justify-between mb-12 relative">
                     <h2 className="text-2xl md:text-4xl font-light text-gray-900 tracking-tight">
                       {t.howItWorksTitle}

@@ -719,77 +719,7 @@ export default function App() {
 </button>
 
                 ))}
-                <div className="relative inline-block text-left mt-1" ref={moreDropdownRef}>
- <button
-  onClick={() => setIsMoreDropdownOpen(!isMoreDropdownOpen)}
-  className="flex items-center px-1.5 py-0.5 cursor-pointer whitespace-nowrap 
-             text-[rgba(0,0,0,0.9)] font-medium opacity-70 hover:opacity-100 
-             transition-opacity duration-200"
-  style={{
-    fontSize: "15px",
-    lineHeight: "24px",
-    letterSpacing: "0.15px",
-    fontFeatureSettings: '"cv09", "cv01", "cv08", "case"',
-    minWidth: "fit-content",
-  }}
->
-  <span className="whitespace-nowrap">More</span>
-  <svg
-    className={`w-4 h-4 ml-1 transition-transform duration-200 ${isMoreDropdownOpen ? "rotate-180" : ""}`}
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-  </svg>
-</button>
-
-
-  {/* Dropdown menu */}
-  {isMoreDropdownOpen && (
-  <div className="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-    <div className="py-1">
-      <button 
-        onClick={() => {
-          setActiveSection('ideas');
-          setIsMoreDropdownOpen(false);
-        }}
-        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-      >
-        Ideas
-      </button>
-      <button 
-        onClick={() => {
-          setActiveSection('profile');
-          setIsMoreDropdownOpen(false);
-        }}
-        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-      >
-        Leaderboard
-      </button>
-      <button 
-        onClick={() => {
-          setActiveSection('createPot');
-          setIsMoreDropdownOpen(false);
-        }}
-        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-      >
-        Create
-      </button>
-      <button 
-        onClick={() => {
-          setActiveSection('bookmarks');
-          setIsMoreDropdownOpen(false);
-        }}
-        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-      >
-        My pots
-      </button>
-    </div>
-  </div>
-  )}
-</div>
+                
 
               </div>
             </div>

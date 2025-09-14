@@ -4,6 +4,7 @@ import { eq, and, desc, asc } from 'drizzle-orm';
 import { PotParticipationHistory, UserPredictionHistory } from './schema';
 import { getBetsTableName, getWrongPredictionsTableName, TableType } from './config';
 import { getDbForWrite, getDbForRead, getDb } from "./db";
+import { neon } from "@neondatabase/serverless";
 
 /**
  * Records when a user enters or re-enters a pot

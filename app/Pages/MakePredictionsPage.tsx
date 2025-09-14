@@ -274,8 +274,13 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
   // Check if betting is allowed (Sunday through Friday, unless testing toggle is off) - UK timezone
   const isBettingAllowed = (): boolean => {
+    // First check if pot has started - this is a hard requirement
+    if (!potInfo.hasStarted) {
+      return false;
+    }
+
     if (!SHOW_RESULTS_DAY_INFO) {
-      return true; // Always allow betting when testing toggle is off
+      return true; // Always allow betting when testing toggle is off (and pot has started)
     }
     const ukNow = getUKTime();
     const day = ukNow.getDay(); // 0 = Sunday, 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday, 6 = Saturday
@@ -921,7 +926,13 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
   const handlePlaceBet = async (prediction: 'positive' | 'negative') => {
     if (!address) return;
-    
+
+    // Check if pot has started before allowing predictions
+    if (!potInfo.hasStarted) {
+      showMessage('Predictions cannot be made until the pot has officially started.');
+      return;
+    }
+
     setIsLoading(true);
     try {
       // Pass the table type string instead of the table object, include the market question and contract address

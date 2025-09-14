@@ -106,8 +106,6 @@ export interface Translations {
   payToEnter?: string;
   joinTournament?: string;
   joinPredictionsTournament?: string;
-  competeMobile?: string;
-  competeForPot?: string;
   referralCodeShort?: string;
   enterCode?: string;
   processingMobile?: string;
@@ -468,13 +466,11 @@ export const translations: Record<Language, Translations> = {
     payToEnter: 'Pay to Enter',
     joinTournament: 'Join Tournament',
     joinPredictionsTournament: 'Join Predictions Tournament',
-    competeMobile: 'Compete & win',
-    competeForPot: 'Compete for the pot',
-    referralCodeShort: 'Referral Code',
+    referralCodeShort: 'Referral Code (Optional)',
     enterCode: 'Enter code...',
     processingMobile: 'Processing...',
-    enterButtonShort: 'Enter',
-    enterButton: 'Enter',
+    enterButtonShort: 'Enter now',
+    enterButton: 'Enter now',
     referralProgram: 'Referrals', // Added for referral navigation links
     referralCode: 'Referral Code (Optional)', // Added for referral code input label
 
@@ -527,12 +523,12 @@ export const translations: Record<Language, Translations> = {
     yourBalanceMobile: 'Balance',
 
     // Email Collection
-    readyToPlay: 'Ready to Play?',
+    readyToPlay: 'Join us!',
     joinGlobalCommunity: 'Join the global prediction community and start competing today',
     enterEmailAddress: 'Enter your email address',
-    joinCommunity: 'Join Community',
+    joinCommunity: 'Submit',
     joining: 'Joining...',
-    skipForNow: 'Skip for now',
+    skipForNow: 'Skip',
     connectWallet: 'Connect Wallet',
     clickSignInButton: 'Click the Sign In button at the top right of the screen to connect your wallet',
     emailCollection: 'Email collection',
@@ -794,7 +790,7 @@ export const translations: Record<Language, Translations> = {
     chelseaManUtdQuestion: 'Chelsea vai ganhar do Machester United?',
    
     referralProgram: 'Indicações', // Added for referral navigation links
-    referralCode: 'Código de Indicação (Opcional)', // Added for referral code input label
+    referralCode: 'Código de Referência (Opcional)', // Added for referral code input label
     // PredictionPotTest interface elements
     processingYourEntry: 'Processando sua entrada...',
     preparingYourPots: 'Preparando seus potes...',
@@ -822,9 +818,7 @@ export const translations: Record<Language, Translations> = {
     payToEnter: 'Pagar para Entrar',
     joinTournament: 'Participar do Torneio',
     joinPredictionsTournament: 'Participar do Torneio de Previsões',
-    competeMobile: 'Concorra e ganhe',
-    competeForPot: 'Concorra ao pote',
-    referralCodeShort: 'Código de Referência',
+    referralCodeShort: 'Código de Referência (Opcional)',
     enterCode: 'Digite o código...',
     processingMobile: 'Processando...',
     enterButtonShort: 'Entrar',
@@ -879,12 +873,12 @@ export const translations: Record<Language, Translations> = {
     yourBalanceMobile: 'Saldo',
 
     // Email Collection
-    readyToPlay: 'Pronto para Jogar?',
+    readyToPlay: 'Junte-se a nós!',
     joinGlobalCommunity: 'Junte-se à comunidade global de previsões e comece a competir hoje',
     enterEmailAddress: 'Digite seu endereço de email',
-    joinCommunity: 'Entrar na Comunidade',
+    joinCommunity: 'Enviar',
     joining: 'Entrando...',
-    skipForNow: 'Pular por enquanto',
+    skipForNow: 'Pular',
     connectWallet: 'Conectar Carteira',
     clickSignInButton: 'Clique no botão Entrar no canto superior direito da tela para conectar sua carteira',
     emailCollection: 'Coleta de email',
