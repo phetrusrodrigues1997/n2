@@ -19,7 +19,7 @@ import {
   removeBookmark,
 } from '../Database/actions';
 import { recordPotEntry,clearPotParticipationHistory } from '../Database/actions3';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, calculateEntryFee, getMinimumPlayersForContract, checkMinimumPlayersThreshold, loadWrongPredictionsData } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, calculateEntryFee, getMinimumPlayersForContract, checkMinimumPlayersThreshold, loadWrongPredictionsData, PENALTY_EXEMPT_CONTRACTS, PENALTY_EXEMPT_ENTRY_FEE } from '../Database/config';
 import { updateWinnerStats } from '../Database/OwnerActions';
 import { clear } from 'console';
 import LoadingScreenAdvanced from '../Components/LoadingScreenAdvanced';
@@ -490,6 +490,13 @@ const PredictionPotTest =  ({ activeSection, setActiveSection }: PredictionPotPr
   
   // Get dynamic entry amount using the new pricing system
   const getEntryAmount = (): bigint => {
+    // Check if this is a penalty-exempt contract
+    if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+      // Use fixed fee for penalty-exempt contracts
+      return usdToEth(PENALTY_EXEMPT_ENTRY_FEE);
+    }
+
+    // Use dynamic pricing for regular contracts
     const entryFeeUsd = calculateEntryFee(potInfo.hasStarted, potInfo.startedOnDate);
     return usdToEth(entryFeeUsd);
   };
@@ -528,6 +535,13 @@ const PredictionPotTest =  ({ activeSection, setActiveSection }: PredictionPotPr
 
   // Helper to get the current USD entry price
   const getCurrentUsdPrice = (): string => {
+    // Check if this is a penalty-exempt contract
+    if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+      // Use fixed fee for penalty-exempt contracts
+      return `$${PENALTY_EXEMPT_ENTRY_FEE.toFixed(2)}`;
+    }
+
+    // Use dynamic pricing for regular contracts
     const entryFeeUsd = calculateEntryFee(potInfo.hasStarted, potInfo.startedOnDate);
     return `$${entryFeeUsd.toFixed(2)}`;
   };
@@ -1276,7 +1290,11 @@ useEffect(() => {
                       <div className="bg-black p-4 rounded-lg mb-4 border border-black">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <span className="text-white text-xl">💰</span>
+                            <img
+                              src="https://dynamic-assets.coinbase.com/dbb4b4983bde81309ddab83eb598358eb44375b930b94687ebe38bc22e52c3b2125258ffb8477a5ef22e33d6bd72e32a506c391caa13af64c00e46613c3e5806/asset_icons/4113b082d21cc5fab17fc8f2d19fb996165bcce635e6900f7fc2d57c4ef33ae9.png"
+                              alt="ETH"
+                              className="w-8 h-8"
+                            />
                             <div>
                               <div className="text-white font-bold text-lg">
                                 ${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)}

@@ -30,7 +30,7 @@ import {
   getWrongPredictors,
   updatePotEntryAmount,
   updatePotDetails
-} from '../Database/ownerActions2';
+} from '../Database/OwnerActions2';
 
 // Contract ABI for individual pot contracts (clones) - Updated for ETH-based contract
 const PRIVATE_POT_ABI = [

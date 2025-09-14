@@ -49,6 +49,17 @@ export const CONTRACT_TO_TABLE_MAPPING = {
 // Used for loading thermometer data and live percentage updates
 export const MARKETS_WITH_CONTRACTS = ['Trending', 'Crypto', 'stocks', 'music'] as const;
 
+// Contract addresses that are exempt from penalty checks
+// Add new feature contracts here to skip missed prediction penalties
+export const PENALTY_EXEMPT_CONTRACTS: string[] = [
+  // Add your new contract addresses here to exempt them from penalties
+  // Example: "0xYourNewContractAddress",
+];
+
+// Entry fee for penalty-exempt contracts (in USD)
+// This fee is used for both entry and re-entry for contracts in PENALTY_EXEMPT_CONTRACTS
+export const PENALTY_EXEMPT_ENTRY_FEE = 1.00; // $1.00 USD
+
 // Type for contract addresses
 export type ContractAddress = keyof typeof CONTRACT_TO_TABLE_MAPPING;
 export type TableType = typeof CONTRACT_TO_TABLE_MAPPING[ContractAddress];
@@ -83,14 +94,15 @@ export function getTableTypeFromMarketId(marketId: string): TableType {
 export function getMinimumPlayersForContract(contractAddress: string): number {
   const contractAddresses = Object.keys(CONTRACT_TO_TABLE_MAPPING);
   const contractIndex = contractAddresses.indexOf(contractAddress);
-  
+
   if (contractIndex === -1) {
     console.warn(`⚠️ Unknown contract address: ${contractAddress}, defaulting to MIN_PLAYERS`);
     return MIN_PLAYERS;
   }
-  
+
   return contractIndex === 0 ? MIN_PLAYERS : MIN_PLAYERS2;
 }
+
 
 /**
  * Check if a contract has reached its minimum players threshold

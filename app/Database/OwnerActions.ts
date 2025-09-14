@@ -2,7 +2,7 @@
 
 import { WrongPredictions, WrongPredictionsCrypto, FeaturedBets, CryptoBets, StocksBets, MusicBets, LivePredictions, LiveQuestions, UsersTable, MarketOutcomes, EvidenceSubmissions, PotInformation, UserPredictionHistory } from "../Database/schema";
 import { eq, inArray, lt, asc, sql, and } from "drizzle-orm";
-import { getBetsTableName, getWrongPredictionsTableFromType, getTableFromType, TableType, CONTRACT_TO_TABLE_MAPPING } from "./config";
+import { getBetsTableName, getWrongPredictionsTableFromType, getTableFromType, TableType, CONTRACT_TO_TABLE_MAPPING, PENALTY_EXEMPT_CONTRACTS } from "./config";
 import { db, readDb, getDbForWrite, getDbForRead } from "./db";
 
 // Test database connectivity
@@ -194,10 +194,11 @@ export async function setDailyOutcome(
   outcome: "positive" | "negative",
   tableType: string,
   questionName: string, // "Bitcoin", "Ethereum", "Tesla", etc.
-  targetDate?: string // Optional: YYYY-MM-DD format. If not provided, uses today's date
+  targetDate?: string, // Optional: YYYY-MM-DD format. If not provided, uses today's date
+  contractParticipants: string[] = [] // Optional: Contract participants for penalty-exempt contracts
 ): Promise<void> {
   // Call the enhanced version but don't return the statistics (for backward compatibility)
-  await setDailyOutcomeWithStats(outcome, tableType, questionName, targetDate);
+  await setDailyOutcomeWithStats(outcome, tableType, questionName, targetDate, contractParticipants);
 }
 
 /**
@@ -208,7 +209,8 @@ export async function setDailyOutcomeWithStats(
   outcome: "positive" | "negative",
   tableType: string,
   questionName: string, // "Bitcoin", "Ethereum", "Tesla", etc.
-  targetDate?: string // Optional: YYYY-MM-DD format. If not provided, uses today's date
+  targetDate?: string, // Optional: YYYY-MM-DD format. If not provided, uses today's date
+  contractParticipants: string[] = [] // Optional: Contract participants for penalty-exempt contracts
 ): Promise<{
   eliminatedCount: number;
   totalParticipants: number;
@@ -326,6 +328,45 @@ export async function setDailyOutcomeWithStats(
       }
     } else {
       console.log(`✅ No wrong predictions found for ${finalTargetDate}`);
+    }
+
+    // For penalty-exempt contracts, also eliminate non-predictors when setting daily outcome
+    // This is needed because these contracts don't use checkMissedPredictionPenalty
+    if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress) && contractParticipants.length > 0) {
+      console.log(`🎯 Processing non-predictors for penalty-exempt contract: ${contractAddress}`);
+      console.log(`📊 Contract participants: ${contractParticipants.length}, Predictors: ${allPredictors.length}`);
+
+      try {
+        // Find non-predictors: participants who are in the contract but didn't make predictions
+        const predictorAddresses = allPredictors.map(p => p.walletAddress.toLowerCase());
+        const nonPredictors = contractParticipants.filter(participant =>
+          !predictorAddresses.includes(participant.toLowerCase())
+        );
+
+        if (nonPredictors.length > 0) {
+          console.log(`🚫 Found ${nonPredictors.length} non-predictors to eliminate for ${finalTargetDate}`);
+
+          const nonPredictorRecords = nonPredictors.map(address => ({
+            walletAddress: address.toLowerCase(),
+            wrongPredictionDate: finalTargetDate,
+          }));
+
+          // Add non-predictors to wrong predictions table
+          await db
+            .insert(wrongPredictionTable)
+            .values(nonPredictorRecords)
+            .onConflictDoNothing();
+
+          console.log(`✅ Successfully eliminated ${nonPredictors.length} non-predictors for penalty-exempt contract`);
+        } else {
+          console.log(`✅ No non-predictors found for penalty-exempt contract ${contractAddress}`);
+        }
+
+      } catch (contractError) {
+        console.error(`❌ Error processing non-predictors for exempt contract ${contractAddress}:`, contractError);
+      }
+    } else if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress) && contractParticipants.length === 0) {
+      console.log(`⚠️ Penalty-exempt contract ${contractAddress} detected but no participants provided - skipping non-predictor elimination`);
     }
     
     // Only clear ALL predictions on non-final days

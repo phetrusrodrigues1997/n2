@@ -17,7 +17,7 @@ export const useContractData = () => {
   const { address, isConnected } = useAccount();
   
   // Get contract addresses from config - memoized to prevent re-creation
-  const contractAddresses = useMemo(() => 
+  const contractAddresses = useMemo(() =>
     Object.keys(CONTRACT_TO_TABLE_MAPPING) as Array<keyof typeof CONTRACT_TO_TABLE_MAPPING>,
     []
   );

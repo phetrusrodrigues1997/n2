@@ -9,7 +9,7 @@ import { Language, getTranslation, supportedLanguages, getTranslatedMarketQuesti
 import { getMarkets, Market } from '../Constants/markets';
 import { CustomAlert, useCustomAlert } from '../Components/CustomAlert';
 import { addBookmark, removeBookmark, isMarketBookmarked, getPredictionPercentages, getTomorrowsBet, placeBitcoinBet, getReEntryFee } from '../Database/actions';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, getTableTypeFromMarketId, MARKETS_WITH_CONTRACTS } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, getTableTypeFromMarketId, MARKETS_WITH_CONTRACTS, PENALTY_EXEMPT_CONTRACTS } from '../Database/config';
 import { getPrice } from '../Constants/getPrice';
 import { useContractData } from '../hooks/useContractData';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
@@ -248,7 +248,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     setShowTutorial(false);
     setTutorialStep(0);
     // Set cookie to remember user has seen tutorial (expires in 1 week)
-    Cookies.set('landingPageTutorialSeen', 'true', { expires: 7 });
+    Cookies.set('landingPageTutorialSeen', 'true', { expires: 1 });
   };
 
   // Check if user has seen tutorial before and show automatically
@@ -298,32 +298,32 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     {
       title: t.globalCompetition || "Global Competition",
       content: t.globalCompetitionDesc || "Join thousands of users worldwide in predicting market movements. Every prediction counts towards building a global community of forecasters.",
-      icon: <Users className="w-6 h-6" />
+      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     },
     {
       title: t.dailyPredictions || "Daily Predictions",
       content: t.dailyPredictionsDesc || "Make your prediction each day before midnight. Will Bitcoin go up or down tomorrow? Simple yes/no predictions with real rewards.",
-      icon: <Calendar className="w-6 h-6" />
+      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     },
     {
       title: t.dynamicPricing || "Dynamic Pricing",
       content: t.dynamicPricingDesc || "Entry fees start low and increase daily. Early predictors pay less, while late entries face higher stakes. Time is money!",
-      icon: <DollarSign className="w-6 h-6" />
+      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     },
     {
       title: t.secondChances || "Second Chances",
       content: t.secondChancesDesc || "Made a wrong prediction? Pay a re-entry fee to get back in the game. No permanent eliminations - just strategic comebacks.",
-      icon: <Target className="w-6 h-6" />
+      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     },
     {
       title: t.finalShowdown || "Final Showdown",
       content: t.finalShowdownDesc || "Saturday night is elimination time. Correct predictors stay in and share the prize. Wrong predictors face the music.",
-      icon: <TrendingUp className="w-6 h-6" />
+      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     },
     {
       title: t.liveStats || "Live Statistics",
       content: t.liveStatsDesc || "Track your performance, view global prediction trends, and see real-time market sentiment. Data drives decisions.",
-      icon: <BarChart2 className="w-6 h-6" />
+      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     }
   ];
   
@@ -500,6 +500,14 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
       for (const contractAddress of contractAddresses) {
         try {
+          // Skip penalty checks for exempt contracts
+          if (PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+            const marketType = CONTRACT_TO_TABLE_MAPPING[contractAddress];
+            console.log(`⏭️ Skipping penalty check for ${marketType} (${contractAddress}) - contract is penalty exempt`);
+            newEliminationStatus[contractAddress] = false; // No elimination for exempt contracts
+            continue;
+          }
+
           const marketType = CONTRACT_TO_TABLE_MAPPING[contractAddress];
           console.log(`🔍 Starting penalty check for ${marketType} (${contractAddress}) with wallet ${address}`);
           await checkMissedPredictionPenalty(address, contractAddress, marketType);
@@ -2216,7 +2224,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
               {/* Modal Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-200">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600">
+                  <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-purple-600">
                     {tutorialSteps[tutorialStep].icon}
                   </div>
                   <div>

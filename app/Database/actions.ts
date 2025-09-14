@@ -3,6 +3,7 @@
 import {  Messages, LivePredictions, Bookmarks } from "./schema"; // Import the schema
 import { eq, sql, and, inArray } from "drizzle-orm";
 import { getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING, getTableTypeFromMarketId } from "./config";
+import { getEventDate } from "./eventDates";
 import { ReferralCodes, Referrals, FreeEntries, UsersTable } from "./schema";
 import { EvidenceSubmissions, MarketOutcomes, PredictionIdeas, PotParticipationHistory, PotInformation } from "./schema";
 import { recordPotEntry, recordUserPrediction } from './actions3';
@@ -387,9 +388,10 @@ export async function placeBitcoinBet(walletAddress: string, prediction: 'positi
     // Note: Saturday restrictions removed for new tournament format
     // Final day restrictions now handled dynamically via pot_information table
     
-    // Get tomorrow's date for the prediction (in UK timezone)
+    // Get prediction date - either from event mapping or tomorrow's date (in UK timezone)
     const now = new Date();
-    const predictionDate = getTomorrowUKDateString(now);
+    const eventDate = contractAddress ? getEventDate(contractAddress) : null;
+    const predictionDate = eventDate || getTomorrowUKDateString(now);
     
     const betsTable = getTableFromType(typeTable);
     const wrongPredictionTable = getWrongPredictionsTableFromType(typeTable);

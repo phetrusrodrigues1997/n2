@@ -10,7 +10,7 @@ import { getMarkets } from '../Constants/markets';
 import { getTranslation, Language, translateMarketQuestion } from '../Languages/languages';
 import { getPrice } from '../Constants/getPrice';
 import { useQueryClient } from '@tanstack/react-query';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, BASE_ENTRY_FEE, calculateEntryFee, loadWrongPredictionsData, calculateParticipantStats } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, BASE_ENTRY_FEE, calculateEntryFee, loadWrongPredictionsData, calculateParticipantStats, PENALTY_EXEMPT_CONTRACTS, PENALTY_EXEMPT_ENTRY_FEE } from '../Database/config';
 import LoadingScreenAdvanced from '../Components/LoadingScreenAdvanced';
 
 
@@ -393,7 +393,13 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
   // Get entry amount using dynamic pricing (same as new entries)
   const getEntryAmount = (): bigint => {
-    // Re-entries use the same dynamic pricing as new entries
+    // Check if this is a penalty-exempt contract
+    if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+      // Use fixed fee for penalty-exempt contracts
+      return usdToEth(PENALTY_EXEMPT_ENTRY_FEE);
+    }
+
+    // Re-entries use the same dynamic pricing as new entries for regular contracts
     const entryFeeUsd = calculateEntryFee(potInfo.hasStarted, potInfo.startedOnDate);
     return usdToEth(entryFeeUsd);
   };

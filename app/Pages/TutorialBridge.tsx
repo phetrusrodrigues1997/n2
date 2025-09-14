@@ -384,7 +384,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
   // Handle skip button click - smart routing based on participation status
   const handleSkipClick = () => {
     // Set cookie to remember user has seen the tutorial (expires in 1 week)
-    Cookies.set('tutorialBridgeSeen', 'true', { expires: 7 });
+    Cookies.set('tutorialBridgeSeen', 'true', { expires: 1 });
     
     if (!isConnected || !address) {
       // Not connected, send to pot entry page which will prompt for wallet connection
@@ -528,12 +528,12 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                         <button
                           onClick={handleEmailSubmit}
                           disabled={emailSubmitting || !email.trim()}
-                          className="w-48 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 
-           disabled:from-purple-300 disabled:to-purple-400 disabled:text-purple-100 
-           text-white font-medium py-4 px-8 rounded-2xl 
-           transition-all duration-300 text-lg disabled:cursor-not-allowed transform hover:scale-[1.02] 
-           active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl 
-           disabled:opacity-80 disabled:shadow-inner disabled:shadow-purple-200"
+                          className="w-48 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800
+           disabled:bg-black disabled:from-black disabled:to-black disabled:text-white
+           text-white font-medium py-4 px-8 rounded-2xl
+           transition-all duration-300 text-lg disabled:cursor-not-allowed transform hover:scale-[1.02]
+           active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl
+           disabled:opacity-100 disabled:shadow-lg"
 
                         >
                           {emailSubmitting ? (
