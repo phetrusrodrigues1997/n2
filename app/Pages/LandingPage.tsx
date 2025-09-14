@@ -888,9 +888,18 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       const contractAddress = getContractAddress(marketId);
       const isParticipant = contractAddress && isUserParticipant(contractAddress);
       const enoughParticipants = contractAddress && hasEnoughParticipants(contractAddress);
+      const potInfo = contractAddress ? potInformation[contractAddress] : null;
+      const potHasStarted = potInfo?.hasStarted || false;
 
       // If user is a participant but not enough players, redirect to NotReadyPage
       if (isParticipant && !enoughParticipants) {
+        setActiveSection('notReadyPage');
+        return;
+      }
+
+      // If user is a participant but pot hasn't started yet, redirect to NotReadyPage
+      if (isParticipant && !potHasStarted) {
+        console.log(`🚫 LandingPage: Participant tried to vote but pot hasn't started for ${contractAddress}`);
         setActiveSection('notReadyPage');
         return;
       }
@@ -900,14 +909,14 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         return;
       }
 
-      // If user is a participant and wants to change their vote (with enough participants)
-      if (prediction && prediction.prediction !== buttonType && isParticipant && enoughParticipants) {
+      // If user is a participant and wants to change their vote (with enough participants and pot started)
+      if (prediction && prediction.prediction !== buttonType && isParticipant && enoughParticipants && potHasStarted) {
         await handleVoteChange(marketId, buttonType);
         return;
       }
 
-      // If user is a participant but hasn't voted yet (with enough participants)
-      if (isParticipant && !prediction && enoughParticipants) {
+      // If user is a participant but hasn't voted yet (with enough participants and pot started)
+      if (isParticipant && !prediction && enoughParticipants && potHasStarted) {
         await handleVoteChange(marketId, buttonType);
         return;
       }
