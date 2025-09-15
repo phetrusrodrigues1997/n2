@@ -1,610 +1,215 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with this repository.
 
 ## Project Overview
 
-**PrediWin.com - Predict, Win, Repeat** is a sophisticated Next.js prediction market platform that gamifies forecasting across multiple asset classes and events through blockchain-based prediction competitions. Built on Base network with OnchainKit integration, users compete in weekly prediction cycles covering cryptocurrency, stocks, sports, and other market movements with structured timing for pot entry, prediction periods, and results determination.
+**PrediWin.com** - Next.js prediction market platform on Base network. Users predict asset price movements, pay ETH entry fees, winners split pots.
 
-### Core Concept & Dynamic Pricing System
-- Users pay **ETH entry fees** (converted from USD values) to enter prediction pots via smart contracts
-- **Dynamic Pricing**: Entry fees based on days since pot started, NOT day of the week
-  - **Days 1-4**: Fixed early pricing ($0.02, $0.03, $0.04, $0.05 USD in ETH)
-  - **Day 5+**: Doubling system starting at $0.10 USD, doubles each day
-  - **Individual Pot Timers**: Each pot has its own start date and pricing schedule
-- **Prediction Logic**: Users predict next day's asset price movements (positive/negative) across multiple markets
-- **Winners split the pot** equally based on actual price movement outcomes
-- **Wrong predictors get temporarily blocked** from future prediction rounds until re-entry fee is paid
-- **Referral system** rewards users with free pot entries for bringing friends
-- **Re-entry System**: Users who made wrong predictions can pay current entry fee to re-enter markets
-- **Minimum Player Requirements**: All pots require a minimum of 2 participants before predictions can begin
-
-### Private Pot Creation System (New)
-- **Create Custom Pots**: Users can deploy their own private prediction markets on any topic
-- **Factory Contract**:  enables cheap EIP-1167 cloning of prediction pots
-- **User-Owned Markets**: Each created pot is owned and controlled by the creator
-- **Flexible Topics**: Crypto prices, sports outcomes, world events, or any custom prediction
-- **Gas-Efficient**: Users pay minimal Base network gas fees (~$0.01-0.05) for pot creation
-- **Social Viral Growth**: Every pot creator brings their friend group to the platform
-- **Creator Control**: Pot owners decide winners and distribute funds to participants
-- **Full Lifecycle Implemented**: Create → Join → Predict → Distribute → Database Cleanup (all working)
-- **⚠️ Design Improvement Needed**: Core functionality works but UI/UX requires significant design enhancement
-
-### Dynamic Pricing Flow
-- **Pricing Based**: On days since individual pot started, NOT calendar days
-- **Early Days (1-4)**: Fixed pricing at $0.02, $0.03, $0.04, $0.05 USD in ETH
-- **Exponential Growth (5+)**: Starting at $0.10 USD, doubles each subsequent day
-- **Owner-Controlled**: Pot owners decide when pots start and when final day occurs
-- **Individual Schedules**: Each pot operates on its own timeline independent of others
-
-### Minimum Player Requirements System (2025)
-- **2-Player Minimum**: All prediction pots require a minimum of 2 participants before predictions can begin
-- **Configuration**: Set via `MIN_PLAYERS` and `MIN_PLAYERS2` constants in `database/config.ts` (currently both set to 2)
-- **Automatic Redirection**: Users who are participants but in pots below minimum are redirected to `NotReadyPage`
-- **Timer Visibility**: "Next question" timers and countdown displays only appear when minimum participants are met
-- **Smart Button Logic**: Yes/No prediction buttons check participant count before allowing predictions
-- **NotReadyPage Features**:
-  - **Real-time Player Count**: Displays current participants vs. required (e.g., "1/2 Players")
-  - **Sleek Mobile Design**: Compressed display optimized for mobile screen real estate
-  - **Email Notifications**: Users can sign up to be notified when pot reaches minimum
-  - **Automatic Updates**: Page refreshes participant count in real-time
-- **Prevention Logic**: Auto-prediction from cookies is blocked if insufficient participants
-- **UI Consistency**: Applied across LandingPage, BookmarksPage, MakePredictionsPage, and PredictionPotTest
-
+### Core Features
+- **Dynamic Pricing**: Entry fees based on days since pot started (fixed $0.02-0.05 days 1-4, doubling from $0.10 day 5+)
+- **Minimum 2 Players**: All pots require 2+ participants before predictions can begin
+- **Re-entry System**: Wrong predictors can pay current entry fee to re-enter
+- **Private Pot Creation**: Users can create custom prediction markets via factory contract
+- **F1 Tournament System**: Season-long elimination tournaments with penalty-exempt contracts
 
 ## Development Commands
 
 ```bash
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-
-# Run linter
-npm run lint
-
-# Build Android APK (requires Android SDK)
-cd android && ./gradlew assembleRelease
-# Signed APK output: android/app/build/outputs/apk/release/app-release.apk
+npm install          # Install dependencies
+npm run dev          # Run development server
+npm run build        # Build for production
+npm run lint         # Run linter
 ```
 
 ## Architecture
 
-### Core Structure
-- **App Router**: Uses Next.js 14 App Router with TypeScript
-- **Blockchain**: Built on Base network using OnchainKit and Wagmi
-- **Database**: PostgreSQL with Drizzle ORM
-- **Styling**: Custom CSS with Tailwind-like classes
-- **State Management**: React hooks and Wagmi for blockchain state
+### Tech Stack
+- **Framework**: Next.js 14 App Router with TypeScript
+- **Blockchain**: Base network using OnchainKit and Wagmi
+- **Database**: PostgreSQL with Drizzle ORM (read/write replica separation)
+- **Styling**: Custom CSS
 
 ### Key Directories
-- `app/Pages/`: Main application pages (LandingPage, Markets, MakePredictionPage, createPotPage, etc.)
-- `app/Sections/`: Reusable UI components (NavigationMenu, ResponsiveLogo)
-- `app/Database/`: Database schema and actions using Drizzle ORM
-  - `actions.ts`: Main database operations
-  - `actions3.ts`: Pot participation history functions + Live chart data (NEW 2025)
-  - `OwnerActions.ts`: Admin/owner operations
-  - `schema.ts`: Complete database schema definitions
-- `app/Constants/`: Configuration files for markets, coins, and pricing
-- `app/Languages/`: Internationalization support
+- `app/Pages/`: Main pages (LandingPage, MakePredictionPage, createPotPage)
+- `app/Database/`: Schema and database operations
+  - `actions.ts`: Main database functions
+  - `schema.ts`: Database schema
+  - `config.ts`: Contract mappings and configuration
+- `app/Constants/`: Markets configuration and pricing
+- `app/Languages/`: Translation system (EN/PT)
 
-### Internationalization (i18n) System
-**Complete Portuguese translation implementation with ultra-conservative approach to protect critical business logic**
+### Database Schema (Key Tables)
+- `FeaturedBets`: Bitcoin and featured asset predictions
+- `CryptoBets`: General crypto predictions
+- `WrongPredictions*`: Tracking incorrect predictions and re-entry fees
+- `MarketOutcomes`: Prediction results with exact question matching
+- `PotParticipationHistory`: Entry/exit audit trail for fair penalties
+- `UsersTable`: User profiles and statistics
 
-#### Translation Architecture
-- **Central Translation System**: `app/Languages/languages.ts` contains all translations with TypeScript support
-- **Language Support**: English (en) and Portuguese (pt-BR) with extensible structure for additional languages
-- **Cookie-Based Persistence**: Language preference stored in 'language' cookie and persists across sessions
-- **Fallback Pattern**: All translations use `{t.translationKey || "English fallback"}` for safety
-- **Component Prop Passing**: currentLanguage prop passed from main app to all child components
+## Critical Production Issues & Fixes
 
-#### Critical Safety Measures
-**⚠️ ULTRA-CONSERVATIVE APPROACH**: Translations implemented with extreme caution to protect database operations, smart contract interactions, and prediction logic:
+### Fixed Contract Bug (August 2025)
+**Problem**: Original contract used `transfer()` which fails with 2300 gas limit when sending to smart contracts
+**Solution**: Deployed `PredictionPotFixed` at `0xd1547F5bC0390F5020B2A80F262e28ccfeF2bf9c` using `call()` instead
 
-- **Display-Only Translations**: Only user-facing display strings translated (buttons, labels, messages)
-- **Database Logic Untouched**: All database identifiers, table names, and query logic remain in English
-- **Smart Contract Safety**: Contract interactions and blockchain logic completely unchanged
-- **Business Logic Protection**: Prediction algorithms, entry fees, and winner calculations unmodified
-- **Identifier Preservation**: All internal IDs, keys, and system identifiers remain stable
+### Database Performance Optimization
+**Issue**: LandingPage bookmark system made 50+ simultaneous queries overwhelming database
+**Fix**: Batched processing (10 markets per batch with delays), request debouncing, proper cleanup
 
+## Adding New Market Contracts
 
+**Critical Steps** (all required):
 
-#### Translation Guidelines for Future Development
-1. **Display vs Logic Separation**: Only translate what users see, never internal identifiers
-2. **Systematic Testing**: Test each translation individually to isolate breaking points
-3. **Fallback Requirements**: Always provide English fallbacks for missing translation keys
-4. **Database Safety**: Never translate database field names, table names, or query parameters
-5. **Smart Contract Immutability**: Contract function names and parameters must remain unchanged
-6. **Conservative Approach**: When in doubt, leave strings untranslated rather than risk breaking functionality
+1. **Update `app/Constants/markets.ts`**
+   - Add `contractAddress` to market in options category
+   - Add complete market data (question, icon cannot be empty)
 
-### Main Application Flow
-The main app component (`app/page.tsx`) uses a section-based navigation system where different pages are rendered based on `activeSection` state. Navigation is handled through the `NavigationMenu` component.
+2. **Update `app/Database/config.ts`**
+   - Add contract to `CONTRACT_TO_TABLE_MAPPING`
+   - Update `getMarketDisplayName()` function
 
-### Database Schema
+3. **Update `app/Database/schema.ts`**
+   - Create `{Market}Bets` and `WrongPredictions{Market}` tables
 
-#### Core Prediction Tables
-- `FeaturedBets`: Primary prediction markets (walletAddress, prediction, betDate, createdAt) - covers Bitcoin and featured assets
-- `CryptoBets`: General crypto prediction markets
-- `WrongPredictions`/`WrongPredictionsCrypto`: Tracking incorrect predictions and re-entry fees
+4. **Update `app/Database/actions.ts`**
+   - Import new tables
+   - Add cases to `getTableFromType()` and `getWrongPredictionsTableFromType()`
 
-#### Market Outcomes & Results System (NEW - 2025)
-- `MarketOutcomes`: Stores prediction results with exact question matching (marketType, questionName, outcomeDate, provisionalOutcome, finalOutcome, isDisputed)
-- **Perfect Result Matching**: Uses `questionName` + `predictionDate` + `marketType` for exact prediction-to-outcome matching
-- **Multi-Asset Support**: Same market can handle multiple questions on same day (e.g., "Bitcoin", "Ethereum", "Tesla")
-- **Question Name Integration**: Uses `selectedMarketQuestion` cookie to capture exact question names from user selections
-- **Provisional vs Final Outcomes**: Supports evidence-based dispute system with 1-hour evidence windows
-- **Enhanced Functions**: `getUserPredictionsWithResults()` provides complete prediction history with results (`'pending'`, `'correct'`, `'incorrect'`)
-- **Live Prediction History UI**: MakePredictionsPage.tsx displays real-time result status with visual badges (✓ Correct, ✗ Wrong, ⏳ Pending)
-- **Provisional Result Indicators**: Shows asterisk (*) for provisional outcomes during evidence windows, with detailed "Actual result" information
-- **Complete Result Transparency**: Users see exact outcome matching for each prediction with color-coded status badges and detailed result information
+5. **⚠️ CRITICAL: Update `app/hooks/useContractData.ts`**
+   - Add `participantsQueryN` and `balanceQueryN` hooks for new contract
+   - Update `participantsData` and `balancesData` arrays
+   - **Without this, contract shows $0 balance and 0 participants**
 
-#### Pot Participation History System (NEW - 2025)
-- `PotParticipationHistory`: Complete audit trail of pot entry/exit events (walletAddress, contractAddress, tableType, eventType, eventDate, eventTimestamp)
-- **Fair Eligibility System**: Tracks who was eligible for predictions on specific dates to prevent unfair penalties
-- **Same-Day Entry Protection**: Users entering mid-week aren't penalized for missing predictions before their entry date
-- **Event-Based Tracking**: Records 'entry' and 'exit' events with precise timestamps for accurate eligibility determination
+6. **Enable Percentages in `app/Pages/LandingPage.tsx`**
+   - Add market ID to `marketsWithContracts` array
 
-#### Referral System Tables (New)
-- `ReferralCodes`: Unique 8-character codes per user (walletAddress, referralCode, createdAt)
-- `Referrals`: Tracks referral relationships and confirmation status (referrerWallet, referredWallet, referralCode, potEntryConfirmed, confirmedAt)
-- `FreeEntries`: Manages earned/used free pot entries (walletAddress, earnedFromReferrals, earnedFromTrivia, earnedFromWordle, usedEntries)
+### Common Integration Mistakes
+- Missing contract hooks in `useContractData.ts` → $0 balance display
+- Market ID vs Display Name mismatch in balance access
+- Empty question/icon fields → "undefined market" error
+- Missing database table imports → "Invalid table type" errors
 
-#### Wordle Game System (NEW)
-- **UsersTable**: Contains `lastWordlePlay`, `wordlePlaysToday` for tracking daily limits and `email` for user contact info
-- **FreeEntries**: Contains `earnedFromWordle` for tracking free entries earned from Wordle wins
-- **Database Functions**: `canPlayWordle()`, `recordWordlePlay()`, `getLastWordlePlay()`, `awardWordleFreeEntry()`
-- **API Routes**: `/api/wordle/award-entry`, `/api/wordle/check-eligibility`, `/api/wordle/record-play`, `/api/wordle/winner`
-- **Daily Word Generation**: Uses word list with daily rotation based on date
-- **One Play Per Day**: Connected wallets limited to one game per 24 hours
-- **Anonymous Play**: Non-connected users can play unlimited games
-- **Free Entry Rewards**: Users earn free pot entries for winning
+## Key Configuration
 
-#### AI Trivia System
-- **Storage**: Trivia statistics stored in localStorage for non-connected users, with database sync on wallet connection
-- **No Dedicated Table**: Uses existing `UsersTable` for connected wallet users
-- **OpenAI Integration**: Dynamic question generation across 25+ categories
-- **100 Answer Milestone**: Users earn discounts after answering 100 questions correctly
+### Smart Contracts
+- **Fixed Contract**: `0xd1547F5bC0390F5020B2A80F262e28ccfeF2bf9c` (uses `call()` not `transfer()`)
+- **Factory Contract**: `0x34c2fF1bb3a8cbF05a7a98f70143DD6F22Df3490` (private pot creation)
 
-#### User Management
-- `Messages`: User messaging system
-- `UsersTable`: Complete user profiles (walletAddress, imageUrl, email, potsWon, totalEarningsETH, lastWordlePlay, wordlePlaysToday)
-- **Email Collection**: User emails stored in `UsersTable.email` field with functions `getUserEmail()` and `saveUserEmail()`
+### Environment Variables
+- `NEXT_PUBLIC_ONCHAINKIT_API_KEY`
+- `NEXT_PUBLIC_PROJECT_ID`
+- `OPENAI_API_KEY` (AI trivia)
+- `DATABASE_URL` (primary)
+- `READ_REPLICA_URL` (read replica)
 
-### Blockchain Integration
-- **Smart Contracts**: PredictionPot contracts handle ETH pot entry and winner distribution
-- **⚠️ CRITICAL CONTRACT ISSUE RESOLVED**: Original PredictionPot.sol had permanent corruption bug using `transfer()` which fails with 2300 gas limit when sending to smart contracts. **FIXED CONTRACT DEPLOYED**: `PredictionPotFixed` at `0xd1547F5bC0390F5020B2A80F262e28ccfeF2bf9c` uses `call()` instead of `transfer()` to prevent permanent distribution failures
-- **Factory Contract**: `PredictionPotWithCloning` enables users to create private pots
-- **EIP-1167 Cloning**: Gas-efficient deployment of new prediction pots using minimal proxy pattern
-- **OnchainKit & Wagmi**: Wallet connections, transaction handling, and Base network integration
-- **ETH Payments**: Users send ETH directly for pot entries (amounts calculated from USD values)
-- **ConnectWallet**: Integrated in header for seamless wallet connectivity
-- **Contract Addresses**: Configurable via cookies, supports multiple prediction markets
-- **Environment variables needed**: `NEXT_PUBLIC_ONCHAINKIT_API_KEY`, `NEXT_PUBLIC_PROJECT_ID`
+### Database Connection Strategy
+- **Primary** (`getDbForWrite()`): INSERT, UPDATE, DELETE operations
+- **Read Replica** (`getDbForRead()`): SELECT queries for performance
 
-### Configuration Notes
-- TypeScript and ESLint errors are ignored during build (see `next.config.mjs`)
-- Webpack configuration includes externals for WalletConnect compatibility
-- Drizzle ORM is used for database operations
-- Python script for token launching in `LaunchToken/newtoken.py`
-- **OpenAI Integration**: Uses `OPENAI_API_KEY` environment variable for AI trivia question generation
-- **Branding**: ghostienobg.png logo integrated across loading screens (LoadingScreen component and LandingPage loading state)
+## F1 Tournament System 🏁
 
-## Key Features
+**PrediWin now supports season-long Formula 1 tournament prediction contests using penalty-exempt contracts.**
 
-### Prediction Pot System (`PredictionPotTest.tsx`)
-- **Dynamic Pot Entry**: Users pay dynamic ETH fees based on days since pot started (not day of week)
-- **Individual Pot Schedules**: Each pot has owner-controlled start dates and timing
-- **Minimum Participants**: Requires 2+ participants before "Your Prediction Ready" display appears
-- **Dynamic Pricing**: Entry fees follow early fixed pricing (days 1-4) then exponential doubling (day 5+)
-- **Owner-Controlled Timing**: Shows UI based on pot information flags (hasStarted, isFinalDay) set by pot owners
-- **Direct ETH Payment**: Single-step process - users send ETH directly to contract
-- **Smart Contract Integration**: Automated pot distribution to winners via blockchain
-- **Participant Tracking**: Real-time display of pot balance and participant count
-- **Re-entry System**: Users with wrong predictions can pay current entry fee to re-enter
-- **Pot Information System**: Database tracks individual pot status with `PotInformation` table
-- **Reset Pot Data**: Owner action to reset pot information and clear user prediction history
+### Tournament Architecture
 
+**Dual System Design:**
+- **Regular Contracts**: Daily prediction markets with automatic penalty system
+- **F1 Contracts**: Event-based tournaments with manual outcome control
 
-### Owner/Admin Functions
-- **Daily Outcome Setting**: Admins set "positive" or "negative" asset movement results
-- **Winner Processing**: Automated system determines winners and distributes pot funds
-- **Wrong Prediction Management**: Tracks incorrect predictions and manages re-entry fees
-- **Combined Operations**: Streamlined workflow for weekly settlement cycles
+### Key Components
 
-### Prediction Logic (`MakePredictionsPage.tsx`)
-- **Automatic Participant Check**: Redirects participants to NotReadyPage if pot has insufficient players (< 2)
-- **Auto-Prediction Prevention**: Blocks cookie-based prediction submission when participant count is too low
-- **Dynamic Prediction Window**: Users can make predictions based on individual pot timing (not fixed weekly schedule)
-- **Same-Day Predictions**: Users can predict starting from their entry day (including same day)
-- **Tomorrow's Predictions**: Users forecast next day's asset price movements
-- **One Prediction Per Day**: System prevents multiple predictions, allows updates before cutoff
-- **Immediate Penalty System**: `checkMissedPredictionPenalty()` runs on page load to instantly block users with missed predictions
-- **Fair Eligibility**: Only penalizes users who were actually eligible for missed predictions (no penalties for pre-entry dates)
-- **Re-entry System**: Wrong predictors must pay current entry fee to re-enter markets
-- **Enhanced Prediction History (2025)**: Real-time display of prediction results with visual status indicators
-  - **Color-Coded Badges**: ✓ Correct (green), ✗ Wrong (red), ⏳ Pending (gray)
-  - **Provisional Indicators**: Asterisk (*) shown during evidence windows
-  - **Detailed Results**: Shows actual outcome vs user prediction with transparency
-  - **Live Updates**: Results update automatically as market outcomes are determined
-- **Owner-Controlled Logic**: UI adapts based on pot owner's final day settings instead of fixed weekly schedule
-- **Multiple Markets**: Support for Featured (Bitcoin), Crypto, Stocks, and Music prediction markets
-- **Clean Terminology**: Uses "predict/prediction" terminology instead of "bet/betting"
-
-#### Updated MakePredictionsPage Layout Structure:
-- **Priority Layout**: New prediction interface displays first, previous predictions and timers below
-- **Universal Dual Timer System**: Always shows exactly 2 timers regardless of state:
-  - **"New Question"**: Red timer counting to next midnight (next prediction opportunity)
-  - **"Next Elimination"**: Blue timer counting to outcome reveal (24 hours after new question)
-- **Visual Urgency Feedback**: Timers change color and animate when urgent (<1 hour orange, <15 min red)
-
-
-### Wordle Daily Game (`wordlePage.tsx`)
-- **Daily Word Challenge**: New word every day with 5 attempts to guess
-- **Connected Wallet Limits**: One game per wallet per 24-hour period
-- **Anonymous Play**: Non-connected users can play unlimited games
-- **Free Entry Rewards**: Winners earn free pot entries for prediction markets
-- **Word Generation**: Uses curated word list with daily rotation based on date
-- **Game Mechanics**: Standard Wordle rules - 5 letters, color-coded feedback
-- **Database Integration**: Tracks play history and prevents multiple daily plays
-- **API Architecture**: RESTful endpoints for eligibility, recording plays, and awarding prizes
-
-### Re-entry System
-- **Wrong Prediction Recovery**: Users who made incorrect predictions can re-enter markets
-- **Current Day Pricing**: Re-entry fee matches today's pot entry fee (not tomorrow's)
-- **Direct ETH Payment**: Single-step process - users send ETH directly to re-enter
-- **Database Cleanup**: Removes user from wrong predictions table upon successful payment
-- **UI Integration**: Minimalist design matching the "You're in the Pot" aesthetic
-- **Clear Messaging**: Uses "today's entry fee" instead of specific amounts for cleaner UX
-
-### Missed Prediction Penalty System (NEW - 2025)
-- **Immediate Page-Level Checking**: `checkMissedPredictionPenalty()` runs when users visit MakePredictionsPage
-- **Fair Eligibility Logic**: Uses `PotParticipationHistory` to determine who should have made predictions
-- **Same-Day Entry Protection**: Users entering today aren't penalized for today's missed predictions  
-- **Instant Blocking UI**: Users with penalties see immediate block screen with re-entry button
-- **Automatic Penalty Addition**: Missed predictions automatically added to wrong predictions table
-- **Single Source of Truth**: Replaced complex `setDailyOutcome` logic with clean page-level validation
-- **Database Functions**: `recordPotEntry()`, `isUserActiveOnDate()`, `getEligiblePredictors()`, `checkMissedPredictionPenalty()`
-- **Production Architecture**: Eliminates race conditions and provides immediate user feedback
-
-### Private Pot Creation System (`createPotPage.tsx`)
-- **Factory Contract Integration**: Uses deployed `PredictionPotWithCloning` at `0x34c2fF1bb3a8cbF05a7a98f70143DD6F22Df3490`
-- **Three-State UI Flow**: Landing page → Create form → Success confirmation
-- **Custom Pot Details**: Users input pot name and description for their prediction market
-- **EIP-1167 Cloning**: Creates cheap proxy contracts (~$0.01-0.05 gas on Base)
-- **Real-time Transaction Status**: Shows "Creating..." and "Confirming..." states during deployment
-- **Success Handling**: Displays new pot contract address with copy-to-clipboard functionality
-- **User Ownership**: Each created pot is owned and controlled by the creator
-- **Wallet Integration**: Requires wallet connection, handles transaction states and errors
-- **Social Viral Mechanism**: Every pot creator becomes a distribution point bringing friend groups
-- **Gas-Efficient Deployment**: Users pay minimal Base network fees for their own pot creation
-
-### AI Trivia Game System (`AIPage.tsx`)
-- **OpenAI Integration**: Uses GPT-3.5-turbo model for dynamic question generation across 25+ categories
-- **Minimalistic Design**: Black and white UI design with clean typography and responsive layout
-- **Statistics Tracking**: Comprehensive stats including correct answers, accuracy, current streak, and best streak
-- **100 Answer Milestone**: Users earn ~$0.01 USD ETH discount after answering 100 questions correctly
-- **localStorage Storage**: Non-connected users use browser storage, with potential database sync on wallet connection
-- **No Dedicated Database Table**: Uses existing `UsersTable` for connected wallet users if implemented
-- **Real-time Updates**: Immediate stat updates after each question
-- **Mobile Responsive**: Optimized grid layouts and touch-friendly interface
-- **Question Categories**: Science, History, Geography, Literature, Math, Sports, Technology, Art, Music, Movies, etc.
-- **Fallback System**: Built-in fallback questions if OpenAI API fails
-- **Progress Tracking**: Visual progress bar showing advancement toward 100 correct answers goal
-
-### Email Collection System
-- **Database Storage**: User emails stored in `UsersTable.email` field
-- **Database Functions**: `getUserEmail()` and `saveUserEmail()` from actions.ts
-- **Input Validation**: Comprehensive validation and SQL injection protection
-- **User Experience**: 
-  - **Dismissible**: Users can close modal and won't see it again for period
-  - **One-Time Collection**: After email submission, modal permanently disappears
-  - **Non-Intrusive**: Appears with respectful timing during wallet interaction
-
-### Performance Optimizations & Database Considerations
-
-#### LandingPage.tsx Bookmark System (CRITICAL)
-⚠️ **Potential Database Overload Issue**: The bookmark functionality in `LandingPage.tsx` can generate excessive database queries that may overwhelm the Neon PostgreSQL instance.
-
-**The Problem:**
-- **Original Implementation**: Made 50+ simultaneous database calls via `isMarketBookmarked()` for every market on each render
-- **Trigger Points**: Executed whenever `address`, `isConnected`, `marketOptions`, or language (`t`) changed
-- **Database Impact**: Could cause connection limits to be exceeded and slow response times
-- **User Impact**: Slow page loads, potential timeouts, poor user experience
-
-**Optimization Implemented:**
-- **Batched Processing**: Process markets in groups of 10 with 100ms delays between batches
-- **Dependency Reduction**: Removed `marketOptions` and `t` from useEffect dependencies to prevent excessive re-runs
-- **Request Debouncing**: Added 200ms debounce to prevent rapid successive calls during wallet connection changes
-- **Cancellation Logic**: Proper cleanup prevents memory leaks and stale requests
-- **Caching Strategy**: Geo IP language detection cached for 1 hour in localStorage
-- **Detailed Logging**: Console tracking for bookmark loading performance monitoring
-
-**Current Behavior:**
-```javascript
-// Before: 50+ simultaneous queries on every render change
-// After: 10 queries per batch with delays, only on wallet/connection changes
-console.log('📑 Loading bookmark status for user:', address);
-console.log('📑 Checking bookmarks for 45 markets');
-console.log('📑 Loaded 12 bookmarks');
-```
-
-**Database Function Optimization:**
-- **BookmarksPage**: Added 10-second timeout and 100-market limit in `getUserBookmarks()`
-- **Query Performance**: Added timing logs and error handling for slow database responses
-- **Memory Management**: Proper async cleanup prevents memory leaks
-
-**Monitoring Guidelines:**
-- Watch console logs for bookmark loading times exceeding 2-3 seconds
-- Monitor Neon database connection count and query performance
-- Alert if `getUserBookmarks()` consistently times out (indicates database issues)
-- Consider implementing Redis caching layer if bookmark queries become frequent
-
-## Critical Bug Resolution - Pot Distribution Fix (August 2025)
-
-### **The Problem: Permanent Contract Corruption**
-A critical production issue was discovered where pot distribution would work multiple times, then suddenly fail permanently with "execution reverted" errors. The contract would become completely unusable for distribution, even though:
-- Owner verification passed ✅
-- Balance checks passed ✅  
-- Winner validation passed ✅
-- Gas estimation looked correct ✅
-- All contract state appeared normal ✅
-
-### **The Root Cause: transfer() vs call()**
-After extensive debugging, the issue was traced to **Solidity's `transfer()` function** in the original contract:
-
-```solidity
-// BROKEN - Original code causing permanent failures
-for (uint256 i = 0; i < winners.length; i++) {
-    payable(winners[i]).transfer(share);  // ❌ 2300 gas limit fails with smart contracts
-}
-```
-
-**Why transfer() fails:**
-- `transfer()` has a hardcoded **2300 gas limit**
-- When sending ETH to smart contract addresses (like multisigs), 2300 gas is insufficient
-- The function **permanently reverts** and corrupts the distribution process
-- Once it fails once, the contract becomes unusable for distribution
-
-### **The Solution: call() with Proper Error Handling**
-The fix was deploying `PredictionPotFixed.sol` with `call()` instead of `transfer()`:
-
-```solidity
-// FIXED - New code that handles all recipient types
-uint256 successfulTransfers = 0;
-for (uint256 i = 0; i < winners.length; i++) {
-    (bool success, ) = payable(winners[i]).call{value: share}("");  // ✅ Forwards all gas
-    if (success) {
-        successfulTransfers++;
-    } else {
-        emit TransferFailed(winners[i], share);
-        // Continue with other winners instead of reverting
-    }
-}
-require(successfulTransfers > 0, "All transfers failed");
-```
-
-**Fixed Contract Deployed:** `0xd1547F5bC0390F5020B2A80F262e28ccfeF2bf9c`
-
-### **Key Lessons Learned**
-1. **Never use `transfer()` for ETH distribution** - use `call()` instead
-2. **Smart contract recipients need more than 2300 gas** for their receive functions  
-3. **Production contracts must handle edge cases** like multisig wallets
-4. **Graceful degradation is critical** - if one transfer fails, continue with others
-5. **Emergency withdrawal functions** are essential for stuck funds
-
-### **Impact & Resolution**
-- ✅ **Root cause permanently fixed** with new contract architecture
-- ✅ **No more distribution failures** regardless of recipient address type
-- ✅ **Future-proof solution** handles EOAs, smart contracts, and multisigs
-- ✅ **Emergency recovery** built-in if needed
-- ✅ **Production-ready** with millions of dollars in mind
-
-This fix ensures pot distribution will **never fail again** due to recipient address types.
-
-## Adding New Contract Addresses for Markets
-
-When deploying a new smart contract for a market, follow these **essential steps** to ensure full integration:
-
-### **Step-by-Step Integration Checklist:**
-
-#### **1. Update Markets Configuration (`app/Constants/markets.ts`)**
-- Add `contractAddress` to the market in the `options` category
-- Add complete market data (question, icon, name, etc.) - cannot be empty
-- Update the corresponding category-specific section with matching `id` and `contractAddress`
-- Ensure both references have identical market information
-
-#### **2. Update Contract Mapping (`app/Database/config.ts`)**
-- Add new contract address to `CONTRACT_TO_TABLE_MAPPING`
-- Add new table mappings to `TABLE_MAPPINGS.BETS` and `TABLE_MAPPINGS.WRONG_PREDICTIONS`
-- Update `getMarketDisplayName()` function with proper display name
-- Follow naming convention: `{market}_bets` and `wrong_predictions_{market}`
-
-#### **3. Update Database Schema (`app/Database/schema.ts`)**
-- Create new `{Market}Bets` table with standard prediction schema
-- Create new `Wrong_Predictions{Market}` table with standard penalty schema
-- Export both tables for Drizzle ORM usage
-
-#### **4. Update Database Functions (`app/Database/actions.ts`)**
-- Import new `{Market}Bets` table (e.g., `MusicBets`) in the main import statement
-- Import new `WrongPredictions{Market}` table (e.g., `WrongPredictionsMusic`) in the wrong predictions import
-- Add new market case to `getTableFromType()` function to return the correct bets table
-- Add new market case to `getWrongPredictionsTableFromType()` function to return the correct wrong predictions table
-- Update error messages in both functions to include the new market type
-
-#### **5. Update Contract Data Hook (`app/hooks/useContractData.ts`)**
-- **Critical Step**: Add new contract query hooks to handle additional contracts
-- If adding the **5th contract**, add `participantsQuery5` and `balanceQuery5` hooks
-- Update `participantsData` and `balancesData` arrays to include the new contract index
-- **Without this step, the new contract will show $0 balance and 0 participants**
-
-#### **6. Enable Prediction Percentages (`app/Pages/LandingPage.tsx`)**
-- Add market ID to `marketsWithContracts` array in `loadPredictionPercentages()`
-- This enables thermometer display and live percentage updates
-
-#### **7. Database Migration (Production)**
-- Run migrations to create the new tables in production database
-- Ensure both bets and wrong predictions tables are created
-
-### **Example Integration (Music Market):**
-
+#### 1. Penalty Exemption System
 ```typescript
-// 1. markets.ts - options category
-{
-  id: 'music',
-  name: 'Music Charts',
-  contractAddress: '0xb85D3aE374b8098A6cA553dB90C0978401a34f71',
-  question: 'Will "Espresso" be the #1 track on Spotify Global?',
-  icon: 'https://...',
-  // ... other properties
-}
-
-// 2. config.ts
-export const CONTRACT_TO_TABLE_MAPPING = {
-  "0xb85D3aE374b8098A6cA553dB90C0978401a34f71": "music",
-} as const;
-
-// 3. schema.ts
-export const MusicBets = pgTable("music_bets", { /* schema */ });
-export const WrongPredictionsMusic = pgTable("wrong_predictions_music", { /* schema */ });
-
-// 4. actions.ts - Import new tables
-import { Messages, FeaturedBets, CryptoBets, StocksBets, MusicBets } from "./schema";
-import { WrongPredictions, WrongPredictionsCrypto, WrongPredictionsStocks, WrongPredictionsMusic } from "./schema";
-
-// 4. actions.ts - Update functions
-const getTableFromType = (tableType: string) => {
-  switch (tableType) {
-    case 'music':
-      return MusicBets;
-    // ... other cases
-  }
-};
-
-const getWrongPredictionsTableFromType = (tableType: string) => {
-  switch (tableType) {
-    case 'music':
-      return WrongPredictionsMusic;
-    // ... other cases
-  }
-};
-
-// 5. useContractData.ts - Add 4th contract hooks (music was 4th contract)
-const participantsQuery4 = useReadContract({
-  address: contractAddresses[3] as `0x${string}`,
-  abi: PREDICTION_POT_ABI,
-  functionName: 'getParticipants',
-  query: { enabled: isConnected && !!address && contractAddresses.length > 3 }
-});
-
-const balanceQuery4 = useBalance({
-  address: contractAddresses[3] as `0x${string}`,
-  chainId: 8453,
-  query: { enabled: contractAddresses.length > 3 }
-});
-
-// Update arrays to include 4th contract
-const participantsData = [
-  contractAddresses.length > 0 ? participantsQuery1.data : undefined,
-  contractAddresses.length > 1 ? participantsQuery2.data : undefined, 
-  contractAddresses.length > 2 ? participantsQuery3.data : undefined,
-  contractAddresses.length > 3 ? participantsQuery4.data : undefined
-].slice(0, contractAddresses.length);
-
-const balancesData = [
-  contractAddresses.length > 0 ? balanceQuery1.data : undefined,
-  contractAddresses.length > 1 ? balanceQuery2.data : undefined,
-  contractAddresses.length > 2 ? balanceQuery3.data : undefined,
-  contractAddresses.length > 3 ? balanceQuery4.data : undefined
-].slice(0, contractAddresses.length);
-
-// 6. LandingPage.tsx
-const marketsWithContracts = ['Trending', 'Crypto', 'stocks', 'music'];
+// Database/config.ts
+export const PENALTY_EXEMPT_CONTRACTS: string[] = [
+  "0xBahrainGP2024",
+  "0xSaudiGP2024",
+  // ... other F1 race contracts
+];
 ```
 
-### **⚠️ Common Mistakes to Avoid:**
-- **Missing question/icon**: Markets with empty questions will show "undefined market coming soon"
-- **Inconsistent IDs**: Market ID must match between options category and specific category  
-- **Missing from percentages**: Forgetting to add to `marketsWithContracts` means no thermometer
-- **⚠️ CRITICAL: Missing useContractData update**: Forgetting to update `useContractData.ts` with new contract hooks will cause $0 balance and 0 participants display
-- **⚠️ CRITICAL: Market ID vs Display Name Mismatch**: A common cause of $0 balance display even when contract data is working
-  - **Problem**: Balance data is stored using display names (`getMarketDisplayName()` output) but accessed using market IDs
-  - **Example**: Balance stored as `potBalances["Music Charts"]` but accessed as `getRealPotBalance("music")` → returns $0
-  - **Solution**: Functions that access balance data must map market IDs to display names before lookup
-  - **Watch for**: Any function that takes a market ID parameter but needs to access balance/display data
-- **Database schema**: Missing either bets or wrong predictions table will cause errors
-- **Database function updates**: Forgetting to update `getTableFromType()` and `getWrongPredictionsTableFromType()` in actions.ts will cause "Invalid table type" errors
-- **Missing imports**: Must import both the bets table and wrong predictions table in actions.ts
-- **Case sensitivity**: Ensure consistent casing in all table and function names
+**Behavior:**
+- **Regular contracts**: Automatic `checkMissedPenalty` runs daily
+- **F1 contracts**: Penalty checks skipped entirely
 
-### **Testing Verification:**
-After integration, verify:
-- ✅ Market appears in landing page with proper layout (big/small buttons based on index)
-- ✅ Clicking market navigates properly (no "coming soon" error)
-- ✅ **Pot balance displays correctly (not $0)** - indicates useContractData is working
-- ✅ **Participant count shows correctly (not 0)** - confirms contract data hook integration
-- ✅ Thermometer appears after first predictions are made
-- ✅ Prediction percentages load and display correctly
-- ✅ Users can make predictions and data saves to correct database tables
-
-### **Understanding Market Naming Conventions & Data Flow**
-
-The system uses **multiple naming formats** for the same market across different contexts, which can cause integration issues:
-
-#### **Three Key Naming Formats:**
-1. **Market ID** (`markets.ts`): `"music"` - Used in URLs, cookies, and function parameters
-2. **Table Type** (`config.ts`): `"music"` - Used for database operations and contract mapping  
-3. **Display Name** (`getMarketDisplayName()`): `"Music Charts"` - Used for user-facing text and balance storage
-
-#### **Common Data Flow That Causes Issues:**
-```javascript
-// 1. Contract balance fetched and stored using Display Name
-contractAddress → tableType ("music") → getMarketDisplayName() → "Music Charts"
-potBalances["Music Charts"] = "$400"
-
-// 2. UI tries to access balance using Market ID  
-getRealPotBalance("music") → potBalances["music"] → undefined → "$0" ❌
-
-// 3. Fix: Map Market ID to Display Name before accessing
-getRealPotBalance("music") → "Music Charts" → potBalances["Music Charts"] → "$400" ✅
+#### 2. Fixed Entry Fee System
+```typescript
+// Database/config.ts
+export const PENALTY_EXEMPT_ENTRY_FEE = 1.00; // $1.00 USD
 ```
 
-#### **Files That Need ID-to-Display-Name Mapping:**
-- **LandingPage.tsx**: `getRealPotBalance()` function must map market IDs to display names
-- **Any component** that takes market ID parameters but accesses balance/display data
-- **Future components** that display pot balances or market statistics
+**Behavior:**
+- **Regular contracts**: Dynamic pricing ($0.02-0.05 early, doubling later)
+- **F1 contracts**: Fixed $1.00 for entry and re-entry
 
-#### **Prevention Strategy:**
-- **Always trace the data flow** when adding new markets or UI components
-- **Test with console logs** to verify what keys are being used vs. what exists
-- **Consider creating a utility function** for consistent ID-to-display-name mapping across components
+#### 3. Event-Specific Bet Dates
+```typescript
+// Database/eventDates.ts
+export const EVENT_DATE_MAPPING = {
+  "0xBahrainGP2024": "2024-03-02",
+  "0xSaudiGP2024": "2024-03-09",
+  // ... race calendar
+};
+```
+
+**Behavior:**
+- **Regular contracts**: Predictions stored with tomorrow's date
+- **F1 contracts**: Predictions stored with race date from mapping
+
+#### 4. Manual Non-Predictor Elimination
+```typescript
+// In setDailyOutcome() - Database/OwnerActions.ts
+await setDailyOutcome(outcome, tableType, questionName, raceDate, contractParticipants);
+```
+
+**Behavior:**
+- **Regular contracts**: Only eliminate wrong predictions
+- **F1 contracts**: Eliminate both wrong predictions AND non-predictors
+
+### Tournament Flow
+
+1. **Pre-Season**: Users enter F1 contract with $1 fee
+2. **Race Week**: Users predict race outcomes (stored with race date)
+3. **Race Day**: Admin sets outcome with participant list
+4. **Elimination**: Wrong predictors + non-predictors eliminated automatically
+5. **Next Week**: Entry fee increases, survivors continue to next race
+6. **Season End**: Last person standing wins entire pot
+
+### Implementation Files
+
+- **`Database/config.ts`**: Penalty exemption and fee configuration
+- **`Database/eventDates.ts`**: Race calendar mapping
+- **`Database/actions.ts`**: Updated prediction insertion logic
+- **`Database/OwnerActions.ts`**: Enhanced outcome setting with non-predictor elimination
+- **`Pages/LandingPage.tsx`**: Penalty exemption in checkMissedPenalty loop
+- **`Pages/PredictionPotTest.tsx`**: Fixed fee logic for exempt contracts
+- **`Pages/MakePredictionsPage.tsx`**: Fixed re-entry fee logic
+
+### Adding New F1 Races
+
+1. **Add contract to exempt list**:
+```typescript
+export const PENALTY_EXEMPT_CONTRACTS: string[] = [
+  "0xMonacoGP2024", // Add new race contract
+];
+```
+
+2. **Set race date**:
+```typescript
+export const EVENT_DATE_MAPPING = {
+  "0xMonacoGP2024": "2024-05-26", // Add race date
+};
+```
+
+3. **Weekly updates**: Manually update race dates as needed
+
+**System maintains complete backward compatibility - existing users unaffected.**
 
 ## Development Notes
 
-- **Mobile App Strategy**: PWA + Capacitor approach planned for native iOS/Android deployment (1-2 week timeline, zero code rewrite needed)
-- **OnchainKit Version**: Currently on `0.37.5` (downgraded from `0.38.19`). Reverted to stable pre-upgrade version to avoid mobile wallet modal issues and desktop z-index problems found in newer versions.
-- **SPA Architecture**: Single-page application with conditional rendering based on `activeSection`
-- **Wallet-First Design**: Most functionality requires wallet connection and Base network
-- **Database Operations**: All data persistence uses Drizzle ORM with PostgreSQL
-- **Real-time Updates**: Integrates live crypto pricing via `Constants/getPrice.ts`
-- **Blockchain State Management**: Wagmi hooks for contract reads/writes and transaction monitoring
-- **Error Handling**: Comprehensive error states for failed transactions and network issues
-- **Day-Based Logic**: Core functionality changes based on current day of the week using JavaScript `Date.getDay()`
-- **Countdown Systems**: Multiple real-time countdowns for pot entry deadlines and reopening schedules
-- **Responsive UI**: Different interfaces and messages shown based on weekly schedule phases
-- **Prediction-Focused Language**: Entire UI uses "predict/prediction" terminology instead of "bet/betting" to avoid gambling associations
-- **ETH Amount Calculation**: All ETH amounts calculated from USD values with proper wei precision handling
-- **Dynamic Pricing System**: Entry fees based on days since pot started, with early fixed pricing (days 1-4) then exponential doubling (day 5+)
-- **Multi-Asset Support**: Platform designed for predictions beyond crypto (stocks, sports, etc.)
-- **Immediate Penalty System**: Page-level validation prevents delayed surprises and provides instant feedback
-- **Event-Based History Tracking**: Complete audit trail of all pot participation for fair penalty determination
-- **Same-Day Prediction Eligibility**: Users can predict starting from their entry day (including entry day itself)
-- **Enhanced Market Outcomes System (2025)**: All outcome-setting functions (`setDailyOutcome`, `setProvisionalOutcome`, `getProvisionalOutcome`) now require `questionName` parameter for precise result tracking
-- **Question-Based Result Matching**: Predictions matched to outcomes using exact `questionName` + `predictionDate` + `marketType` combination
-- **Prediction Results Integration**: `getUserPredictionsWithResults()` function provides complete prediction history with real-time result status
+- **Translation System**: Ultra-conservative approach - only display strings translated, never database/contract logic
+- **Minimum Players**: Set via `MIN_PLAYERS` constants in `database/config.ts` (currently 2)
+- **OnchainKit Version**: `0.37.5` (stable version, avoid newer versions with modal issues)
+- **Prediction Language**: Uses "predict/prediction" terminology, not "bet/betting"
+- **Mobile Strategy**: PWA + Capacitor for native deployment

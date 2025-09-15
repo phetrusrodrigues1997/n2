@@ -1,5 +1,6 @@
 "use server";
 
+// Private pot owner actions for ETH-based contracts
 import { db2, getTableName } from "./db2";
 import { PrivatePots } from "./schema2";
 import { eq, sql } from "drizzle-orm";
