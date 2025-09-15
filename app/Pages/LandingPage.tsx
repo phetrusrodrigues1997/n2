@@ -1539,7 +1539,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             })()}`}>
                               <div className="text-[13px] font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif] text-gray-500 leading-none flex items-center gap-1" style={{ fontWeight: '350' }}>
                                 {market.potSize}
-                                <span className="text-gray-400">•</span>
+                                <span className="text-gray-400" style={{ fontSize: '8px' }}>•</span>
                                 <RefreshCw className="w-3 h-3" />
                                 {(() => {
                                   const contractAddress = getContractAddress(market.id);
@@ -2058,7 +2058,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           })()}`}>
                             <div className="text-[13px] font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif] text-gray-500 leading-none flex items-center gap-1" style={{ fontWeight: '350' }}>
                               {market.potSize}
-                              <span className="text-gray-400">•</span>
+                              <span className="text-gray-400" style={{ fontSize: '8px' }}>•</span>
                               <RefreshCw className="w-3 h-3" />
                               {(() => {
                                 const contractAddress = getContractAddress(market.id);

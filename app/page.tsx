@@ -859,6 +859,30 @@ export default function App() {
                     maxWidth: '100%'
                   }}
                 >
+                {/* All button - appears selected initially, gets deselected when other buttons are clicked */}
+                <button
+                  key="all-button"
+                  onClick={() => {
+                    // Do nothing functionally, but update states to show All as selected
+                    setSelectedMarket('All');
+                    setActiveCarousel('second');
+                  }}
+                  className={`group flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 transition-all duration-300 ${
+                    (selectedMarket === 'All' && activeCarousel === 'second') || (selectedMarket === 'Trending' && activeCarousel === 'first')
+                      ? 'text-purple-700 bg-purple-100 border border-purple-200 rounded-full'
+                      : 'text-black border border-gray-300 rounded-full hover:text-gray-600'
+                  }`}
+                  style={{
+                    fontWeight: ((selectedMarket === 'All' && activeCarousel === 'second') || (selectedMarket === 'Trending' && activeCarousel === 'first')) ? '500' : '500',
+                    minWidth: 'fit-content',
+                    height: 'auto',
+                  }}
+                >
+                  <span className="text-sm whitespace-nowrap tracking-tight">
+                    For you
+                  </span>
+                </button>
+
                 {shuffledMarkets.map((market) => (
                   <button
                     key={`personalized-${market.id}`}

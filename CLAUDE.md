@@ -123,9 +123,7 @@ npm run lint         # Run linter
 ```typescript
 // Database/config.ts
 export const PENALTY_EXEMPT_CONTRACTS: string[] = [
-  "0xBahrainGP2024",
-  "0xSaudiGP2024",
-  // ... other F1 race contracts
+  "0x7357650abC8B1f980806E80a6c3FB56Aae23c45e", // F1 Tournament 2025
 ];
 ```
 
@@ -147,9 +145,7 @@ export const PENALTY_EXEMPT_ENTRY_FEE = 1.00; // $1.00 USD
 ```typescript
 // Database/eventDates.ts
 export const EVENT_DATE_MAPPING = {
-  "0xBahrainGP2024": "2024-03-02",
-  "0xSaudiGP2024": "2024-03-09",
-  // ... race calendar
+  "0x7357650abC8B1f980806E80a6c3FB56Aae23c45e": "2025-03-16", // Bahrain GP 2025
 };
 ```
 
@@ -186,19 +182,28 @@ await setDailyOutcome(outcome, tableType, questionName, raceDate, contractPartic
 - **`Pages/PredictionPotTest.tsx`**: Fixed fee logic for exempt contracts
 - **`Pages/MakePredictionsPage.tsx`**: Fixed re-entry fee logic
 
+### Current F1 Contract
+
+**Active Formula 1 Tournament Contract**: `0x7357650abC8B1f980806E80a6c3FB56Aae23c45e`
+- **Current Race**: Bahrain GP 2025 (March 16, 2025)
+- **Status**: Penalty-exempt with fixed $1.00 USD entry fee
+- **Table Type**: `formula1` (Formula1Bets and WrongPredictionsFormula1)
+
 ### Adding New F1 Races
 
 1. **Add contract to exempt list**:
 ```typescript
 export const PENALTY_EXEMPT_CONTRACTS: string[] = [
-  "0xMonacoGP2024", // Add new race contract
+  "0x7357650abC8B1f980806E80a6c3FB56Aae23c45e", // Current F1 contract
+  "0xNewRaceContract2025", // Add new race contract
 ];
 ```
 
 2. **Set race date**:
 ```typescript
 export const EVENT_DATE_MAPPING = {
-  "0xMonacoGP2024": "2024-05-26", // Add race date
+  "0x7357650abC8B1f980806E80a6c3FB56Aae23c45e": "2025-03-16", // Current race
+  "0xNewRaceContract2025": "2025-03-30", // Add new race date
 };
 ```
 
