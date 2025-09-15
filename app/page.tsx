@@ -47,7 +47,7 @@ const LIVE_POT_ADDRESS = '0xDc6725F0E3D654c3Fde0480428b194ab19F20a9E';
 
 export default function App() {
   const { address, isConnected } = useAccount();
-  const [activeSection, setActiveSection] = useState('home'); // Default section
+  const [activeSection, setActiveSection] = useState('comingsoon'); // Default section
   const [privatePotAddress, setPrivatePotAddress] = useState<string>(''); // For routing to private pots
   const [hasEnteredLivePot, setHasEnteredLivePot] = useState(false); // Track live pot entry
   const [isMobileSearchActive, setIsMobileSearchActive] = useState(false); // Track mobile search state
@@ -473,8 +473,8 @@ export default function App() {
     <div className="min-h-screen bg-white text-white">
 
 
-      {/* Hide header and all content when LandingPage is loading */}
-      {!isLandingPageLoading && (
+      {/* Hide header and all content when LandingPage is loading or showing coming soon */}
+      {!isLandingPageLoading && activeSection !== 'comingsoon' && (
         <header
   className={`z-50 bg-white px-4 md:py-2 sticky top-0 ${
     (activeSection === "home") ? "border-b border-gray-200" : ""
@@ -729,7 +729,7 @@ export default function App() {
       )}
 
       {/* Mobile Search Bar - Below Header - Always show on mobile when home */}
-      {!isLandingPageLoading && activeSection === 'home' && (
+      {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection === 'home' && (
       <div className="md:hidden bg-white px-4 py-3 flex items-center gap-3">
         <div className="relative flex-1">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -772,7 +772,7 @@ export default function App() {
       )}
 
       {/* Second Carousel - Personalized Labels (Below mobile search bar) */}
-      {!isLandingPageLoading && activeSection === 'home' && (
+      {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection === 'home' && (
         <section className="relative z-10 px-4 py-2 md:py-3 bg-white overflow-hidden">
           <div className="w-full mx-auto">
             <div className="flex items-center gap-4 w-full max-w-full">
@@ -959,7 +959,7 @@ export default function App() {
       </main>
 
       {/* Mobile Bottom Navigation */}
-      {!isLandingPageLoading && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'ideas' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && activeSection !== 'discord' && (
+      {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'ideas' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && activeSection !== 'discord' && (
         <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40">
         <div className="flex items-center justify-around py-2">
           <button
@@ -1047,7 +1047,7 @@ export default function App() {
       )}
 
       {/* Toast Notification */}
-      {!isLandingPageLoading && showToast && (
+      {!isLandingPageLoading && activeSection !== 'comingsoon' && showToast && (
         <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 md:bottom-6 bg-black/80 text-white px-4 py-2 rounded-md shadow-lg border border-[#004400] transition-all duration-200 flex items-center z-50">
           <svg className="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
