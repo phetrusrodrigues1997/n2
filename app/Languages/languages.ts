@@ -368,10 +368,10 @@ export const translations: Record<Language, Translations> = {
     comingSoon: 'market coming soon!',
     
     // Market Questions
-    bitcoinQuestion: 'Will Bitcoin end the day higher?',
+    bitcoinQuestion: 'Bitcoin closes higher than opening price',
     ethereumQuestion: 'Will Ethereum end the day higher?',
     solanaQuestion: 'Will Solana end the day higher?',
-    teslaQuestion: 'Will Tesla stock end the day higher?',
+    teslaQuestion: 'Tesla stock closes higher than opening price',
     nvidiaQuestion: 'Will NVIDIA stock end the day higher?',
     sp500Question: 'Will S&P 500 end the day higher?',
     
@@ -719,10 +719,10 @@ export const translations: Record<Language, Translations> = {
     comingSoon: 'mercado em breve!',
     
     // Market Questions
-    bitcoinQuestion: 'O Bitcoin vai terminar o dia em alta?',
+    bitcoinQuestion: 'Bitcoin fecha em alta em relação ao preço de abertura',
     ethereumQuestion: 'O Ethereum vai terminar o dia em alta?',
     solanaQuestion: 'O Solana vai terminar o dia em alta?',
-    teslaQuestion: 'A ação da Tesla vai terminar o dia em alta?',
+    teslaQuestion: 'Ação da Tesla fecha em alta em relação ao preço de abertura',
     nvidiaQuestion: 'A ação da NVIDIA vai terminar o dia em alta?',
     sp500Question: 'O S&P 500 vai terminar o dia em alta?',
     
@@ -1137,14 +1137,14 @@ export const getTranslatedMarketQuestion = (market: any, language: Language): st
   // Map market names/IDs to their appropriate translated questions
   const questionMap: Record<string, string> = {
     // Main markets
-    'Trending': language === 'en' 
-      ? 'Will a solo female artist have the #1 song on the global spotify charts?'
-      : 'Uma artista solo feminina terá a música #1 nas paradas globais do Spotify?',
+    'Trending': language === 'en'
+      ? 'Solo female artist has #1 song on Spotify Global'
+      : 'Artista feminina solo tem música #1 no Spotify Global',
     'Crypto': t.bitcoinQuestion,
     'Stocks': t.teslaQuestion, 
     'Music Charts': language === 'en'
-      ? 'Will "Espresso" be the #1 track on Spotify Global?'
-      : 'Será que "Espresso" será a faixa #1 no Spotify Global?',
+      ? 'Espresso reaches #1 on Spotify Global'
+      : 'Espresso alcança #1 no Spotify Global',
     // Additional markets
     'X Trending Topics': language === 'en'
       ? 'Which topic will rank #1 on X trending topics in the United States by 21:00 UTC today?'
@@ -1173,7 +1173,7 @@ export const translateMarketQuestion = (questionText: string, language: Language
     'Will Tesla stock end the day higher?': 'A ação da Tesla vai terminar o dia em alta?',
     
     // Music/Espresso question - direct hardcoded mapping
-    'Will "Espresso" be the #1 track on Spotify Global?': 'Será que "Espresso" será a faixa #1 no Spotify Global?',
+    'Will Espresso be the #1 track on Spotify Global?': 'Será que Espresso será a faixa #1 no Spotify Global?',
     
     // Trending - this would be a translated version from the Trending market
     'Will a solo female artist have the #1 song on the global spotify charts?': 'Uma artista solo feminina terá a música #1 nas paradas globais do Spotify?',

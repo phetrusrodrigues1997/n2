@@ -977,8 +977,18 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       cutoff--;
     }
 
-    // If no space found, just cut at maxLength
-    if (cutoff === 0) cutoff = maxLength;
+    // If no space found within reasonable range, try to find a better cutoff point
+    if (cutoff === 0 || cutoff < maxLength * 0.6) {
+      // Look for spaces in a wider range
+      cutoff = Math.min(maxLength - 3, text.length);
+      while (cutoff > maxLength * 0.5 && text[cutoff] !== ' ') {
+        cutoff--;
+      }
+      // If still no good break point, just cut shorter to avoid mid-word breaks
+      if (cutoff < maxLength * 0.5) {
+        cutoff = Math.floor(maxLength * 0.8);
+      }
+    }
 
     // Trim any trailing spaces and add ellipsis
     return text.substring(0, cutoff).trimEnd() + '...';
