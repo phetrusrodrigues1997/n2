@@ -3,8 +3,11 @@
 // Used for F1 races and other scheduled events where predictions should be made for a specific date
 
 export const EVENT_DATE_MAPPING = {
-  // F1 2024 Season - Add your penalty-exempt contract addresses here
+  // F1 2025 Season - Add your penalty-exempt contract addresses here
   // Format: "contractAddress": "YYYY-MM-DD" (race date)
+
+  // Formula 1 Tournament Contract
+  "0x7357650abC8B1f980806E80a6c3FB56Aae23c45e": "2025-03-16", // Bahrain GP 2025
 
   // Example races (replace with actual contract addresses):
   // "0xBahrainGP2024": "2024-03-02",

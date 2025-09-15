@@ -53,6 +53,13 @@ export const useContractData = () => {
     query: { enabled: isConnected && !!address && contractAddresses.length > 3 }
   });
 
+  const participantsQuery5 = useReadContract({
+    address: contractAddresses[4] as `0x${string}`,
+    abi: PREDICTION_POT_ABI,
+    functionName: 'getParticipants',
+    query: { enabled: isConnected && !!address && contractAddresses.length > 4 }
+  });
+
   const balanceQuery1 = useBalance({
     address: contractAddresses[0] as `0x${string}`,
     chainId: 8453,
@@ -77,19 +84,27 @@ export const useContractData = () => {
     query: { enabled: contractAddresses.length > 3 }
   });
 
+  const balanceQuery5 = useBalance({
+    address: contractAddresses[4] as `0x${string}`,
+    chainId: 8453,
+    query: { enabled: contractAddresses.length > 4 }
+  });
+
   // Organize data for easy consumption - only include data for contracts that exist
   const participantsData = [
     contractAddresses.length > 0 ? participantsQuery1.data : undefined,
-    contractAddresses.length > 1 ? participantsQuery2.data : undefined, 
+    contractAddresses.length > 1 ? participantsQuery2.data : undefined,
     contractAddresses.length > 2 ? participantsQuery3.data : undefined,
-    contractAddresses.length > 3 ? participantsQuery4.data : undefined
+    contractAddresses.length > 3 ? participantsQuery4.data : undefined,
+    contractAddresses.length > 4 ? participantsQuery5.data : undefined
   ].slice(0, contractAddresses.length);
 
   const balancesData = [
     contractAddresses.length > 0 ? balanceQuery1.data : undefined,
     contractAddresses.length > 1 ? balanceQuery2.data : undefined,
     contractAddresses.length > 2 ? balanceQuery3.data : undefined,
-    contractAddresses.length > 3 ? balanceQuery4.data : undefined
+    contractAddresses.length > 3 ? balanceQuery4.data : undefined,
+    contractAddresses.length > 4 ? balanceQuery5.data : undefined
   ].slice(0, contractAddresses.length);
   
   return {

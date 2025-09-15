@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
 import { formatUnits } from 'viem';
 import { checkMissedPredictionPenalty } from '../Database/actions3';
-import { ArrowRight, Bookmark, Check, BookOpen, ChevronRight, ChevronLeft, X, CheckCircle2, DollarSign, Target, TrendingUp, Users, Calendar, BarChart2 } from 'lucide-react';
+import { ArrowRight, Bookmark, Check, BookOpen, ChevronRight, ChevronLeft, X, CheckCircle2, DollarSign, Target, TrendingUp, Users, Calendar, BarChart2, RefreshCw } from 'lucide-react';
 import { Language, getTranslation, supportedLanguages, getTranslatedMarketQuestion } from '../Languages/languages';
 import { getMarkets, Market } from '../Constants/markets';
 import { CustomAlert, useCustomAlert } from '../Components/CustomAlert';
@@ -1537,21 +1537,34 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
                               return !useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
                             })()}`}>
-                              <div className="text-[13px] font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif] text-gray-500 leading-none" style={{ fontWeight: '350' }}>{market.potSize}</div>
+                              <div className="text-[13px] font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif] text-gray-500 leading-none flex items-center gap-1" style={{ fontWeight: '350' }}>
+                                {market.potSize}
+                                <span className="text-gray-400">•</span>
+                                <RefreshCw className="w-3 h-3" />
+                                {(() => {
+                                  const contractAddress = getContractAddress(market.id);
+                                  const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
+                                  return isPenaltyExempt ? 'Weekly' : 'Daily';
+                                })()}
+                              </div>
 
                               {(() => {
+                                // MOBILE STATS FOOTER - RIGHT SIDE DISPLAY LOGIC
+                                // Shows user participation status OR bookmark button
+                                // NOTE: participant counts are checked but not displayed to users
                                 const contractAddress = getContractAddress(market.id);
                                 const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
-                                const enoughParticipants = contractAddress ? hasEnoughParticipants(contractAddress) : false;
+                                const enoughParticipants = contractAddress ? hasEnoughParticipants(contractAddress) : false; // Used for internal logic, not displayed
                                 const potInfo = contractAddress ? potInformation[contractAddress] : null;
 
                                 if (userIsParticipant) {
+                                  // USER IS PARTICIPANT: Show status badges based on pot state
                                   // Check if user is eliminated for this specific market
                                   const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
                                   // Priority: Timer > "Begins soon" > "Entered"
                                   if (potInfo?.hasStarted) {
-                                    // Case 3: Show timer when pot has started
+                                    // Case 3: Show countdown timer when pot has started
                                     return (
                                       <div className={`px-2 py-1 bg-gray-100 rounded-lg text-xs font-medium flex items-center gap-1 ${
                                         isEliminated ? 'text-gray-500' : 'text-purple-700'
@@ -1575,6 +1588,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     );
                                   }
                                 } else {
+                                  // USER IS NOT PARTICIPANT: Show bookmark button
                                   return (
                                     <button
                                       onClick={(e) => handleBookmarkToggle(market, e)}
@@ -1793,7 +1807,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           <div className="flex items-start gap-3 mb-3 relative">
                             {/* Small Square Image */}
                             <div className="flex-shrink-0">
-                              <div className="rounded-lg w-12 h-12 bg-white overflow-hidden relative">
+                              <div className="rounded-lg w-14 h-14 bg-white overflow-hidden relative">
                                 {market.icon?.slice(0, 4) === 'http' ? (
                                   <img
                                     src={market.icon}
@@ -2042,21 +2056,34 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
                             return !useTraditionalLayout ? '-translate-y-2' : '';
                           })()}`}>
-                            <div className="text-[13px] font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif] text-gray-500 leading-none" style={{ fontWeight: '350' }}>{market.potSize}</div>
+                            <div className="text-[13px] font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif] text-gray-500 leading-none flex items-center gap-1" style={{ fontWeight: '350' }}>
+                              {market.potSize}
+                              <span className="text-gray-400">•</span>
+                              <RefreshCw className="w-3 h-3" />
+                              {(() => {
+                                const contractAddress = getContractAddress(market.id);
+                                const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
+                                return isPenaltyExempt ? 'Weekly' : 'Daily';
+                              })()}
+                            </div>
 
                             {(() => {
+                              // DESKTOP STATS FOOTER - RIGHT SIDE DISPLAY LOGIC
+                              // Shows user participation status OR bookmark button
+                              // NOTE: participant counts are checked but not displayed to users
                               const contractAddress = getContractAddress(market.id);
                               const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
-                              const enoughParticipants = contractAddress ? hasEnoughParticipants(contractAddress) : false;
+                              const enoughParticipants = contractAddress ? hasEnoughParticipants(contractAddress) : false; // Used for internal logic, not displayed
                               const potInfo = contractAddress ? potInformation[contractAddress] : null;
 
                               if (userIsParticipant) {
+                                // USER IS PARTICIPANT: Show status badges based on pot state
                                 // Check if user is eliminated for this specific market
                                 const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
                                 // Priority: Timer > "Begins soon" > "Entered"
                                 if (potInfo?.hasStarted) {
-                                  // Case 3: Show timer when pot has started
+                                  // Case 3: Show countdown timer when pot has started
                                   return (
                                     <div className={`px-2 py-1 bg-gray-100 rounded-lg text-xs font-medium flex items-center gap-1 ${
                                       isEliminated ? 'text-gray-500' : 'text-purple-700'
@@ -2080,6 +2107,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   );
                                 }
                               } else {
+                                // USER IS NOT PARTICIPANT: Show bookmark button
                                 return (
                                   <button
                                     onClick={(e) => handleBookmarkToggle(market, e)}

@@ -3,10 +3,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Wallet, Mail, X } from 'lucide-react';
 import Cookies from 'js-cookie';
-import { useAccount, useReadContract } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2 } from '../Database/config';
 import { getUserEmail, saveUserEmail } from '../Database/actions';
 import { Language, getTranslation } from '../Languages/languages';
+import { useContractData } from '../hooks/useContractData';
 
 interface DashboardProps {
   activeSection: string;
@@ -15,40 +16,6 @@ interface DashboardProps {
   currentLanguage?: Language;
 }
 
-// Use centralized contract mapping from config
-const CONTRACT_ADDRESSES = CONTRACT_TO_TABLE_MAPPING;
-
-// Prediction Pot ABI
-const PREDICTION_POT_ABI = [
-  {
-    "inputs": [],
-    "name": "getParticipants",
-    "outputs": [{ "internalType": "address[]", "name": "", "type": "address[]" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "creator",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "participant", "type": "address" }],
-    "name": "removeParticipant",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-] as const;
 
 const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLanguage = 'en' }: DashboardProps) => {
   const [marketInfo, setMarketInfo] = useState({ name: '', section: '', address: '' });
@@ -128,44 +95,8 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
     }
   }, [address, isConnected]);
 
-  // Get contract addresses array
-  const contractAddresses = Object.keys(CONTRACT_ADDRESSES) as Array<keyof typeof CONTRACT_ADDRESSES>;
-
-  // Read participants from all contracts - hooks must be called at top level
-  const { data: participants1 } = useReadContract({
-    address: contractAddresses[0] as `0x${string}`,
-    abi: PREDICTION_POT_ABI,
-    functionName: 'getParticipants',
-    query: { enabled: isConnected && !!address }
-  });
-
-  const { data: participants2 } = useReadContract({
-    address: contractAddresses[1] as `0x${string}`,
-    abi: PREDICTION_POT_ABI,
-    functionName: 'getParticipants',
-    query: { enabled: isConnected && !!address }
-  });
-
-  const { data: participants3 } = useReadContract({
-    address: contractAddresses[2] as `0x${string}`,
-    abi: PREDICTION_POT_ABI,
-    functionName: 'getParticipants',
-    query: { enabled: isConnected && !!address && contractAddresses.length > 2 }
-  });
-
-  const { data: participants4 } = useReadContract({
-    address: contractAddresses[3] as `0x${string}`,
-    abi: PREDICTION_POT_ABI,
-    functionName: 'getParticipants',
-    query: { enabled: isConnected && !!address && contractAddresses.length > 3 }
-  });
-
-  const participantsData = useMemo(() => [
-    participants1,
-    participants2,
-    contractAddresses.length > 2 ? participants3 : undefined,
-    contractAddresses.length > 3 ? participants4 : undefined
-  ].filter(data => data !== undefined), [participants1, participants2, participants3, participants4, contractAddresses.length]);
+  // Use centralized contract data hook
+  const { contractAddresses, participantsData } = useContractData();
 
   // Load pot info for selected market
   useEffect(() => {
@@ -332,9 +263,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
       const selectedMarketAddress = Cookies.get('selectedMarket');
       console.log('Selected pot address from cookie:', selectedMarketAddress);
 
-      // Check if the selected market address exists in our CONTRACT_ADDRESSES
-      if (selectedMarketAddress && selectedMarketAddress in CONTRACT_ADDRESSES) {
-        const marketType = CONTRACT_ADDRESSES[selectedMarketAddress as keyof typeof CONTRACT_ADDRESSES];
+      // Check if the selected market address exists in our contracts
+      if (selectedMarketAddress && selectedMarketAddress in CONTRACT_TO_TABLE_MAPPING) {
+        const marketType = CONTRACT_TO_TABLE_MAPPING[selectedMarketAddress as keyof typeof CONTRACT_TO_TABLE_MAPPING];
         setMarketInfo({
           name: getMarketDisplayName(marketType),
           section: 'bitcoinPot',  // Both markets use the same section, PredictionPotTest handles the difference

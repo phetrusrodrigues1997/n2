@@ -5,7 +5,7 @@ import { getAllEvidenceSubmissions } from '../Database/actions';
 import { getProvisionalOutcome } from '../Database/OwnerActions';
 import { getMarkets } from '../Constants/markets';
 import { getTranslation } from '../Languages/languages';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, TableType } from '../Database/config';
 
 // Dynamic market discovery
 const getMarketsWithContracts = () => {
@@ -17,10 +17,9 @@ const getMarketsWithContracts = () => {
 // Map contract address to table type for database queries using centralized mapping
 const getTableTypeFromContract = (contractAddress: string): TableType => {
   const mappedType = CONTRACT_TO_TABLE_MAPPING[contractAddress as keyof typeof CONTRACT_TO_TABLE_MAPPING];
-  return mappedType || contractAddress.slice(2, 8).toLowerCase();
+  return mappedType || 'featured'; // Safe fallback to known table type
 };
 
-type TableType = "featured" | "crypto" | "stocks" | "music";
 
 interface EvidenceSubmission {
   id: number;

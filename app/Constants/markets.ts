@@ -77,6 +77,19 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     potSize: '$420',
   },
 
+  formula1: {
+    id: 'formula1',
+    name: 'Formula 1',
+    symbol: 'F1',
+    contractAddress: '0x7357650abC8B1f980806E80a6c3FB56Aae23c45e',
+    color: '#E10600',
+    question: 'Will Verstappen win the next Formula 1 race?',
+    icon: 'https://cdn.shopify.com/s/files/1/1451/0982/files/f1-cars-corner_1024x1024.jpg?v=1741173306',
+    currentPrice: '$100',
+    participants: 0,
+    potSize: '$0',
+  },
+
   // COMING SOON - Markets without deployed contracts yet
   sports: {
     id: 'sports',
@@ -298,17 +311,21 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
 
 // ============================================
 // CATEGORY MAPPINGS - Define which markets belong to each category
+// ⚠️ IMPORTANT: When adding a new market to MARKET_DEFINITIONS, you MUST also add it here!
+// - Add to 'options' array for main landing page display
+// - Add individual category mapping for direct access
 // ============================================
 
 const CATEGORY_MAPPINGS: Record<string, string[]> = {
   // Main categories
-  'options': ['trending', 'crypto', 'stocks', 'music', 'xtrends', 'weather', 'sports', 'politics', 'elections', 'tvshows', 'popculture', 'technews', 'movies', 'space', 'fashion', 'celebs', 'health', 'gaming', 'travel'],
+  'options': ['trending', 'crypto', 'stocks', 'music', 'formula1', 'xtrends', 'weather', 'sports', 'politics', 'elections', 'tvshows', 'popculture', 'technews', 'movies', 'space', 'fashion', 'celebs', 'health', 'gaming', 'travel'],
 
   // Individual market categories
   'Trending': ['trending'],
   'Crypto': ['crypto'],
   'stocks': ['stocks'],
   'music': ['music'],
+  'formula1': ['formula1'],
   'sports': ['chelseaManutd'],
   'politics': ['politics'],
   'elections': ['elections'],

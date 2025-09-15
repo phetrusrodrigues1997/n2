@@ -1,5 +1,5 @@
-import { WrongPredictions, WrongPredictionsCrypto, WrongPredictionsStocks, WrongPredictionsMusic } from "./schema";
-import {  FeaturedBets, CryptoBets, StocksBets, MusicBets, LivePredictions, Bookmarks } from "./schema"; // Import the schema
+import { WrongPredictions, WrongPredictionsCrypto, WrongPredictionsStocks, WrongPredictionsMusic, WrongPredictionsFormula1 } from "./schema";
+import {  FeaturedBets, CryptoBets, StocksBets, MusicBets, Formula1Bets, LivePredictions, Bookmarks } from "./schema"; // Import the schema
 
 // Minimum players required to start a pot
 export const MIN_PLAYERS = 2; // Minimum participants for first market
@@ -43,17 +43,17 @@ export const CONTRACT_TO_TABLE_MAPPING = {
   "0xe9b69d0EA3a6E018031931d300319769c6629866": "crypto",
   "0xf07E717e1dB49dDdB207C68cCb433BaE4Bc65fC9": "stocks",
   "0xb85D3aE374b8098A6cA553dB90C0978401a34f71": "music",
+  "0x7357650abC8B1f980806E80a6c3FB56Aae23c45e": "formula1",
 } as const;
 
 // Markets that have deployed smart contracts and support prediction percentages
 // Used for loading thermometer data and live percentage updates
-export const MARKETS_WITH_CONTRACTS = ['Trending', 'Crypto', 'stocks', 'music'] as const;
+export const MARKETS_WITH_CONTRACTS = ['Trending', 'Crypto', 'stocks', 'music', 'formula1'] as const;
 
 // Contract addresses that are exempt from penalty checks
 // Add new feature contracts here to skip missed prediction penalties
 export const PENALTY_EXEMPT_CONTRACTS: string[] = [
-  // Add your new contract addresses here to exempt them from penalties
-  // Example: "0xYourNewContractAddress",
+  "0x7357650abC8B1f980806E80a6c3FB56Aae23c45e", // Formula 1 Tournament Contract
 ];
 
 // Entry fee for penalty-exempt contracts (in USD)
@@ -81,6 +81,9 @@ export function getTableTypeFromMarketId(marketId: string): TableType {
       return 'stocks';
     case 'music':
       return 'music';
+    case 'formula1':
+    case 'f1':
+      return 'formula1';
     default:
       return 'featured'; // Default fallback
   }
@@ -143,8 +146,10 @@ export const getTableFromType = (tableType: string) => {
       return StocksBets;
     case 'music':
       return MusicBets;
+    case 'formula1':
+      return Formula1Bets;
     default:
-      throw new Error(`Invalid table type: ${tableType}. Must be 'featured', 'crypto', 'stocks', or 'music'`);
+      throw new Error(`Invalid table type: ${tableType}. Must be 'featured', 'crypto', 'stocks', 'music', or 'formula1'`);
   }
 };
 // Centralized table name mappings for database operations
@@ -152,17 +157,19 @@ export const TABLE_MAPPINGS = {
   // Bets tables (predictions/votes)
   BETS: {
     featured: 'featured_bets',
-    crypto: 'crypto_bets', 
+    crypto: 'crypto_bets',
     stocks: 'stocks_bets',
-    music: 'music_bets'
+    music: 'music_bets',
+    formula1: 'formula1_bets'
   } as const,
-  
+
   // Wrong predictions tables (penalties/eliminations)
   WRONG_PREDICTIONS: {
     featured: 'wrong_Predictions', // Note: Capital P for legacy reasons
     crypto: 'wrong_predictions_crypto',
     stocks: 'wrong_predictions_stocks',
-    music: 'wrong_predictions_music'
+    music: 'wrong_predictions_music',
+    formula1: 'wrong_predictions_formula1'
   } as const
 } as const;
 
@@ -186,8 +193,10 @@ export const getWrongPredictionsTableFromType = (tableType: string) => {
       return WrongPredictionsStocks;
     case 'music':
       return WrongPredictionsMusic;
+    case 'formula1':
+      return WrongPredictionsFormula1;
     default:
-      throw new Error(`Invalid table type: ${tableType}. Must be 'featured', 'crypto', 'stocks', or 'music'`);
+      throw new Error(`Invalid table type: ${tableType}. Must be 'featured', 'crypto', 'stocks', 'music', or 'formula1'`);
   }
 };
 
@@ -206,6 +215,8 @@ export const getMarketDisplayName = (tableType: TableType): string => {
       return 'stocks';
     case 'music':
       return 'Music Charts';
+    case 'formula1':
+      return 'Formula 1';
     default:
       return tableType; // fallback to the original table type
   }
