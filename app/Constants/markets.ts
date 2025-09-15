@@ -27,7 +27,7 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
   // ACTIVE CONTRACTS - Markets with deployed smart contracts
   trending: {
     id: 'Trending',
-    name: 'Random Topics',
+    name: 'Trending',
     symbol: 'Trending',
     contractAddress: '0xd1547F5bC0390F5020B2A80F262e28ccfeF2bf9c',
     color: '#1DB954',
