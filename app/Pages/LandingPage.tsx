@@ -1571,9 +1571,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
                               return !useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
                             })()}`}>
-                              <div className="text-[13px] font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif] text-gray-500 leading-none flex items-center gap-1" style={{ fontWeight: '350' }}>
+                              <div className="text-[13px] font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif] text-gray-500 leading-none flex items-center gap-1" style={{ fontWeight: '350', opacity: 0.65 }}>
                                 {market.potSize}
-                                <span className="text-gray-400" style={{ fontSize: '8px' }}>•</span>
+                                <span className="text-gray-400" style={{ fontSize: '5px' }}>•</span>
                                 <RefreshCw className="w-3 h-3" />
                                 {(() => {
                                   const contractAddress = getContractAddress(market.id);
@@ -1628,6 +1628,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       onClick={(e) => handleBookmarkToggle(market, e)}
                                       disabled={bookmarkLoading === market.id}
                                       className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                                      style={{ opacity: 0.65 }}
                                     >
                                       {bookmarkLoading === market.id ? (
                                         <div className="w-4 h-4 animate-spin rounded-full border-2 border-purple-700 border-t-transparent"></div>
@@ -2100,9 +2101,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
                             return !useTraditionalLayout ? '-translate-y-2' : '';
                           })()}`}>
-                            <div className="text-[13px] font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif] text-gray-500 leading-none flex items-center gap-1" style={{ fontWeight: '350' }}>
+                            <div className="text-[13px] font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif] text-gray-500 leading-none flex items-center gap-1" style={{ fontWeight: '350', opacity: 0.65 }}>
                               {market.potSize}
-                              <span className="text-gray-400" style={{ fontSize: '8px' }}>•</span>
+                              <span className="text-gray-400" style={{ fontSize: '5px' }}>•</span>
                               <RefreshCw className="w-3 h-3" />
                               {(() => {
                                 const contractAddress = getContractAddress(market.id);
@@ -2157,6 +2158,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     onClick={(e) => handleBookmarkToggle(market, e)}
                                     disabled={bookmarkLoading === market.id}
                                     className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                                    style={{ opacity: 0.65 }}
                                   >
                                     {bookmarkLoading === market.id ? (
                                       <div className="w-3 h-3 animate-spin rounded-full border-2 border-purple-700 border-t-transparent"></div>

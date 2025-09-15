@@ -704,7 +704,7 @@ export default function App() {
     transition-opacity duration-200
     ${selectedMarket === market.id && activeCarousel === 'first'
       ? 'text-[rgba(0,0,0,0.9)] font-semibold opacity-100'
-      : 'text-[rgba(0,0,0,0.9)] font-medium opacity-70 hover:opacity-100'
+      : 'text-[rgba(0,0,0,0.9)] font-medium opacity-50 hover:opacity-85'
     }
   `}
   style={{
