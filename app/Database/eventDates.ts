@@ -7,17 +7,11 @@ export const EVENT_DATE_MAPPING = {
   // Format: "contractAddress": "YYYY-MM-DD" (race date)
 
   // Formula 1 Tournament Contract
-  "0x7357650abC8B1f980806E80a6c3FB56Aae23c45e": "2025-03-16", // Bahrain GP 2025
+  "0x7357650abC8B1f980806E80a6c3FB56Aae23c45e": "2025-03-22", // Bahrain GP 2025
 
   // Example races (replace with actual contract addresses):
   // "0xBahrainGP2024": "2024-03-02",
   // "0xSaudiGP2024": "2024-03-09",
-  // "0xAustralianGP2024": "2024-03-24",
-  // "0xJapaneseGP2024": "2024-04-07",
-  // "0xChineseGP2024": "2024-04-21",
-  // "0xMiamiGP2024": "2024-05-05",
-  // "0xEmiliaRomagnaGP2024": "2024-05-19",
-  // "0xMonacoGP2024": "2024-05-26",
 
 } as const;
 

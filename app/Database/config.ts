@@ -58,7 +58,7 @@ export const PENALTY_EXEMPT_CONTRACTS: string[] = [
 
 // Entry fee for penalty-exempt contracts (in USD)
 // This fee is used for both entry and re-entry for contracts in PENALTY_EXEMPT_CONTRACTS
-export const PENALTY_EXEMPT_ENTRY_FEE = 1.00; // $1.00 USD
+export const PENALTY_EXEMPT_ENTRY_FEE = 0.04; // $1.00 USD
 
 // Type for contract addresses
 export type ContractAddress = keyof typeof CONTRACT_TO_TABLE_MAPPING;

@@ -967,6 +967,23 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   // };
 
 
+  // Utility function to truncate text without trailing spaces before ellipsis
+  const truncateText = (text: string, maxLength: number = 80) => {
+    if (text.length <= maxLength) return text;
+
+    // Find the last space before maxLength
+    let cutoff = maxLength;
+    while (cutoff > 0 && text[cutoff] !== ' ') {
+      cutoff--;
+    }
+
+    // If no space found, just cut at maxLength
+    if (cutoff === 0) cutoff = maxLength;
+
+    // Trim any trailing spaces and add ellipsis
+    return text.substring(0, cutoff).trimEnd() + '...';
+  };
+
   const handleMarketClick = (marketId: string, reentry: boolean = false) => {
     const contractAddress = getContractAddress(marketId);
 
@@ -1313,11 +1330,18 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   const index = marketOptions.findIndex(m => m.id === market.id);
                                   return ((index + 1) % 5 === 0) || index === 1 ? 'pr-16' : 'pr-4';
                                 })()
-                                }`}>                <p className="text-sm leading-tight line-clamp-2 font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]" style={{
+                                }`}>                <p className="text-sm leading-tight font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]" style={{
                                   color: '#374151',
-                                  fontWeight: '650'
+                                  fontWeight: '650',
+                                  maxHeight: '2.5rem',
+                                  overflow: 'hidden'
                                 }}>
-                                  {getTranslatedMarketQuestion(market, currentLanguage)}
+                                  {(() => {
+                                    const marketIndex = marketOptions.findIndex(m => m.id === market.id);
+                                    const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
+                                    const charLimit = useTraditionalLayout ? 45 : 55; // Mobile: more chars for traditional, slightly more for new style
+                                    return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
+                                  })()}
                                 </p>
                               </div>
 
@@ -1833,8 +1857,18 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                               return (
                                 <div className={`flex-1 ${showThermometer ? 'pr-16' : 'pr-4'}`}>
-                                  <p className="text-sm leading-tight line-clamp-2 font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]" style={{ color: '#374151', fontWeight: '650' }}>
-                                    {getTranslatedMarketQuestion(market, currentLanguage)}
+                                  <p className="text-sm leading-tight font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]" style={{
+                                    color: '#374151',
+                                    fontWeight: '650',
+                                    maxHeight: '2.5rem',
+                                    overflow: 'hidden'
+                                  }}>
+                                    {(() => {
+                                      const marketIndex = marketOptions.findIndex(m => m.id === market.id);
+                                      const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
+                                      const charLimit = useTraditionalLayout ? 35 : 50; // Desktop: keep traditional tight, moderate expansion for new style
+                                      return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
+                                    })()}
                                   </p>
                                 </div>
                               );

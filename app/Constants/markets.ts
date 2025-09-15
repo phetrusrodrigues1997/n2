@@ -38,6 +38,19 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     potSize: '$420',
   },
 
+    formula1: {
+    id: 'formula1',
+    name: 'Formula 1',
+    symbol: 'F1',
+    contractAddress: '0x7357650abC8B1f980806E80a6c3FB56Aae23c45e',
+    color: '#E10600',
+    question: 'Will Verstappen win the first race of the season?',
+    icon: 'https://cdn.shopify.com/s/files/1/1451/0982/files/f1-cars-corner_1024x1024.jpg?v=1741173306',
+    currentPrice: '$100',
+    participants: 0,
+    potSize: '$0',
+  },
+
   crypto: {
     id: 'Crypto',
     name: 'crypto',
@@ -49,19 +62,6 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     currentPrice: '$100',
     participants: 50,
     potSize: '$500',
-  },
-
-  formula1: {
-    id: 'formula1',
-    name: 'Formula 1',
-    symbol: 'F1',
-    contractAddress: '0x7357650abC8B1f980806E80a6c3FB56Aae23c45e',
-    color: '#E10600',
-    question: 'Will Verstappen win the next Formula 1 race?',
-    icon: 'https://cdn.shopify.com/s/files/1/1451/0982/files/f1-cars-corner_1024x1024.jpg?v=1741173306',
-    currentPrice: '$100',
-    participants: 0,
-    potSize: '$0',
   },
 
   stocks: {
@@ -320,12 +320,12 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
 
 const CATEGORY_MAPPINGS: Record<string, string[]> = {
   // Main categories
-  'options': ['trending', 'crypto', 'formula1','stocks', 'music', 'xtrends', 'weather', 'sports', 'politics', 'elections', 'tvshows', 'popculture', 'technews', 'movies', 'space', 'fashion', 'celebs', 'health', 'gaming', 'travel'],
+  'options': ['trending', 'formula1','crypto','stocks', 'music', 'xtrends', 'weather', 'sports', 'politics', 'elections', 'tvshows', 'popculture', 'technews', 'movies', 'space', 'fashion', 'celebs', 'health', 'gaming', 'travel'],
 
   // Individual market categories
   'Trending': ['trending'],
-  'Crypto': ['crypto'],
   'formula1': ['formula1'],
+  'Crypto': ['crypto'],
   'stocks': ['stocks'],
   'music': ['music'],
   'sports': ['chelseaManutd'],
