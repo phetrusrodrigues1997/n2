@@ -4,7 +4,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Wallet, Mail, X } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { useAccount } from 'wagmi';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2 } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, PENALTY_EXEMPT_CONTRACTS } from '../Database/config';
+import { getEventDate } from '../Database/eventDates';
 import { getUserEmail, saveUserEmail } from '../Database/actions';
 import { Language, getTranslation } from '../Languages/languages';
 import { useContractData } from '../hooks/useContractData';
@@ -45,6 +46,37 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
   const [potInfoLoaded, setPotInfoLoaded] = useState<boolean>(false);
 
   const { address, isConnected } = useAccount();
+
+  // Use centralized contract data hook
+  const { contractAddresses, participantsData } = useContractData();
+
+  // Check if current contract is penalty-exempt (tournament)
+  const isPenaltyExempt = useMemo(() => {
+    const selectedMarketAddress = Cookies.get('selectedMarket');
+    if (!selectedMarketAddress && contractAddresses.length === 0) return false;
+    const contractToCheck = selectedMarketAddress || contractAddresses[0];
+    return PENALTY_EXEMPT_CONTRACTS.includes(contractToCheck);
+  }, [contractAddresses]);
+
+  // Get tournament start date (one week before event date)
+  const getTournamentStartDate = useMemo(() => {
+    const selectedMarketAddress = Cookies.get('selectedMarket');
+    if (!selectedMarketAddress && contractAddresses.length === 0) return null;
+    const contractToCheck = selectedMarketAddress || contractAddresses[0];
+    const eventDate = getEventDate(contractToCheck);
+    if (eventDate) {
+      const eventDateObj = new Date(eventDate);
+      const startDate = new Date(eventDateObj);
+      startDate.setDate(eventDateObj.getDate() - 7); // One week before
+      return startDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+    return null;
+  }, [contractAddresses]);
 
 
   // Get translations
@@ -94,9 +126,6 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
       setUserPots([]);
     }
   }, [address, isConnected]);
-
-  // Use centralized contract data hook
-  const { contractAddresses, participantsData } = useContractData();
 
   // Load pot info for selected market
   useEffect(() => {
@@ -314,8 +343,8 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
 
   // Handle skip button click - smart routing based on participation status
   const handleSkipClick = () => {
-    // Set cookie to remember user has seen the tutorial (expires in 1 week)
-    Cookies.set('tutorialBridgeSeen', 'true', { expires: 1 });
+    // Set cookie to remember user has seen the tutorial
+    Cookies.set('tutorialBridgeSeen', 'true', { expires: 1 / 24 }); // 1 hour expiry for testing
     
     if (!isConnected || !address) {
       // Not connected, send to pot entry page which will prompt for wallet connection
@@ -589,82 +618,169 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12">
-                    <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                        1
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.globalCompetition}</h3>
-                        <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                          {t.globalCompetitionDesc}
-                        </p>
-                      </div>
-                    </div>
+                    {isPenaltyExempt ? (
+                      // Tournament-specific steps
+                      <>
+                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
+                            1
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">🏆 Tournament Entry</h3>
+                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
+                              {getTournamentStartDate
+                                ? `Tournament started ${getTournamentStartDate}. Join the season-long elimination tournament with a fixed entry fee.`
+                                : "Join the season-long elimination tournament with a fixed entry fee."
+                              }
+                            </p>
+                          </div>
+                        </div>
 
-                    <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                        2
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.dailyPredictions}</h3>
-                        <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                          {t.dailyPredictionsDesc}
-                        </p>
-                      </div>
-                    </div>
+                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
+                            2
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">📅 Weekly Predictions</h3>
+                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
+                              Predictions occur every week leading up to the next race date visible at the top of this page. Make your prediction before each event!
+                            </p>
+                          </div>
+                        </div>
 
-                    <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                        3
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.dynamicPricing}</h3>
-                        <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                          {t.dynamicPricingDesc}
-                        </p>
-                      </div>
-                    </div>
+                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
+                            3
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">❌ Elimination System</h3>
+                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
+                              Wrong predictors AND non-predictors are eliminated each week. Stay active and predict correctly to survive!
+                            </p>
+                          </div>
+                        </div>
 
-                    <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                        4
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.secondChances}</h3>
-                        <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                          {t.secondChancesDesc}
-                        </p>
-                      </div>
-                    </div>
+                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
+                            4
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">🔄 Re-entry Option</h3>
+                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
+                              Eliminated players can re-enter by paying the current fixed entry fee, but the pot grows each week making victory more valuable!
+                            </p>
+                          </div>
+                        </div>
 
-                    <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                        5
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.finalShowdown}</h3>
-                        <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                          {t.finalShowdownDesc}
-                        </p>
-                      </div>
-                    </div>
+                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
+                            5
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">🏁 Season Finale</h3>
+                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
+                              The last person standing at the end of the season wins the entire accumulated pot. Survive the full season to claim victory!
+                            </p>
+                          </div>
+                        </div>
 
-                    <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                      <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                        6
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.liveStats}</h3>
-                        <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                          {t.liveStatsDesc}
-                        </p>
-                      </div>
-                    </div>
+                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
+                            6
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">📊 Tournament Stats</h3>
+                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
+                              Track remaining participants, pot value, and your survival streak throughout the season. Every week matters!
+                            </p>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      // Regular pot steps
+                      <>
+                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
+                            1
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.globalCompetition}</h3>
+                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
+                              {t.globalCompetitionDesc}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
+                            2
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.dailyPredictions}</h3>
+                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
+                              {t.dailyPredictionsDesc}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
+                            3
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.dynamicPricing}</h3>
+                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
+                              {t.dynamicPricingDesc}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
+                            4
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.secondChances}</h3>
+                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
+                              {t.secondChancesDesc}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
+                            5
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.finalShowdown}</h3>
+                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
+                              {t.finalShowdownDesc}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
+                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
+                            6
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.liveStats}</h3>
+                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
+                              {t.liveStatsDesc}
+                            </p>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   <div className="mt-12 p-8 bg-gradient-to-r from-purple-50/80 to-blue-50/80 rounded-3xl border-0">
                     <p className="text-center text-lg md:text-xl text-gray-800 font-light leading-relaxed">
-                      🎯 <span className="font-medium text-[#0000aa]">{t.yourGoal}</span> {t.tutorialGoal}
+                      {isPenaltyExempt ? (
+                        <>🏆 <span className="font-medium text-[#0000aa]">Your Goal:</span> Survive the entire tournament season by making correct predictions every week and be the last person standing to claim the full pot!</>
+                      ) : (
+                        <>🎯 <span className="font-medium text-[#0000aa]">{t.yourGoal}</span> {t.tutorialGoal}</>
+                      )}
                     </p>
                   </div>
                 </div>

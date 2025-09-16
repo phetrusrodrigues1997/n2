@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     const result = await db
       .insert(PotInformation)
       .values({
-        contractAddress,
+        contractAddress: contractAddress.toLowerCase(),
         hasStarted,
         isFinalDay,
         startedOnDate,

@@ -230,7 +230,7 @@ export async function setDailyOutcomeWithStats(
   if (contractAddress) {
     try {
       const potInfo = await db.select().from(PotInformation)
-        .where(eq(PotInformation.contractAddress, contractAddress))
+        .where(eq(PotInformation.contractAddress, contractAddress.toLowerCase()))
         .limit(1);
       
       if (potInfo.length > 0) {
@@ -885,7 +885,7 @@ export async function clearPotInformation(contractAddress: string): Promise<bool
         lastDayDate: null,
         announcementSent: false
       })
-      .where(eq(PotInformation.contractAddress, contractAddress));
+      .where(eq(PotInformation.contractAddress, contractAddress.toLowerCase()));
     
     console.log(`📊 Pot info reset result (exact):`, potInfoResult);
     

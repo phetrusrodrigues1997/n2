@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     const potInfo = await db
       .select()
       .from(PotInformation)
-      .where(eq(PotInformation.contractAddress, contractAddress))
+      .where(eq(PotInformation.contractAddress, contractAddress.toLowerCase()))
       .limit(1);
 
     if (potInfo.length === 0) {

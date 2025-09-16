@@ -2830,7 +2830,7 @@ export async function notifyMinimumPlayersReached(
     const potInfo = await db
       .select({ announcementSent: PotInformation.announcementSent })
       .from(PotInformation)
-      .where(eq(PotInformation.contractAddress, contractAddress))
+      .where(eq(PotInformation.contractAddress, contractAddress.toLowerCase()))
       .limit(1);
     
     if (potInfo.length > 0 && potInfo[0].announcementSent) {
@@ -2874,14 +2874,14 @@ export async function notifyMinimumPlayersReached(
       await db
         .update(PotInformation)
         .set({ announcementSent: true })
-        .where(eq(PotInformation.contractAddress, contractAddress));
+        .where(eq(PotInformation.contractAddress, contractAddress.toLowerCase()));
       console.log(`🎯 Updated announcementSent flag for existing pot info`);
     } else {
       // Create new pot info record with announcement flag set
       await db
         .insert(PotInformation)
         .values({
-          contractAddress,
+          contractAddress: contractAddress.toLowerCase(),
           announcementSent: true,
           hasStarted: false,
           isFinalDay: false

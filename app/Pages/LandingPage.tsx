@@ -247,8 +247,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   const closeTutorial = () => {
     setShowTutorial(false);
     setTutorialStep(0);
-    // Set cookie to remember user has seen tutorial (expires in 1 week)
-    Cookies.set('landingPageTutorialSeen', 'true', { expires: 1 });
+    // Set cookie to remember user has seen tutorial
+    Cookies.set('landingPageTutorialSeen', 'true', { expires: 1 / 24 }); // 1 hour expiry for testing
   };
 
   // Check if user has seen tutorial before and show automatically
@@ -1321,26 +1321,17 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               {/* Small Square Image */}
                               <div className="flex-shrink-0">
                                 <div className="rounded-lg w-12 h-12 bg-white overflow-hidden relative">
-                                {typeof market.icon === 'string' && market.icon.startsWith('/') ? (
-                                <img src={market.icon} alt={`${market.name} Icon`} className="absolute inset-0 w-full h-full object-cover" />
-                                ) : typeof market.icon === 'string' ? (
-                                   <div className="absolute inset-0 flex items-center justify-center">
-                                     <span className="text-sm text-gray-600">{market.icon}</span>
-                                 </div>
+                                {market.icon && (market.icon.slice(0, 1) === '/') ? (
+                                <img
+                                    src={market.icon}
+                                    alt={`${market.name} Icon`}
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                  />
                                 ) : (
-                                     <img src={market.icon as string} alt={`${market.name} Icon`} className="absolute inset-0 w-full h-full object-cover" />
-                                    )}
-
-                                    <img
-                                      src={market.icon}
-                                      alt={`${market.name} Icon`}
-                                      className="absolute inset-0 w-full h-full object-cover"
-                                    />
-                                  ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                      <span className="text-sm text-gray-600">{market.icon}</span>
-                                    </div>
-                                  )
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-lg text-gray-600">{market.icon}</span>
+                                  </div>
+                                )}
                                 </div>
                               </div>
 
@@ -1852,7 +1843,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             {/* Small Square Image */}
                             <div className="flex-shrink-0">
                               <div className="rounded-lg w-14 h-14 bg-white overflow-hidden relative">
-                                {market.icon && (market.icon.slice(0, 1) === '/' || market.icon.slice(0, 4) === 'http') ? (
+                                {market.icon && (market.icon.slice(0, 1) === '/') ? (
                                   <img
                                     src={market.icon}
                                     alt={`${market.name} Icon`}
