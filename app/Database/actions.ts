@@ -2880,10 +2880,51 @@ export async function notifyMinimumPlayersReached(
       return tomorrow.toLocaleDateString('en-US', options);
     };
 
-    const nextDay = getNextCalendarDayUTC();
-    const message = currentParticipants === 2
-      ? `🎉 Great news! Your pot is ready with ${currentParticipants} participants! Starting on ${nextDay} when the pot officially begins.`
-      : `🎉 Awesome! Your ${marketType} pot is ready with ${currentParticipants} participants! Starting on ${nextDay} when the pot officially begins.`;
+    // Check if this is a penalty-exempt contract
+    const { PENALTY_EXEMPT_CONTRACTS, getMarketDisplayName } = await import('./config');
+    const { getEventDate } = await import('./eventDates');
+
+    const isPenaltyExempt = PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
+    const eventDate = isPenaltyExempt ? getEventDate(contractAddress) : null;
+
+    // Get user-friendly market name instead of table type
+    const friendlyMarketName = getMarketDisplayName(marketType, 'en');
+
+    let message: string;
+
+    if (isPenaltyExempt && eventDate) {
+      // For penalty-exempt contracts, mention tournament will start one week before event
+      const getTournamentStartDate = (eventDateString: string): string => {
+        try {
+          const eventDateParts = eventDateString.split('-');
+          if (eventDateParts.length === 3) {
+            const year = parseInt(eventDateParts[0]);
+            const month = parseInt(eventDateParts[1]) - 1;
+            const day = parseInt(eventDateParts[2]);
+            const eventDate = new Date(year, month, day);
+            const tournamentStart = new Date(eventDate);
+            tournamentStart.setDate(eventDate.getDate() - 7);
+            return tournamentStart.toLocaleDateString('en-US', {
+              weekday: 'long',
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric'
+            });
+          }
+        } catch (error) {
+          console.error('Error parsing tournament start date:', error);
+        }
+        return 'soon';
+      };
+
+      message = `📝 Note: The ${friendlyMarketName} tournament will start one week before the event (${eventDate}). Tournament begins on ${getTournamentStartDate(eventDate)}. Get ready to make your predictions!`;
+    } else {
+      // Regular contract behavior
+      const nextDay = getNextCalendarDayUTC();
+      message = currentParticipants === 2
+        ? `🎉 Great news! Your pot is ready with ${currentParticipants} participants! Starting on ${nextDay} when the pot officially begins.`
+        : `🎉 Awesome! Your ${friendlyMarketName} pot is ready with ${currentParticipants} participants! Starting on ${nextDay} when the pot officially begins.`;
+    }
     
     // Create the announcement directly since we've already checked for duplicates
     const announcementResult = await createContractAnnouncement(message, contractAddress);

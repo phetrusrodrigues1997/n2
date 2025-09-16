@@ -304,7 +304,7 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     symbol: '',
     color: '#1DA1F2',
     question: 'Sports topic trends #1 on US X?',
-    icon: 'https://cdn.mos.cms.futurecdn.net/Pwh2dVaGJY9yDxznmn8vEg.jpg',
+    icon: '/alcaraztennis.jpg',
     currentPrice: '-',
     participants: 112,
     potSize: '$1120',

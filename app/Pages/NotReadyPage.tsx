@@ -70,6 +70,7 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
     return 'soon'; // Fallback
   };
 
+
   // Pot information state (same as MakePredictionsPage)
   const [potInfo, setPotInfo] = useState<{
     hasStarted: boolean;
@@ -373,10 +374,10 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                         ? "🚀 This pot is now live and accepting predictions! You shouldn't be seeing this page - try refreshing or navigating back."
                         : hasEnoughPlayers && !potInfo.hasStarted
                           ? isPenaltyExempt && eventDate
-                            ? `🏁 The Formula 1 tournament will begin on ${getTournamentStartDate(eventDate)} - one week before the race! Get ready to make your predictions.`
+                            ? `🏁 The tournament will begin on ${getTournamentStartDate(eventDate)} - one week before the event (${eventDate})! Get ready to make your predictions.`
                             : `🎉 Great news! This pot has enough players and is ready to start. Predictions will begin on ${getNextCalendarDayUTC()} when the pot officially opens!`
                           : isPenaltyExempt && eventDate
-                            ? `🏁 The Formula 1 tournament will begin on ${getTournamentStartDate(eventDate)} - one week before the race! Get ready to make your predictions.`
+                            ? `🏁 The tournament will begin on ${getTournamentStartDate(eventDate)} - one week before the event (${eventDate})! Get ready to make your predictions.`
                             : "👻 Invite your friends! We'll notify you via email when there are enough players to start the predictions tournament!"
                     }
                   </p>

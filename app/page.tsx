@@ -47,7 +47,7 @@ const LIVE_POT_ADDRESS = '0xDc6725F0E3D654c3Fde0480428b194ab19F20a9E';
 
 export default function App() {
   const { address, isConnected } = useAccount();
-  const [activeSection, setActiveSection] = useState('comingsoon'); // Default section
+  const [activeSection, setActiveSection] = useState('home'); // Default section 
   const [privatePotAddress, setPrivatePotAddress] = useState<string>(''); // For routing to private pots
   const [hasEnteredLivePot, setHasEnteredLivePot] = useState(false); // Track live pot entry
   const [isMobileSearchActive, setIsMobileSearchActive] = useState(false); // Track mobile search state
@@ -58,6 +58,8 @@ export default function App() {
   const [ethPrice, setEthPrice] = useState<number | null>(null); // ETH price in USD
   const [isMobile, setIsMobile] = useState(false); // Track if device is mobile
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false); // Track language dropdown state
+  const [tournamentFilter, setTournamentFilter] = useState<'all' | 'daily' | 'weekly'>('all'); // Filter for daily/weekly tournaments
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false); // Track filter dropdown state
 
   // Get ETH balance
   const ethBalance = useBalance({
@@ -137,6 +139,19 @@ export default function App() {
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, [isLanguageDropdownOpen]);
+
+  // Close filter dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (isFilterDropdownOpen && !target.closest('[data-filter-dropdown]')) {
+        setIsFilterDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isFilterDropdownOpen]);
 
   // Fetch ETH price
   useEffect(() => {
@@ -504,8 +519,8 @@ export default function App() {
               {/* Search Bar - Desktop only, right of logo */}
               <div className="hidden md:flex items-center gap-3 ml-6 flex-1">
                 <div className="relative">
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                    <svg className="w-8 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="absolute left-1 top-1/2 transform -translate-y-1/2">
+                    <svg className="w-9 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                   </div>
@@ -517,7 +532,7 @@ export default function App() {
                     className="w-[530px] pl-10 pr-10 py-2 bg-gray-100 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:bg-white focus:border-2 focus:border-purple-700 transition-colors duration-200"
                   />
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <span className="text-gray-400 text-sm font-mono">/</span>
+                    <span className="text-gray-500 text-sm font-mono">/</span>
                   </div>
                 </div>
                 
@@ -747,11 +762,18 @@ export default function App() {
         </div>
 
         {/* Filter Symbol */}
-        <div className="flex items-center justify-center w-10 h-10 bg-transparent rounded-lg">
-          <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button
+          className={`flex items-center justify-center w-10 h-10 bg-transparent rounded-lg transition-colors duration-200 ${
+            isFilterDropdownOpen ? 'bg-purple-50 border border-purple-200' : 'hover:bg-gray-100'
+          }`}
+          onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+        >
+          <svg className={`w-5 h-5 transition-colors duration-200 ${
+            isFilterDropdownOpen ? 'text-purple-700' : 'text-black'
+          }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
-        </div>
+        </button>
 
         {/* Bookmark/Save Symbol */}
         <button 
@@ -786,7 +808,7 @@ export default function App() {
                   </div>
                   <input
                     type="text"
-                    placeholder="Search"
+                    placeholder={t.search}
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:bg-white focus:border-2 focus:border-purple-700 transition-colors duration-200"
@@ -794,10 +816,19 @@ export default function App() {
                 </div>
 
                 {/* Filter Symbol */}
-                <div className="flex items-center justify-center w-9 h-9 bg-white rounded-lg">
-                  <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                  </svg>
+                <div className="relative" data-filter-dropdown>
+                  <button
+                    onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+                    className={`flex items-center justify-center w-9 h-9 bg-white rounded-lg transition-colors duration-200 ${
+                      isFilterDropdownOpen ? 'bg-purple-50 border border-purple-200' : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    <svg className={`w-5 h-5 transition-colors duration-200 ${
+                      isFilterDropdownOpen ? 'text-purple-700' : 'text-black'
+                    }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                  </button>
                 </div>
 
                 {/* Bookmark/Save Symbol */}
@@ -828,38 +859,77 @@ export default function App() {
 
               </div>
 
-              {/* Carousel - Right side on desktop, full width on mobile */}
-              <div className="relative flex-1 md:flex-1 min-w-0 overflow-hidden">
-                {/* Left Arrow for second carousel - Hidden on mobile */}
-                <button
-                  onClick={scrollLeft2}
-                  className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white shadow-lg rounded-full items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200"
-                  style={{ display: showLeftArrow2 ? 'flex' : 'none' }}
-                >
-                  <ChevronLeft className="w-4 h-4 text-gray-600" />
-                </button>
 
-                {/* Right Arrow for second carousel - Hidden on mobile */}
-                {showRightArrow2 && (
+              {/* Conditional: Show Filter Bar when filter dropdown is open, otherwise show Carousel */}
+              {isFilterDropdownOpen ? (
+                /* Tournament Filter Bar */
+                <div className="flex items-center gap-2 flex-1 md:flex-1 min-w-0">
+                  <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    <button
+                      onClick={() => setTournamentFilter('all')}
+                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                        tournamentFilter === 'all'
+                          ? 'bg-white text-purple-700 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-800'
+                      }`}
+                    >
+                      {t.allTournaments}
+                    </button>
+                    <button
+                      onClick={() => setTournamentFilter('daily')}
+                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                        tournamentFilter === 'daily'
+                          ? 'bg-white text-purple-700 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-800'
+                      }`}
+                    >
+                      {t.dailyTournaments}
+                    </button>
+                    <button
+                      onClick={() => setTournamentFilter('weekly')}
+                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                        tournamentFilter === 'weekly'
+                          ? 'bg-white text-purple-700 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-800'
+                      }`}
+                    >
+                      {t.weeklyTournaments}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* Original Carousel - Right side on desktop, full width on mobile */
+                <div className="relative flex-1 md:flex-1 min-w-0 overflow-hidden">
+                  {/* Left Arrow for second carousel - Hidden on mobile */}
                   <button
-                    onClick={scrollRight2}
-                    className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white shadow-lg rounded-full items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200"
+                    onClick={scrollLeft2}
+                    className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white shadow-lg rounded-full items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200"
+                    style={{ display: showLeftArrow2 ? 'flex' : 'none' }}
                   >
-                    <ChevronRight className="w-4 h-4 text-gray-600" />
+                    <ChevronLeft className="w-4 h-4 text-gray-600" />
                   </button>
-                )}
 
-                <div 
-                  ref={carousel2Ref}
-                  className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 max-w-full"
-                  onScroll={handleScroll2}
-                  style={{
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none',
-                    maxWidth: '100%'
-                  }}
-                >
-                {/* All button - appears selected initially, gets deselected when other buttons are clicked */}
+                  {/* Right Arrow for second carousel - Hidden on mobile */}
+                  {showRightArrow2 && (
+                    <button
+                      onClick={scrollRight2}
+                      className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white shadow-lg rounded-full items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200"
+                    >
+                      <ChevronRight className="w-4 h-4 text-gray-600" />
+                    </button>
+                  )}
+
+                  <div
+                    ref={carousel2Ref}
+                    className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 max-w-full"
+                    onScroll={handleScroll2}
+                    style={{
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none',
+                      maxWidth: '100%'
+                    }}
+                  >
+                    {/* All button - appears selected initially, gets deselected when other buttons are clicked */}
                 <button
                   key="all-button"
                   onClick={() => {
@@ -906,8 +976,9 @@ export default function App() {
                     </span>
                   </button>
                 ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </section>
@@ -920,14 +991,14 @@ export default function App() {
         {activeSection === "comingsoon" && <ComingSoonPage />} 
         {activeSection === "receive" && <ReceiveSection activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "profile" && <ProfilePage activeSection={activeSection} setActiveSection={setActiveSection} />}
-        {activeSection === "messagesPage" && <MessagingPage activeSection={activeSection} setActiveSection={setActiveSection} onAnnouncementsMarkedAsRead={onAnnouncementsMarkedAsRead} />}
+        {activeSection === "messagesPage" && <MessagingPage activeSection={activeSection} setActiveSection={setActiveSection} onAnnouncementsMarkedAsRead={onAnnouncementsMarkedAsRead} currentLanguage={currentLanguage} />}
         {activeSection === "discord" && <HowItWorksSection setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {/* {activeSection === "notifications" && <CreateMessage />} */}
         {activeSection === "dashboard" && <TutorialBridge key={currentLanguage} activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "notReadyPage" && <NotReadyPage activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "bitcoinPot" && <PredictionPotTest activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "referralProgram" && <ReferralProgram activeSection={activeSection} setActiveSection={setActiveSection} />}
-        {activeSection === "home" && <LandingPage activeSection={activeSection} setActiveSection={setActiveSection} isMobileSearchActive={isMobileSearchActive} searchQuery={searchQuery} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} onLoadingChange={handleLoadingChange} currentLanguage={currentLanguage} />}
+        {activeSection === "home" && <LandingPage activeSection={activeSection} setActiveSection={setActiveSection} isMobileSearchActive={isMobileSearchActive} searchQuery={searchQuery} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} onLoadingChange={handleLoadingChange} currentLanguage={currentLanguage} tournamentFilter={tournamentFilter} />}
         {activeSection === "makePrediction" && <MakePredicitions activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "AI" && <GamesHub activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "createPot" && <CreatePotPage navigateToPrivatePot={navigateToPrivatePot} />}

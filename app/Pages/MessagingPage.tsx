@@ -3,14 +3,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
 import { Megaphone, Plus, Calendar, User } from 'lucide-react';
-import { 
+import {
   createAnnouncement,
   getAllAnnouncements,
   getUserContractAnnouncements,
   getUnreadAnnouncements,
-  markAnnouncementsAsRead 
+  markAnnouncementsAsRead
 } from '../Database/actions';
 import { markAnnouncementsAsRead as markAnnouncementsAsReadCookie } from '../utils/announcementCookies';
+import { getTranslation, Language } from '../Languages/languages';
 import LoadingScreen from '../Components/LoadingScreen';
 
 interface Announcement {
@@ -25,9 +26,10 @@ interface MessagingPageProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
   onAnnouncementsMarkedAsRead?: () => void;
+  currentLanguage: Language;
 }
 
-const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead }: MessagingPageProps) => {
+const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead, currentLanguage }: MessagingPageProps) => {
   const { address, isConnected } = useAccount();
   
   // Special admin wallet address
@@ -159,7 +161,7 @@ const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead }: Messag
     const date = new Date(datetime);
     const now = new Date();
     const diffHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
+
     if (diffHours < 1) {
       return 'Just now';
     } else if (diffHours < 24) {
@@ -169,6 +171,53 @@ const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead }: Messag
       const days = Math.floor(diffHours / 24);
       return `${days}d ago`;
     }
+  };
+
+  // Function to translate announcement messages
+  const translateAnnouncementMessage = (message: string): string => {
+    const t = getTranslation(currentLanguage); // Use the current language from props
+
+    // Pattern matching for different announcement types
+
+    // Penalty-exempt tournament announcements
+    if (message.includes('📝 Note: The') && message.includes('tournament will start one week before the event')) {
+      // Extract market name and dates from the message
+      const marketMatch = message.match(/📝 Note: The (.+?) tournament will start/);
+      const eventDateMatch = message.match(/event \((.+?)\)/);
+      const startDateMatch = message.match(/Tournament begins on (.+?)\./);
+
+      if (marketMatch && eventDateMatch && startDateMatch) {
+        const marketName = marketMatch[1];
+        const eventDate = eventDateMatch[1];
+        const startDate = startDateMatch[1];
+
+        return `${t.penaltyExemptTournamentNote} ${marketName} ${t.tournamentWillStart} (${eventDate}). ${t.oneWeekBeforeEvent} ${startDate}. ${t.getReadyToPredictions}`;
+      }
+    }
+
+    // Regular pot ready announcements
+    if (message.includes('🎉 Great news! Your pot is ready') || (message.includes('🎉 Awesome! Your') && message.includes('pot is ready'))) {
+      // Extract participant count and market type
+      const participantMatch = message.match(/with (\d+) participants/);
+      const marketMatch = message.match(/Your (.+?) pot is ready/);
+      const dayMatch = message.match(/Starting on (.+?) when/);
+
+      if (participantMatch && dayMatch) {
+        const participants = participantMatch[1];
+        const day = dayMatch[1];
+        const marketType = marketMatch ? marketMatch[1] : 'market';
+
+        // For now, keep English (can be extended for other languages)
+        if (participants === '2') {
+          return `🎉 Great news! Your pot is ready with ${participants} participants! Starting on ${day} when the pot officially begins.`;
+        } else {
+          return `🎉 Awesome! Your ${marketType} pot is ready with ${participants} participants! Starting on ${day} when the pot officially begins.`;
+        }
+      }
+    }
+
+    // Return original message if no pattern matches
+    return message;
   };
 
   // Show loading screen during initial load
@@ -344,7 +393,7 @@ const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead }: Messag
                     </div>
                     
                    <p className="text-gray-800 leading-relaxed text-sm sm:text-base">
-  {announcement.message.split("\n").map((line, i) => (
+  {translateAnnouncementMessage(announcement.message).split("\n").map((line, i) => (
     <span key={i}>
       {line}
       <br />

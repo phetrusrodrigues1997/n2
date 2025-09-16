@@ -350,6 +350,25 @@ export interface Translations {
   pot: string;
   pots: string;
   clickAnyPotAbove: string;
+
+  // Penalty-exempt tournament announcements
+  penaltyExemptTournamentNote: string;
+  tournamentWillStart: string;
+  oneWeekBeforeEvent: string;
+  getReadyToPredictions: string;
+
+  // LandingPage hero section
+  thousandsOfPlayers: string;
+  thousandsOfWinners: string;
+  lastStandingQuestion: string;
+
+  // Search
+  search: string;
+
+  // Filter
+  allTournaments: string;
+  dailyTournaments: string;
+  weeklyTournaments: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -517,10 +536,16 @@ export const translations: Record<Language, Translations> = {
     personalizedBoxOffice: 'Box Office',
 
     // Header
-    searchPotsPlaceholder: 'Search pots...',
+    searchPotsPlaceholder: 'Search for tournaments...',
+    search: 'Search',
     howItWorks: 'How it works',
     yourBalance: 'Your balance',
     yourBalanceMobile: 'Balance',
+
+    // Filter
+    allTournaments: 'All',
+    dailyTournaments: 'Daily',
+    weeklyTournaments: 'Weekly',
 
     // Email Collection
     readyToPlay: 'Join us!',
@@ -702,7 +727,18 @@ export const translations: Record<Language, Translations> = {
     currentlyParticipatingIn: 'You\'re currently participating in',
     pot: 'pot',
     pots: 'pots',
-    clickAnyPotAbove: 'Click on any pot above to make predictions and compete for the pot.'
+    clickAnyPotAbove: 'Click on any pot above to make predictions and compete for the pot.',
+
+    // Penalty-exempt tournament announcements
+    penaltyExemptTournamentNote: '📝 Note: The',
+    tournamentWillStart: 'tournament will start one week before the event',
+    oneWeekBeforeEvent: 'Tournament begins on',
+    getReadyToPredictions: 'Get ready to make your predictions!',
+
+    // LandingPage hero section
+    thousandsOfPlayers: 'Thousands of players,',
+    thousandsOfWinners: 'Thousands of winners,',
+    lastStandingQuestion: 'will you be among the last 5 standing?'
   },
   'pt-BR': {
     // Hero Section
@@ -867,10 +903,16 @@ export const translations: Record<Language, Translations> = {
     personalizedBoxOffice: 'Bilheteria',
 
     // Header
-    searchPotsPlaceholder: 'Buscar potes...',
+    searchPotsPlaceholder: 'Busque por torneios...',
+    search: 'Buscar',
     howItWorks: 'Como funciona',
     yourBalance: 'Seu saldo',
     yourBalanceMobile: 'Saldo',
+
+    // Filter
+    allTournaments: 'Todos',
+    dailyTournaments: 'Diários',
+    weeklyTournaments: 'Semanais',
 
     // Email Collection
     readyToPlay: 'Junte-se a nós!',
@@ -1052,7 +1094,18 @@ export const translations: Record<Language, Translations> = {
     currentlyParticipatingIn: 'Você está participando atualmente de',
     pot: 'pote',
     pots: 'potes',
-    clickAnyPotAbove: 'Clique em qualquer pote acima para fazer previsões e competir pelo pote.'
+    clickAnyPotAbove: 'Clique em qualquer pote acima para fazer previsões e competir pelo pote.',
+
+    // Penalty-exempt tournament announcements
+    penaltyExemptTournamentNote: '📝 Nota: O torneio de',
+    tournamentWillStart: 'começará uma semana antes do evento',
+    oneWeekBeforeEvent: 'Torneio começa em',
+    getReadyToPredictions: 'Prepare-se para fazer suas previsões!',
+
+    // LandingPage hero section
+    thousandsOfPlayers: 'Milhares de jogadores,',
+    thousandsOfWinners: 'Milhares de vencedores,',
+    lastStandingQuestion: 'você estará entre os 5 últimos de pé?'
   },
 };
 
@@ -1096,6 +1149,7 @@ export const getMarketDisplayName = (marketName: string, language: Language): st
     'crypto': t.marketCrypto,        // Maps to same as 'Crypto'
     'stocks': t.marketStocks,        // Maps to same as 'Stocks'
     'music': t.marketMusicCharts,    // Maps to same as 'Music Charts'
+    'formula1': 'Formula 1',         // Maps to Formula 1
   };
 
   return marketNameMap[marketName] || marketName;

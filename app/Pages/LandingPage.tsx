@@ -36,6 +36,7 @@ interface LandingPageProps {
   setSelectedMarket?: (market: string) => void;
   onLoadingChange?: (isLoading: boolean) => void;
   currentLanguage?: Language;
+  tournamentFilter?: 'all' | 'daily' | 'weekly';
 }
 
 // Helper function to get contract address from markets data
@@ -45,7 +46,7 @@ const getContractAddress = (marketId: string): string | null => {
   return market?.contractAddress || null;
 };
 
-const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = false, searchQuery = '', selectedMarket: propSelectedMarket = 'Trending', setSelectedMarket, onLoadingChange, currentLanguage: propCurrentLanguage }: LandingPageProps) => {
+const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = false, searchQuery = '', selectedMarket: propSelectedMarket = 'Trending', setSelectedMarket, onLoadingChange, currentLanguage: propCurrentLanguage, tournamentFilter = 'all' }: LandingPageProps) => {
   const { contractAddresses, participantsData, balancesData, isConnected, address } = useContractData();
   const [isVisible, setIsVisible] = useState(false);
   // Use language from parent component or fallback to 'en'
@@ -139,6 +140,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   // Tutorial state
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
+
 
 
 
@@ -1199,12 +1201,27 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 });
 
                 // Filter markets based on search query
-                const filteredMarkets = searchQuery
+                let filteredMarkets = searchQuery
                   ? allMarkets.filter(market =>
                     getTranslatedMarketQuestion(market, currentLanguage).toLowerCase().includes(searchQuery.toLowerCase()) ||
                     market.name.toLowerCase().includes(searchQuery.toLowerCase())
                   )
                   : allMarkets;
+
+                // Filter markets based on tournament type (daily/weekly)
+                if (tournamentFilter !== 'all') {
+                  filteredMarkets = filteredMarkets.filter(market => {
+                    const contractAddress = getContractAddress(market.id);
+                    const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
+
+                    if (tournamentFilter === 'daily') {
+                      return !isPenaltyExempt; // Daily tournaments are non-penalty-exempt
+                    } else if (tournamentFilter === 'weekly') {
+                      return isPenaltyExempt; // Weekly tournaments are penalty-exempt
+                    }
+                    return true;
+                  });
+                }
 
                 // Reorder: selected market first, then others (match by tabId) - move displaced market further down
                 const selectedMarketData = filteredMarkets.find(market => market.tabId === selectedMarket);
@@ -1673,7 +1690,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 });
               })()}
 
-              {/* Mobile Loading More Indicator */}
+              {/* Mobile Loading More Indicator - Hidden button */}
               {(() => {
                 const allMarkets = marketOptions.length;
                 const hasMoreMarkets = displayedMarketsCount < allMarkets && !searchQuery;
@@ -1687,8 +1704,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                       </div>
                     )}
 
+                    {/* Button hidden with 'hidden' class */}
                     {hasMoreMarkets && !isLoadingMore && (
-                      <div className="text-center py-6">
+                      <div className="text-center py-6 hidden">
                         <button
                           onClick={loadMoreMarkets}
                           className="bg-purple-700 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
@@ -1700,6 +1718,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                   </div>
                 );
               })()}
+
             </div>
           </div>
         </section>
@@ -1739,12 +1758,27 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 });
 
                 // Filter markets based on search query
-                const filteredMarkets = searchQuery
+                let filteredMarkets = searchQuery
                   ? allMarkets.filter(market =>
                     getTranslatedMarketQuestion(market, currentLanguage).toLowerCase().includes(searchQuery.toLowerCase()) ||
                     market.name.toLowerCase().includes(searchQuery.toLowerCase())
                   )
                   : allMarkets;
+
+                // Filter markets based on tournament type (daily/weekly)
+                if (tournamentFilter !== 'all') {
+                  filteredMarkets = filteredMarkets.filter(market => {
+                    const contractAddress = getContractAddress(market.id);
+                    const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
+
+                    if (tournamentFilter === 'daily') {
+                      return !isPenaltyExempt; // Daily tournaments are non-penalty-exempt
+                    } else if (tournamentFilter === 'weekly') {
+                      return isPenaltyExempt; // Weekly tournaments are penalty-exempt
+                    }
+                    return true;
+                  });
+                }
 
                 // Reorder: selected market first, then others (match by tabId) - move displaced market further down
                 const selectedMarketData = filteredMarkets.find(market => market.tabId === selectedMarket);
@@ -2203,7 +2237,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
               })()}
             </div>
 
-            {/* Desktop Loading More Indicator */}
+            {/* Desktop Loading More Indicator - Hidden button */}
             {(() => {
               const allMarkets = marketOptions.length;
               const hasMoreMarkets = displayedMarketsCount < allMarkets && !searchQuery;
@@ -2217,8 +2251,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                     </div>
                   )}
 
+                  {/* Button hidden with 'hidden' class */}
                   {hasMoreMarkets && !isLoadingMore && (
-                    <div className="text-center py-8">
+                    <div className="text-center py-8 hidden">
                       <button
                         onClick={loadMoreMarkets}
                         className="bg-purple-700 hover:bg-purple-700 text-white px-8 py-4 rounded-lg font-medium text-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
@@ -2230,6 +2265,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 </>
               );
             })()}
+
           </div>
         </section>
 
@@ -2238,10 +2274,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           <div className="max-w-4xl mx-auto text-center">
             <div className="space-y-4 mb-12">
               <h2 className="text-4xl font-light text-gray-900 tracking-tight">
-                <span className="text-purple-700 font-medium">Thousands</span> of players,
+                <span className="text-purple-700 font-medium">{t.thousandsOfPlayers}</span>
               </h2>
               <h3 className="text-3xl font-black text-gray-900 tracking-tight">
-                will you be among the last 10 standing?
+                {t.lastStandingQuestion}
               </h3>
             </div>
 
@@ -2270,10 +2306,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         <section id="call-to-action" className="relative z-10 px-6 mt-16 mb-16 md:hidden">
           <div className="max-w-7xl mx-auto text-center">
             <h2 className="text-2xl font-light text-gray-900 mb-2 tracking-tight">
-              <span className="text-purple-700 font-medium">Thousands</span> of winners,
+              <span className="text-purple-700 font-medium">{t.thousandsOfWinners}</span>
             </h2>
             <h3 className="text-xl font-black text-gray-900 mb-10 tracking-tight">
-              will you be among the last 10 standing?
+              {t.lastStandingQuestion}
             </h3>
 
             {/* Minimalist Entry Button - Mobile */}
