@@ -60,13 +60,13 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
     { id: 'home', label: t.home || 'Home' },
     { id: 'createPot', label: t.privateMarkets || 'Private Pots' },
     { id: 'liveMarkets', label: t.liveMarkets || 'Live Markets' },
+    { id: 'news', label: 'News' },
     { id: 'receive', label: t.fundAccount || 'Fund Account' },
     { id: 'AI', label: t.games || 'Games' },
     { id: 'profile', label: t.statsRankings || 'Stats & Rankings' },
     { id: 'bookmarks', label: t.myPots || 'My Pots' },
-    { id: 'discord', label: t.howItWorksTitle || 'How It Works' },
     { id: 'ideas', label: t.ideas || 'Ideas' },
-    
+
   ];
 
   return (

@@ -30,6 +30,7 @@ import MessagingPage from './Pages/MessagingPage';
 import IdeasPage from './Pages/IdeasPage';
 import AdminEvidenceReviewPage from './Pages/AdminEvidenceReviewPage';
 import ComingSoonPage from './Pages/ComingSoonPage';
+import NewsPage from './Pages/NewsPage';
 import { getMarkets } from './Constants/markets';
 import { Language, getTranslation, supportedLanguages, getMarketDisplayName, getPersonalizedLabel } from './Languages/languages';
 import { getPrice } from './Constants/getPrice';
@@ -1013,6 +1014,7 @@ export default function App() {
         {activeSection === "AI" && <GamesHub activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "createPot" && <CreatePotPage navigateToPrivatePot={navigateToPrivatePot} />}
         {activeSection === "ideas" && <IdeasPage activeSection={activeSection} setActiveSection={setActiveSection} />}
+        {activeSection === "news" && <NewsPage onBack={() => setActiveSection('home')} />}
         {activeSection === "bookmarks" && <BookmarksPage activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "adminEvidenceReview" && <AdminEvidenceReviewPage activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "privatePot" && privatePotAddress && (
@@ -1077,29 +1079,21 @@ export default function App() {
           </button>
 
               <button
-            onClick={(e) => {
-              console.log('Mobile SEARCH button clicked');
-              if (activeSection === 'home') {
-                setIsMobileSearchActive(!isMobileSearchActive);
-                if (!isMobileSearchActive) {
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-              } else {
-                setActiveSection('home');
-                setIsMobileSearchActive(true);
-                setTimeout(() => {
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }, 100);
-              }
+            onClick={() => {
+              console.log('Mobile NEWS button clicked');
+              setActiveSection('news');
             }}
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 text-gray-500 opacity-70`}
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${activeSection === 'news' ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'}`}
           >
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200`}>
+            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${activeSection === 'news' ? 'bg-transparent' : ''}`}>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
+                <path d="M18 14h-8"/>
+                <path d="M15 18h-5"/>
+                <path d="M10 6h8v4h-8V6z"/>
               </svg>
             </div>
-            <span className="text-[13px] font-medium">{t.bottomNavSearch}</span>
+            <span className="text-[13px] font-medium">News</span>
           </button>
           
           <button

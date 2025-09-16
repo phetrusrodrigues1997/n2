@@ -31,13 +31,14 @@ npm run lint         # Run linter
 - **Styling**: Custom CSS
 
 ### Key Directories
-- `app/Pages/`: Main pages (LandingPage, MakePredictionPage, createPotPage)
+- `app/Pages/`: Main pages (LandingPage, MakePredictionPage, createPotPage, NewsPage)
 - `app/Database/`: Schema and database operations
   - `actions.ts`: Main database functions
   - `schema.ts`: Database schema
   - `config.ts`: Contract mappings and configuration
 - `app/Constants/`: Markets configuration and pricing
 - `app/Languages/`: Translation system (EN/PT)
+- `app/Sections/`: Reusable components (NavigationMenu, etc.)
 
 ### Database Schema (Key Tables)
 - `FeaturedBets`: Bitcoin and featured asset predictions
@@ -210,6 +211,36 @@ export const EVENT_DATE_MAPPING = {
 3. **Weekly updates**: Manually update race dates as needed
 
 **System maintains complete backward compatibility - existing users unaffected.**
+
+## Tournament Filtering System
+
+**Filter markets by tournament type on LandingPage**
+
+### Filter Options (`page.tsx` + `LandingPage.tsx`)
+- **All**: Show all markets (default)
+- **Daily**: Non-penalty-exempt contracts only
+- **Weekly**: Penalty-exempt contracts only
+- **Recently Started**: Markets with `startedOnDate` ≤ 3 days ago
+
+### Implementation
+- Filter bar replaces second carousel when filter symbol clicked
+- Filters stay open until filter symbol clicked again (not auto-close on selection)
+- Uses `potInformation` state with `startedOnDate` from `/api/pot-info` endpoint
+
+## News System
+
+**Twitter-style news feed accessible via navigation menus**
+
+### NewsPage Component (`app/Pages/NewsPage.tsx`)
+- **Desktop**: Grid layout with featured article + card grid
+- **Mobile**: Single-column Twitter-style feed
+- **Navigation**: Desktop hamburger menu "News" + mobile bottom nav (replaces search)
+- **Content**: 6 articles using market icons from `markets.ts` with realistic headlines and sources
+
+### Navigation Updates
+- **Desktop menu**: Added "News" option to hamburger dropdown
+- **Mobile bottom nav**: Replaced search button with news button (newspaper icon)
+- **Live Markets**: Routes to `LiveMarketPotEntry` component
 
 ## Development Notes
 
