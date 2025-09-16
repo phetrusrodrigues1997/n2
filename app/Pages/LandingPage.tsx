@@ -36,7 +36,7 @@ interface LandingPageProps {
   setSelectedMarket?: (market: string) => void;
   onLoadingChange?: (isLoading: boolean) => void;
   currentLanguage?: Language;
-  tournamentFilter?: 'all' | 'daily' | 'weekly';
+  tournamentFilter?: 'all' | 'daily' | 'weekly' | 'recently';
 }
 
 // Helper function to get contract address from markets data
@@ -97,6 +97,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     hasStarted: boolean;
     announcementSent: boolean;
     isFinalDay: boolean;
+    startedOnDate: string | null;
   }>>({});
 
   // Vote change loading states
@@ -559,7 +560,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       if (contractAddresses.length === 0) return;
 
       console.log('🔍 Fetching pot information for all contracts...');
-      const newPotInformation: Record<string, { hasStarted: boolean; announcementSent: boolean; isFinalDay: boolean }> = {};
+      const newPotInformation: Record<string, { hasStarted: boolean; announcementSent: boolean; isFinalDay: boolean; startedOnDate: string | null }> = {};
 
       for (const contractAddress of contractAddresses) {
         try {
@@ -574,7 +575,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
             newPotInformation[contractAddress] = {
               hasStarted: data.hasStarted || false,
               announcementSent: data.announcementSent || false,
-              isFinalDay: data.isFinalDay || false
+              isFinalDay: data.isFinalDay || false,
+              startedOnDate: data.startedOnDate || null
             };
             console.log(`🔍 Pot info for ${contractAddress}:`, newPotInformation[contractAddress]);
           } else {
@@ -592,7 +594,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           newPotInformation[contractAddress] = {
             hasStarted: false,
             announcementSent: false,
-            isFinalDay: false
+            isFinalDay: false,
+            startedOnDate: null
           };
         }
       }
@@ -1218,6 +1221,18 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                       return !isPenaltyExempt; // Daily tournaments are non-penalty-exempt
                     } else if (tournamentFilter === 'weekly') {
                       return isPenaltyExempt; // Weekly tournaments are penalty-exempt
+                    } else if (tournamentFilter === 'recently') {
+                      // Recently started: check if started_on_date is within 3 days
+                      const potInfo = contractAddress ? potInformation[contractAddress] : null;
+                      const startedOnDate = potInfo?.startedOnDate;
+                      if (startedOnDate) {
+                        const startDate = new Date(startedOnDate);
+                        const today = new Date();
+                        const diffTime = today.getTime() - startDate.getTime();
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        return diffDays <= 3;
+                      }
+                      return false;
                     }
                     return true;
                   });
@@ -1775,6 +1790,18 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                       return !isPenaltyExempt; // Daily tournaments are non-penalty-exempt
                     } else if (tournamentFilter === 'weekly') {
                       return isPenaltyExempt; // Weekly tournaments are penalty-exempt
+                    } else if (tournamentFilter === 'recently') {
+                      // Recently started: check if started_on_date is within 3 days
+                      const potInfo = contractAddress ? potInformation[contractAddress] : null;
+                      const startedOnDate = potInfo?.startedOnDate;
+                      if (startedOnDate) {
+                        const startDate = new Date(startedOnDate);
+                        const today = new Date();
+                        const diffTime = today.getTime() - startDate.getTime();
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        return diffDays <= 3;
+                      }
+                      return false;
                     }
                     return true;
                   });

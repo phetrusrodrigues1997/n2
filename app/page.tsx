@@ -58,7 +58,7 @@ export default function App() {
   const [ethPrice, setEthPrice] = useState<number | null>(null); // ETH price in USD
   const [isMobile, setIsMobile] = useState(false); // Track if device is mobile
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false); // Track language dropdown state
-  const [tournamentFilter, setTournamentFilter] = useState<'all' | 'daily' | 'weekly'>('all'); // Filter for daily/weekly tournaments
+  const [tournamentFilter, setTournamentFilter] = useState<'all' | 'daily' | 'weekly' | 'recently'>('all'); // Filter for daily/weekly/recently started tournaments
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false); // Track filter dropdown state
 
   // Get ETH balance
@@ -757,7 +757,7 @@ export default function App() {
             placeholder={t.searchPotsPlaceholder}
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-transparent border border-gray-300 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:bg-white focus:border-purple-700 transition-colors duration-200"
+            className="w-full pl-10 pr-4 py-2 bg-transparent border border-gray-200 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:bg-white focus:border-purple-700 transition-colors duration-200"
           />
         </div>
 
@@ -863,7 +863,7 @@ export default function App() {
               {/* Conditional: Show Filter Bar when filter dropdown is open, otherwise show Carousel */}
               {isFilterDropdownOpen ? (
                 /* Tournament Filter Bar */
-                <div className="flex items-center gap-2 flex-1 md:flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-1 md:flex-1 min-w-0" data-filter-dropdown>
                   <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
                     <button
                       onClick={() => setTournamentFilter('all')}
@@ -894,6 +894,16 @@ export default function App() {
                       }`}
                     >
                       {t.weeklyTournaments}
+                    </button>
+                    <button
+                      onClick={() => setTournamentFilter('recently')}
+                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                        tournamentFilter === 'recently'
+                          ? 'bg-white text-purple-700 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-800'
+                      }`}
+                    >
+                      {t.recentlyStarted}
                     </button>
                   </div>
                 </div>
@@ -939,8 +949,8 @@ export default function App() {
                   }}
                   className={`group flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 transition-all duration-300 ${
                     (selectedMarket === 'All' && activeCarousel === 'second') || (selectedMarket === 'Trending' && activeCarousel === 'first')
-                      ? 'text-purple-700 bg-purple-100 border border-purple-200 rounded-full'
-                      : 'text-black border border-gray-300 rounded-full hover:text-gray-600'
+                      ? 'text-purple-700 bg-purple-100 border border-purple-300 rounded-full'
+                      : 'text-black border border-gray-200 rounded-full hover:text-gray-600'
                   }`}
                   style={{
                     fontWeight: ((selectedMarket === 'All' && activeCarousel === 'second') || (selectedMarket === 'Trending' && activeCarousel === 'first')) ? '500' : '500',
@@ -961,8 +971,8 @@ export default function App() {
                       setActiveCarousel('second');
                     }}
                     className={`group flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 transition-all duration-300 ${selectedMarket === market.id && activeCarousel === 'second'
-                        ? 'text-purple-700 bg-purple-100 border border-purple-200 rounded-full'
-                        : 'text-black border border-gray-300 rounded-full hover:text-gray-600'
+                        ? 'text-purple-700 bg-purple-100 border border-purple-300 rounded-full'
+                        : 'text-black border border-gray-200 rounded-full hover:text-gray-600'
                       }`}
                     style={{
                       fontWeight: selectedMarket === market.id && activeCarousel === 'second' ? '500' : '500',

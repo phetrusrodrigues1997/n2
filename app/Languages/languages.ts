@@ -369,6 +369,7 @@ export interface Translations {
   allTournaments: string;
   dailyTournaments: string;
   weeklyTournaments: string;
+  recentlyStarted: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -546,6 +547,7 @@ export const translations: Record<Language, Translations> = {
     allTournaments: 'All',
     dailyTournaments: 'Daily',
     weeklyTournaments: 'Weekly',
+    recentlyStarted: 'Recently Started',
 
     // Email Collection
     readyToPlay: 'Join us!',
@@ -913,6 +915,7 @@ export const translations: Record<Language, Translations> = {
     allTournaments: 'Todos',
     dailyTournaments: 'Diários',
     weeklyTournaments: 'Semanais',
+    recentlyStarted: 'Recém-Iniciados',
 
     // Email Collection
     readyToPlay: 'Junte-se a nós!',

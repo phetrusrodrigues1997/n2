@@ -16,7 +16,7 @@ export async function recordPotEntry(
   eventType: 'entry' | 're-entry' = 'entry' // Defaults to 'entry' for backwards compatibility
 ): Promise<{ success: boolean; message: string }> {
   try {
-    console.log(`📝 Recording pot ${eventType} for ${walletAddress} in ${tableType} pot`);
+     console.log(`📝 Recording pot ${eventType} for ${walletAddress} in ${tableType} pot`);
     
     await getDb().insert(PotParticipationHistory).values({
       walletAddress: walletAddress.toLowerCase(),
