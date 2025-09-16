@@ -949,7 +949,7 @@ export default function App() {
                   }}
                   className={`group flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 transition-all duration-300 ${
                     (selectedMarket === 'All' && activeCarousel === 'second') || (selectedMarket === 'Trending' && activeCarousel === 'first')
-                      ? 'text-purple-700 bg-purple-100 border border-purple-300 rounded-full'
+                      ? 'text-purple-700 bg-purple-100 border border-purple-200 rounded-full'
                       : 'text-black border border-gray-200 rounded-full hover:text-gray-600'
                   }`}
                   style={{
@@ -971,7 +971,7 @@ export default function App() {
                       setActiveCarousel('second');
                     }}
                     className={`group flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 transition-all duration-300 ${selectedMarket === market.id && activeCarousel === 'second'
-                        ? 'text-purple-700 bg-purple-100 border border-purple-300 rounded-full'
+                        ? 'text-purple-700 bg-purple-100 border border-purple-200 rounded-full'
                         : 'text-black border border-gray-200 rounded-full hover:text-gray-600'
                       }`}
                     style={{
