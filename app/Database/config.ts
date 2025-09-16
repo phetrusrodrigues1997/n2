@@ -1,5 +1,6 @@
 import { WrongPredictions, WrongPredictionsCrypto, WrongPredictionsStocks, WrongPredictionsMusic, WrongPredictionsFormula1 } from "./schema";
 import {  FeaturedBets, CryptoBets, StocksBets, MusicBets, Formula1Bets, LivePredictions, Bookmarks } from "./schema"; // Import the schema
+import { getEventDate } from './eventDates';
 
 // Minimum players required to start a pot
 export const MIN_PLAYERS = 2; // Minimum participants for first market
@@ -267,12 +268,102 @@ export const getTimeUntilMidnight = (): string => {
   const ukNow = getUKTime();
   const tonightMidnight = getTonightMidnight();
   const timeLeft = tonightMidnight.getTime() - ukNow.getTime();
-  
+
   if (timeLeft <= 0) {
     return '00:00:00';
   } else {
     return formatTime(timeLeft);
   }
+};
+
+// ========================================
+// CENTRALIZED TIMER LOGIC
+// ========================================
+
+export interface TimerData {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+// Helper function to format timer display with days support
+export const formatTimerDisplay = (timer: TimerData): string => {
+  if (timer.days > 0) {
+    // Show days and hours when more than 0 days remaining
+    return `${timer.days}d ${timer.hours.toString().padStart(2, '0')}h`;
+  } else {
+    // Show hours:minutes:seconds when less than 24 hours remaining
+    return `${timer.hours.toString().padStart(2, '0')}:${timer.minutes.toString().padStart(2, '0')}:${timer.seconds.toString().padStart(2, '0')}`;
+  }
+};
+
+// Helper function to get timer urgency level
+export const getTimerUrgency = (days: number, hours: number, minutes: number, seconds: number): string => {
+  if (days > 0) return 'normal'; // More than a day left
+  const totalMinutes = hours * 60 + minutes + seconds / 60;
+  if (totalMinutes <= 15) return 'critical'; // < 15 minutes
+  if (totalMinutes <= 60) return 'urgent';   // < 1 hour
+  return 'normal';
+};
+
+// Calculate timer data for any contract (handles both regular and penalty-exempt)
+export const getTimerDataForContract = (contractAddress?: string): TimerData => {
+  const ukNow = getUKTime();
+  let targetTime: Date;
+
+  if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+    // For penalty-exempt contracts, get event date
+    const eventDate = getEventDate(contractAddress);
+
+    if (eventDate) {
+      // Parse the event date in UK timezone
+      const eventDateParts = eventDate.split('-');
+      if (eventDateParts.length === 3) {
+        const year = parseInt(eventDateParts[0]);
+        const month = parseInt(eventDateParts[1]) - 1; // Month is 0-indexed
+        const day = parseInt(eventDateParts[2]);
+
+        // Check if event is in the past - if so, use prediction deadline (23:59)
+        const eventStartTime = new Date(year, month, day, 0, 0, 0, 0);
+        if (eventStartTime.getTime() < ukNow.getTime()) {
+          // Event is in past, use prediction deadline
+          targetTime = new Date(year, month, day, 23, 59, 59, 0);
+        } else {
+          // Event is in future, countdown to event start
+          targetTime = eventStartTime;
+        }
+      } else {
+        // Invalid date format, fallback to midnight
+        targetTime = getTonightMidnight();
+      }
+    } else {
+      // No event date configured, fallback to midnight
+      targetTime = getTonightMidnight();
+    }
+  } else {
+    // For regular contracts, use tonight's midnight
+    targetTime = getTonightMidnight();
+  }
+
+  const diffMs = targetTime.getTime() - ukNow.getTime();
+
+  if (diffMs <= 0) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  }
+
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+  return { days, hours, minutes, seconds };
+};
+
+// Get formatted timer string for any contract
+export const getFormattedTimerForContract = (contractAddress?: string): string => {
+  const timerData = getTimerDataForContract(contractAddress);
+  return formatTimerDisplay(timerData);
 };
 
 // ========================================

@@ -10,7 +10,8 @@ import { getMarkets } from '../Constants/markets';
 import { getTranslation, Language, translateMarketQuestion } from '../Languages/languages';
 import { getPrice } from '../Constants/getPrice';
 import { useQueryClient } from '@tanstack/react-query';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, BASE_ENTRY_FEE, calculateEntryFee, loadWrongPredictionsData, calculateParticipantStats, PENALTY_EXEMPT_CONTRACTS, PENALTY_EXEMPT_ENTRY_FEE } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, BASE_ENTRY_FEE, calculateEntryFee, loadWrongPredictionsData, calculateParticipantStats, PENALTY_EXEMPT_CONTRACTS, PENALTY_EXEMPT_ENTRY_FEE, getFormattedTimerForContract, formatTimerDisplay, getTimerUrgency, getTimerDataForContract } from '../Database/config';
+import { getEventDate } from '../Database/eventDates';
 import LoadingScreenAdvanced from '../Components/LoadingScreenAdvanced';
 
 
@@ -32,18 +33,6 @@ const getUKTime = (date: Date = new Date()): Date => {
   return new Date(ukTimeString.replace(', ', 'T'));
 };
 
-// // Helper function to get table type from contract address using markets.ts
-// const getTableTypeFromContract = (contractAddress: string): string => {
-//   const marketOptions = getMarkets(getTranslation('en'), 'options');
-//   const market = marketOptions.find(m => m.contractAddress === contractAddress);
-  
-//   if (market?.id === 'Trending') return 'featured';
-//   if (market?.id === 'crypto') return 'crypto';
-//   if (market?.id === 'stocks') return 'stocks';
-  
-//   // Fallback for unknown contracts
-//   return 'featured';
-// };
 
 // Use centralized table mapping from config
 const tableMapping = CONTRACT_TO_TABLE_MAPPING;
@@ -132,7 +121,38 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   const [allReEntryFees, setAllReEntryFees] = useState<{market: string, fee: number}[]>([]);
   const [marketQuestion, setMarketQuestion] = useState<string>(''); // Original English question for database operations
   const [displayQuestion, setDisplayQuestion] = useState<string>(''); // Translated question for display only
-  
+  const [isPenaltyExempt, setIsPenaltyExempt] = useState<boolean>(false);
+  const [eventDate, setEventDate] = useState<string | null>(null);
+  const [formattedEventDate, setFormattedEventDate] = useState<string>('');
+
+  // Effect to detect penalty-exempt contracts and set event dates
+  useEffect(() => {
+    if (contractAddress) {
+      const isExempt = PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
+      setIsPenaltyExempt(isExempt);
+
+      if (isExempt) {
+        const eventDateString = getEventDate(contractAddress);
+        setEventDate(eventDateString);
+
+        if (eventDateString) {
+          // Format the event date for display
+          const eventDateObj = new Date(eventDateString);
+          const formatted = eventDateObj.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+          setFormattedEventDate(formatted);
+        }
+      } else {
+        setEventDate(null);
+        setFormattedEventDate('');
+      }
+    }
+  }, [contractAddress]);
+
   // Pot information state
   const [potInfo, setPotInfo] = useState<{
     hasStarted: boolean;
@@ -260,17 +280,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
 
   
-  const [timeUntilNewQuestion, setTimeUntilNewQuestion] = useState<{
-    hours: number;
-    minutes: number;
-    seconds: number;
-  }>({ hours: 0, minutes: 0, seconds: 0 });
-
-  const [timeUntilNextElimination, setTimeUntilNextElimination] = useState<{
-    hours: number;
-    minutes: number;
-    seconds: number;
-  }>({ hours: 0, minutes: 0, seconds: 0 });
+  // Timer states using centralized logic
+  const [timerData, setTimerData] = useState<{ days: number; hours: number; minutes: number; seconds: number }>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   // Check if betting is allowed (Sunday through Friday, unless testing toggle is off) - UK timezone
   const isBettingAllowed = (): boolean => {
@@ -337,36 +348,34 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     return dayAfterTomorrow;
   };
 
-  // Update countdown timers
-  const updateCountdowns = () => {
-    const ukNow = getUKTime();
-    
-    // Time until new question (tonight's midnight)
-    const tonightMidnight = getTonightMidnight();
-    const diffToNewQuestion = tonightMidnight.getTime() - ukNow.getTime();
-    
-    if (diffToNewQuestion > 0) {
-      const hours = Math.floor(diffToNewQuestion / (1000 * 60 * 60));
-      const minutes = Math.floor((diffToNewQuestion % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diffToNewQuestion % (1000 * 60)) / 1000);
-      setTimeUntilNewQuestion({ hours, minutes, seconds });
-    } else {
-      setTimeUntilNewQuestion({ hours: 0, minutes: 0, seconds: 0 });
-    }
+  // Get the deadline for predictions (23:59 of event date for penalty-exempt, or tomorrow midnight for regular)
+  const getPredictionDeadline = (): Date => {
+    if (isPenaltyExempt && eventDate) {
+      // For penalty-exempt contracts, deadline is 23:59 of the event date
+      // Parse the event date in UK timezone (same as getUKTime logic)
+      const eventDateParts = eventDate.split('-');
+      const year = parseInt(eventDateParts[0]);
+      const month = parseInt(eventDateParts[1]) - 1; // Month is 0-indexed
+      const day = parseInt(eventDateParts[2]);
 
-    // Time until next elimination (tomorrow's midnight - 24 hours after new question)
-    const tomorrowMidnight = getTomorrowMidnight();
-    const diffToElimination = tomorrowMidnight.getTime() - ukNow.getTime();
-    
-    if (diffToElimination > 0) {
-      const hours = Math.floor(diffToElimination / (1000 * 60 * 60));
-      const minutes = Math.floor((diffToElimination % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diffToElimination % (1000 * 60)) / 1000);
-      setTimeUntilNextElimination({ hours, minutes, seconds });
+      // Create date at 23:59:59 in UK timezone
+      const eventDateObj = new Date(year, month, day, 23, 59, 59, 0);
+      return eventDateObj;
     } else {
-      setTimeUntilNextElimination({ hours: 0, minutes: 0, seconds: 0 });
+      // For regular contracts, use the standard tomorrow midnight logic
+      return getTomorrowMidnight();
     }
   };
+
+  // Update countdown timers using centralized logic
+  const updateCountdowns = () => {
+    if (contractAddress) {
+      // Use centralized timer logic for contract-specific timers
+      const data = getTimerDataForContract(contractAddress);
+      setTimerData(data);
+    }
+  };
+
 
   // Check if user has already submitted evidence
   const hasUserSubmittedEvidence = (): boolean => {
@@ -404,40 +413,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     return usdToEth(entryFeeUsd);
   };
 
-  // Helper function to get timer urgency level
-  const getTimerUrgency = (hours: number, minutes: number, seconds: number) => {
-    const totalMinutes = hours * 60 + minutes + seconds / 60;
-    if (totalMinutes <= 15) return 'critical'; // < 15 minutes
-    if (totalMinutes <= 60) return 'urgent';   // < 1 hour
-    return 'normal';
-  };
 
-  // Helper function to get timer styling based on urgency
-  const getTimerStyling = (urgency: string, baseColor: string) => {
-    switch (urgency) {
-      case 'critical':
-        return {
-          container: `bg-gradient-to-r from-purple-100 to-purple-200 border-2 border-purple-400 ${baseColor === 'blue' ? 'animate-pulse' : 'animate-bounce'}`,
-          text: 'text-purple-800',
-          icon: 'bg-purple-700',
-          timer: 'text-purple-900'
-        };
-      case 'urgent':
-        return {
-          container: `bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-300 animate-pulse`,
-          text: 'text-orange-700',
-          icon: 'bg-orange-600',
-          timer: 'text-orange-900'
-        };
-      default:
-        return {
-          container: `bg-gradient-to-r from-${baseColor}-50 to-${baseColor}-100 border border-${baseColor}-200`,
-          text: `text-${baseColor}-700`,
-          icon: `bg-${baseColor}-600`,
-          timer: `text-${baseColor}-900`
-        };
-    }
-  };
 
   
 
@@ -525,7 +501,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     updateCountdowns(); // Initial update
     const interval = setInterval(updateCountdowns, 1000); // Update every second
     return () => clearInterval(interval);
-  }, []);
+  }, [contractAddress, isPenaltyExempt, eventDate]); // Update when contract address, penalty exempt status or event date changes
 
   // Read contract data to get participants
   const { data: participants } = useReadContract({
@@ -953,7 +929,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       const tomorrowFormatted = tomorrow.toLocaleDateString();
-      showMessage(`Bet placed successfully for ${tomorrowFormatted}!`);
+      // showMessage(`Pre placed successfully for ${tomorrowFormatted}!`);
       await loadBets(); // Reload to show the new bet
       await loadPredictionHistory(); // Reload prediction history
       
@@ -1185,7 +1161,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       {/* Eligible Participants Display - Mobile: Top Left, Desktop: Top Right - Hidden while loading */}
       {!(isBetLoading || !isDataLoaded) && (
         <div className={`absolute top-16 left-4 md:top-4 md:left-auto md:right-4 z-20 ${
-      isMainSectionCollapsed ? "" : "-translate-y-10"
+      isMainSectionCollapsed ? "" : "-translate-y-10 md:-translate-y-0"
     }`}>
           {/* Mobile Version - Match Next Question Timer Style */}
           <div className="md:hidden bg-white border border-gray-300 rounded-lg px-3 py-2">
@@ -1506,11 +1482,11 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                         <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
                           <Clock className="w-1.5 h-1.5 text-white" />
                         </div>
-                        <span className="text-gray-700 font-medium text-xs">{t.nextQuestion || "Next Question"}</span>
+                        <span className="text-gray-700 font-medium text-xs">
+                          {isPenaltyExempt ? "Race Day" : (t.nextQuestion || "Next Question")}
+                        </span>
                         <span className="font-black text-gray-900 text-xs tracking-wider">
-                          {timeUntilNewQuestion.hours.toString().padStart(2, '0')}:
-                          {timeUntilNewQuestion.minutes.toString().padStart(2, '0')}:
-                          {timeUntilNewQuestion.seconds.toString().padStart(2, '0')}
+                          {formatTimerDisplay(timerData)}
                         </span>
                       </div>
                     </div>
@@ -1593,11 +1569,11 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                       <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
                         <Clock className="w-1.5 h-1.5 text-white" />
                       </div>
-                      <span className="text-purple-700 font-medium text-xs">{t.nextQuestion || "Next Question"}</span>
+                      <span className="text-purple-700 font-medium text-xs">
+                        {isPenaltyExempt ? "Race Day" : (t.nextQuestion || "Next Question")}
+                      </span>
                       <span className="font-black text-purple-900 text-xs tracking-wider">
-                        {timeUntilNewQuestion.hours.toString().padStart(2, '0')}:
-                        {timeUntilNewQuestion.minutes.toString().padStart(2, '0')}:
-                        {timeUntilNewQuestion.seconds.toString().padStart(2, '0')}
+                        {formatTimerDisplay(timerData)}
                       </span>
                     </div>
                   </div>
@@ -1617,9 +1593,9 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                           {tomorrowsBet ? (t.activePrediction || 'Active Prediction') : (displayQuestion || (t.makePrediction || 'Make Prediction'))}
                         </h2>
                         <p className="text-gray-500 text-xs sm:text-sm font-medium">
-                          {tomorrowsBet 
+                          {tomorrowsBet
                             ? (t.managePrediction || "Manage your current prediction")
-                            : <>{t.for || "For"} <span className="text-purple-700">{t.tomorrow || "tomorrow"}</span></>
+                            : <>{t.for || "For"} <span className="text-purple-700">{isPenaltyExempt && formattedEventDate ? formattedEventDate : (t.tomorrow || "tomorrow")}</span></>
                           }
                         </p>
                       </div>
@@ -1768,77 +1744,33 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                       <div className="space-y-3">
                       
                       {/* New Question Timer */}
-                      {(() => {
-                        const urgency = getTimerUrgency(timeUntilNewQuestion.hours, timeUntilNewQuestion.minutes, timeUntilNewQuestion.seconds);
-                        
-                        let containerClass = 'bg-white border border-gray-200';
-                        let textClass = 'text-gray-700';
-                        let timerClass = 'text-gray-900';
-                        let iconClass = 'bg-purple-600';
-                        
-                        if (urgency === 'critical') {
-                          containerClass = 'bg-gradient-to-r from-purple-50 to-purple-100 border-2 border-purple-300 animate-pulse';
-                          textClass = 'text-purple-800';
-                          timerClass = 'text-purple-900';
-                          iconClass = 'bg-purple-700';
-                        } else if (urgency === 'urgent') {
-                          containerClass = 'bg-gradient-to-r from-purple-25 to-purple-50 border border-purple-200';
-                          textClass = 'text-purple-700';
-                          timerClass = 'text-purple-800';
-                          iconClass = 'bg-purple-600';
-                        }
-                        
-                        return (
-                          <div className={`${containerClass} rounded-xl p-4`}>
-                            <div className="flex items-center justify-between">
-                              <div className={`${textClass} font-semibold text-sm`}>{t.nextQuestion || "Next Question"}</div>
-                              <div className="flex items-center gap-3">
-                                <div className={`w-6 h-6 ${iconClass} rounded-full flex items-center justify-center`}>
-                                  <Clock className="w-3 h-3 text-white" />
-                                </div>
-                                <span className={`font-black ${timerClass} text-lg tracking-wider`}>
-                                  {timeUntilNewQuestion.hours.toString().padStart(2, '0')}:
-                                  {timeUntilNewQuestion.minutes.toString().padStart(2, '0')}:
-                                  {timeUntilNewQuestion.seconds.toString().padStart(2, '0')}
-                                </span>
-                              </div>
-                            </div>
+                      <div className="bg-white border border-gray-200 rounded-xl p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="text-gray-700 font-semibold text-sm">
+                            {isPenaltyExempt ? "Race Day" : (t.nextQuestion || "Next Question")}
                           </div>
-                        );
-                      })()}
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
+                              <Clock className="w-3 h-3 text-white" />
+                            </div>
+                            <span className="font-black text-gray-900 text-lg tracking-wider">
+                              {formatTimerDisplay(timerData)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
-                      {/* Next Elimination Timer */}
-                      {(() => {
-                        const urgency = getTimerUrgency(timeUntilNextElimination.hours, timeUntilNextElimination.minutes, timeUntilNextElimination.seconds);
-                        
-                        let containerClass = 'bg-white border border-gray-200';
-                        let textClass = 'text-gray-700';
-                        let timerClass = 'text-gray-900';
-                        let iconClass = 'bg-gray-600';
-                        
-                        if (urgency === 'critical') {
-                          containerClass = 'bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-gray-400 animate-pulse';
-                          textClass = 'text-gray-800';
-                          timerClass = 'text-gray-900';
-                          iconClass = 'bg-gray-700';
-                        } else if (urgency === 'urgent') {
-                          containerClass = 'bg-gradient-to-r from-gray-25 to-gray-50 border border-gray-300';
-                          textClass = 'text-gray-700';
-                          timerClass = 'text-gray-800';
-                          iconClass = 'bg-gray-600';
-                        }
-                        
-                        return (
-                          <div className={`${containerClass} rounded-xl p-4`}>
-                            <div className="flex items-center justify-between">
-                              <div className={`${textClass} font-semibold text-sm`}>{t.resultsReveal || "Results Reveal"}</div>
-                              <div className="flex items-center gap-3">
-                               <span className='text-purple-700 font-semibold'>{t.tomorrowAtMidnight || "Tomorrow at Midnight"}</span>
-                              </div>
+                      {/* Next Elimination Timer - Hidden for penalty-exempt contracts */}
+                      {!isPenaltyExempt && (
+                        <div className="bg-white border border-gray-200 rounded-xl p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="text-gray-700 font-semibold text-sm">{t.resultsReveal || "Results Reveal"}</div>
+                            <div className="flex items-center gap-3">
+                             <span className='text-purple-700 font-semibold'>{t.tomorrowAtMidnight || "Tomorrow at Midnight"}</span>
                             </div>
                           </div>
-                        );
-                      })()}
+                        </div>
+                      )}
                       </div>
                     </div>
                   </div>

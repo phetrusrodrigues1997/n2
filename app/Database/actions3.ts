@@ -391,15 +391,15 @@ export async function checkMissedPredictionPenalty(
     // STEP 3: Get the bets table for this market type
     const tableName = getBetsTableName(tableType);
 
-    // Check if they entered or re-entered the pot within the last 24 hours
-    // This gives users exactly 24 hours from their entry/re-entry timestamp before penalties can apply
-    console.log(`🔍 STEP 4: Checking if user entered/re-entered within the last 24 hours`);
-    
-    // Calculate 24 hours ago from now
-    const twentyFourHoursAgo = new Date(today.getTime() - (24 * 60 * 60 * 1000));
+    // Check if they entered or re-entered the pot within the last 20 hours
+    // This gives users exactly 20 hours from their entry/re-entry timestamp before penalties can apply
+    console.log(`🔍 STEP 4: Checking if user entered/re-entered within the last 20 hours`);
+
+    // Calculate 20 hours ago from now
+    const twentyHoursAgo = new Date(today.getTime() - (20 * 60 * 60 * 1000));
     
     console.log(`🔍 Current time: ${today.toISOString()}`);
-    console.log(`🔍 24 hours ago: ${twentyFourHoursAgo.toISOString()}`);
+    console.log(`🔍 20 hours ago: ${twentyHoursAgo.toISOString()}`);
     
     const recentEntryCheck = await sql`
       SELECT COUNT(*) as entry_count, MAX(event_timestamp) as latest_entry_timestamp
@@ -407,18 +407,18 @@ export async function checkMissedPredictionPenalty(
       WHERE wallet_address = ${walletAddress.toLowerCase()} 
       AND contract_address = ${contractAddress.toLowerCase()}
       AND event_type IN ('entry', 're-entry')
-      AND event_timestamp > ${twentyFourHoursAgo.toISOString()}
+      AND event_timestamp > ${twentyHoursAgo.toISOString()}
     `;
 
     console.log(`🔍 Recent entry query result:`, recentEntryCheck);
-    const enteredWithin24Hours = parseInt(recentEntryCheck[0].entry_count) > 0;
+    const enteredWithin20Hours = parseInt(recentEntryCheck[0].entry_count) > 0;
     const latestEntryTimestamp = recentEntryCheck[0].latest_entry_timestamp;
-    console.log(`🔍 Entered within 24 hours? ${enteredWithin24Hours} (count: ${recentEntryCheck[0].entry_count}, latest: ${latestEntryTimestamp})`);
-    
-    if (enteredWithin24Hours) {
+    console.log(`🔍 Entered within 20 hours? ${enteredWithin20Hours} (count: ${recentEntryCheck[0].entry_count}, latest: ${latestEntryTimestamp})`);
+
+    if (enteredWithin20Hours) {
       const entryTime = new Date(latestEntryTimestamp);
       const hoursAgo = Math.round((today.getTime() - entryTime.getTime()) / (1000 * 60 * 60 * 100)) / 100; // Round to 2 decimals
-      console.log(`✅ User ${walletAddress} entered/re-entered ${hoursAgo} hours ago (${latestEntryTimestamp}) - still within 24-hour grace period`);
+      console.log(`✅ User ${walletAddress} entered/re-entered ${hoursAgo} hours ago (${latestEntryTimestamp}) - still within 20-hour grace period`);
       return;
     }
 

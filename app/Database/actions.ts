@@ -2,7 +2,7 @@
 
 import {  Messages, LivePredictions, Bookmarks } from "./schema"; // Import the schema
 import { eq, sql, and, inArray } from "drizzle-orm";
-import { getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING, getTableTypeFromMarketId } from "./config";
+import { getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING, getTableTypeFromMarketId, PENALTY_EXEMPT_CONTRACTS } from "./config";
 import { getEventDate } from "./eventDates";
 import { ReferralCodes, Referrals, FreeEntries, UsersTable } from "./schema";
 import { EvidenceSubmissions, MarketOutcomes, PredictionIdeas, PotParticipationHistory, PotInformation } from "./schema";
@@ -516,8 +516,30 @@ export async function getTomorrowsBet(walletAddress: string, tableType: string) 
   try {
     // Normalize wallet address for consistency
     const normalizedWalletAddress = walletAddress.toLowerCase();
-    const predictionDate = getTomorrowUKDateString();
-    
+
+    // For penalty-exempt contracts, we need to use the event date instead of tomorrow's date
+    // First, get the contract address for this table type
+    const contractAddress = Object.keys(CONTRACT_TO_TABLE_MAPPING).find(
+      address => CONTRACT_TO_TABLE_MAPPING[address as keyof typeof CONTRACT_TO_TABLE_MAPPING] === tableType
+    );
+
+    let predictionDate: string;
+
+    if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+      // For penalty-exempt contracts, use the event date
+      const { getEventDate } = await import('./eventDates');
+      const eventDate = getEventDate(contractAddress);
+      if (eventDate) {
+        predictionDate = eventDate;
+      } else {
+        // Fallback to tomorrow if no event date is configured
+        predictionDate = getTomorrowUKDateString();
+      }
+    } else {
+      // For regular contracts, use tomorrow's date
+      predictionDate = getTomorrowUKDateString();
+    }
+
     const betsTable = getTableFromType(tableType);
     const result = await db
       .select()

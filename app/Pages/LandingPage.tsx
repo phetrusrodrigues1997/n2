@@ -101,8 +101,28 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   // Vote change loading states
   const [voteChangeLoading, setVoteChangeLoading] = useState<Record<string, boolean>>({});
 
-  // 24-hour countdown timer using custom hook
-  const timeUntilMidnight = useCountdownTimer();
+  // Contract-specific timer mapping using the centralized logic
+  const [contractTimers, setContractTimers] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const updateAllTimers = async () => {
+      if (contractAddresses.length === 0) return;
+
+      const { getFormattedTimerForContract } = await import('../Database/config');
+      const newTimers: Record<string, string> = {};
+
+      for (const contractAddress of contractAddresses) {
+        newTimers[contractAddress] = getFormattedTimerForContract(contractAddress);
+      }
+
+      setContractTimers(newTimers);
+    };
+
+    updateAllTimers();
+
+    const interval = setInterval(updateAllTimers, 1000);
+    return () => clearInterval(interval);
+  }, [contractAddresses]);
 
   // Pagination state
   const [displayedMarketsCount, setDisplayedMarketsCount] = useState(12);
@@ -1603,7 +1623,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       <div className={`px-2 py-1 bg-gray-100 rounded-lg text-xs font-medium flex items-center gap-1 ${
                                         isEliminated ? 'text-gray-500' : 'text-purple-700'
                                       }`}>
-                                        {timeUntilMidnight}
+                                        {contractAddress ? contractTimers[contractAddress] || '' : ''}
                                       </div>
                                     );
                                   } else if (potInfo?.announcementSent) {
@@ -2133,7 +2153,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     <div className={`px-2 py-1 bg-gray-100 rounded-lg text-xs font-medium flex items-center gap-1 ${
                                       isEliminated ? 'text-gray-500' : 'text-purple-700'
                                     }`}>
-                                      {timeUntilMidnight}
+                                      {contractAddress ? contractTimers[contractAddress] || '' : ''}
                                     </div>
                                   );
                                 } else if (potInfo?.announcementSent) {
