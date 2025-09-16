@@ -14,7 +14,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'PrediWin - Predict, Win, Repeat',
+  title: 'Prediwin - Predict, Win, Repeat',
   description: 'Blockchain prediction market platform on Base network. Predict crypto, stocks, sports movements and win ETH rewards.',
   manifest: '/manifest.json',
   icons: {
