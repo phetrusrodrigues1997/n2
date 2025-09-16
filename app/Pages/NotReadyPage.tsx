@@ -5,7 +5,8 @@ import { Mail, Users, Clock } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { saveUserEmail, notifyMinimumPlayersReached } from '../Database/actions';
 import { useContractData } from '../hooks/useContractData';
-import { CONTRACT_TO_TABLE_MAPPING, MIN_PLAYERS, MIN_PLAYERS2 } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, MIN_PLAYERS, MIN_PLAYERS2, PENALTY_EXEMPT_CONTRACTS } from '../Database/config';
+import { getEventDate } from '../Database/eventDates';
 import Cookies from 'js-cookie';
 
 interface NotReadyPageProps {
@@ -20,6 +21,8 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
   const [isFinalDay, setIsFinalDay] = useState<boolean>(false);
   const [isEliminated, setIsEliminated] = useState<boolean>(false);
   const [isSendingNotification, setIsSendingNotification] = useState<boolean>(false);
+  const [isPenaltyExempt, setIsPenaltyExempt] = useState<boolean>(false);
+  const [eventDate, setEventDate] = useState<string | null>(null);
   const { address } = useAccount();
   const { contractAddresses, participantsData } = useContractData();
 
@@ -28,15 +31,43 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
     const now = new Date();
     const tomorrow = new Date(now);
     tomorrow.setUTCDate(now.getUTCDate() + 1);
-    
-    const options: Intl.DateTimeFormatOptions = { 
-      weekday: 'long', 
-      month: 'long', 
+
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      month: 'long',
       day: 'numeric',
       timeZone: 'UTC'
     };
-    
+
     return tomorrow.toLocaleDateString('en-US', options);
+  };
+
+  // Function to get tournament start date (1 week before event date)
+  const getTournamentStartDate = (eventDateString: string): string => {
+    try {
+      const eventDateParts = eventDateString.split('-');
+      if (eventDateParts.length === 3) {
+        const year = parseInt(eventDateParts[0]);
+        const month = parseInt(eventDateParts[1]) - 1; // Month is 0-indexed
+        const day = parseInt(eventDateParts[2]);
+
+        const eventDate = new Date(year, month, day);
+        const tournamentStart = new Date(eventDate);
+        tournamentStart.setDate(eventDate.getDate() - 7); // 1 week before
+
+        const options: Intl.DateTimeFormatOptions = {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        };
+
+        return tournamentStart.toLocaleDateString('en-US', options);
+      }
+    } catch (error) {
+      console.error('Error parsing tournament start date:', error);
+    }
+    return 'soon'; // Fallback
   };
 
   // Pot information state (same as MakePredictionsPage)
@@ -49,6 +80,29 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
     isFinalDay: false,
     startedOnDate: null
   });
+
+  // Penalty-exempt contract detection
+  useEffect(() => {
+    const savedContract = Cookies.get('selectedMarket');
+    const contractAddress = savedContract || contractAddresses[0];
+
+    if (contractAddress) {
+      const isExempt = PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
+      setIsPenaltyExempt(isExempt);
+
+      if (isExempt) {
+        const eventDateString = getEventDate(contractAddress);
+        setEventDate(eventDateString);
+        console.log(`🏁 NotReadyPage: Penalty-exempt contract detected`, {
+          contractAddress,
+          eventDate: eventDateString,
+          isPenaltyExempt: true
+        });
+      } else {
+        setEventDate(null);
+      }
+    }
+  }, [contractAddresses]);
 
   // Get current participant count and required minimum
   const getParticipantCounts = () => {
@@ -110,7 +164,8 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
   }, [contractAddresses]); // Only trigger when contractAddresses changes
 
   // Determine what state we're in
-  const hasEnoughPlayers = current >= required;
+  // For penalty-exempt contracts, we don't require minimum players
+  const hasEnoughPlayers = isPenaltyExempt ? true : current >= required;
   const isPotReady = hasEnoughPlayers && potInfo.hasStarted;
   
   // Send notification if minimum players threshold is reached
@@ -300,13 +355,15 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                 {/* Main Message */}
                 <div className="space-y-4">
                   <h1 className="text-2xl md:text-3xl font-light text-gray-900">
-                    {isFinalDay && isEliminated 
-                      ? "Tournament Complete - You Were Eliminated" 
+                    {isFinalDay && isEliminated
+                      ? "Tournament Complete - You Were Eliminated"
                       : hasEnoughPlayers && potInfo.hasStarted
                         ? "Pot is Active! Ready to Predict"
                         : hasEnoughPlayers && !potInfo.hasStarted
-                          ? "Pot is Ready! Starting Soon"
-                          : "This pot isn't ready to begin yet"
+                          ? isPenaltyExempt ? "Tournament Starting Soon!" : "Pot is Ready! Starting Soon"
+                          : isPenaltyExempt
+                            ? "Tournament Starting Soon!" // For penalty-exempt, never show "not ready" message
+                            : "This pot isn't ready to begin yet"
                     }
                   </h1>
                   <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
@@ -315,8 +372,12 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                       : hasEnoughPlayers && potInfo.hasStarted
                         ? "🚀 This pot is now live and accepting predictions! You shouldn't be seeing this page - try refreshing or navigating back."
                         : hasEnoughPlayers && !potInfo.hasStarted
-                          ? `🎉 Great news! This pot has enough players and is ready to start. Predictions will begin on ${getNextCalendarDayUTC()} when the pot officially opens!`
-                          : "👻 Invite your friends! We'll notify you via email when there are enough players to start the predictions tournament!"
+                          ? isPenaltyExempt && eventDate
+                            ? `🏁 The Formula 1 tournament will begin on ${getTournamentStartDate(eventDate)} - one week before the race! Get ready to make your predictions.`
+                            : `🎉 Great news! This pot has enough players and is ready to start. Predictions will begin on ${getNextCalendarDayUTC()} when the pot officially opens!`
+                          : isPenaltyExempt && eventDate
+                            ? `🏁 The Formula 1 tournament will begin on ${getTournamentStartDate(eventDate)} - one week before the race! Get ready to make your predictions.`
+                            : "👻 Invite your friends! We'll notify you via email when there are enough players to start the predictions tournament!"
                     }
                   </p>
                 </div>
@@ -341,7 +402,9 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                           <Clock className="w-3 h-3 md:w-4 md:h-4 text-green-600" />
                         </div>
                         <div className="flex items-center gap-1 md:gap-2">
-                          <span className="text-xs md:text-sm text-green-700 font-medium">Starts {getNextCalendarDayUTC()}</span>
+                          <span className="text-xs md:text-sm text-green-700 font-medium">
+                            Starts {isPenaltyExempt && eventDate ? getTournamentStartDate(eventDate) : getNextCalendarDayUTC()}
+                          </span>
                         </div>
                       </div>
                     ) : (

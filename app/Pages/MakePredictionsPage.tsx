@@ -531,27 +531,46 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
     // Only run redirect logic after pot info is loaded to avoid race conditions
     if (isParticipant && participants && Array.isArray(participants) && potInfoLoaded) {
-      // Determine which minimum players requirement to use
-      const contractAddresses = Object.keys(CONTRACT_TO_TABLE_MAPPING);
-      const contractIndex = contractAddresses.indexOf(contractAddress);
-      const minPlayersRequired = contractIndex === 0 ? MIN_PLAYERS : MIN_PLAYERS2;
+      let shouldRedirect: boolean;
+      let redirectReason: string;
 
-      // Redirect to NotReadyPage if:
-      // 1. Not enough players, OR
-      // 2. Enough players but pot hasn't officially started yet
-      const shouldRedirect = participants.length < minPlayersRequired || !potInfo.hasStarted;
+      // Check if this is a penalty-exempt contract
+      if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+        // For penalty-exempt contracts (F1 tournaments), only check if pot has started
+        // No minimum players requirement
+        shouldRedirect = !potInfo.hasStarted;
+        redirectReason = !potInfo.hasStarted ? 'pot not started' : 'none';
 
-      console.log(`🔍 MakePredictionsPage redirect decision:`, {
-        participantsLength: participants.length,
-        minPlayersRequired,
-        hasEnoughPlayers: participants.length >= minPlayersRequired,
-        potHasStarted: potInfo.hasStarted,
-        shouldRedirect,
-        redirectReason: participants.length < minPlayersRequired ? 'not enough players' : !potInfo.hasStarted ? 'pot not started' : 'none'
-      });
+        console.log(`🔍 MakePredictionsPage redirect decision (penalty-exempt):`, {
+          contractAddress,
+          participantsLength: participants.length,
+          potHasStarted: potInfo.hasStarted,
+          shouldRedirect,
+          redirectReason,
+          isPenaltyExempt: true
+        });
+      } else {
+        // For regular contracts, check both minimum players AND pot started
+        const contractAddresses = Object.keys(CONTRACT_TO_TABLE_MAPPING);
+        const contractIndex = contractAddresses.indexOf(contractAddress);
+        const minPlayersRequired = contractIndex === 0 ? MIN_PLAYERS : MIN_PLAYERS2;
+
+        shouldRedirect = participants.length < minPlayersRequired || !potInfo.hasStarted;
+        redirectReason = participants.length < minPlayersRequired ? 'not enough players' : !potInfo.hasStarted ? 'pot not started' : 'none';
+
+        console.log(`🔍 MakePredictionsPage redirect decision (regular):`, {
+          participantsLength: participants.length,
+          minPlayersRequired,
+          hasEnoughPlayers: participants.length >= minPlayersRequired,
+          potHasStarted: potInfo.hasStarted,
+          shouldRedirect,
+          redirectReason,
+          isPenaltyExempt: false
+        });
+      }
 
       if (shouldRedirect) {
-        console.log(`🚨 MakePredictionsPage: Redirecting to NotReadyPage`);
+        console.log(`🚨 MakePredictionsPage: Redirecting to NotReadyPage (${redirectReason})`);
         setActiveSection('notReadyPage');
       } else {
         console.log(`✅ MakePredictionsPage: User can stay on predictions page`);
