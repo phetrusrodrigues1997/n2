@@ -640,7 +640,7 @@ export const translations: Record<Language, Translations> = {
     detailedStep5Description: 'When the tournament reaches its final day (only 5 players left), this will be your last prediction. Make it count! If you\'re among the final winners, you\'ll split the entire accumulated pot equally with the other survivors. The more people eliminated, the bigger your share!',
 
     detailedStep6Title: '💸 Step 6: Collect Your Winnings',
-    detailedStep6Description: 'If you make it to the end and win, the prize money is automatically sent to your wallet - no need to claim it manually! Winners split the pot equally. You can then join new tournaments or try different markets. Each tournament is a fresh chance to win big!',
+    detailedStep6Description: 'If you make it to the end and win, the prize money is automatically sent to your wallet - no need to claim it manually! Winners split the pot equally. ',
 
     // Detailed Tournament Steps (Weekly Markets)
     detailedTournamentStep1Title: '🏁 Step 1: Join the Season Tournament',
@@ -1079,7 +1079,7 @@ export const translations: Record<Language, Translations> = {
     detailedStep5Description: 'Quando o torneio chegar ao dia final (apenas 5 jogadores restantes), esta será sua última previsão. Faça valer! Se estiver entre os vencedores finais, você dividirá todo o pote acumulado igualmente com os outros sobreviventes. Quanto mais pessoas eliminadas, maior sua parte!',
 
     detailedStep6Title: '💸 Passo 6: Colete Seus Ganhos',
-    detailedStep6Description: 'Se chegar ao final e ganhar, o dinheiro do prêmio é automaticamente enviado para sua carteira - não precisa reivindicar manualmente! Os vencedores dividem o pote igualmente. Você pode então entrar em novos torneios ou tentar mercados diferentes. Cada torneio é uma nova chance de ganhar muito!',
+    detailedStep6Description: 'Se chegar ao final e ganhar, o dinheiro do prêmio é automaticamente enviado para sua carteira - não precisa reivindicar manualmente! Os vencedores dividem o pote igualmente.',
 
     // Detailed Tournament Steps (Weekly Markets)
     detailedTournamentStep1Title: '🏁 Passo 1: Entre no Torneio da Temporada',
