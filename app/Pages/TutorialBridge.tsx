@@ -664,7 +664,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
 
             {/* Tutorial Screen - Show when email is collected or skipped */}
             {!isLoadingEmail && !showEmailCollection && isConnected && (
-              <div className="max-w-5xl mx-auto opacity-100 px-4">
+              <div className="max-w-5xl mx-auto opacity-100 px-2 md:px-4">
                 {/* Back to Email Collection Button */}
                 <div className="mb-6">
                   <button
@@ -677,32 +677,32 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                 </div>
 
                 {/* Tutorial Content */}
-                <div className="bg-white rounded-3xl border-0 p-6 md:mb-8 mb-16">
-                  <div className="flex items-center justify-between mb-12 relative">
-                    <h2 className="text-2xl md:text-4xl font-light text-gray-900 tracking-tight">
+                <div className="bg-white rounded-3xl border-0 p-3 md:p-6 md:mb-8 mb-16">
+                  <div className="flex flex-col md:flex-row items-center justify-between mb-8 md:mb-12 gap-4 md:gap-0">
+                    <h2 className="text-xl md:text-4xl font-light text-gray-900 tracking-tight text-center md:text-left">
                       {t.howItWorksTitle}
                     </h2>
                     <button
                       onClick={handleSkipClick}
-                      className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-4 py-2 md:px-8 md:py-3 rounded-2xl transition-all duration-300 font-medium text-sm md:text-base transform hover:scale-[1.02] active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl"
+                      className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-2 md:px-8 md:py-3 rounded-2xl transition-all duration-300 font-medium text-sm md:text-base transform hover:scale-[1.02] active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl w-full md:w-auto"
                     >
                       {t.skipButton}
                     </button>
                   </div>
 
                   {/* Carousel Container */}
-                  <div className="relative mb-12">
+                  <div className="relative mb-12 px-2 md:px-0">
                     {/* Current Step Display */}
-                    <div className="bg-white border border-gray-200/60 rounded-2xl p-6 md:p-8 shadow-sm min-h-[200px] flex items-center">
-                      <div className="flex items-start gap-4 md:gap-6 w-full">
-                        <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-12 h-12 md:w-16 md:h-16 flex items-center justify-center font-medium text-lg md:text-2xl flex-shrink-0">
+                    <div className="bg-white border border-gray-200/60 rounded-2xl p-4 md:p-8 shadow-sm min-h-[200px] md:min-h-[240px] flex items-center overflow-hidden">
+                      <div className="flex flex-col md:flex-row items-start gap-3 md:gap-6 w-full">
+                        <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-10 h-10 md:w-16 md:h-16 flex items-center justify-center font-medium text-base md:text-2xl flex-shrink-0 mx-auto md:mx-0">
                           {currentStep + 1}
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <h3 className="text-xl md:text-2xl font-medium text-gray-900 mb-3 md:mb-4">
+                        <div className="min-w-0 flex-1 text-center md:text-left">
+                          <h3 className="text-lg md:text-2xl font-medium text-gray-900 mb-2 md:mb-4 break-words leading-tight">
                             {tutorialSteps[currentStep]?.title}
                           </h3>
-                          <p className="text-base md:text-lg text-gray-600 font-light leading-relaxed">
+                          <p className="text-sm md:text-lg text-gray-600 font-light leading-relaxed break-words hyphens-auto">
                             {tutorialSteps[currentStep]?.description}
                           </p>
                         </div>
@@ -710,20 +710,20 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                     </div>
 
                     {/* Navigation Arrows */}
-                    <div className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-6">
+                    <div className="absolute top-1/2 -translate-y-1/2 -left-2 md:-left-6">
                       <button
                         onClick={prevStep}
-                        className="w-10 h-10 md:w-12 md:h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
+                        className="w-8 h-8 md:w-12 md:h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
                       >
-                        <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
+                        <ChevronLeft className="w-4 h-4 md:w-6 md:h-6 text-gray-600" />
                       </button>
                     </div>
-                    <div className="absolute top-1/2 -translate-y-1/2 -right-4 md:-right-6">
+                    <div className="absolute top-1/2 -translate-y-1/2 -right-2 md:-right-6">
                       <button
                         onClick={nextStep}
-                        className="w-10 h-10 md:w-12 md:h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
+                        className="w-8 h-8 md:w-12 md:h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
                       >
-                        <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
+                        <ChevronRight className="w-4 h-4 md:w-6 md:h-6 text-gray-600" />
                       </button>
                     </div>
 
@@ -750,8 +750,8 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                     </div>
                   </div>
 
-                  <div className="mt-12 p-8 bg-gradient-to-r from-purple-50/80 to-blue-50/80 rounded-3xl border-0">
-                    <p className="text-center text-lg md:text-xl text-gray-800 font-light leading-relaxed">
+                  <div className="mt-8 md:mt-12 p-4 md:p-8 bg-gradient-to-r from-purple-50/80 to-blue-50/80 rounded-3xl border-0">
+                    <p className="text-center text-base md:text-xl text-gray-800 font-light leading-relaxed break-words">
                       {isPenaltyExempt ? (
                         <>🏆 <span className="font-medium text-[#0000aa]">{currentLanguage === 'pt-BR' ? 'Seu Objetivo:' : 'Your Goal:'}</span> {t.yourGoalTournament}</>
                       ) : (
