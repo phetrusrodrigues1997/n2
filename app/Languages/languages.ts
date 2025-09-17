@@ -21,6 +21,7 @@ export interface Translations {
   teslaQuestion: string;
   nvidiaQuestion: string;
   sp500Question: string;
+  formula1Question: string;
   
   // How It Works Section
   howItWorksTitle: string;
@@ -45,6 +46,8 @@ export interface Translations {
   tutorialStep4Description: string;
   tutorialStep5Title: string;
   tutorialStep5Description: string;
+  tutorialStep6Title: string;
+  tutorialStep6Description: string;
   skipTutorial: string;
   previous: string;
   next: string;
@@ -317,6 +320,9 @@ export interface Translations {
   predictionsClosed: string;
   youChose: string;
   for: string;
+  predictionHistory: string;
+  predictions: string;
+  showingLatest: string;
   tomorrow: string;
   managePrediction: string;
   activePrediction: string;
@@ -369,6 +375,8 @@ export interface Translations {
   allTournaments: string;
   dailyTournaments: string;
   weeklyTournaments: string;
+  daily: string;
+  weekly: string;
   recentlyStarted: string;
 }
 
@@ -394,6 +402,7 @@ export const translations: Record<Language, Translations> = {
     teslaQuestion: 'Tesla stock closes higher than opening price',
     nvidiaQuestion: 'Will NVIDIA stock end the day higher?',
     sp500Question: 'Will S&P 500 end the day higher?',
+    formula1Question: 'Verstappen wins first race of the season',
     
     // How It Works Section
     howItWorksTitle: 'How It Works',
@@ -416,8 +425,10 @@ export const translations: Record<Language, Translations> = {
     tutorialStep3Description: 'Every day, predict tomorrow\'s outcome in your chosen market. Wrong predictions require a re-entry fee to continue playing.',
     tutorialStep4Title: 'Saturday Results & New Pot',
     tutorialStep4Description: 'Winners split the pot every Saturday. The game restarts Sunday with fresh entry fees and a new weekly cycle.',
-    tutorialStep5Title: 'Ready to Start?',
-    tutorialStep5Description: 'Choose your market, join early for the best prices, make smart predictions, and survive to split the weekly pot!',
+    tutorialStep5Title: 'Weekly Tournaments',
+    tutorialStep5Description: 'Some tournaments have weekly questions and begin one week prior to the first day of the season. Examples include Formula 1, NBA, and World Cup tournaments.',
+    tutorialStep6Title: 'Ready to Start?',
+    tutorialStep6Description: 'Choose your market, join early for the best prices, make smart predictions, and survive to split the pot!',
     skipTutorial: 'Skip Tutorial',
     previous: 'Previous',
     next: 'Next',
@@ -547,6 +558,8 @@ export const translations: Record<Language, Translations> = {
     allTournaments: 'All',
     dailyTournaments: 'Daily',
     weeklyTournaments: 'Weekly',
+    daily: 'Daily',
+    weekly: 'Weekly',
     recentlyStarted: 'Recently Started',
 
     // Email Collection
@@ -565,7 +578,7 @@ export const translations: Record<Language, Translations> = {
     globalCompetition: 'Global competition',
     globalCompetitionDesc: 'Players worldwide compete in the same prediction tournaments.',
     dailyPredictions: 'Daily predictions',
-    dailyPredictionsDesc: 'Choose and enter a pot so you can predict what\'s gonna happen tomorrow!',
+    dailyPredictionsDesc: 'Choose a question, enter the tournament, and predict what\'s gonna happen tomorrow!',
     dynamicPricing: 'Dynamic pricing',
     dynamicPricingDesc: 'Entry fees start low but will double after the 5th day - join early to save!',
     secondChances: 'Second chances',
@@ -697,6 +710,9 @@ export const translations: Record<Language, Translations> = {
     predictionsClosed: 'Predictions Closed',
     youChose: 'You Chose',
     for: 'For:',
+    predictionHistory: 'Prediction History',
+    predictions: 'predictions',
+    showingLatest: 'Showing latest 5 of',
     tomorrow: 'tomorrow',
     managePrediction: 'Manage your current prediction',
     activePrediction: 'Active Prediction',
@@ -757,12 +773,13 @@ export const translations: Record<Language, Translations> = {
     comingSoon: 'mercado em breve!',
     
     // Market Questions
-    bitcoinQuestion: 'Bitcoin fecha em alta em relação ao preço de abertura',
-    ethereumQuestion: 'O Ethereum vai terminar o dia em alta?',
-    solanaQuestion: 'O Solana vai terminar o dia em alta?',
-    teslaQuestion: 'Ação da Tesla fecha em alta em relação ao preço de abertura',
-    nvidiaQuestion: 'A ação da NVIDIA vai terminar o dia em alta?',
-    sp500Question: 'O S&P 500 vai terminar o dia em alta?',
+    bitcoinQuestion: 'Bitcoin fechará em alta em relação ao preço de abertura',
+    ethereumQuestion: 'O Ethereum terminará o dia em alta?',
+    solanaQuestion: 'O Solana terminará o dia em alta?',
+    teslaQuestion: 'Ação da Tesla fechará em alta em relação ao preço de abertura',
+    nvidiaQuestion: 'A ação da NVIDIA terminará o dia em alta?',
+    sp500Question: 'O S&P 500 terminará o dia em alta?',
+    formula1Question: 'Verstappen vencerá a primeira corrida da temporada',
     
     // How It Works Section
     howItWorksTitle: 'Como Funciona',
@@ -785,8 +802,10 @@ export const translations: Record<Language, Translations> = {
     tutorialStep3Description: 'Previsões abrem de terça a quinta-feira. Preveja se Bitcoin vai subir ou descer no próximo dia. Escolha sabiamente - sua previsão determina seu destino.',
     tutorialStep4Title: 'Dia dos Resultados Sexta',
     tutorialStep4Description: 'Vencedores são determinados sexta à meia-noite UTC. Preditores corretos dividem o pote igualmente. Preditores errados ficam temporariamente bloqueados da próxima rodada.',
-    tutorialStep5Title: 'Pronto para Jogar?',
-    tutorialStep5Description: 'Agora você entende as regras. Conecte sua carteira e faça sua primeira previsão para começar a ganhar!',
+    tutorialStep5Title: 'Torneios Semanais',
+    tutorialStep5Description: 'Alguns torneios têm perguntas semanais e começam uma semana antes do primeiro dia da temporada. Exemplos incluem Fórmula 1, NBA e Copa do Mundo.',
+    tutorialStep6Title: 'Pronto para Jogar?',
+    tutorialStep6Description: 'Agora você entende as regras. Conecte sua carteira e faça sua primeira previsão para começar a ganhar!',
     skipTutorial: 'Pular Tutorial',
     previous: 'Anterior',
     next: 'Próximo',
@@ -814,18 +833,18 @@ export const translations: Record<Language, Translations> = {
     enterPotButton: 'Entrar no Pote (10 USDC)',
     insufficientUSDC: 'Saldo insuficiente de USDC',
     pleaseApproveFirst: 'Por favor, aprove primeiro os gastos de USDC',
-    amazonQuestion: 'A ação da Amazon vai terminar o dia em alta?',
-    appleQuestion: 'A ação da Apple vai terminar o dia em alta?',
-    googleQuestion: 'A ação do Google vai terminar o dia em alta?',
-    microsoftQuestion: 'A ação da Microsoft vai terminar o dia em alta?',
-    metaQuestion: 'A ação da Meta vai terminar o dia em alta?',
-    dogecoinQuestion: 'O Dogecoin vai terminar o dia em alta?',
-    cardanoQuestion: 'O Cardano vai terminar o dia em alta?',
-    xrpQuestion: 'O XRP vai terminar o dia em alta?',
-    ftse100Question: 'O FTSE 100 vai terminar o dia em alta?',
-    goldQuestion: 'O Ouro vai terminar o dia em alta?',
+    amazonQuestion: 'A ação da Amazon terminará o dia em alta?',
+    appleQuestion: 'A ação da Apple terminará o dia em alta?',
+    googleQuestion: 'A ação do Google terminará o dia em alta?',
+    microsoftQuestion: 'A ação da Microsoft terminará o dia em alta?',
+    metaQuestion: 'A ação da Meta terminará o dia em alta?',
+    dogecoinQuestion: 'O Dogecoin terminará o dia em alta?',
+    cardanoQuestion: 'O Cardano terminará o dia em alta?',
+    xrpQuestion: 'O XRP terminará o dia em alta?',
+    ftse100Question: 'O FTSE 100 terminará o dia em alta?',
+    goldQuestion: 'O Ouro terminará o dia em alta?',
     howItWorksLink: 'Como funciona?', // Added for the link to the How It Works section
-    chelseaManUtdQuestion: 'Chelsea vai ganhar do Machester United?',
+    chelseaManUtdQuestion: 'Chelsea ganhará do Manchester United?',
    
     referralProgram: 'Indicações', // Added for referral navigation links
     referralCode: 'Código de Referência (Opcional)', // Added for referral code input label
@@ -915,6 +934,8 @@ export const translations: Record<Language, Translations> = {
     allTournaments: 'Todos',
     dailyTournaments: 'Diários',
     weeklyTournaments: 'Semanais',
+    daily: 'Diário',
+    weekly: 'Semanal',
     recentlyStarted: 'Recém-Iniciados',
 
     // Email Collection
@@ -933,7 +954,7 @@ export const translations: Record<Language, Translations> = {
     globalCompetition: 'Competição global',
     globalCompetitionDesc: 'Jogadores do mundo todo competem nos mesmos torneios de previsão.',
     dailyPredictions: 'Previsões diárias',
-    dailyPredictionsDesc: 'Escolha e entre em um pote para tentar prever o que vai acontecer amanhã!',
+    dailyPredictionsDesc: 'Escolha uma pergunta, entre no pote e preveja o que vai acontecer amanhã!',
     dynamicPricing: 'Preços dinâmicos',
     dynamicPricingDesc: 'As taxas de entrada começam baixas, mas dobrarão após o 5º dia - entre cedo para economizar!',
     secondChances: 'Segunda chance',
@@ -1065,6 +1086,9 @@ export const translations: Record<Language, Translations> = {
     predictionsClosed: 'Previsões Fechadas',
     youChose: 'Você Escolheu',
     for: 'Para:',
+    predictionHistory: 'Histórico de Previsões',
+    predictions: 'previsões',
+    showingLatest: 'Mostrando as 5 mais recentes de',
     tomorrow: 'amanhã',
     managePrediction: 'Gerenciar sua previsão atual',
     activePrediction: 'Previsão Ativa',
@@ -1196,22 +1220,116 @@ export const getTranslatedMarketQuestion = (market: any, language: Language): st
     // Main markets
     'Trending': language === 'en'
       ? 'Solo female artist has #1 song on Spotify Global'
-      : 'Artista feminina solo tem música #1 no Spotify Global',
+      : 'Artista feminina solo terá música #1 no Spotify Global',
     'Crypto': t.bitcoinQuestion,
-    'Stocks': t.teslaQuestion, 
+    'Stocks': t.teslaQuestion,
+    'Formula 1': t.formula1Question,
+    'formula1': t.formula1Question,
     'Music Charts': language === 'en'
       ? 'Espresso reaches #1 on Spotify Global'
-      : 'Espresso alcança #1 no Spotify Global',
+      : 'Espresso alcançará #1 no Spotify Global',
     // Additional markets
     'X Trending Topics': language === 'en'
       ? 'Which topic will rank #1 on X trending topics in the United States by 21:00 UTC today?'
       : 'Qual tópico ficará em #1 nos tópicos em alta do X nos Estados Unidos às 21:00 UTC hoje?',
+    // Markets without contracts - need proper translations
+    'Sports': language === 'en'
+      ? 'Chelsea beats Manchester United'
+      : 'Chelsea ganhará do Manchester United',
+    'sports': language === 'en'
+      ? 'Chelsea beats Manchester United'
+      : 'Chelsea ganhará do Manchester United',
+    'Weather': language === 'en'
+      ? 'London Heathrow hits 22°C at 3PM UTC'
+      : 'Londres Heathrow atingirá 22°C às 15h UTC',
+    'weather': language === 'en'
+      ? 'London Heathrow hits 22°C at 3PM UTC'
+      : 'Londres Heathrow atingirá 22°C às 15h UTC',
+    'Politics': language === 'en'
+      ? 'Trump announces new China tariffs'
+      : 'Trump anunciará novas tarifas sobre a China',
+    'politics': language === 'en'
+      ? 'Trump announces new China tariffs'
+      : 'Trump anunciará novas tarifas sobre a China',
+    'Elections': language === 'en'
+      ? 'Who will be the next president of the United States?'
+      : 'Quem será o próximo presidente dos Estados Unidos?',
+    'elections': language === 'en'
+      ? 'Who will be the next president of the United States?'
+      : 'Quem será o próximo presidente dos Estados Unidos?',
+    'TV Shows': language === 'en'
+      ? 'New Stranger Things trailer drops'
+      : 'Novo trailer de Stranger Things será lançado',
+    'tvshows': language === 'en'
+      ? 'New Stranger Things trailer drops'
+      : 'Novo trailer de Stranger Things será lançado',
+    'Pop Culture': language === 'en'
+      ? 'Drake posts on X tomorrow'
+      : 'Drake postará no X amanhã',
+    'popculture': language === 'en'
+      ? 'Drake posts on X tomorrow'
+      : 'Drake postará no X amanhã',
     'Tech News': language === 'en'
-      ? 'Will there be major tech news today?'
-      : 'Haverá grandes notícias de tecnologia hoje?',
+      ? 'ChatGPT goes open source'
+      : 'ChatGPT se tornará código aberto',
+    'technews': language === 'en'
+      ? 'ChatGPT goes open source'
+      : 'ChatGPT se tornará código aberto',
+    'Box Office': language === 'en'
+      ? 'Leonardo DiCaprio wins an Oscar'
+      : 'Leonardo DiCaprio ganhará um Oscar',
+    'movies': language === 'en'
+      ? 'Leonardo DiCaprio wins an Oscar'
+      : 'Leonardo DiCaprio ganhará um Oscar',
+    'Astronomy': language === 'en'
+      ? 'NASA finds life on Europa'
+      : 'NASA encontrará vida em Europa',
+    'space': language === 'en'
+      ? 'NASA finds life on Europa'
+      : 'NASA encontrará vida em Europa',
     'Fashion Trends': language === 'en'
-      ? 'Will fashion trends change significantly today?'
-      : 'As tendências da moda mudarão significativamente hoje?',
+      ? 'Major brand launches sustainable fashion line'
+      : 'Grande marca lançará linha de moda sustentável',
+    'fashion': language === 'en'
+      ? 'Major brand launches sustainable fashion line'
+      : 'Grande marca lançará linha de moda sustentável',
+    'Celebrity News': language === 'en'
+      ? 'Dua Lipa tweets about new album'
+      : 'Dua Lipa tuitará sobre novo álbum',
+    'celebs': language === 'en'
+      ? 'Dua Lipa tweets about new album'
+      : 'Dua Lipa tuitará sobre novo álbum',
+    'Health & Fitness': language === 'en'
+      ? 'Pfizer releases new advertisement'
+      : 'Pfizer lançará novo anúncio',
+    'health': language === 'en'
+      ? 'Pfizer releases new advertisement'
+      : 'Pfizer lançará novo anúncio',
+    'Gaming': language === 'en'
+      ? 'GTA 6 gets announced'
+      : 'GTA 6 será anunciado',
+    'gaming': language === 'en'
+      ? 'GTA 6 gets announced'
+      : 'GTA 6 será anunciado',
+    'Travel & Tourism': language === 'en'
+      ? 'Ibiza records highest temperature in Spain'
+      : 'Ibiza registrará a temperatura mais alta da Espanha',
+    'travel': language === 'en'
+      ? 'Ibiza records highest temperature in Spain'
+      : 'Ibiza registrará a temperatura mais alta da Espanha',
+    // Special markets
+    'Chelsea vs Man United': language === 'en'
+      ? 'Chelsea beats Manchester United'
+      : 'Chelsea ganhará do Manchester United',
+    'chelsea-manutd': language === 'en'
+      ? 'Chelsea beats Manchester United'
+      : 'Chelsea ganhará do Manchester United',
+    'London 3PM ≥ 22°C': language === 'en'
+      ? 'London Heathrow hits 22°C at 3PM UTC'
+      : 'Londres Heathrow atingirá 22°C às 15h UTC',
+    'london-temp-3pm': language === 'en'
+      ? 'London Heathrow hits 22°C at 3PM UTC'
+      : 'Londres Heathrow atingirá 22°C às 15h UTC',
   };
   
   // Return translated question if available, otherwise return original
@@ -1227,21 +1345,46 @@ export const translateMarketQuestion = (questionText: string, language: Language
   // Direct mapping of English questions to Portuguese translations
   const questionTranslations: Record<string, string> = {
     // Tesla stock question - from English to Portuguese
-    'Will Tesla stock end the day higher?': 'A ação da Tesla vai terminar o dia em alta?',
-    
+    'Will Tesla stock end the day higher?': 'A ação da Tesla terminará o dia em alta?',
+
     // Music/Espresso question - direct hardcoded mapping
-    'Will Espresso be the #1 track on Spotify Global?': 'Será que Espresso será a faixa #1 no Spotify Global?',
-    
+    'Will Espresso be the #1 track on Spotify Global?': 'Espresso será a faixa #1 no Spotify Global?',
+
     // Trending - this would be a translated version from the Trending market
     'Will a solo female artist have the #1 song on the global spotify charts?': 'Uma artista solo feminina terá a música #1 nas paradas globais do Spotify?',
-    
+
     // Bitcoin (if it appears)
-    'Will Bitcoin end the day higher?': 'O Bitcoin vai terminar o dia em alta?',
-    
-    // Handle case where Tesla question might already be in Portuguese (when markets.ts used Portuguese t)
-    'A ação da Tesla vai terminar o dia em alta?': 'A ação da Tesla vai terminar o dia em alta?',
-    
-    // Add more question translations here as needed
+    'Will Bitcoin end the day higher?': 'O Bitcoin terminará o dia em alta?',
+
+    // Formula 1 Verstappen question
+    'Verstappen wins first race of the season': 'Verstappen vencerá a primeira corrida da temporada',
+
+    // Core market questions from markets.ts
+    'Bitcoin closes higher than opening price': 'Bitcoin fechará em alta em relação ao preço de abertura',
+    'Solo female artist has #1 song on Spotify Global': 'Artista feminina solo terá música #1 no Spotify Global',
+    'Espresso reaches #1 on Spotify Global': 'Espresso alcançará #1 no Spotify Global',
+
+    // Markets without contracts
+    'Chelsea beats Manchester United': 'Chelsea ganhará do Manchester United',
+    'London Heathrow hits 22°C at 3PM UTC': 'Londres Heathrow atingirá 22°C às 15h UTC',
+    'Trump announces new China tariffs': 'Trump anunciará novas tarifas sobre a China',
+    'Who will be the next president of the United States?': 'Quem será o próximo presidente dos Estados Unidos?',
+    'New Stranger Things trailer drops': 'Novo trailer de Stranger Things será lançado',
+    'Drake posts on X tomorrow': 'Drake postará no X amanhã',
+    'ChatGPT goes open source': 'ChatGPT se tornará código aberto',
+    'Leonardo DiCaprio wins an Oscar': 'Leonardo DiCaprio ganhará um Oscar',
+    'NASA finds life on Europa': 'NASA encontrará vida em Europa',
+    'Major brand launches sustainable fashion line': 'Grande marca lançará linha de moda sustentável',
+    'Dua Lipa tweets about new album': 'Dua Lipa tuitará sobre novo álbum',
+    'Pfizer releases new advertisement': 'Pfizer lançará novo anúncio',
+    'GTA 6 gets announced': 'GTA 6 será anunciado',
+    'Ibiza records highest temperature in Spain': 'Ibiza registrará a temperatura mais alta da Espanha',
+    'Which topic will rank #1 on X trending topics in the United States by 21:00 UTC today?': 'Qual tópico ficará em #1 nos tópicos em alta do X nos Estados Unidos às 21:00 UTC hoje?',
+
+    // Handle case where questions might already be in Portuguese
+    'A ação da Tesla terminará o dia em alta?': 'A ação da Tesla terminará o dia em alta?',
+    'Bitcoin fechará em alta em relação ao preço de abertura': 'Bitcoin fechará em alta em relação ao preço de abertura',
+    'Verstappen vencerá a primeira corrida da temporada': 'Verstappen vencerá a primeira corrida da temporada',
   };
   
   // Debug logging (can be removed in production)

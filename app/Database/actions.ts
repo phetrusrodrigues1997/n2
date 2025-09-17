@@ -2217,12 +2217,32 @@ export async function createContractAnnouncement(message: string, contractAddres
         to: CONTRACT_PARTICIPANTS,
         message: message,
         datetime: datetime,
-        contractAddress: contractAddress,
+        contractAddress: contractAddress.toLowerCase(),
       })
       .returning();
   } catch (error) {
     console.error("Error creating contract announcement:", error);
     throw new Error("Failed to create contract announcement");
+  }
+}
+
+/**
+ * Clears all messages (announcements) for a specific contract
+ */
+export async function clearContractMessages(contractAddress: string) {
+  try {
+    console.log(`🗑️ Clearing all messages for contract ${contractAddress}`);
+
+    const result = await db
+      .delete(Messages)
+      .where(eq(Messages.contractAddress, contractAddress.toLowerCase()))
+      .returning();
+
+    console.log(`✅ Cleared ${result.length} messages for contract ${contractAddress}`);
+    return result;
+  } catch (error) {
+    console.error("Error clearing contract messages:", error);
+    throw new Error("Failed to clear contract messages");
   }
 }
 
@@ -2551,17 +2571,26 @@ export async function hasUnreadAnnouncements(userAddress: string): Promise<boole
  * Call this AFTER setDailyOutcome() succeeds
  */
 export async function notifyMarketOutcome(
-  contractAddress: string, 
-  outcome: string, 
-  marketType: string = 'market'
+  contractAddress: string,
+  outcome: string,
+  marketType: string = 'market',
+  eliminatedCount: number = 0
 ) {
   try {
     console.log(`📢 Sending market outcome notification for ${contractAddress}: ${outcome}`);
-    
-    const message = outcome === 'positive' 
+
+    const winnerMessage = outcome === 'positive'
       ? `🎉 Great news! Users who predicted POSITIVE won today's ${marketType} market!`
       : `🎉 Great news! Users who predicted NEGATIVE won today's ${marketType} market!`;
-    
+
+    const eliminationSummary = eliminatedCount === 0
+      ? ` Amazing! No one was eliminated this round - all predictions were correct!`
+      : eliminatedCount === 1
+        ? ` Your prediction was incorrect this time. Pay today's entry fee to re-enter the ${marketType} pot!`
+        : ` Were you one of the unlucky ones? ${eliminatedCount} users were eliminated. If that's you, pay today's entry fee to re-enter!`;
+
+    const message = winnerMessage + eliminationSummary;
+
     const result = await createContractAnnouncementSafe(message, contractAddress);
     
     if (result.isDuplicate) {

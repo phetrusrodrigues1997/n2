@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 import { Language, getTranslation, supportedLanguages } from '../Languages/languages';
 import { getPrice } from '../Constants/getPrice';
 import { setDailyOutcome, setDailyOutcomeWithStats, setProvisionalOutcome, getProvisionalOutcome, determineWinners, clearWrongPredictions, testDatabaseConnection, getUserStats, clearPotInformation } from '../Database/OwnerActions'; // Adjust path as needed
-import { notifyMarketOutcome, notifyEliminatedUsers, notifyWinners, notifyPotDistributed, notifyMarketUpdate, notifyMinimumPlayersReached } from '../Database/actions';
+import { notifyMarketOutcome, notifyEliminatedUsers, notifyWinners, notifyPotDistributed, notifyMarketUpdate, notifyMinimumPlayersReached, clearContractMessages } from '../Database/actions';
 import { useQueryClient } from '@tanstack/react-query';
 import { 
   recordReferral, 
@@ -1586,21 +1586,15 @@ useEffect(() => {
             try {
               console.log("📢 Sending pot outcome notifications with accurate elimination counts...");
               
-              // Notify market outcome
+              // Notify market outcome with elimination summary
               const marketOutcomeResult = await notifyMarketOutcome(
-                contractAddress, 
-                outcome as "positive" | "negative", 
-                selectedTableType
+                contractAddress,
+                outcome as "positive" | "negative",
+                selectedTableType,
+                outcomeStats.eliminatedCount // ✅ Real count for elimination summary!
               );
-              
-              // Send elimination notification with REAL count from database
-              const eliminationResult = await notifyEliminatedUsers(
-                contractAddress, 
-                outcomeStats.eliminatedCount, // ✅ Real count instead of estimate!
-                selectedTableType
-              );
-              
-              console.log(`✅ Notifications sent - Market: ${marketOutcomeResult.isDuplicate ? 'duplicate prevented' : 'sent'}, Elimination: ${eliminationResult.isDuplicate ? 'duplicate prevented' : 'sent'}`);
+
+              console.log(`✅ Combined notification sent - Market outcome with elimination summary: ${marketOutcomeResult.isDuplicate ? 'duplicate prevented' : 'sent'}`);
               console.log(`📊 Real stats: ${outcomeStats.eliminatedCount} eliminated out of ${outcomeStats.totalParticipants} total participants`);
             } catch (notificationError) {
               console.error("❌ Notification failed (core operation still succeeded):", notificationError);
@@ -1728,7 +1722,8 @@ useEffect(() => {
           setIsLoading(true);
           try {
             await clearPotInformation(contractAddress);
-            showMessage('Pot data reset successfully! Pot information and user prediction history cleared.');
+            await clearContractMessages(contractAddress);
+            showMessage('Pot data reset successfully! Pot information, user prediction history, and contract messages cleared.');
             
             // Reset local pot info state
             setPotInfo({

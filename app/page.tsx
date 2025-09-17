@@ -986,11 +986,11 @@ export default function App() {
                   }}
                 >
                   <span className="text-sm whitespace-nowrap tracking-tight">
-                    For you
+                    {t.personalizedForYou || 'For you'}
                   </span>
                 </button>
 
-                {shuffledMarkets.map((market) => (
+                {shuffledMarkets.filter(market => market.name !== 'Trending').map((market) => (
                   <button
                     key={`personalized-${market.id}`}
                     onClick={() => {

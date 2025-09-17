@@ -1820,10 +1820,10 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
               onClick={() => setIsPredictionHistoryCollapsed(!isPredictionHistoryCollapsed)}
             >
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-black text-gray-900 tracking-tight">Prediction History</h3>
+                <h3 className="text-xl font-black text-gray-900 tracking-tight">{t.predictionHistory || 'Prediction History'}</h3>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-500 font-medium">
-                    {predictionHistory.length} prediction{predictionHistory.length !== 1 ? 's' : ''}
+                    {predictionHistory.length} {predictionHistory.length === 1 ? (currentLanguage === 'pt-BR' ? 'previsão' : 'prediction') : (t.predictions || 'predictions')}
                   </span>
                   <ChevronDown 
                     className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
@@ -1873,7 +1873,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                             </span>
                           </div>
                           <p className="text-gray-700 text-sm font-medium line-clamp-1 mb-1">
-                            {prediction.questionName}
+                            {translateMarketQuestion(prediction.questionName, currentLanguage || 'en')}
                           </p>
                           <p className="text-gray-400 text-xs">
                             {new Date(prediction.createdAt).toLocaleDateString(currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-US')} • {' '}
@@ -1930,7 +1930,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                 {predictionHistory.length > 5 && (
                   <div className="mt-4 pt-4 border-t border-gray-100 text-center">
                     <p className="text-gray-500 text-xs font-medium">
-                      Showing latest 5 of {predictionHistory.length} predictions
+                      {t.showingLatest || 'Showing latest 5 of'} {predictionHistory.length} {t.predictions || 'predictions'}
                     </p>
                   </div>
                 )}
@@ -1939,33 +1939,6 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
           </div>
         )}
 
-        {/* Previous Prediction Section - Below Main Interface */}
-        {todaysBet && (
-          <div className="bg-gradient-to-br from-blue-50/80 via-white/80 to-blue-50/80 backdrop-blur-xl border border-blue-200/50 rounded-3xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-2xl shadow-blue-900/10 text-center relative overflow-hidden">
-            <div className="relative z-10">
-              <h3 className="text-base sm:text-lg font-bold text-gray-700 mb-3 sm:mb-4">Previous Prediction</h3>
-              <div className="flex items-center justify-center gap-3 sm:gap-4">
-                <div className={`p-2 sm:p-3 rounded-xl shadow-md ${
-                  todaysBet.prediction === 'positive' ? 'bg-[#00dd00]' : 'bg-[#dd0000]'
-                }`}>
-                  {todaysBet.prediction === 'positive' ? (
-                    <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  ) : (
-                    <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  )}
-                </div>
-                <div className="text-left">
-                  <div className="text-lg sm:text-xl font-black text-gray-900 tracking-tight">
-                    {todaysBet.prediction === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
-                  </div>
-                  {/* <div className="text-gray-500 text-xs font-medium">
-                    For: <span className="text-purple-700">tomorrow</span>
-                  </div> */}
-                </div>
-              </div>
-            </div> 
-          </div>
-        )}
 
         {/* Premium Rules Section - Only show when no provisional outcome is set */}
         {false && !hasOutcomeBeenSet() && (

@@ -359,6 +359,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     },
     {
+      title: t.tutorialStep5Title || "Weekly Predictions",
+      content: t.tutorialStep5Description || "Some tournaments happen weekly, and begin one week before the first day of the event. Examples include Formula 1 races, NBA playoffs, and World Cup matches.",
+      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
+    },
+    {
       title: t.dynamicPricing || "Dynamic Pricing",
       content: t.dynamicPricingDesc || "Entry fees start low and increase daily. Early predictors pay less, while late entries face higher stakes. Time is money!",
       icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
@@ -377,7 +382,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       title: t.liveStats || "Live Statistics",
       content: t.liveStatsDesc || "Track your performance, view global prediction trends, and see real-time market sentiment. Data drives decisions.",
       icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
-    }
+    },
+    
   ];
   
   
@@ -1666,7 +1672,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 {(() => {
                                   const contractAddress = getContractAddress(market.id);
                                   const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
-                                  return isPenaltyExempt ? 'Weekly' : 'Daily';
+                                  return isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily');
                                 })()}
                               </div>
 
@@ -2225,7 +2231,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               {(() => {
                                 const contractAddress = getContractAddress(market.id);
                                 const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
-                                return isPenaltyExempt ? 'Weekly' : 'Daily';
+                                return isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily');
                               })()}
                             </div>
 
@@ -2415,7 +2421,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
             <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col">
               {/* Modal Header */}
-              <div className="flex items-center justify-between px-2 md:px-6 py-6 border-b border-gray-200">
+              <div className="flex items-center justify-between px-5 md:px-6 py-6 border-b border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-purple-600">
                     {tutorialSteps[tutorialStep].icon}
