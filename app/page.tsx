@@ -1044,7 +1044,7 @@ export default function App() {
       {/* Mobile Bottom Navigation */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'ideas' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && activeSection !== 'discord' && (
         <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40 border-t border-gray-200">
-        <div className="flex items-center justify-around py-2">
+        <div className="flex items-center justify-around py-1">
           <button
             onClick={(e) => {
               console.log('Mobile HOME button clicked');
@@ -1054,9 +1054,9 @@ export default function App() {
             className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${(activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot') ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
               }`}
           >
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${(activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot') ? 'bg-transparent' : ''
+            <div className={`w-4 h-4 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${(activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot') ? 'bg-transparent' : ''
               }`}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9,22 9,12 15,12 15,22"></polyline>
               </svg>
@@ -1069,13 +1069,13 @@ export default function App() {
             className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${activeSection === 'liveMarkets' ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
               }`}
           >
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${activeSection === 'liveMarkets' ? 'bg-transparent' : ''
+            <div className={`w-4 h-4 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${activeSection === 'liveMarkets' ? 'bg-transparent' : ''
               }`}>
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 16 16">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M3.05 3.05a7 7 0 0 0 0 9.9.5.5 0 0 1-.707.707 8 8 0 0 1 0-11.314.5.5 0 0 1 .707.707m2.122 2.122a4 4 0 0 0 0 5.656.5.5 0 1 1-.708.708 5 5 0 0 1 0-7.072.5.5 0 0 1 .708.708m5.656-.708a.5.5 0 0 1 .708 0 5 5 0 0 1 0 7.072.5.5 0 1 1-.708-.708 4 4 0 0 0 0-5.656.5.5 0 0 1 0-.708m2.122-2.12a.5.5 0 0 1 .707 0 8 8 0 0 1 0 11.313.5.5 0 0 1-.707-.707 7 7 0 0 0 0-9.9.5.5 0 0 1 0-.707zM10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/>
               </svg>
             </div>
-            <span className="text-[13px] font-medium translate-y-0.5">{t.bottomNavLive}</span>
+            <span className="text-[13px] font-medium">{t.bottomNavLive}</span>
           </button>
 
               <button
@@ -1085,8 +1085,8 @@ export default function App() {
             }}
             className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${activeSection === 'news' ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'}`}
           >
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${activeSection === 'news' ? 'bg-transparent' : ''}`}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <div className={`w-4 h-4 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${activeSection === 'news' ? 'bg-transparent' : ''}`}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
                 <path d="M18 14h-8"/>
                 <path d="M15 18h-5"/>
@@ -1106,14 +1106,14 @@ export default function App() {
             className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${(activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile') ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
               }`}
           >
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${(activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile') ? 'bg-transparent' : ''
+            <div className={`w-4 h-4 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${(activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile') ? 'bg-transparent' : ''
               }`}>
-              <svg className="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
             </div>
-            <span className="text-[11px] md:text-[13px] font-medium truncate max-w-[60px]">
+            <span className="text-[13px] font-medium truncate max-w-[60px]">
                {t.bottomNavMyPots}
             </span>
           </button>
