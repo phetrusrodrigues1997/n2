@@ -141,6 +141,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   // Tutorial state
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
+  const [isTutorialLanguageDropdownOpen, setIsTutorialLanguageDropdownOpen] = useState(false);
 
 
 
@@ -270,8 +271,16 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   const closeTutorial = () => {
     setShowTutorial(false);
     setTutorialStep(0);
+    setIsTutorialLanguageDropdownOpen(false);
     // Set cookie to remember user has seen tutorial
     Cookies.set('landingPageTutorialSeen', 'true', { expires: 1 / 24 }); // 1 hour expiry for testing
+  };
+
+  const handleTutorialLanguageChange = (language: Language) => {
+    setIsTutorialLanguageDropdownOpen(false);
+    // Dispatch custom event to notify page.tsx about language change
+    const event = new CustomEvent('changeLanguage', { detail: language });
+    window.dispatchEvent(event);
   };
 
   // Check if user has seen tutorial before and show automatically
@@ -315,6 +324,19 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
 
   const t = getTranslation(currentLanguage);
+
+  // Close tutorial language dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (isTutorialLanguageDropdownOpen && !target.closest('[data-tutorial-language-dropdown]')) {
+        setIsTutorialLanguageDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isTutorialLanguageDropdownOpen]);
 
   // Tutorial steps data (using the content from TutorialBridge.tsx)
   const tutorialSteps = [
@@ -590,7 +612,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
             newPotInformation[contractAddress] = {
               hasStarted: false,
               announcementSent: false,
-              isFinalDay: false
+              isFinalDay: false,
+              startedOnDate: null
             };
           }
         } catch (error) {
@@ -2398,12 +2421,65 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={closeTutorial}
-                  className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+
+                <div className="flex items-center gap-2">
+                  {/* Language dropdown in tutorial */}
+                  <div className="relative" data-tutorial-language-dropdown>
+                    <button
+                      onClick={() => setIsTutorialLanguageDropdownOpen(!isTutorialLanguageDropdownOpen)}
+                      className="flex items-center gap-2 px-3 py-2 bg-purple-50 text-purple-700 font-semibold rounded-md hover:bg-purple-800 hover:text-white transition-colors border border-purple-200"
+                    >
+                      <img
+                        src={supportedLanguages.find(lang => lang.code === currentLanguage)?.flag}
+                        alt="Current language"
+                        className="object-cover rounded w-6 h-4"
+                      />
+                      <span className="text-sm font-medium">
+                        {supportedLanguages.find(lang => lang.code === currentLanguage)?.name}
+                      </span>
+                      <svg
+                        className={`w-4 h-4 transition-transform duration-200 ${
+                          isTutorialLanguageDropdownOpen ? 'rotate-180' : 'rotate-0'
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        strokeWidth="2"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {/* Language dropdown menu */}
+                    {isTutorialLanguageDropdownOpen && (
+                      <div className="absolute right-0 mt-1 w-40 bg-white rounded-md shadow-lg border border-gray-200 z-[90]">
+                        {supportedLanguages.map((language) => (
+                          <button
+                            key={language.code}
+                            onClick={() => handleTutorialLanguageChange(language.code)}
+                            className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors ${
+                              currentLanguage === language.code ? 'bg-purple-50 text-purple-700' : 'text-gray-700'
+                            }`}
+                          >
+                            <img
+                              src={language.flag}
+                              alt={`${language.name} flag`}
+                              className="w-4 h-3 object-cover rounded"
+                            />
+                            <span className="text-sm">{language.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={closeTutorial}
+                    className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
               {/* Modal Content */}
