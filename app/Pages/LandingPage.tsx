@@ -2421,7 +2421,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                     {tutorialSteps[tutorialStep].icon}
                   </div>
                   <div>
-                    <h2 className="text-base md:text-lg font-semibold text-gray-900">
+                    <h2 className="text-sm md:text-lg font-semibold text-gray-900">
                       {t.howItWorksTitle || "How It Works"}
                     </h2>
                     <p className="text-sm text-gray-500">
