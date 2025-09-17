@@ -2493,7 +2493,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
               {/* Modal Content */}
               <div className="flex-1 p-6">
                 <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  <h3 className="text-base md:text-xl font-bold text-gray-900 mb-4">
                     {tutorialSteps[tutorialStep].title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">

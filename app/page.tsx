@@ -1070,7 +1070,7 @@ export default function App() {
       {/* Mobile Bottom Navigation */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'ideas' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && activeSection !== 'discord' && (
         <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40 border-t border-gray-200">
-        <div className="flex items-center justify-around py-1">
+        <div className="flex items-center justify-around py-2">
           <button
             onClick={(e) => {
               console.log('Mobile HOME button clicked');
@@ -1149,7 +1149,7 @@ export default function App() {
 
       {/* How it works popup - extension of bottom navigation */}
       {!isLandingPageLoading && activeSection === 'home' && showHowItWorksPopup && !isTutorialOpen && (
-        <div className="fixed left-0 right-0 md:hidden bg-white z-50" data-how-it-works-popup style={{ bottom: '54px' }}>
+        <div className="fixed left-0 right-0 md:hidden bg-white z-50" data-how-it-works-popup style={{ bottom: '62px' }}>
           <div
             className="bg-white border-t border-gray-200 rounded-t-lg px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
             onClick={() => {
