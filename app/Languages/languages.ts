@@ -984,7 +984,7 @@ export const translations: Record<Language, Translations> = {
     globalCompetition: 'Competição global',
     globalCompetitionDesc: 'Jogadores do mundo todo competem nos mesmos torneios de previsão.',
     dailyPredictions: 'Previsões diárias',
-    dailyPredictionsDesc: 'Escolha uma pergunta, entre no pote e preveja o que vai acontecer amanhã!',
+    dailyPredictionsDesc: 'Escolha uma pergunta, entre no torneio e preveja o que vai acontecer amanhã!',
     dynamicPricing: 'Preços dinâmicos',
     dynamicPricingDesc: 'As taxas de entrada começam baixas, mas dobrarão após o 5º dia - entre cedo para economizar!',
     secondChances: 'Segunda chance',
