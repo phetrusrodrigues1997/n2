@@ -1651,9 +1651,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
                               return !useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
                             })()}`}>
-                              <div className="text-[13px] font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif] text-gray-500 leading-none flex items-center gap-1" style={{ fontWeight: '350', opacity: 0.7 }}>
+                              <div className="text-sm font-medium text-gray-600 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                                 {market.potSize}
-                                <span className="text-gray-400" style={{ fontSize: '5px' }}>•</span>
+                                <span className="text-gray-400 font-bold" style={{ fontSize: '8px' }}>•</span>
                                 <RefreshCw className="w-3 h-3" />
                                 {(() => {
                                   const contractAddress = getContractAddress(market.id);
@@ -2210,9 +2210,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
                             return !useTraditionalLayout ? '-translate-y-2' : '';
                           })()}`}>
-                            <div className="text-[13px] font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif] text-gray-500 leading-none flex items-center gap-1" style={{ fontWeight: '350', opacity: 0.7 }}>
+                            <div className="text-sm font-medium text-gray-600 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                               {market.potSize}
-                              <span className="text-gray-400" style={{ fontSize: '5px' }}>•</span>
+                              <span className="text-gray-400 font-bold" style={{ fontSize: '8px' }}>•</span>
                               <RefreshCw className="w-3 h-3" />
                               {(() => {
                                 const contractAddress = getContractAddress(market.id);
