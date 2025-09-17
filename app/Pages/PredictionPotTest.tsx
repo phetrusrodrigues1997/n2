@@ -14,7 +14,7 @@ import {
   confirmReferralPotEntry, 
   getAvailableFreeEntries, 
   consumeFreeEntry, 
-  getReEntryFee,
+  isEliminated,
   processReEntry,
   removeBookmark,
 } from '../Database/actions';
@@ -380,7 +380,7 @@ const PredictionPotTest =  ({ activeSection, setActiveSection }: PredictionPotPr
       setFreeEntriesAvailable(freeEntries);
       
       // Check if user needs to pay re-entry fee for current market
-      const reEntryAmount = await getReEntryFee(address, selectedTableType);
+      const reEntryAmount = await isEliminated(address, selectedTableType);
       setReEntryFee(reEntryAmount);
       
       // Note: getAllReEntryFees was removed since we now use dynamic pricing

@@ -2,7 +2,7 @@
 
 import {  Messages, LivePredictions, Bookmarks } from "./schema"; // Import the schema
 import { eq, sql, and, inArray } from "drizzle-orm";
-import { getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING, getTableTypeFromMarketId, PENALTY_EXEMPT_CONTRACTS } from "./config";
+import { getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING, getTableTypeFromMarketId, PENALTY_EXEMPT_CONTRACTS, TableType } from "./config";
 import { getEventDate } from "./eventDates";
 import { ReferralCodes, Referrals, FreeEntries, UsersTable } from "./schema";
 import { EvidenceSubmissions, MarketOutcomes, PredictionIdeas, PotParticipationHistory, PotInformation } from "./schema";
@@ -267,13 +267,13 @@ export async function getAllMessages(address: string) {
  * Gets re-entry fee for a wallet address if they need to pay to re-enter
  * Returns null if no re-entry needed, otherwise returns today's dynamic entry fee
  */
-export async function getReEntryFee(walletAddress: string, typeTable: string): Promise<number | null> {
+export async function isEliminated(walletAddress: string, typeTable: string): Promise<number | null> {
   try {
-    // console.log(`🔍 getReEntryFee: Checking wallet ${walletAddress} for table type: ${typeTable}`);
+    // console.log(`🔍 isEliminated: Checking wallet ${walletAddress} for table type: ${typeTable}`);
     const normalizedWalletAddress = walletAddress.toLowerCase(); // Fix case sensitivity!
-    // console.log(`🔍 getReEntryFee: Normalized wallet address: ${normalizedWalletAddress}`);
+    // console.log(`🔍 isEliminated: Normalized wallet address: ${normalizedWalletAddress}`);
     const wrongPredictionTable = getWrongPredictionsTableFromType(typeTable);
-    // console.log(`🔍 getReEntryFee: Using wrong predictions table for query`);
+    // console.log(`🔍 isEliminated: Using wrong predictions table for query`);
     
     const result = await db
       .select({ walletAddress: wrongPredictionTable.walletAddress })
@@ -281,10 +281,11 @@ export async function getReEntryFee(walletAddress: string, typeTable: string): P
       .where(eq(wrongPredictionTable.walletAddress, normalizedWalletAddress))
       .limit(1);
     
-    console.log(`🔍 getReEntryFee: Query result length: ${result.length}`);
+    console.log(`🔍 isEliminated: Query result length: ${result.length}`);
     
     // If user has wrong prediction, return 1 (simple elimination indicator)
     if (result.length > 0) {
+      console.log(`🔍 isEliminated: TRUE`);
       return 1;
     }
     
@@ -2888,7 +2889,7 @@ export async function notifyMinimumPlayersReached(
     const eventDate = isPenaltyExempt ? getEventDate(contractAddress) : null;
 
     // Get user-friendly market name instead of table type
-    const friendlyMarketName = getMarketDisplayName(marketType, 'en');
+    const friendlyMarketName = getMarketDisplayName(marketType as TableType);
 
     let message: string;
 

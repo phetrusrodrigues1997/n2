@@ -8,7 +8,7 @@ import { ArrowRight, Bookmark, Check, BookOpen, ChevronRight, ChevronLeft, X, Ch
 import { Language, getTranslation, supportedLanguages, getTranslatedMarketQuestion } from '../Languages/languages';
 import { getMarkets, Market } from '../Constants/markets';
 import { CustomAlert, useCustomAlert } from '../Components/CustomAlert';
-import { addBookmark, removeBookmark, isMarketBookmarked, getPredictionPercentages, getTomorrowsBet, placeBitcoinBet, getReEntryFee } from '../Database/actions';
+import { addBookmark, removeBookmark, isMarketBookmarked, getPredictionPercentages, getTomorrowsBet, placeBitcoinBet, isEliminated } from '../Database/actions';
 import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, getTableTypeFromMarketId, MARKETS_WITH_CONTRACTS, PENALTY_EXEMPT_CONTRACTS } from '../Database/config';
 import { getPrice } from '../Constants/getPrice';
 import { useContractData } from '../hooks/useContractData';
@@ -523,11 +523,16 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
       for (const contractAddress of contractAddresses) {
         try {
-          // Skip penalty checks for exempt contracts
+          // Skip automatic penalty checks for exempt contracts, but still check elimination status
           if (PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
             const marketType = CONTRACT_TO_TABLE_MAPPING[contractAddress];
-            console.log(`⏭️ Skipping penalty check for ${marketType} (${contractAddress}) - contract is penalty exempt`);
-            newEliminationStatus[contractAddress] = false; // No elimination for exempt contracts
+            console.log(`⏭️ Skipping automatic penalty check for ${marketType} (${contractAddress}) - contract is penalty exempt`);
+            console.log(`🔍 Checking elimination status for penalty-exempt contract ${marketType} (${contractAddress})`);
+
+            // Still check if user is eliminated (has re-entry fee) from manual setDailyOutcome elimination
+            const reEntryFee = await isEliminated(address, marketType);
+            newEliminationStatus[contractAddress] = reEntryFee !== null && reEntryFee > 0;
+            console.log(`🔍 Elimination status for penalty-exempt ${marketType}: ${newEliminationStatus[contractAddress]}`);
             continue;
           }
 
@@ -536,7 +541,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           await checkMissedPredictionPenalty(address, contractAddress, marketType);
 
           // Check if user is eliminated (has re-entry fee)
-          const reEntryFee = await getReEntryFee(address, marketType);
+          const reEntryFee = await isEliminated(address, marketType);
           newEliminationStatus[contractAddress] = reEntryFee !== null && reEntryFee > 0;
           console.log(`🔍 Elimination status for ${marketType}: ${newEliminationStatus[contractAddress]}`);
 

@@ -131,8 +131,7 @@ const NewsPage = ({ onBack }: NewsPageProps) => {
           {newsArticles.map((article, index) => (
             <article
               key={article.id}
-              className="border-b border-gray-100 px-4 py-2 hover:bg-gray-50 transition-colors cursor-pointer"
-              style={{ minHeight: '50vh' }}
+              className="border-b border-gray-100 px-4 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
             >
               {/* Article Header */}
               <div className="flex items-start gap-3 mb-3">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatUnits, parseEther } from 'viem';
-import { placeBitcoinBet, getTomorrowsBet, getTodaysBet, getReEntryFee, submitEvidence, getUserEvidenceSubmission, getAllEvidenceSubmissions, processReEntry, notifyMinimumPlayersReached } from '../Database/actions';
+import { placeBitcoinBet, getTomorrowsBet, getTodaysBet, isEliminated, submitEvidence, getUserEvidenceSubmission, getAllEvidenceSubmissions, processReEntry, notifyMinimumPlayersReached } from '../Database/actions';
 import { getUserPredictionsByContract, getUserPredictionsWithResults } from '../Database/actions3';
 import { getProvisionalOutcome, } from '../Database/OwnerActions';
 import { TrendingUp, TrendingDown, Shield, Zap, AlertTriangle, Clock, FileText, Upload, ChevronDown, ChevronUp, Eye, Trophy, Users } from 'lucide-react';
@@ -211,7 +211,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   useEffect(() => {
   const checkFinalDayRedirect = async () => {
     if (potInfo.isFinalDay && address && selectedTableType) {
-      const fee = await getReEntryFee(address, selectedTableType);
+      const fee = await isEliminated(address, selectedTableType);
       if (fee && fee > 0) {
         console.log(`🚫 Final day detected with elimination - redirecting ${address} to NotReadyPage`);
         Cookies.set('finalDayRedirect', 'true', { expires: 1/24 });
@@ -812,7 +812,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       const [tomorrowBet, todayBet, reEntryAmount] = await Promise.all([
         getTomorrowsBet(address, selectedTableType),
         getTodaysBet(address, selectedTableType),
-        getReEntryFee(address, selectedTableType)
+        isEliminated(address, selectedTableType)
       ]);
       
       console.log(`🔍 MakePredictionsPage: Re-entry fee result: ${reEntryAmount} for table type: ${selectedTableType}`);
