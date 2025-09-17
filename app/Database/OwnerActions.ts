@@ -333,8 +333,10 @@ export async function setDailyOutcomeWithStats(
     // For penalty-exempt contracts, also eliminate non-predictors when setting daily outcome
     // This is needed because these contracts don't use checkMissedPredictionPenalty
     if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress) && contractParticipants.length > 0) {
-      console.log(`🎯 Processing non-predictors for penalty-exempt contract: ${contractAddress}`);
-      console.log(`📊 Contract participants: ${contractParticipants.length}, Predictors: ${allPredictors.length}`);
+      console.log(`🎯 [NON-PREDICTOR ELIMINATION] Processing non-predictors for penalty-exempt contract: ${contractAddress}`);
+      console.log(`📊 [NON-PREDICTOR ELIMINATION] Contract participants: ${contractParticipants.length}, Predictors who made bets: ${allPredictors.length}`);
+      console.log(`📋 [NON-PREDICTOR ELIMINATION] Contract participants list:`, contractParticipants.map(addr => addr.toLowerCase()));
+      console.log(`📋 [NON-PREDICTOR ELIMINATION] Predictor addresses list:`, allPredictors.map(p => p.walletAddress.toLowerCase()));
 
       try {
         // Find non-predictors: participants who are in the contract but didn't make predictions
@@ -343,30 +345,52 @@ export async function setDailyOutcomeWithStats(
           !predictorAddresses.includes(participant.toLowerCase())
         );
 
+        console.log(`🔍 [NON-PREDICTOR ELIMINATION] Non-predictor analysis:`);
+        console.log(`   - Total contract participants: ${contractParticipants.length}`);
+        console.log(`   - Participants who made predictions: ${predictorAddresses.length}`);
+        console.log(`   - Non-predictors identified: ${nonPredictors.length}`);
+        console.log(`📋 [NON-PREDICTOR ELIMINATION] Non-predictor addresses:`, nonPredictors.map(addr => addr.toLowerCase()));
+
         if (nonPredictors.length > 0) {
-          console.log(`🚫 Found ${nonPredictors.length} non-predictors to eliminate for ${finalTargetDate}`);
+          console.log(`🚫 [NON-PREDICTOR ELIMINATION] Found ${nonPredictors.length} non-predictors to eliminate for ${finalTargetDate}`);
 
           const nonPredictorRecords = nonPredictors.map(address => ({
             walletAddress: address.toLowerCase(),
             wrongPredictionDate: finalTargetDate,
           }));
 
+          console.log(`💾 [NON-PREDICTOR ELIMINATION] Inserting ${nonPredictorRecords.length} records into wrong predictions table:`, nonPredictorRecords);
+
           // Add non-predictors to wrong predictions table
-          await db
+          const insertResult = await db
             .insert(wrongPredictionTable)
             .values(nonPredictorRecords)
             .onConflictDoNothing();
 
-          console.log(`✅ Successfully eliminated ${nonPredictors.length} non-predictors for penalty-exempt contract`);
+          console.log(`📊 [NON-PREDICTOR ELIMINATION] Insert result:`, insertResult);
+          console.log(`✅ [NON-PREDICTOR ELIMINATION] Successfully eliminated ${nonPredictors.length} non-predictors for penalty-exempt contract`);
         } else {
-          console.log(`✅ No non-predictors found for penalty-exempt contract ${contractAddress}`);
+          console.log(`✅ [NON-PREDICTOR ELIMINATION] No non-predictors found for penalty-exempt contract ${contractAddress}`);
+          console.log(`🎉 [NON-PREDICTOR ELIMINATION] All ${contractParticipants.length} participants made predictions!`);
         }
 
       } catch (contractError) {
-        console.error(`❌ Error processing non-predictors for exempt contract ${contractAddress}:`, contractError);
+        console.error(`❌ [NON-PREDICTOR ELIMINATION] Error processing non-predictors for exempt contract ${contractAddress}:`, contractError);
+        console.error(`❌ [NON-PREDICTOR ELIMINATION] Error details:`, {
+          contractAddress,
+          contractParticipants: contractParticipants.length,
+          allPredictors: allPredictors.length,
+          errorMessage: contractError instanceof Error ? contractError.message : 'Unknown error',
+          errorStack: contractError instanceof Error ? contractError.stack : 'No stack trace'
+        });
       }
     } else if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress) && contractParticipants.length === 0) {
-      console.log(`⚠️ Penalty-exempt contract ${contractAddress} detected but no participants provided - skipping non-predictor elimination`);
+      console.log(`⚠️ [NON-PREDICTOR ELIMINATION] Penalty-exempt contract ${contractAddress} detected but no participants provided - skipping non-predictor elimination`);
+      console.log(`🔧 [NON-PREDICTOR ELIMINATION] This likely means the contract participants array was not passed to setDailyOutcome function`);
+    } else if (contractAddress && !PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+      console.log(`ℹ️ [NON-PREDICTOR ELIMINATION] Contract ${contractAddress} is not penalty-exempt - non-predictor elimination will be handled by checkMissedPredictionPenalty`);
+    } else if (!contractAddress) {
+      console.log(`⚠️ [NON-PREDICTOR ELIMINATION] No contract address found for table type ${tableType} - cannot determine if penalty-exempt`);
     }
     
     // Only clear ALL predictions on non-final days

@@ -1567,11 +1567,20 @@ useEffect(() => {
           setIsLoading(true);
           try {
             console.log('🔴 Setting daily outcome:', { outcome, dateParam, tableType: selectedTableType });
-            
+
+            // Get contract participants for penalty-exempt contracts
+            let contractParticipants: string[] = [];
+            if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+              console.log(`🔍 [PENALTY-EXEMPT] Using contract participants for: ${contractAddress}`);
+              // Use the participants data already fetched from the smart contract
+              contractParticipants = participants ? Array.from(new Set(participants)) : [];
+              console.log(`📊 [PENALTY-EXEMPT] Found ${contractParticipants.length} unique participants:`, contractParticipants);
+            }
+
             // Set daily outcome with statistics (this will add new wrong predictions to the table)
             // Note: Non-predictor penalties are now handled at the page level
             const questionName = marketQuestion || getMarketDisplayName(selectedTableType);
-            const outcomeStats = await setDailyOutcomeWithStats(outcome as "positive" | "negative", selectedTableType, questionName, dateParam);
+            const outcomeStats = await setDailyOutcomeWithStats(outcome as "positive" | "negative", selectedTableType, questionName, dateParam, contractParticipants);
             
             // 🔔 Send notifications after successful outcome setting with REAL counts
             try {
