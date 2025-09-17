@@ -78,9 +78,12 @@ export default function App() {
   const [showRightArrow, setShowRightArrow] = useState(false);
   const [showLeftArrow2, setShowLeftArrow2] = useState(false);
   const [showRightArrow2, setShowRightArrow2] = useState(false);
+  const [showLeftArrowFilter, setShowLeftArrowFilter] = useState(false);
+  const [showRightArrowFilter, setShowRightArrowFilter] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState<Language>('en');
   const carouselRef = useRef<HTMLDivElement>(null);
   const carousel2Ref = useRef<HTMLDivElement>(null);
+  const filterCarouselRef = useRef<HTMLDivElement>(null);
   const moreDropdownRef = useRef<HTMLDivElement>(null);
 
   // Get market options for carousels
@@ -355,6 +358,29 @@ export default function App() {
     }
   };
 
+  const scrollLeftFilter = () => {
+    const container = filterCarouselRef.current;
+    if (container) {
+      container.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRightFilter = () => {
+    const container = filterCarouselRef.current;
+    if (container) {
+      container.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
+
+  const updateFilterArrowVisibility = () => {
+    const container = filterCarouselRef.current;
+    if (container) {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      setShowLeftArrowFilter(scrollLeft > 0);
+      setShowRightArrowFilter(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
     const { scrollLeft, scrollWidth, clientWidth } = container;
@@ -367,6 +393,13 @@ export default function App() {
     const { scrollLeft, scrollWidth, clientWidth } = container;
     setShowLeftArrow2(scrollLeft > 0);
     setShowRightArrow2(scrollLeft < scrollWidth - clientWidth - 1);
+  };
+
+  const handleScrollFilter = (e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    setShowLeftArrowFilter(scrollLeft > 0);
+    setShowRightArrowFilter(scrollLeft < scrollWidth - clientWidth - 1);
   };
 
   // Reset live pot entry state when switching sections
@@ -443,6 +476,7 @@ export default function App() {
     const timer = setTimeout(() => {
       updateArrowVisibility();
       updateArrowVisibility2();
+      updateFilterArrowVisibility();
     }, 300);
     return () => clearTimeout(timer);
   }, [marketOptions]);
@@ -461,6 +495,21 @@ export default function App() {
     }, 100);
     return () => clearTimeout(timer);
   }, [selectedMarket]);
+
+  // Filter carousel effects
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateFilterArrowVisibility();
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [isFilterDropdownOpen]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateFilterArrowVisibility();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [tournamentFilter]);
 
 
 
@@ -889,48 +938,119 @@ export default function App() {
 
               {/* Conditional: Show Filter Bar when filter dropdown is open, otherwise show Carousel */}
               {isFilterDropdownOpen ? (
-                /* Tournament Filter Bar */
-                <div className="flex items-center gap-2 flex-1 md:flex-1 min-w-0" data-filter-dropdown>
-                  <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                /* Tournament Filter Carousel */
+                <div className="relative flex-1 md:flex-1 min-w-0 overflow-hidden" data-filter-dropdown>
+                  {/* Left Arrow for filter carousel */}
+                  {showLeftArrowFilter && (
+                    <button
+                      onClick={scrollLeftFilter}
+                      className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white shadow-lg rounded-full items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200"
+                    >
+                      <ChevronLeft className="w-4 h-4 text-gray-600" />
+                    </button>
+                  )}
+
+                  {/* Right Arrow for filter carousel */}
+                  {showRightArrowFilter && (
+                    <button
+                      onClick={scrollRightFilter}
+                      className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white shadow-lg rounded-full items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200"
+                    >
+                      <ChevronRight className="w-4 h-4 text-gray-600" />
+                    </button>
+                  )}
+
+                  <div
+                    ref={filterCarouselRef}
+                    className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 max-w-full px-2 md:px-8"
+                    onScroll={handleScrollFilter}
+                    style={{
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none',
+                      maxWidth: '100%'
+                    }}
+                  >
                     <button
                       onClick={() => setTournamentFilter('all')}
-                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                      className={`flex-shrink-0 px-3 py-1.5 text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                         tournamentFilter === 'all'
-                          ? 'bg-white text-purple-700 shadow-sm'
-                          : 'text-gray-600 hover:text-gray-800'
+                          ? 'bg-purple-100 text-purple-700 rounded-md'
+                          : 'bg-white text-gray-600 hover:text-gray-800 rounded-full'
                       }`}
                     >
                       {t.allTournaments}
                     </button>
                     <button
                       onClick={() => setTournamentFilter('daily')}
-                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                      className={`flex-shrink-0 px-3 py-1.5 text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                         tournamentFilter === 'daily'
-                          ? 'bg-white text-purple-700 shadow-sm'
-                          : 'text-gray-600 hover:text-gray-800'
+                          ? 'bg-purple-100 text-purple-700 rounded-md'
+                          : 'bg-white text-gray-600 hover:text-gray-800 rounded-full'
                       }`}
                     >
                       {t.dailyTournaments}
                     </button>
                     <button
                       onClick={() => setTournamentFilter('weekly')}
-                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                      className={`flex-shrink-0 px-3 py-1.5 text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                         tournamentFilter === 'weekly'
-                          ? 'bg-white text-purple-700 shadow-sm'
-                          : 'text-gray-600 hover:text-gray-800'
+                          ? 'bg-purple-100 text-purple-700 rounded-md'
+                          : 'bg-white text-gray-600 hover:text-gray-800 rounded-full'
                       }`}
                     >
                       {t.weeklyTournaments}
                     </button>
                     <button
                       onClick={() => setTournamentFilter('recently')}
-                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                      className={`flex-shrink-0 px-3 py-1.5 text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                         tournamentFilter === 'recently'
-                          ? 'bg-white text-purple-700 shadow-sm'
-                          : 'text-gray-600 hover:text-gray-800'
+                          ? 'bg-purple-100 text-purple-700 rounded-md'
+                          : 'bg-white text-gray-600 hover:text-gray-800 rounded-full'
                       }`}
                     >
                       {t.recentlyStarted}
+                    </button>
+                    <button
+                      onClick={() => {/* TODO: Implement trending filter */}}
+                      className="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap bg-white text-gray-600 hover:text-gray-800"
+                    >
+                      Trending
+                    </button>
+                    <button
+                      onClick={() => {/* TODO: Implement hot filter */}}
+                      className="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap bg-white text-gray-600 hover:text-gray-800"
+                    >
+                      Hot
+                    </button>
+                    <button
+                      onClick={() => {/* TODO: Implement ending soon filter */}}
+                      className="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap bg-white text-gray-600 hover:text-gray-800"
+                    >
+                      Ending Soon
+                    </button>
+                    <button
+                      onClick={() => {/* TODO: Implement high prize filter */}}
+                      className="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap bg-white text-gray-600 hover:text-gray-800"
+                    >
+                      High Prize
+                    </button>
+                    <button
+                      onClick={() => {/* TODO: Implement low entry filter */}}
+                      className="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap bg-white text-gray-600 hover:text-gray-800"
+                    >
+                      Low Entry
+                    </button>
+                    <button
+                      onClick={() => {/* TODO: Implement new filter */}}
+                      className="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap bg-white text-gray-600 hover:text-gray-800"
+                    >
+                      New
+                    </button>
+                    <button
+                      onClick={() => {/* TODO: Implement featured filter */}}
+                      className="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap bg-white text-gray-600 hover:text-gray-800"
+                    >
+                      Featured
                     </button>
                   </div>
                 </div>
@@ -1151,7 +1271,7 @@ export default function App() {
       {!isLandingPageLoading && activeSection === 'home' && showHowItWorksPopup && !isTutorialOpen && (
         <div className="fixed left-0 right-0 md:hidden bg-white z-50" data-how-it-works-popup style={{ bottom: '62px' }}>
           <div
-            className="bg-white border-t border-gray-200 rounded-t-lg px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+            className="bg-white border-t border-gray-100 rounded-t-lg px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
             onClick={() => {
               setActiveSection('discord');
               setShowHowItWorksPopup(false);
