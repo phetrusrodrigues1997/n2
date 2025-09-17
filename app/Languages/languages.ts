@@ -195,6 +195,7 @@ export interface Translations {
   howItWorks: string;
   yourBalance: string;
   yourBalanceMobile: string;
+  signIn: string;
 
   // Email Collection
   readyToPlay: string;
@@ -659,6 +660,7 @@ export const translations: Record<Language, Translations> = {
     howItWorks: 'How it works',
     yourBalance: 'Your balance',
     yourBalanceMobile: 'Balance',
+    signIn: 'Sign In',
 
     // Filter
     allTournaments: 'All',
@@ -1129,6 +1131,7 @@ export const translations: Record<Language, Translations> = {
     howItWorks: 'Como funciona',
     yourBalance: 'Seu saldo',
     yourBalanceMobile: 'Saldo',
+    signIn: 'Entrar',
 
     // Filter
     allTournaments: 'Todos',
