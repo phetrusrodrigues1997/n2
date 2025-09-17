@@ -402,6 +402,34 @@ export interface Translations {
   copyAddress: string;
   copied: string;
   baseNetworkOnly: string;
+
+  // Detailed Tutorial Steps (Daily Markets)
+  detailedStep1Title: string;
+  detailedStep1Description: string;
+  detailedStep2Title: string;
+  detailedStep2Description: string;
+  detailedStep3Title: string;
+  detailedStep3Description: string;
+  detailedStep4Title: string;
+  detailedStep4Description: string;
+  detailedStep5Title: string;
+  detailedStep5Description: string;
+  detailedStep6Title: string;
+  detailedStep6Description: string;
+
+  // Detailed Tournament Steps (Weekly Markets)
+  detailedTournamentStep1Title: string;
+  detailedTournamentStep1Description: string;
+  detailedTournamentStep2Title: string;
+  detailedTournamentStep2Description: string;
+  detailedTournamentStep3Title: string;
+  detailedTournamentStep3Description: string;
+  detailedTournamentStep4Title: string;
+  detailedTournamentStep4Description: string;
+  detailedTournamentStep5Title: string;
+  detailedTournamentStep5Description: string;
+  detailedTournamentStep6Title: string;
+  detailedTournamentStep6Description: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -594,6 +622,44 @@ export const translations: Record<Language, Translations> = {
     copyAddress: 'Copy Address',
     copied: 'Copied!',
     baseNetworkOnly: 'Base Network Only',
+
+    // Detailed Tutorial Steps (Daily Markets)
+    detailedStep1Title: '💰 Step 1: Join the Tournament',
+    detailedStep1Description: 'You are about to enter a daily prediction tournament. You will need to pay an entry fee (starting at $0.02 and increasing daily). Finish this tutorial to proceed to the entry page where you\'ll see the current price and pay to join. Entry fees get more expensive each day, so join early to save money!',
+
+    detailedStep2Title: '🎯 Step 2: Make Your First Prediction',
+    detailedStep2Description: 'After paying the entry fee, you\'ll be taken to the prediction page. You will choose "YES" or "NO" for tomorrow\'s outcome (like "Will Bitcoin end higher?"). You must make your prediction before the daily deadline. This is your chance to prove your forecasting skills!',
+
+    detailedStep3Title: '⏰ Step 3: Wait for Results (Come Back Tomorrow)',
+    detailedStep3Description: 'Once you\'ve made your prediction, come back tomorrow to see if you were right! Results are revealed the next day. If you predicted correctly, you\'re safe and continue to the next round. If you were wrong, don\'t worry - you can pay to re-enter and keep playing.',
+
+    detailedStep4Title: '🔄 Step 4: Daily Predictions Continue',
+    detailedStep4Description: 'Every day, you\'ll make a new prediction about the next day\'s outcome. The tournament continues with daily eliminations until only 5 players remain. Each day you survive brings you closer to winning the entire pot. Stay consistent and trust your instincts!',
+
+    detailedStep5Title: '🏆 Step 5: Reach the Final 5',
+    detailedStep5Description: 'When the tournament reaches its final day (only 5 players left), this will be your last prediction. Make it count! If you\'re among the final winners, you\'ll split the entire accumulated pot equally with the other survivors. The more people eliminated, the bigger your share!',
+
+    detailedStep6Title: '💸 Step 6: Collect Your Winnings',
+    detailedStep6Description: 'If you make it to the end and win, the prize money is automatically sent to your wallet - no need to claim it manually! Winners split the pot equally. You can then join new tournaments or try different markets. Each tournament is a fresh chance to win big!',
+
+    // Detailed Tournament Steps (Weekly Markets)
+    detailedTournamentStep1Title: '🏁 Step 1: Join the Season Tournament',
+    detailedTournamentStep1Description: 'You are about to enter a season-long tournament with weekly predictions. You will pay a fixed entry fee (usually $1.00) that never changes throughout the season. Click "Skip" below to go to the entry page and join this special tournament that runs for multiple weeks.',
+
+    detailedTournamentStep2Title: '📅 Step 2: Weekly Prediction Schedule',
+    detailedTournamentStep2Description: 'Unlike daily tournaments, you only predict once per week before each event (like Formula 1 races). You\'ll see the next event date at the top of the page. Make sure to return each week and submit your prediction before the deadline, or you\'ll be automatically eliminated!',
+
+    detailedTournamentStep3Title: '❌ Step 3: Weekly Elimination Rules',
+    detailedTournamentStep3Description: 'Every week after the event, wrong predictors AND people who forgot to predict are eliminated. This is stricter than daily tournaments! You must both participate and be correct to survive. Stay active and engaged throughout the entire season.',
+
+    detailedTournamentStep4Title: '💰 Step 4: Re-entry During Season',
+    detailedTournamentStep4Description: 'If you get eliminated, you can pay the same fixed entry fee to re-enter and continue the tournament. However, the longer the season goes, the bigger the pot grows, making victory more valuable! Strategic timing of re-entry can be important.',
+
+    detailedTournamentStep5Title: '🏁 Step 5: Survive the Full Season',
+    detailedTournamentStep5Description: 'The tournament continues for the entire season (multiple weeks or months). Each week, more players are eliminated until only one person remains. You need to make correct predictions consistently throughout the whole season to claim the final prize.',
+
+    detailedTournamentStep6Title: '👑 Step 6: Winner Takes All',
+    detailedTournamentStep6Description: 'The last person standing at the end of the season wins the entire accumulated pot! Unlike daily tournaments where final players split the prize, season tournaments have a single winner. The prize can be massive since it grows throughout the entire season with all entry and re-entry fees.',
 
     // Email Collection
     readyToPlay: 'Get notified!',
@@ -995,6 +1061,44 @@ export const translations: Record<Language, Translations> = {
     copyAddress: 'Copiar Endereço',
     copied: 'Copiado!',
     baseNetworkOnly: 'Apenas Rede Base',
+
+    // Detailed Tutorial Steps (Daily Markets)
+    detailedStep1Title: '💰 Passo 1: Entre no Torneio',
+    detailedStep1Description: 'Você está prestes a entrar em um torneio diário de previsões. Você precisará pagar uma taxa de entrada (começando em $0,02 e aumentando diariamente). Depois desse tutorial, vamos te levar para a página de entrada onde verá o preço atual e pagará para entrar. As taxas ficam mais caras a cada dia, então entre cedo para economizar!',
+
+    detailedStep2Title: '🎯 Passo 2: Faça Sua Primeira Previsão',
+    detailedStep2Description: 'Após pagar a taxa de entrada, você será levado à página de previsões. Você escolherá "SIM" ou "NÃO" para o resultado de amanhã (como "Bitcoin terminará em alta?"). Você deve fazer sua previsão antes do prazo diário. Esta é sua chance de provar suas habilidades de previsão!',
+
+    detailedStep3Title: '⏰ Passo 3: Aguarde os Resultados (Volte Amanhã)',
+    detailedStep3Description: 'Depois de fazer sua previsão, volte amanhã para ver se você estava certo! Os resultados são revelados no dia seguinte. Se você previu corretamente, está seguro e continua para a próxima rodada. Se errou, não se preocupe - você pode pagar para reentrar e continuar jogando.',
+
+    detailedStep4Title: '🔄 Passo 4: Previsões Diárias Continuam',
+    detailedStep4Description: 'Todos os dias, você fará uma nova previsão sobre o resultado do próximo dia. O torneio continua com eliminações diárias até restarem apenas 5 jogadores. Cada dia que você sobreviver te aproxima de ganhar todo o pote. Mantenha-se consistente e confie nos seus instintos!',
+
+    detailedStep5Title: '🏆 Passo 5: Alcance os 5 Finais',
+    detailedStep5Description: 'Quando o torneio chegar ao dia final (apenas 5 jogadores restantes), esta será sua última previsão. Faça valer! Se estiver entre os vencedores finais, você dividirá todo o pote acumulado igualmente com os outros sobreviventes. Quanto mais pessoas eliminadas, maior sua parte!',
+
+    detailedStep6Title: '💸 Passo 6: Colete Seus Ganhos',
+    detailedStep6Description: 'Se chegar ao final e ganhar, o dinheiro do prêmio é automaticamente enviado para sua carteira - não precisa reivindicar manualmente! Os vencedores dividem o pote igualmente. Você pode então entrar em novos torneios ou tentar mercados diferentes. Cada torneio é uma nova chance de ganhar muito!',
+
+    // Detailed Tournament Steps (Weekly Markets)
+    detailedTournamentStep1Title: '🏁 Passo 1: Entre no Torneio da Temporada',
+    detailedTournamentStep1Description: 'Você está prestes a entrar em um torneio de temporada inteira com previsões semanais. Você pagará uma taxa de entrada fixa (geralmente $1,00) que nunca muda durante a temporada. Clique em "Pular" abaixo para ir à página de entrada e participar deste torneio especial que dura várias semanas.',
+
+    detailedTournamentStep2Title: '📅 Passo 2: Cronograma de Previsões Semanais',
+    detailedTournamentStep2Description: 'Diferente dos torneios diários, você só prevê uma vez por semana antes de cada evento (como corridas de Fórmula 1). Você verá a próxima data do evento no topo da página. Certifique-se de voltar toda semana e enviar sua previsão antes do prazo, ou será automaticamente eliminado!',
+
+    detailedTournamentStep3Title: '❌ Passo 3: Regras de Eliminação Semanal',
+    detailedTournamentStep3Description: 'Toda semana após o evento, preditores errados E pessoas que esqueceram de prever são eliminados. Isso é mais rigoroso que torneios diários! Você deve tanto participar quanto estar correto para sobreviver. Mantenha-se ativo e engajado durante toda a temporada.',
+
+    detailedTournamentStep4Title: '💰 Passo 4: Reentrada Durante a Temporada',
+    detailedTournamentStep4Description: 'Se for eliminado, pode pagar a mesma taxa de entrada fixa para reentrar e continuar o torneio. No entanto, quanto mais longa a temporada, maior o pote cresce, tornando a vitória mais valiosa! O timing estratégico da reentrada pode ser importante.',
+
+    detailedTournamentStep5Title: '🏁 Passo 5: Sobreviva à Temporada Completa',
+    detailedTournamentStep5Description: 'O torneio continua por toda a temporada (várias semanas ou meses). Cada semana, mais jogadores são eliminados até restar apenas uma pessoa. Você precisa fazer previsões corretas consistentemente durante toda a temporada para reivindicar o prêmio final.',
+
+    detailedTournamentStep6Title: '👑 Passo 6: Vencedor Leva Tudo',
+    detailedTournamentStep6Description: 'A última pessoa de pé no final da temporada ganha todo o pote acumulado! Diferente dos torneios diários onde jogadores finais dividem o prêmio, torneios de temporada têm um único vencedor. O prêmio pode ser massivo já que cresce durante toda a temporada com todas as taxas de entrada e reentrada.',
 
     // Email Collection
     readyToPlay: 'Seja notificado!',

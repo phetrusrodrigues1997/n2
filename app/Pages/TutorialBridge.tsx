@@ -85,66 +85,64 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
   // Get translations
   const t = getTranslation(currentLanguage);
 
-  // Define tutorial steps based on penalty exemption
+  // Define tutorial steps based on penalty exemption (detailed, spoon-feeding version)
   const tutorialSteps = useMemo(() => {
     if (isPenaltyExempt) {
       return [
         {
-          title: t.tournamentEntry,
-          description: getTournamentStartDate
-            ? `${currentLanguage === 'pt-BR' ? 'Torneio iniciado' : 'Tournament started'} ${getTournamentStartDate}. ${t.tournamentEntryDesc}`
-            : t.tournamentEntryDesc
+          title: t.detailedTournamentStep1Title,
+          description: t.detailedTournamentStep1Description
         },
         {
-          title: t.weeklyPredictions,
-          description: t.weeklyPredictionsDesc
+          title: t.detailedTournamentStep2Title,
+          description: t.detailedTournamentStep2Description
         },
         {
-          title: t.eliminationSystem,
-          description: t.eliminationSystemDesc
+          title: t.detailedTournamentStep3Title,
+          description: t.detailedTournamentStep3Description
         },
         {
-          title: t.reentryOption,
-          description: t.reentryOptionDesc
+          title: t.detailedTournamentStep4Title,
+          description: t.detailedTournamentStep4Description
         },
         {
-          title: t.seasonFinale,
-          description: t.seasonFinaleDesc
+          title: t.detailedTournamentStep5Title,
+          description: t.detailedTournamentStep5Description
         },
         {
-          title: t.tournamentStats,
-          description: t.tournamentStatsDesc
+          title: t.detailedTournamentStep6Title,
+          description: t.detailedTournamentStep6Description
         }
       ];
     } else {
       return [
         {
-          title: t.globalCompetition,
-          description: t.globalCompetitionDesc
+          title: t.detailedStep1Title,
+          description: t.detailedStep1Description
         },
         {
-          title: t.dailyPredictions,
-          description: t.dailyPredictionsDesc
+          title: t.detailedStep2Title,
+          description: t.detailedStep2Description
         },
         {
-          title: t.dynamicPricing,
-          description: t.dynamicPricingDesc
+          title: t.detailedStep3Title,
+          description: t.detailedStep3Description
         },
         {
-          title: t.secondChances,
-          description: t.secondChancesDesc
+          title: t.detailedStep4Title,
+          description: t.detailedStep4Description
         },
         {
-          title: t.finalShowdown,
-          description: t.finalShowdownDesc
+          title: t.detailedStep5Title,
+          description: t.detailedStep5Description
         },
         {
-          title: t.liveStats,
-          description: t.liveStatsDesc
+          title: t.detailedStep6Title,
+          description: t.detailedStep6Description
         }
       ];
     }
-  }, [isPenaltyExempt, t, getTournamentStartDate, currentLanguage]);
+  }, [isPenaltyExempt, t]);
 
   // Navigation functions
   const nextStep = () => {
