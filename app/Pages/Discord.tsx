@@ -104,7 +104,7 @@ const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ setActiveSection,
   ];
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md border border-gray-300">
+    <div className="w-full max-w-4xl mx-auto p-6 mt-8 bg-white rounded-lg shadow-md border border-gray-300">
       {/* Back Button - Mobile Only */}
       {setActiveSection && (
         <div className="mb-6 md:hidden">

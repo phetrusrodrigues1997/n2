@@ -1115,7 +1115,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
   // Show loading screen
   if (isLoading) {
-    return <LoadingScreenAdvanced subtitle="Loading your questions..." />;
+    return <LoadingScreenAdvanced subtitle={t.loadingPredictions ||"Just a moment..."} />;
   }
 
   return (

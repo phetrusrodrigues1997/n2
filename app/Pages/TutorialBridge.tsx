@@ -459,9 +459,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                           className="w-7 h-7 md:w-11 md:h-11 flex-shrink-0"
                         />
                       </div>
-                      <p className="text-gray-600 text-lg font-light leading-relaxed max-w-md mx-auto">
-                        {t.joinGlobalCommunity}
-                      </p>
+                      
                     </div>
 
                     {/* Input Section */}
@@ -626,11 +624,11 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                             1
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">🏆 Tournament Entry</h3>
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.tournamentEntry}</h3>
                             <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
                               {getTournamentStartDate
-                                ? `Tournament started ${getTournamentStartDate}. Join the season-long elimination tournament with a fixed entry fee.`
-                                : "Join the season-long elimination tournament with a fixed entry fee."
+                                ? `${currentLanguage === 'pt-BR' ? 'Torneio iniciado' : 'Tournament started'} ${getTournamentStartDate}. ${t.tournamentEntryDesc}`
+                                : t.tournamentEntryDesc
                               }
                             </p>
                           </div>
@@ -641,9 +639,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                             2
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">📅 Weekly Predictions</h3>
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.weeklyPredictions}</h3>
                             <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              Predictions occur every week leading up to the next race date visible at the top of this page. Make your prediction before each event!
+                              {t.weeklyPredictionsDesc}
                             </p>
                           </div>
                         </div>
@@ -653,9 +651,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                             3
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">❌ Elimination System</h3>
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.eliminationSystem}</h3>
                             <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              Wrong predictors AND non-predictors are eliminated each week. Stay active and predict correctly to survive!
+                              {t.eliminationSystemDesc}
                             </p>
                           </div>
                         </div>
@@ -665,9 +663,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                             4
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">🔄 Re-entry Option</h3>
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.reentryOption}</h3>
                             <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              Eliminated players can re-enter by paying the current fixed entry fee, but the pot grows each week making victory more valuable!
+                              {t.reentryOptionDesc}
                             </p>
                           </div>
                         </div>
@@ -677,9 +675,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                             5
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">🏁 Season Finale</h3>
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.seasonFinale}</h3>
                             <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              The last person standing at the end of the season wins the entire accumulated pot. Survive the full season to claim victory!
+                              {t.seasonFinaleDesc}
                             </p>
                           </div>
                         </div>
@@ -689,9 +687,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                             6
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">📊 Tournament Stats</h3>
+                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.tournamentStats}</h3>
                             <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              Track remaining participants, pot value, and your survival streak throughout the season. Every week matters!
+                              {t.tournamentStatsDesc}
                             </p>
                           </div>
                         </div>
@@ -777,7 +775,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                   <div className="mt-12 p-8 bg-gradient-to-r from-purple-50/80 to-blue-50/80 rounded-3xl border-0">
                     <p className="text-center text-lg md:text-xl text-gray-800 font-light leading-relaxed">
                       {isPenaltyExempt ? (
-                        <>🏆 <span className="font-medium text-[#0000aa]">Your Goal:</span> Survive the entire tournament season by making correct predictions every week and be the last person standing to claim the full pot!</>
+                        <>🏆 <span className="font-medium text-[#0000aa]">{currentLanguage === 'pt-BR' ? 'Seu Objetivo:' : 'Your Goal:'}</span> {t.yourGoalTournament}</>
                       ) : (
                         <>🎯 <span className="font-medium text-[#0000aa]">{t.yourGoal}</span> {t.tutorialGoal}</>
                       )}

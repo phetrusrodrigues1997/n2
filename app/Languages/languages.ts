@@ -175,7 +175,6 @@ export interface Translations {
 
   // Email Collection
   readyToPlay: string;
-  joinGlobalCommunity: string;
   enterEmailAddress: string;
   joinCommunity: string;
   joining: string;
@@ -198,6 +197,21 @@ export interface Translations {
   finalShowdownDesc: string;
   liveStats: string;
   liveStatsDesc: string;
+
+  // Tournament Tutorial Steps
+  tournamentEntry: string;
+  tournamentEntryDesc: string;
+  weeklyPredictions: string;
+  weeklyPredictionsDesc: string;
+  eliminationSystem: string;
+  eliminationSystemDesc: string;
+  reentryOption: string;
+  reentryOptionDesc: string;
+  seasonFinale: string;
+  seasonFinaleDesc: string;
+  tournamentStats: string;
+  tournamentStatsDesc: string;
+  yourGoalTournament: string;
 
   // Footer
   footerText: string;
@@ -296,6 +310,7 @@ export interface Translations {
 
   // MakePredictionsPage (VERY LIMITED - only safe display strings)
   loadingPredictions: string;
+  loadingScreenSubtitle: string;
   finalPredictions: string;
   congratulationsFinal10: string;
   gotIt: string;
@@ -563,9 +578,8 @@ export const translations: Record<Language, Translations> = {
     recentlyStarted: 'Recently Started',
 
     // Email Collection
-    readyToPlay: 'Join us!',
-    joinGlobalCommunity: 'Join the global prediction community and start competing today',
-    enterEmailAddress: 'Enter your email address',
+    readyToPlay: 'Get notified!',
+    enterEmailAddress: 'Email address',
     joinCommunity: 'Submit',
     joining: 'Joining...',
     skipForNow: 'Skip',
@@ -587,6 +601,21 @@ export const translations: Record<Language, Translations> = {
     finalShowdownDesc: 'Tournament runs until final 10 players remain for the last day.',
     liveStats: 'Live stats',
     liveStatsDesc: 'Stay informed with up-to-date information for each pot.',
+
+    // Tournament Tutorial Steps
+    tournamentEntry: '🏆 Tournament Entry',
+    tournamentEntryDesc: 'Join the season-long elimination tournament with a fixed entry fee.',
+    weeklyPredictions: '📅 Weekly Predictions',
+    weeklyPredictionsDesc: 'Predictions occur every week leading up to the next race date visible at the top of this page. Make your prediction before each event!',
+    eliminationSystem: '❌ Elimination System',
+    eliminationSystemDesc: 'Wrong predictors AND non-predictors are eliminated each week. Stay active and predict correctly to survive!',
+    reentryOption: '🔄 Re-entry Option',
+    reentryOptionDesc: 'Eliminated players can re-enter by paying the current fixed entry fee, but the pot grows each week making victory more valuable!',
+    seasonFinale: '🏁 Season Finale',
+    seasonFinaleDesc: 'The last person standing at the end of the season wins the entire accumulated pot. Survive the full season to claim victory!',
+    tournamentStats: '📊 Tournament Stats',
+    tournamentStatsDesc: 'Track remaining participants, pot value, and your survival streak throughout the season. Every week matters!',
+    yourGoalTournament: 'Survive the entire tournament season by making correct predictions every week and be the last person standing to claim the full pot!',
 
     // Footer
     footerText: 'Prediwin — All rights reserved.',
@@ -686,6 +715,7 @@ export const translations: Record<Language, Translations> = {
 
     // MakePredictionsPage (VERY LIMITED - only safe display strings)
     loadingPredictions: 'Loading your predictions...',
+    loadingScreenSubtitle: 'Just a moment...',
     finalPredictions: 'Final Predictions',
     congratulationsFinal10: 'Congratulations! You are down to the last 10. Make your predictions as you normally would and if you win we will notify you.',
     gotIt: 'Got it! 🎯',
@@ -779,7 +809,7 @@ export const translations: Record<Language, Translations> = {
     teslaQuestion: 'Ação da Tesla fechará em alta em relação ao preço de abertura',
     nvidiaQuestion: 'A ação da NVIDIA terminará o dia em alta?',
     sp500Question: 'O S&P 500 terminará o dia em alta?',
-    formula1Question: 'Verstappen vencerá a primeira corrida da temporada',
+    formula1Question: 'Verstappen vai vencer a primeira corrida da temporada',
     
     // How It Works Section
     howItWorksTitle: 'Como Funciona',
@@ -849,6 +879,7 @@ export const translations: Record<Language, Translations> = {
     referralProgram: 'Indicações', // Added for referral navigation links
     referralCode: 'Código de Referência (Opcional)', // Added for referral code input label
     // PredictionPotTest interface elements
+    loadingScreenSubtitle: 'Aguarde um momento...',
     processingYourEntry: 'Processando sua entrada...',
     preparingYourPots: 'Preparando seus potes...',
     fundYourAccount: 'Financie Sua Conta',
@@ -939,9 +970,8 @@ export const translations: Record<Language, Translations> = {
     recentlyStarted: 'Recém-Iniciados',
 
     // Email Collection
-    readyToPlay: 'Junte-se a nós!',
-    joinGlobalCommunity: 'Junte-se à comunidade global de previsões e comece a competir hoje',
-    enterEmailAddress: 'Digite seu endereço de email',
+    readyToPlay: 'Seja notificado!',
+    enterEmailAddress: 'Endereço de email',
     joinCommunity: 'Enviar',
     joining: 'Entrando...',
     skipForNow: 'Pular',
@@ -963,6 +993,21 @@ export const translations: Record<Language, Translations> = {
     finalShowdownDesc: 'O torneio continua até restarem apenas 10 jogadores para a final.',
     liveStats: 'Estatísticas ao vivo',
     liveStatsDesc: 'Mantenha-se informado com informações atualizadas para cada pote.',
+
+    // Tournament Tutorial Steps
+    tournamentEntry: '🏆 Entrada no Torneio',
+    tournamentEntryDesc: 'Participe do torneio de eliminação que dura toda a temporada com uma taxa de entrada fixa.',
+    weeklyPredictions: '📅 Previsões Semanais',
+    weeklyPredictionsDesc: 'Previsões ocorrem toda semana antes da próxima data de corrida visível no topo desta página. Faça sua previsão antes de cada evento!',
+    eliminationSystem: '❌ Sistema de Eliminação',
+    eliminationSystemDesc: 'Preditores errados E não-preditores são eliminados toda semana. Mantenha-se ativo e preveja corretamente para sobreviver!',
+    reentryOption: '🔄 Opção de Reentrada',
+    reentryOptionDesc: 'Jogadores eliminados podem reentrar pagando a taxa de entrada fixa atual, mas o pote cresce a cada semana tornando a vitória mais valiosa!',
+    seasonFinale: '🏁 Final da Temporada',
+    seasonFinaleDesc: 'A última pessoa de pé no final da temporada ganha todo o pote acumulado. Sobreviva à temporada completa para reivindicar a vitória!',
+    tournamentStats: '📊 Estatísticas do Torneio',
+    tournamentStatsDesc: 'Acompanhe os participantes restantes, valor do pote e sua sequência de sobrevivência durante toda a temporada. Cada semana importa!',
+    yourGoalTournament: 'Sobreviva à temporada inteira do torneio fazendo previsões corretas toda semana e seja a última pessoa de pé para reivindicar o pote completo!',
 
     // Footer
     footerText: 'Prediwin — Todos os direitos reservados.',
@@ -1357,7 +1402,7 @@ export const translateMarketQuestion = (questionText: string, language: Language
     'Will Bitcoin end the day higher?': 'O Bitcoin terminará o dia em alta?',
 
     // Formula 1 Verstappen question
-    'Verstappen wins first race of the season': 'Verstappen vencerá a primeira corrida da temporada',
+    'Verstappen wins first race of the season': 'Verstappen vai vencer a primeira corrida da temporada',
 
     // Core market questions from markets.ts
     'Bitcoin closes higher than opening price': 'Bitcoin fechará em alta em relação ao preço de abertura',
@@ -1384,7 +1429,7 @@ export const translateMarketQuestion = (questionText: string, language: Language
     // Handle case where questions might already be in Portuguese
     'A ação da Tesla terminará o dia em alta?': 'A ação da Tesla terminará o dia em alta?',
     'Bitcoin fechará em alta em relação ao preço de abertura': 'Bitcoin fechará em alta em relação ao preço de abertura',
-    'Verstappen vencerá a primeira corrida da temporada': 'Verstappen vencerá a primeira corrida da temporada',
+    'Verstappen vai vencer a primeira corrida da temporada': 'Verstappen vai vencer a primeira corrida da temporada',
   };
   
   // Debug logging (can be removed in production)
