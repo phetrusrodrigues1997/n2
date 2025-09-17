@@ -2424,7 +2424,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                     <h2 className="text-sm md:text-lg font-semibold text-gray-900">
                       {t.howItWorksTitle || "How It Works"}
                     </h2>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-xs md:text-sm text-gray-500">
                       Step {tutorialStep + 1} of {tutorialSteps.length}
                     </p>
                   </div>
