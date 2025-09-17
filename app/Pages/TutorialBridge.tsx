@@ -664,9 +664,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
 
             {/* Tutorial Screen - Show when email is collected or skipped */}
             {!isLoadingEmail && !showEmailCollection && isConnected && (
-              <div className="max-w-5xl mx-auto opacity-100 px-2 md:px-4">
+              <div className="max-w-5xl mx-auto opacity-100 px-0 md:px-4">
                 {/* Back to Email Collection Button */}
-                <div className="mb-6">
+                <div className="mb-6 px-4 md:px-0">
                   <button
                     onClick={() => setShowEmailCollection(true)}
                     className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
@@ -677,53 +677,81 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                 </div>
 
                 {/* Tutorial Content */}
-                <div className="bg-white rounded-3xl border-0 p-3 md:p-6 md:mb-8 mb-16">
-                  <div className="flex flex-col md:flex-row items-center justify-between mb-8 md:mb-12 gap-4 md:gap-0">
-                    <h2 className="text-xl md:text-4xl font-light text-gray-900 tracking-tight text-center md:text-left">
+                <div className="bg-white rounded-none md:rounded-3xl border-0 p-0 md:p-6 md:mb-8 mb-16">
+                  {/* Header - Desktop with skip button, Mobile without */}
+                  <div className="hidden md:flex items-center justify-between mb-12">
+                    <h2 className="text-4xl font-light text-gray-900 tracking-tight">
                       {t.howItWorksTitle}
                     </h2>
                     <button
                       onClick={handleSkipClick}
-                      className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-2 md:px-8 md:py-3 rounded-2xl transition-all duration-300 font-medium text-sm md:text-base transform hover:scale-[1.02] active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl w-full md:w-auto"
+                      className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-8 py-3 rounded-2xl transition-all duration-300 font-medium text-base transform hover:scale-[1.02] active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl"
                     >
                       {t.skipButton}
                     </button>
                   </div>
 
+                  {/* Mobile Header - Just title */}
+                  <div className="md:hidden mb-4 px-4">
+                    <h2 className="text-xl font-light text-gray-900 tracking-tight text-center">
+                      {t.howItWorksTitle}
+                    </h2>
+                  </div>
+
                   {/* Carousel Container */}
-                  <div className="relative mb-12 px-2 md:px-0">
+                  <div className="relative mb-8 mx-0 md:mx-0 md:px-0">
+                    {/* Mobile Navigation Arrows - Top positioned */}
+                    <div className="md:hidden flex justify-between items-center mb-4 px-4">
+                      <button
+                        onClick={prevStep}
+                        className="w-8 h-8 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
+                      >
+                        <ChevronLeft className="w-4 h-4 text-gray-600" />
+                      </button>
+                      <button
+                        onClick={nextStep}
+                        className="w-8 h-8 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
+                      >
+                        <ChevronRight className="w-4 h-4 text-gray-600" />
+                      </button>
+                    </div>
+
                     {/* Current Step Display */}
-                    <div className="bg-white border border-gray-200/60 rounded-2xl p-4 md:p-8 shadow-sm min-h-[200px] md:min-h-[240px] flex items-center overflow-hidden">
+                    <div className="bg-white border-0 md:border border-gray-200/60 rounded-none md:rounded-2xl p-4 md:p-8 shadow-none md:shadow-sm min-h-[200px] md:min-h-[240px] flex items-center overflow-hidden mx-0 md:mx-0">
                       <div className="flex flex-col md:flex-row items-start gap-3 md:gap-6 w-full">
                         <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-10 h-10 md:w-16 md:h-16 flex items-center justify-center font-medium text-base md:text-2xl flex-shrink-0 mx-auto md:mx-0">
                           {currentStep + 1}
                         </div>
-                        <div className="min-w-0 flex-1 text-center md:text-left">
-                          <h3 className="text-lg md:text-2xl font-medium text-gray-900 mb-2 md:mb-4 break-words leading-tight">
+                        <div className="min-w-0 flex-1 text-center md:text-left px-2 md:px-0">
+                          <h3 className="text-lg md:text-2xl font-medium text-gray-900 mb-3 md:mb-4 break-words leading-tight">
                             {tutorialSteps[currentStep]?.title}
                           </h3>
-                          <p className="text-sm md:text-lg text-gray-600 font-light leading-relaxed break-words hyphens-auto">
-                            {tutorialSteps[currentStep]?.description}
+                          <p className="text-sm md:text-lg text-gray-600 font-light leading-relaxed break-words hyphens-auto text-left md:text-left px-2 md:px-0 space-y-2">
+                            {tutorialSteps[currentStep]?.description.split('. ').map((sentence, index, array) => (
+                              <span key={index} className="block">
+                                {sentence}{index < array.length - 1 ? '.' : ''}
+                              </span>
+                            ))}
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    {/* Navigation Arrows */}
-                    <div className="absolute top-1/2 -translate-y-1/2 -left-2 md:-left-6">
+                    {/* Desktop Navigation Arrows - Side positioned */}
+                    <div className="hidden md:block absolute top-1/2 -translate-y-1/2 -left-6">
                       <button
                         onClick={prevStep}
-                        className="w-8 h-8 md:w-12 md:h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
+                        className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
                       >
-                        <ChevronLeft className="w-4 h-4 md:w-6 md:h-6 text-gray-600" />
+                        <ChevronLeft className="w-6 h-6 text-gray-600" />
                       </button>
                     </div>
-                    <div className="absolute top-1/2 -translate-y-1/2 -right-2 md:-right-6">
+                    <div className="hidden md:block absolute top-1/2 -translate-y-1/2 -right-6">
                       <button
                         onClick={nextStep}
-                        className="w-8 h-8 md:w-12 md:h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
+                        className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
                       >
-                        <ChevronRight className="w-4 h-4 md:w-6 md:h-6 text-gray-600" />
+                        <ChevronRight className="w-6 h-6 text-gray-600" />
                       </button>
                     </div>
 
@@ -748,6 +776,16 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                         {currentStep + 1} {currentLanguage === 'pt-BR' ? 'de' : 'of'} {tutorialSteps.length}
                       </span>
                     </div>
+                  </div>
+
+                  {/* Mobile Skip Button - Below carousel */}
+                  <div className="md:hidden mt-6 px-4">
+                    <button
+                      onClick={handleSkipClick}
+                      className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-3 rounded-2xl transition-all duration-300 font-medium text-base transform hover:scale-[1.02] active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl w-full"
+                    >
+                      {t.skipButton}
+                    </button>
                   </div>
 
                   <div className="mt-8 md:mt-12 p-4 md:p-8 bg-gradient-to-r from-purple-50/80 to-blue-50/80 rounded-3xl border-0">
