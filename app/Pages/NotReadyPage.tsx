@@ -7,14 +7,16 @@ import { saveUserEmail, notifyMinimumPlayersReached } from '../Database/actions'
 import { useContractData } from '../hooks/useContractData';
 import { CONTRACT_TO_TABLE_MAPPING, MIN_PLAYERS, MIN_PLAYERS2, PENALTY_EXEMPT_CONTRACTS } from '../Database/config';
 import { getEventDate } from '../Database/eventDates';
+import { Language, getTranslation } from '../Languages/languages';
 import Cookies from 'js-cookie';
 
 interface NotReadyPageProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
+  currentLanguage?: Language;
 }
 
-const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) => {
+const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' }: NotReadyPageProps) => {
   const [showEmailCollection, setShowEmailCollection] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [emailSubmitting, setEmailSubmitting] = useState<boolean>(false);
@@ -130,6 +132,29 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
   };
 
   const { current, required } = getParticipantCounts();
+
+  // Get translations
+  const t = getTranslation(currentLanguage);
+
+  // Helper function to format waiting message
+  const getWaitingMessage = (count: number): string => {
+    if (!t.waitingForPlayers) return `Waiting for ${count} more player${count !== 1 ? 's' : ''}`;
+
+    const plural = count !== 1 ? (currentLanguage === 'pt-BR' ? 'es' : 's') : '';
+    return t.waitingForPlayers
+      .replace('{count}', count.toString())
+      .replace('{plural}', plural);
+  };
+
+  // Helper function to format dynamic messages
+  const formatMessage = (template: string | undefined, replacements: Record<string, string>): string => {
+    if (!template) return '';
+    let result = template;
+    Object.entries(replacements).forEach(([key, value]) => {
+      result = result.replace(`{${key}}`, value);
+    });
+    return result;
+  };
 
   // Fetch pot information (same logic as MakePredictionsPage)
   useEffect(() => {
@@ -295,7 +320,7 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
   return (
     <div className="min-h-screen bg-white text-black w-full overflow-x-hidden">
       <div className="w-full mx-auto p-6">
-        <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="flex items-center justify-center min-h-[80vh] md:min-h-[80vh] mb-24 md:mb-0">
           <div className="text-center w-full max-w-4xl">
             {/* Email Collection Modal */}
             {showEmailCollection && (
@@ -306,10 +331,10 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                       <Mail className="w-8 h-8 text-purple-600" />
                     </div>
                     <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-                      Get Notified
+                      {t.getNotified || 'Get Notified'}
                     </h2>
                     <p className="text-gray-600 text-sm leading-relaxed">
-                      We'll email you when this pot has enough players to start
+                      {t.emailWhenReady || 'We\'ll email you when this pot has enough players to start'}
                     </p>
                   </div>
 
@@ -318,7 +343,7 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email address"
+                      placeholder={t.enterEmailAddress || 'Enter your email address'}
                       className="w-full px-4 py-3 text-base bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-purple-400 focus:outline-none transition-all duration-300 placeholder-gray-500"
                       onKeyPress={(e) => e.key === 'Enter' && handleEmailSubmit()}
                     />
@@ -329,13 +354,13 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                         disabled={emailSubmitting || !email.trim()}
                         className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 disabled:from-purple-300 disabled:to-purple-400 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 disabled:cursor-not-allowed"
                       >
-                        {emailSubmitting ? 'Saving...' : 'Notify Me'}
+                        {emailSubmitting ? (t.saving || 'Saving...') : (t.notifyMe || 'Notify Me')}
                       </button>
                       <button
                         onClick={() => setShowEmailCollection(false)}
                         className="w-full text-gray-500 hover:text-gray-700 font-medium py-2 px-6 transition-colors duration-200"
                       >
-                        Cancel
+                        {t.cancel || 'Cancel'}
                       </button>
                     </div>
                   </div>
@@ -357,28 +382,36 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                 <div className="space-y-4">
                   <h1 className="text-2xl md:text-3xl font-light text-gray-900">
                     {isFinalDay && isEliminated
-                      ? "Tournament Complete - You Were Eliminated"
+                      ? (t.tournamentComplete || "Tournament Complete - You Were Eliminated")
                       : hasEnoughPlayers && potInfo.hasStarted
-                        ? "Pot is Active! Ready to Predict"
+                        ? (t.potIsActive || "Pot is Active! Ready to Predict")
                         : hasEnoughPlayers && !potInfo.hasStarted
-                          ? isPenaltyExempt ? "Tournament Starting Soon!" : "Pot is Ready! Starting Soon"
+                          ? isPenaltyExempt ? (t.tournamentStartingSoon || "Tournament Starting Soon!") : (t.potIsReady || "Pot is Ready! Starting Soon")
                           : isPenaltyExempt
-                            ? "Tournament Starting Soon!" // For penalty-exempt, never show "not ready" message
-                            : "This pot isn't ready to begin yet"
+                            ? (t.tournamentStartingSoon || "Tournament Starting Soon!") // For penalty-exempt, never show "not ready" message
+                            : (t.notReadyYet || "This pot isn't ready to begin yet")
                     }
                   </h1>
                   <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
                     {isFinalDay && isEliminated
-                      ? "🏆 The final day has arrived and winners are being determined. Unfortunately, you were eliminated earlier in the tournament. Better luck next time!"
+                      ? (t.finalDayEliminated || "🏆 The final day has arrived and winners are being determined. Unfortunately, you were eliminated earlier in the tournament. Better luck next time!")
                       : hasEnoughPlayers && potInfo.hasStarted
-                        ? "🚀 This pot is now live and accepting predictions! You shouldn't be seeing this page - try refreshing or navigating back."
+                        ? (t.potIsLive || "🚀 This pot is now live and accepting predictions! You shouldn't be seeing this page - try refreshing or navigating back.")
                         : hasEnoughPlayers && !potInfo.hasStarted
                           ? isPenaltyExempt && eventDate
-                            ? `🏁 The tournament will begin on ${getTournamentStartDate(eventDate)} - one week before the event (${eventDate})! Get ready to make your predictions.`
-                            : `🎉 Great news! This pot has enough players and is ready to start. Predictions will begin on ${getNextCalendarDayUTC()} when the pot officially opens!`
+                            ? formatMessage(t.tournamentWillBegin || "🏁 The tournament will begin on {startDate} - one week before the event ({eventDate})! Get ready to make your predictions.", {
+                                startDate: getTournamentStartDate(eventDate),
+                                eventDate: eventDate
+                              })
+                            : formatMessage(t.potReadyToStart || "🎉 Great news! This pot has enough players and is ready to start. Predictions will begin on {date} when the pot officially opens!", {
+                                date: getNextCalendarDayUTC()
+                              })
                           : isPenaltyExempt && eventDate
-                            ? `🏁 The tournament will begin on ${getTournamentStartDate(eventDate)} - one week before the event (${eventDate})! Get ready to make your predictions.`
-                            : "👻 Invite your friends! We'll notify you via email when there are enough players to start the predictions tournament!"
+                            ? formatMessage(t.tournamentWillBegin || "🏁 The tournament will begin on {startDate} - one week before the event ({eventDate})! Get ready to make your predictions.", {
+                                startDate: getTournamentStartDate(eventDate),
+                                eventDate: eventDate
+                              })
+                            : (t.inviteFriends || "👻 Invite your friends! We'll notify you via email when there are enough players to start the predictions tournament!")
                     }
                   </p>
                 </div>
@@ -393,7 +426,9 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                           <Users className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
                         </div>
                         <div className="flex items-center gap-1 md:gap-2">
-                          <span className="text-xs md:text-sm text-blue-700 font-medium">Pot is live with {current} players!</span>
+                          <span className="text-xs md:text-sm text-blue-700 font-medium">
+                            {formatMessage(t.potLiveWithPlayers || 'Pot is live with {count} players!', { count: current.toString() })}
+                          </span>
                         </div>
                       </div>
                     ) : hasEnoughPlayers && !potInfo.hasStarted ? (
@@ -404,7 +439,9 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                         </div>
                         <div className="flex items-center gap-1 md:gap-2">
                           <span className="text-xs md:text-sm text-green-700 font-medium">
-                            Starts {isPenaltyExempt && eventDate ? getTournamentStartDate(eventDate) : getNextCalendarDayUTC()}
+                            {formatMessage(t.starts || 'Starts {date}', {
+                              date: isPenaltyExempt && eventDate ? getTournamentStartDate(eventDate) : getNextCalendarDayUTC()
+                            })}
                           </span>
                         </div>
                       </div>
@@ -415,10 +452,9 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                           <Users className="w-3 h-3 md:w-4 md:h-4 text-purple-600" />
                         </div>
                         <div className="flex items-center gap-1 md:gap-2">
-                          <span className="text-lg md:text-2xl font-semibold text-gray-900">{current}</span>
-                          <span className="text-gray-400 text-sm md:text-lg font-light">/</span>
-                          <span className="text-md md:text-lg font-medium text-gray-600">{required}</span>
-                          <span className="text-xs md:text-sm text-gray-500 ml-0.5 md:ml-1">Players</span>
+                          <span className="text-xs md:text-sm text-gray-500">
+                            {getWaitingMessage(required - current)}
+                          </span>
                         </div>
                       </div>
                     )}
@@ -434,7 +470,7 @@ const NotReadyPage = ({ activeSection, setActiveSection }: NotReadyPageProps) =>
                     className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-3 rounded-2xl font-medium transition-colors duration-200 flex items-center gap-2 justify-center -translate-y-2"
                   >
                     <Mail className="w-4 h-4" />
-                    Get Notified
+                    {t.getNotified || 'Get Notified'}
                   </button>
                 </div>
                 )}

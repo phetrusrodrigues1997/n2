@@ -426,7 +426,7 @@ export const calculateParticipantStats = (
   }
 
   // Get unique participants
-  const uniqueParticipantsList = [...new Set(participants)];
+  const uniqueParticipantsList = Array.from(new Set(participants));
   
   // Filter out those with wrong predictions (case insensitive)
   const eligibleParticipantsList = uniqueParticipantsList.filter(addr => 

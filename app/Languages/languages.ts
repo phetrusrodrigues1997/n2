@@ -90,6 +90,29 @@ export interface Translations {
   letsFundAccount?: string;
   backToHome?: string;
   back?: string;
+  waitingForPlayers?: string; // Added for the waiting for players message
+
+  // NotReadyPage translations
+  getNotified?: string;
+  emailWhenReady?: string;
+  notifyMe?: string;
+  saving?: string;
+  cancel?: string;
+  notReadyYet?: string;
+  tournamentComplete?: string;
+  potIsActive?: string;
+  potIsReady?: string;
+  tournamentStartingSoon?: string;
+  finalDayEliminated?: string;
+  potIsLive?: string;
+  potReadyToStart?: string;
+  inviteFriends?: string;
+  tournamentWillBegin?: string;
+  oneWeekBefore?: string;
+  getReadyPredictions?: string;
+  potLiveWithPlayers?: string;
+  starts?: string;
+
   waitingWalletConfirmation?: string;
   transactionConfirming?: string;
   viewOnBasescan?: string;
@@ -182,6 +205,16 @@ export interface Translations {
   connectWallet: string;
   clickSignInButton: string;
   emailCollection: string;
+
+  // Email Management
+  manageEmail: string;
+  yourEmail: string;
+  updateEmailAddress: string;
+  updateEmail: string;
+  updating: string;
+  changeEmail: string;
+  continueToTutorial: string;
+  emailNotificationMessage: string;
 
   // Tutorial - How It Works
   skipButton: string;
@@ -530,6 +563,27 @@ export const translations: Record<Language, Translations> = {
     letsFundAccount: "Let's fund your account →",
     backToHome: '← Back to Home',
     back: 'Back',
+    waitingForPlayers: 'Waiting for {count} more player{plural}',
+
+    // NotReadyPage translations
+    getNotified: 'Get Notified',
+    emailWhenReady: 'We\'ll email you when this pot has enough players to start',
+    notifyMe: 'Notify Me',
+    saving: 'Saving...',
+    cancel: 'Cancel',
+    notReadyYet: 'This pot isn\'t ready to begin yet',
+    tournamentComplete: 'Tournament Complete - You Were Eliminated',
+    potIsActive: 'Pot is Active! Ready to Predict',
+    potIsReady: 'Pot is Ready! Starting Soon',
+    tournamentStartingSoon: 'Tournament Starting Soon!',
+    finalDayEliminated: '🏆 The final day has arrived and winners are being determined. Unfortunately, you were eliminated earlier in the tournament. Better luck next time!',
+    potIsLive: '🚀 This pot is now live and accepting predictions! You shouldn\'t be seeing this page - try refreshing or navigating back.',
+    potReadyToStart: '🎉 Great news! This pot has enough players and is ready to start. Predictions will begin on {date} when the pot officially opens!',
+    inviteFriends: '👻 Invite your friends! We\'ll notify you via email when there are enough players to start the predictions tournament!',
+    tournamentWillBegin: '🏁 The tournament will begin on {startDate} - one week before the event ({eventDate})! Get ready to make your predictions.',
+    potLiveWithPlayers: 'Pot is live with {count} players!',
+    starts: 'Starts {date}',
+
     waitingWalletConfirmation: 'Waiting for wallet confirmation...',
     transactionConfirming: 'Transaction confirming on blockchain...',
     viewOnBasescan: 'View on BaseScan →',
@@ -670,6 +724,16 @@ export const translations: Record<Language, Translations> = {
     connectWallet: 'Connect Wallet',
     clickSignInButton: 'Click the Sign In button at the top right of the screen to connect your wallet',
     emailCollection: 'Email collection',
+
+    // Email Management
+    manageEmail: 'Manage Email',
+    yourEmail: 'Your Email',
+    updateEmailAddress: 'Update your email address',
+    updateEmail: 'Update Email',
+    updating: 'Updating...',
+    changeEmail: 'Change Email',
+    continueToTutorial: 'Continue to Tutorial',
+    emailNotificationMessage: 'We\'ll notify you at this address when pots are ready',
 
     // Tutorial - How It Works
     skipButton: 'Skip →',
@@ -971,6 +1035,27 @@ export const translations: Record<Language, Translations> = {
     letsFundAccount: "Vamos financiar sua conta →",
     backToHome: '← Voltar ao Início',
     back: 'Voltar',
+    waitingForPlayers: 'Aguardando mais {count} jogador{plural}',
+
+    // NotReadyPage translations
+    getNotified: 'Receber Notificações',
+    emailWhenReady: 'Enviaremos um email quando este pote tiver jogadores suficientes para começar',
+    notifyMe: 'Me Notifique',
+    saving: 'Salvando...',
+    cancel: 'Cancelar',
+    notReadyYet: 'Este pote ainda não está pronto para começar',
+    tournamentComplete: 'Torneio Completo - Você Foi Eliminado',
+    potIsActive: 'Pote está Ativo! Pronto para Prever',
+    potIsReady: 'Pote está Pronto! Começando em Breve',
+    tournamentStartingSoon: 'Torneio Começando em Breve!',
+    finalDayEliminated: '🏆 O dia final chegou e os vencedores estão sendo determinados. Infelizmente, você foi eliminado mais cedo no torneio. Boa sorte na próxima!',
+    potIsLive: '🚀 Este pote agora está ao vivo e aceitando previsões! Você não deveria estar vendo esta página - tente atualizar ou voltar.',
+    potReadyToStart: '🎉 Ótimas notícias! Este pote tem jogadores suficientes e está pronto para começar. As previsões começarão em {date} quando o pote abrir oficialmente!',
+    inviteFriends: '👻 Convide seus amigos! Notificaremos você por email quando houver jogadores suficientes para começar o torneio de previsões!',
+    tournamentWillBegin: '🏁 O torneio começará em {startDate} - uma semana antes do evento ({eventDate})! Prepare-se para fazer suas previsões.',
+    potLiveWithPlayers: 'Pote ao vivo com {count} jogadores!',
+    starts: 'Começa em {date}',
+
     waitingWalletConfirmation: 'Aguardando confirmação da carteira...',
     transactionConfirming: 'Transação confirmando na blockchain...',
     viewOnBasescan: 'Ver no BaseScan →',
@@ -1109,6 +1194,16 @@ export const translations: Record<Language, Translations> = {
     connectWallet: 'Conectar Carteira',
     clickSignInButton: 'Clique no botão Entrar no canto superior direito da tela para conectar sua carteira',
     emailCollection: 'Coleta de email',
+
+    // Email Management
+    manageEmail: 'Gerenciar Email',
+    yourEmail: 'Seu Email',
+    updateEmailAddress: 'Atualize seu endereço de email',
+    updateEmail: 'Atualizar Email',
+    updating: 'Atualizando...',
+    changeEmail: 'Alterar Email',
+    continueToTutorial: 'Continuar para Tutorial',
+    emailNotificationMessage: 'Notificaremos você neste endereço quando os potes estiverem prontos',
 
     // Tutorial - How It Works
     skipButton: 'Pular →',
