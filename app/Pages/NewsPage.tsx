@@ -170,7 +170,7 @@ const NewsPage = ({ onBack }: NewsPageProps) => {
               </div>
 
               {/* Engagement Stats */}
-              <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+              <div className="flex items-center justify-between pt-3 ">
                 <div className="flex items-center gap-6">
                   {/* Comments */}
                   <button className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors group">
@@ -244,7 +244,7 @@ const NewsPage = ({ onBack }: NewsPageProps) => {
                   </p>
 
                   {/* Engagement Stats */}
-                  <div className="flex items-center gap-8 pt-4 border-t border-gray-100">
+                  <div className="flex items-center gap-8 pt-4 ">
                     <button className="flex items-center gap-3 text-gray-500 hover:text-blue-600 transition-colors group">
                       <div className="p-3 rounded-full group-hover:bg-blue-50 transition-colors">
                         <MessageCircle className="w-6 h-6" />
@@ -310,7 +310,7 @@ const NewsPage = ({ onBack }: NewsPageProps) => {
                     </p>
 
                     {/* Engagement Stats */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between pt-4 ">
                       <div className="flex items-center gap-4">
                         <button className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors group">
                           <div className="p-2 rounded-full group-hover:bg-blue-50 transition-colors">
