@@ -62,6 +62,7 @@ export default function App() {
   const [tournamentFilter, setTournamentFilter] = useState<'all' | 'daily' | 'weekly' | 'recently'>('all'); // Filter for daily/weekly/recently started tournaments
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false); // Track filter dropdown state
   const [showHowItWorksPopup, setShowHowItWorksPopup] = useState(false); // Track how it works popup
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false); // Track tutorial modal state
 
   // Get ETH balance
   const ethBalance = useBalance({
@@ -155,16 +156,16 @@ export default function App() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [isFilterDropdownOpen]);
 
-  // Show "How it works" popup after 2 seconds on home page
+  // Show "How it works" popup after 2 seconds on home page (but not when tutorial is open)
   useEffect(() => {
-    if (activeSection === 'home' && !isLandingPageLoading) {
+    if (activeSection === 'home' && !isLandingPageLoading && !isTutorialOpen) {
       const timer = setTimeout(() => {
         setShowHowItWorksPopup(true);
       }, 2000);
 
       return () => clearTimeout(timer);
     }
-  }, [activeSection, isLandingPageLoading]);
+  }, [activeSection, isLandingPageLoading, isTutorialOpen]);
 
   // Close "How it works" popup when clicking outside
   useEffect(() => {
@@ -1034,7 +1035,7 @@ export default function App() {
         {activeSection === "notReadyPage" && <NotReadyPage activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "bitcoinPot" && <PredictionPotTest activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "referralProgram" && <ReferralProgram activeSection={activeSection} setActiveSection={setActiveSection} />}
-        {activeSection === "home" && <LandingPage activeSection={activeSection} setActiveSection={setActiveSection} isMobileSearchActive={isMobileSearchActive} searchQuery={searchQuery} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} onLoadingChange={handleLoadingChange} currentLanguage={currentLanguage} tournamentFilter={tournamentFilter} />}
+        {activeSection === "home" && <LandingPage activeSection={activeSection} setActiveSection={setActiveSection} isMobileSearchActive={isMobileSearchActive} searchQuery={searchQuery} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} onLoadingChange={handleLoadingChange} currentLanguage={currentLanguage} tournamentFilter={tournamentFilter} onTutorialStateChange={setIsTutorialOpen} />}
         {activeSection === "makePrediction" && <MakePredicitions activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "AI" && <GamesHub activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "createPot" && <CreatePotPage navigateToPrivatePot={navigateToPrivatePot} />}
@@ -1147,7 +1148,7 @@ export default function App() {
       )}
 
       {/* How it works popup - extension of bottom navigation */}
-      {!isLandingPageLoading && activeSection === 'home' && showHowItWorksPopup && (
+      {!isLandingPageLoading && activeSection === 'home' && showHowItWorksPopup && !isTutorialOpen && (
         <div className="fixed left-0 right-0 md:hidden bg-white z-50" data-how-it-works-popup style={{ bottom: '54px' }}>
           <div
             className="bg-white border-t border-gray-200 rounded-t-lg px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"

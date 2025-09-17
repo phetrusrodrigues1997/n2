@@ -37,6 +37,7 @@ interface LandingPageProps {
   onLoadingChange?: (isLoading: boolean) => void;
   currentLanguage?: Language;
   tournamentFilter?: 'all' | 'daily' | 'weekly' | 'recently';
+  onTutorialStateChange?: (isOpen: boolean) => void;
 }
 
 // Helper function to get contract address from markets data
@@ -46,7 +47,7 @@ const getContractAddress = (marketId: string): string | null => {
   return market?.contractAddress || null;
 };
 
-const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = false, searchQuery = '', selectedMarket: propSelectedMarket = 'Trending', setSelectedMarket, onLoadingChange, currentLanguage: propCurrentLanguage, tournamentFilter = 'all' }: LandingPageProps) => {
+const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = false, searchQuery = '', selectedMarket: propSelectedMarket = 'Trending', setSelectedMarket, onLoadingChange, currentLanguage: propCurrentLanguage, tournamentFilter = 'all', onTutorialStateChange }: LandingPageProps) => {
   const { contractAddresses, participantsData, balancesData, isConnected, address } = useContractData();
   const [isVisible, setIsVisible] = useState(false);
   // Use language from parent component or fallback to 'en'
@@ -142,6 +143,13 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
   const [isTutorialLanguageDropdownOpen, setIsTutorialLanguageDropdownOpen] = useState(false);
+
+  // Notify parent when tutorial state changes
+  useEffect(() => {
+    if (onTutorialStateChange) {
+      onTutorialStateChange(showTutorial);
+    }
+  }, [showTutorial, onTutorialStateChange]);
 
 
 
@@ -2424,7 +2432,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                 <div className="flex items-center gap-2">
                   {/* Language dropdown in tutorial */}
-                  <div className="relative" data-tutorial-language-dropdown>
+                  <div className="relative " data-tutorial-language-dropdown>
                     <button
                       onClick={() => setIsTutorialLanguageDropdownOpen(!isTutorialLanguageDropdownOpen)}
                       className="flex items-center gap-2 px-3 py-2 bg-purple-50 text-purple-700 font-semibold rounded-md hover:bg-purple-800 hover:text-white transition-colors border border-purple-200"
@@ -2475,7 +2483,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                   <button
                     onClick={closeTutorial}
-                    className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="hidden md:block text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-lg transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>
