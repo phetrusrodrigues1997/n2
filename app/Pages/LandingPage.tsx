@@ -1443,7 +1443,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   {(() => {
                                     const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                                     const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
-                                    const charLimit = useTraditionalLayout ? 45 : 75; // Mobile: more chars for traditional, increased for new style
+                                    const charLimit = useTraditionalLayout ? 53 : 75; // Mobile: increased chars for traditional, increased for new style
                                     return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
                                   })()}
                                 </p>
