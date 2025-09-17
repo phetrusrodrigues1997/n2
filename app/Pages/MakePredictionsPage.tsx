@@ -1155,7 +1155,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
             
             {/* Subheading */}
             <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-              {t.congratulationsFinal10 || "Congratulations! You are down to the last 10. Make your predictions as you normally would and if you win we will notify you."}
+              {t.congratulationsFinal10 || "Congratulations! You are down to the last 5. Make your predictions as you normally would and if you win we will notify you."}
             </p>
             
             {/* Close Button */}

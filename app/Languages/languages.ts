@@ -393,6 +393,15 @@ export interface Translations {
   daily: string;
   weekly: string;
   recentlyStarted: string;
+
+  // Receive Page
+  purchaseCrypto: string;
+  connectYourWalletReceive: string;
+  connectWalletToViewAddress: string;
+  receiveETH: string;
+  copyAddress: string;
+  copied: string;
+  baseNetworkOnly: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -449,7 +458,7 @@ export const translations: Record<Language, Translations> = {
     next: 'Next',
     startPlaying: 'Start Playing',
     tutorialTip: 'The more accurate your predictions, the more you\'ll win!',
-    tutorialGoal: 'Keep predicting correctly until you\'re one of the last 10.',
+    tutorialGoal: 'Keep predicting correctly until you\'re one of the last 5.',
     yourGoal: 'Your Goal:',
 
     // PredictionPotTest specific
@@ -576,6 +585,15 @@ export const translations: Record<Language, Translations> = {
     daily: 'Daily',
     weekly: 'Weekly',
     recentlyStarted: 'Recently Started',
+
+    // Receive Page
+    purchaseCrypto: 'Purchase Crypto',
+    connectYourWalletReceive: 'Connect Your Wallet',
+    connectWalletToViewAddress: 'Connect your wallet to view your receive address and QR code',
+    receiveETH: 'Receive ETH',
+    copyAddress: 'Copy Address',
+    copied: 'Copied!',
+    baseNetworkOnly: 'Base Network Only',
 
     // Email Collection
     readyToPlay: 'Get notified!',
@@ -717,7 +735,7 @@ export const translations: Record<Language, Translations> = {
     loadingPredictions: 'Loading your predictions...',
     loadingScreenSubtitle: 'Just a moment...',
     finalPredictions: 'Final Predictions',
-    congratulationsFinal10: 'Congratulations! You are down to the last 10. Make your predictions as you normally would and if you win we will notify you.',
+    congratulationsFinal10: 'Congratulations! You are down to the last 5. Make your predictions as you normally would and if you win we will notify you.',
     gotIt: 'Got it! 🎯',
     loadingYourBet: 'Loading your prediction...',
     nextElimination: 'Next Elimination',
@@ -841,7 +859,7 @@ export const translations: Record<Language, Translations> = {
     next: 'Próximo',
     startPlaying: 'Começar a Jogar',
     tutorialTip: 'Quanto mais precisas suas previsões, mais você ganhará!',
-    tutorialGoal: 'Continue prevendo corretamente até ser um dos últimos 10.',
+    tutorialGoal: 'Continue prevendo corretamente até ser um dos últimos 5.',
     yourGoal: 'Seu Objetivo:',
 
     // PredictionPotTest specific
@@ -968,6 +986,15 @@ export const translations: Record<Language, Translations> = {
     daily: 'Diário',
     weekly: 'Semanal',
     recentlyStarted: 'Recém-Iniciados',
+
+    // Receive Page
+    purchaseCrypto: 'Comprar Cripto',
+    connectYourWalletReceive: 'Conectar Sua Carteira',
+    connectWalletToViewAddress: 'Conecte sua carteira para ver seu endereço de recebimento e código QR',
+    receiveETH: 'Receber ETH',
+    copyAddress: 'Copiar Endereço',
+    copied: 'Copiado!',
+    baseNetworkOnly: 'Apenas Rede Base',
 
     // Email Collection
     readyToPlay: 'Seja notificado!',

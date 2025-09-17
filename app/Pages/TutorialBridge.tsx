@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Wallet, Mail, X } from 'lucide-react';
+import { Wallet, Mail, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { useAccount } from 'wagmi';
 import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, PENALTY_EXEMPT_CONTRACTS } from '../Database/config';
@@ -32,6 +32,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
   const [emailSubmitting, setEmailSubmitting] = useState<boolean>(false);
   const [hasUserEmail, setHasUserEmail] = useState<boolean | null>(null);
   const [isLoadingEmail, setIsLoadingEmail] = useState<boolean>(true);
+
+  // Carousel state
+  const [currentStep, setCurrentStep] = useState<number>(0);
 
   // Pot info state
   const [potInfo, setPotInfo] = useState<{
@@ -81,6 +84,80 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
 
   // Get translations
   const t = getTranslation(currentLanguage);
+
+  // Define tutorial steps based on penalty exemption
+  const tutorialSteps = useMemo(() => {
+    if (isPenaltyExempt) {
+      return [
+        {
+          title: t.tournamentEntry,
+          description: getTournamentStartDate
+            ? `${currentLanguage === 'pt-BR' ? 'Torneio iniciado' : 'Tournament started'} ${getTournamentStartDate}. ${t.tournamentEntryDesc}`
+            : t.tournamentEntryDesc
+        },
+        {
+          title: t.weeklyPredictions,
+          description: t.weeklyPredictionsDesc
+        },
+        {
+          title: t.eliminationSystem,
+          description: t.eliminationSystemDesc
+        },
+        {
+          title: t.reentryOption,
+          description: t.reentryOptionDesc
+        },
+        {
+          title: t.seasonFinale,
+          description: t.seasonFinaleDesc
+        },
+        {
+          title: t.tournamentStats,
+          description: t.tournamentStatsDesc
+        }
+      ];
+    } else {
+      return [
+        {
+          title: t.globalCompetition,
+          description: t.globalCompetitionDesc
+        },
+        {
+          title: t.dailyPredictions,
+          description: t.dailyPredictionsDesc
+        },
+        {
+          title: t.dynamicPricing,
+          description: t.dynamicPricingDesc
+        },
+        {
+          title: t.secondChances,
+          description: t.secondChancesDesc
+        },
+        {
+          title: t.finalShowdown,
+          description: t.finalShowdownDesc
+        },
+        {
+          title: t.liveStats,
+          description: t.liveStatsDesc
+        }
+      ];
+    }
+  }, [isPenaltyExempt, t, getTournamentStartDate, currentLanguage]);
+
+  // Navigation functions
+  const nextStep = () => {
+    setCurrentStep(prev => (prev + 1) % tutorialSteps.length);
+  };
+
+  const prevStep = () => {
+    setCurrentStep(prev => (prev - 1 + tutorialSteps.length) % tutorialSteps.length);
+  };
+
+  const goToStep = (stepIndex: number) => {
+    setCurrentStep(stepIndex);
+  };
 
   // Check if user has email when wallet connects
   useEffect(() => {
@@ -615,161 +692,64 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12">
-                    {isPenaltyExempt ? (
-                      // Tournament-specific steps
-                      <>
-                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                            1
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.tournamentEntry}</h3>
-                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              {getTournamentStartDate
-                                ? `${currentLanguage === 'pt-BR' ? 'Torneio iniciado' : 'Tournament started'} ${getTournamentStartDate}. ${t.tournamentEntryDesc}`
-                                : t.tournamentEntryDesc
-                              }
-                            </p>
-                          </div>
+                  {/* Carousel Container */}
+                  <div className="relative mb-12">
+                    {/* Current Step Display */}
+                    <div className="bg-white border border-gray-200/60 rounded-2xl p-6 md:p-8 shadow-sm min-h-[200px] flex items-center">
+                      <div className="flex items-start gap-4 md:gap-6 w-full">
+                        <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-12 h-12 md:w-16 md:h-16 flex items-center justify-center font-medium text-lg md:text-2xl flex-shrink-0">
+                          {currentStep + 1}
                         </div>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-xl md:text-2xl font-medium text-gray-900 mb-3 md:mb-4">
+                            {tutorialSteps[currentStep]?.title}
+                          </h3>
+                          <p className="text-base md:text-lg text-gray-600 font-light leading-relaxed">
+                            {tutorialSteps[currentStep]?.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
 
-                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                            2
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.weeklyPredictions}</h3>
-                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              {t.weeklyPredictionsDesc}
-                            </p>
-                          </div>
-                        </div>
+                    {/* Navigation Arrows */}
+                    <div className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-6">
+                      <button
+                        onClick={prevStep}
+                        className="w-10 h-10 md:w-12 md:h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
+                      >
+                        <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
+                      </button>
+                    </div>
+                    <div className="absolute top-1/2 -translate-y-1/2 -right-4 md:-right-6">
+                      <button
+                        onClick={nextStep}
+                        className="w-10 h-10 md:w-12 md:h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
+                      >
+                        <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
+                      </button>
+                    </div>
 
-                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                            3
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.eliminationSystem}</h3>
-                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              {t.eliminationSystemDesc}
-                            </p>
-                          </div>
-                        </div>
+                    {/* Step Indicators */}
+                    <div className="flex justify-center gap-2 mt-6">
+                      {tutorialSteps.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => goToStep(index)}
+                          className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                            index === currentStep
+                              ? 'bg-purple-600 scale-110'
+                              : 'bg-gray-300 hover:bg-gray-400'
+                          }`}
+                        />
+                      ))}
+                    </div>
 
-                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                            4
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.reentryOption}</h3>
-                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              {t.reentryOptionDesc}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                            5
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.seasonFinale}</h3>
-                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              {t.seasonFinaleDesc}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                            6
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.tournamentStats}</h3>
-                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              {t.tournamentStatsDesc}
-                            </p>
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      // Regular pot steps
-                      <>
-                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                            1
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.globalCompetition}</h3>
-                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              {t.globalCompetitionDesc}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                            2
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.dailyPredictions}</h3>
-                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              {t.dailyPredictionsDesc}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                            3
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.dynamicPricing}</h3>
-                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              {t.dynamicPricingDesc}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                            4
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.secondChances}</h3>
-                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              {t.secondChancesDesc}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                            5
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.finalShowdown}</h3>
-                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              {t.finalShowdownDesc}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white border border-gray-200/60 rounded-2xl hover:border-gray-300/80 hover:shadow-lg transition-all duration-300 shadow-sm">
-                          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-medium text-sm md:text-lg flex-shrink-0">
-                            6
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-base md:text-xl font-medium text-gray-900 mb-1 md:mb-2">{t.liveStats}</h3>
-                            <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">
-                              {t.liveStatsDesc}
-                            </p>
-                          </div>
-                        </div>
-                      </>
-                    )}
+                    {/* Step Counter */}
+                    <div className="text-center mt-4">
+                      <span className="text-sm text-gray-500 font-medium">
+                        {currentStep + 1} {currentLanguage === 'pt-BR' ? 'de' : 'of'} {tutorialSteps.length}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="mt-12 p-8 bg-gradient-to-r from-purple-50/80 to-blue-50/80 rounded-3xl border-0">

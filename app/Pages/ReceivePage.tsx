@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAccount } from 'wagmi';
 import { Copy, Check, QrCode, Wallet, ArrowLeft } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { getTranslation, type Language } from '../Languages/languages';
 
 interface ReceiveSectionProps {
   activeSection?: string;
@@ -12,6 +13,27 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
   const { address, isConnected } = useAccount();
   const [copied, setCopied] = useState(false);
   const queryClient = useQueryClient();
+
+  // Get current language
+  const [currentLanguage, setCurrentLanguage] = useState<Language>('en');
+
+  useEffect(() => {
+    const handleLanguageChange = (event: CustomEvent) => {
+      setCurrentLanguage(event.detail.language);
+    };
+
+    window.addEventListener('languageChange', handleLanguageChange as EventListener);
+    const savedLanguage = localStorage.getItem('preferredLanguage') as Language;
+    if (savedLanguage) {
+      setCurrentLanguage(savedLanguage);
+    }
+
+    return () => {
+      window.removeEventListener('languageChange', handleLanguageChange as EventListener);
+    };
+  }, []);
+
+  const t = getTranslation(currentLanguage);
 
   // Refresh balance when component mounts
   useEffect(() => {
@@ -70,7 +92,7 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
             onClick={() => window.open('https://keys.coinbase.com', '_blank', 'noopener,noreferrer')}
             className="flex items-center gap-2 text-purple-600 hover:text-purple-700 transition-colors duration-200 font-medium text-sm tracking-wide"
           >
-            <span>Purchase Crypto</span>
+            <span>{t.purchaseCrypto}</span>
             <span>→</span>
           </button>
         </div>
@@ -81,9 +103,9 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
             <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <Wallet className="w-10 h-10 text-purple-600" />
             </div>
-            <h2 className="text-2xl font-bold text-black mb-3">Connect Your Wallet</h2>
+            <h2 className="text-2xl font-bold text-black mb-3">{t.connectYourWalletReceive}</h2>
             <p className="text-gray-600">
-              Connect your wallet to view your receive address and QR code
+              {t.connectWalletToViewAddress}
             </p>
           </div>
         ) : (
@@ -94,7 +116,7 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
               <div className="text-center mb-4">
                 <div className="inline-flex items-center gap-2 bg-purple-100 px-3 py-1.5 rounded-full mb-3">
                   <QrCode className="w-4 h-4 text-purple-600" />
-                  <span className="text-sm font-semibold text-purple-600">Receive ETH</span>
+                  <span className="text-sm font-semibold text-purple-600">{t.receiveETH}</span>
                 </div>
               </div>
 
@@ -118,12 +140,12 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
                 {copied ? (
                   <>
                     <Check className="w-4 h-4" />
-                    <span>Copied!</span>
+                    <span>{t.copied}</span>
                   </>
                 ) : (
                   <>
                     <Copy className="w-4 h-4" />
-                    <span>Copy Address</span>
+                    <span>{t.copyAddress}</span>
                   </>
                 )}
               </button>
@@ -132,7 +154,7 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
               <div className="flex justify-center">
                 <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-full">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span className="text-blue-700 text-xs font-semibold">Base Network Only</span>
+                  <span className="text-blue-700 text-xs font-semibold">{t.baseNetworkOnly}</span>
                 </div>
               </div>
             </div>
