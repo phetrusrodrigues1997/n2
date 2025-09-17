@@ -61,6 +61,7 @@ export default function App() {
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false); // Track language dropdown state
   const [tournamentFilter, setTournamentFilter] = useState<'all' | 'daily' | 'weekly' | 'recently'>('all'); // Filter for daily/weekly/recently started tournaments
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false); // Track filter dropdown state
+  const [showHowItWorksPopup, setShowHowItWorksPopup] = useState(false); // Track how it works popup
 
   // Get ETH balance
   const ethBalance = useBalance({
@@ -153,6 +154,30 @@ export default function App() {
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, [isFilterDropdownOpen]);
+
+  // Show "How it works" popup after 2 seconds on home page
+  useEffect(() => {
+    if (activeSection === 'home' && !isLandingPageLoading) {
+      const timer = setTimeout(() => {
+        setShowHowItWorksPopup(true);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [activeSection, isLandingPageLoading]);
+
+  // Close "How it works" popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (showHowItWorksPopup && !target.closest('[data-how-it-works-popup]')) {
+        setShowHowItWorksPopup(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showHowItWorksPopup]);
 
   // Fetch ETH price
   useEffect(() => {
@@ -1118,6 +1143,41 @@ export default function App() {
             </span>
           </button>
         </div>
+        </div>
+      )}
+
+      {/* How it works popup - extension of bottom navigation */}
+      {!isLandingPageLoading && activeSection === 'home' && showHowItWorksPopup && (
+        <div className="fixed left-0 right-0 md:hidden bg-white z-50" data-how-it-works-popup style={{ bottom: '54px' }}>
+          <div
+            className="bg-white border-t border-gray-200 rounded-t-lg px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+            onClick={() => {
+              setActiveSection('discord');
+              setShowHowItWorksPopup(false);
+            }}
+          >
+            <div className="flex items-center justify-center relative">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <h3 className="text-sm font-medium text-purple-600">How it works</h3>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowHowItWorksPopup(false);
+                }}
+                className="absolute right-0 text-purple-500 hover:text-purple-700 p-1"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
