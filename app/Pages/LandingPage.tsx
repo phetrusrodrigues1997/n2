@@ -1390,11 +1390,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             '--swap-distance': swapDistance
                           } as React.CSSProperties}
                         >
-                          <div className={`h-full ${index === 0 ? 'min-h-[320px]' : 'min-h-[220px]'} flex flex-col justify-between transition-all duration-300 bg-white ${(() => {
+                          <div className={`h-full ${index === 0 ? 'min-h-[295px]' : 'min-h-[220px]'} flex flex-col justify-between transition-all duration-300 bg-white ${(() => {
                             const contractAddress = getContractAddress(market.id);
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
                             const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                            const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
+                            const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
 
                             // Reduce bottom padding for non-traditional layouts to make div shorter
                             let classes = useTraditionalLayout ? 'p-2 pb-5' : 'p-2 pb-0';
@@ -1446,7 +1446,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 }}>
                                   {(() => {
                                     const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                                    const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
+                                    const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                                     const charLimit = useTraditionalLayout ? 53 : 75; // Mobile: increased chars for traditional, increased for new style
                                     return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
                                   })()}
@@ -1456,7 +1456,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               {(() => {
                                 // Mobile: Alternating layout system
                                 const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                                const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
+                                const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                                 const contractAddress = getContractAddress(market.id);
                                 const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
@@ -1518,7 +1518,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             {(() => {
                               // Mobile: Alternating button layout system
                               const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                              const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
+                              const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
 
                               if (useTraditionalLayout) {
                                 // Traditional buttons (even index markets)
@@ -1667,7 +1667,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             <div className={`flex justify-between items-center pt-2 ${(() => {
                               // Mobile: Check if this market uses traditional layout for translate-y
                               const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                              const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
+                              const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                               return !useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
                             })()}`}>
                               <div className="text-sm font-medium text-gray-600 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
@@ -1989,7 +1989,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             {(() => {
                               // Determine if thermometer will be shown to adjust question width
                               const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                              const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
+                              const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
                               const showThermometer = useTraditionalLayout && predictionPercentages[market.tabId || market.id] && !isEliminated;
@@ -2004,7 +2004,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   }}>
                                     {(() => {
                                       const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                                      const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
+                                      const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                                       const charLimit = useTraditionalLayout ? 35 : 50; // Desktop: keep traditional tight, moderate expansion for new style
                                       return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
                                     })()}
@@ -2016,7 +2016,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             {(() => {
                               // Alternating layout system
                               const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                              const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
+                              const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
@@ -2078,7 +2078,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           {(() => {
                             // Alternating button layout system
                             const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                            const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
+                            const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
 
                             if (useTraditionalLayout) {
                               // Traditional buttons (even index markets)
@@ -2226,7 +2226,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           <div className={`flex justify-between items-center pt-2 ${(() => {
                             // Desktop: Check if this market uses traditional layout for translate-y
                             const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                            const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 1;
+                            const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                             return !useTraditionalLayout ? '-translate-y-2' : '';
                           })()}`}>
                             <div className="text-sm font-medium text-gray-600 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
