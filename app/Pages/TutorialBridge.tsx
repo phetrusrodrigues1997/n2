@@ -482,13 +482,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                     <div className="text-center mb-12">
                       <div className="flex items-center justify-center gap-3 mb-6 flex-nowrap">
                         <h1 className="text-2xl md:text-4xl font-light text-gray-900 tracking-tight flex-shrink-0">
-                          {currentUserEmail && !isEditingEmail ? t.yourEmail : t.readyToPlay}
+                          {currentUserEmail && !isEditingEmail ? t.yourEmail : t.readyToPlay}📩
                         </h1>
-                        <img
-                          src="/ghostienobg.png"
-                          alt="Ghostie"
-                          className="w-7 h-7 md:w-11 md:h-11 flex-shrink-0"
-                        />
+                        
                       </div>
 
                       {/* Show current email if exists and not editing */}
@@ -511,7 +507,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder={isEditingEmail ? t.updateEmailAddress : t.enterEmailAddress}
-                            className="w-full px-6 py-5 md:px-7 md:py-5
+                            className="w-full px-6 py-3 md:px-7 md:py-5
                              text-lg bg-gray-50/80 border-2 border-gray-200 rounded-2xl focus:border-purple-500
                              focus:bg-white focus:ring-4 focus:ring-purple-100 focus:outline-none
                              transition-all duration-300 ease-out placeholder-gray-400 font-normal

@@ -4,12 +4,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
 import { formatUnits } from 'viem';
 import { checkMissedPredictionPenalty } from '../Database/actions3';
-import { ArrowRight, Bookmark, Check, BookOpen, ChevronRight, ChevronLeft, X, CheckCircle2, DollarSign, Target, TrendingUp, Users, Calendar, BarChart2, RefreshCw } from 'lucide-react';
+import { ArrowRight, Bookmark, Check, BookOpen, ChevronRight, ChevronLeft, X, CheckCircle2, DollarSign, Target, TrendingUp, Users, Calendar, BarChart2, RefreshCw, Plus } from 'lucide-react';
 import { Language, getTranslation, supportedLanguages, getTranslatedMarketQuestion } from '../Languages/languages';
 import { getMarkets, Market } from '../Constants/markets';
 import { CustomAlert, useCustomAlert } from '../Components/CustomAlert';
 import { addBookmark, removeBookmark, isMarketBookmarked, getPredictionPercentages, getTomorrowsBet, placeBitcoinBet, isEliminated } from '../Database/actions';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, getTableTypeFromMarketId, MARKETS_WITH_CONTRACTS, PENALTY_EXEMPT_CONTRACTS } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, getTableTypeFromMarketId, MARKETS_WITH_CONTRACTS, PENALTY_EXEMPT_CONTRACTS, calculateEntryFee, PENALTY_EXEMPT_ENTRY_FEE } from '../Database/config';
 import { getPrice } from '../Constants/getPrice';
 import { useContractData } from '../hooks/useContractData';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
@@ -45,6 +45,22 @@ const getContractAddress = (marketId: string): string | null => {
   const marketOptions = getMarkets(getTranslation('en'), 'options');
   const market = marketOptions.find(m => m.id === marketId || m.name === marketId);
   return market?.contractAddress || null;
+};
+
+// Helper function to get entry fee display text
+const getEntryFeeDisplay = (marketId: string): string => {
+  const contractAddress = getContractAddress(marketId);
+
+  // Check if this is a penalty-exempt contract
+  if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+    return `$${PENALTY_EXEMPT_ENTRY_FEE.toFixed(2)}`;
+  }
+
+  // Use dynamic pricing for regular contracts
+  // For now, using default values since we don't have pot info here
+  // In a real implementation, you'd need to fetch pot status
+  const entryFeeUsd = calculateEntryFee(true, new Date().toISOString()); // hasStarted=true, current date
+  return `$${entryFeeUsd.toFixed(2)}`;
 };
 
 const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = false, searchQuery = '', selectedMarket: propSelectedMarket = 'Trending', setSelectedMarket, onLoadingChange, currentLanguage: propCurrentLanguage, tournamentFilter = 'all', onTutorialStateChange }: LandingPageProps) => {
@@ -1390,7 +1406,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             '--swap-distance': swapDistance
                           } as React.CSSProperties}
                         >
-                          <div className={`h-full ${index === 0 ? 'min-h-[295px]' : 'min-h-[220px]'} flex flex-col justify-between transition-all duration-300 bg-white ${(() => {
+                          <div className={`h-full min-h-[295px] flex flex-col justify-between transition-all duration-300 bg-white ${(() => {
                             const contractAddress = getContractAddress(market.id);
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
                             const marketIndex = marketOptions.findIndex(m => m.id === market.id);
@@ -1418,7 +1434,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             <div className="flex items-center gap-3 mb-6 relative">
                               {/* Small Square Image */}
                               <div className="flex-shrink-0">
-                                <div className={`rounded-lg ${index === 0 ? 'w-20 h-20' : 'w-16 h-16'} bg-white overflow-hidden relative`}>
+                                <div className="rounded-lg w-20 h-20 bg-white overflow-hidden relative">
                                 {market.icon && (market.icon.slice(0, 1) === '/') ? (
                                 <img
                                     src={market.icon}
@@ -1696,6 +1712,17 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             })()}
                             </div>
 
+                            {/* Entry Fee -> Pot Balance Display */}
+                            <div className="flex justify-center items-center py-3">
+                              <div className="flex items-center gap-2 text-sm font-medium text-gray-700 opacity-60">
+                                <span>{getEntryFeeDisplay(market.id)}</span>
+                                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                </svg>
+                                <span className="text-[#00ad00] font-semibold">{market.potSize}</span>
+                              </div>
+                            </div>
+
                             {/* Stats Footer */}
                             <div className={`flex justify-between items-center pt-2 ${(() => {
                               // Mobile: Check if this market uses traditional layout for translate-y
@@ -1704,7 +1731,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               return !useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
                             })()}`}>
                               <div className="text-sm font-medium text-gray-600 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
-                                {market.potSize}
+                                Pot #{market.potNumber || 'N/A'}
                                 <span className="text-gray-400 font-bold" style={{ fontSize: '8px' }}>•</span>
                                 <RefreshCw className="w-3 h-3" />
                                 {(() => {
@@ -1764,13 +1791,15 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     >
                                       {bookmarkLoading === market.id ? (
                                         <div className="w-4 h-4 animate-spin rounded-full border-2 border-purple-700 border-t-transparent"></div>
-                                      ) : (
+                                      ) : bookmarkedMarkets.has(market.id) ? (
                                         <Bookmark
-                                          className={`w-4 h-4 transition-all duration-200 ${bookmarkedMarkets.has(market.id)
-                                              ? 'text-purple-700 fill-purple-700'
-                                              : 'text-gray-500'
-                                            }`}
+                                          className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700"
                                         />
+                                      ) : (
+                                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
+                                          <path d="M12 7v10M7 12h10" strokeWidth={2} strokeLinecap="round" />
+                                        </svg>
                                       )}
                                     </button>
                                   );
@@ -1987,7 +2016,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           '--swap-distance': swapDistance
                         } as React.CSSProperties}
                       >
-                        <div className={`rounded-2xl p-3 h-full flex flex-col min-h-[180px] transition-all duration-300 bg-white ${(() => {
+                        <div className={`rounded-2xl p-3 h-full flex flex-col justify-between min-h-[180px] transition-all duration-300 bg-white ${(() => {
                           const contractAddress = getContractAddress(market.id);
                           const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
@@ -1998,7 +2027,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           }
                         })()}`}>
 
-
+                          {/* Main content area */}
+                          <div className="flex-1 flex flex-col">
                           {/* Header with Icon, Question, and Percentage */}
                           <div className="flex items-start gap-3 mb-3 relative">
                             {/* Small Square Image */}
@@ -2254,6 +2284,18 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               );
                             }
                           })()}
+                          </div>
+
+                          {/* Entry Fee -> Pot Balance Display */}
+                          <div className="flex justify-center items-center py-2">
+                            <div className="flex items-center gap-2 text-xs font-medium text-gray-700 opacity-60">
+                              <span>{getEntryFeeDisplay(market.id)}</span>
+                              <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                              </svg>
+                              <span className="text-[#00ad00] font-semibold">{market.potSize}</span>
+                            </div>
+                          </div>
 
                           {/* Stats Footer - Compact */}
                           <div className={`flex justify-between items-center pt-2 ${(() => {
@@ -2263,7 +2305,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             return !useTraditionalLayout ? '-translate-y-2' : '';
                           })()}`}>
                             <div className="text-sm font-medium text-gray-600 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
-                              {market.potSize}
+                              Pot #{market.potNumber || 'N/A'}
                               <span className="text-gray-400 font-bold" style={{ fontSize: '8px' }}>•</span>
                               <RefreshCw className="w-3 h-3" />
                               {(() => {
@@ -2322,14 +2364,16 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     style={{ opacity: 0.7 }}
                                   >
                                     {bookmarkLoading === market.id ? (
-                                      <div className="w-3 h-3 animate-spin rounded-full border-2 border-purple-700 border-t-transparent"></div>
-                                    ) : (
+                                      <div className="w-4 h-4 animate-spin rounded-full border-2 border-purple-700 border-t-transparent"></div>
+                                    ) : bookmarkedMarkets.has(market.id) ? (
                                       <Bookmark
-                                        className={`w-3 h-3 transition-all duration-200 ${bookmarkedMarkets.has(market.id)
-                                            ? 'text-purple-700 fill-purple-700'
-                                            : 'text-gray-500 '
-                                          }`}
+                                        className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700"
                                       />
+                                    ) : (
+                                      <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
+                                        <path d="M12 7v10M7 12h10" strokeWidth={2} strokeLinecap="round" />
+                                      </svg>
                                     )}
                                   </button>
                                 );

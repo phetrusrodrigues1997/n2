@@ -15,6 +15,7 @@ export interface Market {
   currentPrice: string
   participants: number
   potSize: string
+  potNumber?: number
   tabId?: string
 }
 
@@ -36,6 +37,7 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     currentPrice: '$150',
     participants: 42,
     potSize: '$420',
+    potNumber: 1,
   },
 
     formula1: {
@@ -48,7 +50,8 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     icon: '/formula.jpg',
     currentPrice: '$100',
     participants: 0,
-    potSize: '$0', 
+    potSize: '$0',
+    potNumber: 2,
   },
 
   crypto: {
@@ -62,6 +65,7 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     currentPrice: '$100',
     participants: 50,
     potSize: '$500',
+    potNumber: 3,
   },
 
   stocks: {
@@ -75,6 +79,7 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     currentPrice: '$248.50',
     participants: 156,
     potSize: '$1,560',
+    potNumber: 4,
   },
 
   music: {
@@ -88,6 +93,7 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     currentPrice: '$130',
     participants: 42,
     potSize: '$420',
+    potNumber: 5,
   },
 
   
