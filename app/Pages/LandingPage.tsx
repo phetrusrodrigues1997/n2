@@ -1468,7 +1468,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   {(() => {
                                     const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                                     const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
-                                    const wrapLimit = useTraditionalLayout ? 35 : 37;
+                                    const wrapLimit = useTraditionalLayout ? 30 : 37;
                                     const truncateLimit = 60;
 
                                     let text = getTranslatedMarketQuestion(market, currentLanguage);
