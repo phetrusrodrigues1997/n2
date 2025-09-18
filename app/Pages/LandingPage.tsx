@@ -1576,7 +1576,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           e.preventDefault();
                                           handleMarketClick(market.id);
                                         })}
-                                        className="bg-purple-50 hover:bg-blue-200 text-purple-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center"
+                                        className="bg-purple-50 hover:bg-blue-200 text-purple-700 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center"
                                       >
                                         {t.higher}
                                       </button>
@@ -1586,7 +1586,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           e.preventDefault();
                                           handleMarketClick(market.id);
                                         })}
-                                        className="bg-blue-50 hover:bg-purple-200 text-blue-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center"
+                                        className="bg-blue-50 hover:bg-purple-200 text-blue-700  rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center"
                                       >
                                         {t.lower}
                                       </button>
@@ -1602,7 +1602,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 const noPercentage = 100 - yesPercentage;
 
                                 return (
-                                  <div className="flex items-center justify-between mb-3 px-2">
+                                  <div className="flex items-center justify-between mb-3">
                                     {/* Left side: Yes/No labels stacked */}
                                     <div className="flex flex-col gap-2">
                                       <div className="text-base font-normal text-black">{t.higher}</div>

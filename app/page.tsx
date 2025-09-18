@@ -943,7 +943,7 @@ export default function App() {
               {/* Conditional: Show Filter Bar when filter dropdown is open, otherwise show Carousel */}
               {isFilterDropdownOpen ? (
                 /* Tournament Filter Carousel */
-                <div className="relative flex-1 md:flex-1 min-w-0 overflow-hidden" data-filter-dropdown>
+                <div className="relative flex-1 md:flex-1 min-w-0 overflow-hidden -translate-x-2 md:translate-x-0" data-filter-dropdown>
                   {/* Left Arrow for filter carousel */}
                   {showLeftArrowFilter && (
                     <button
