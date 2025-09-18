@@ -1713,13 +1713,17 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             </div>
 
                             {/* Entry Fee -> Pot Balance Display */}
-                            <div className="flex justify-center items-center py-3">
-                              <div className="flex items-center gap-2 text-sm font-medium text-gray-700 opacity-60">
+                            <div className={`flex justify-center items-center ${(() => {
+                              const marketIndex = marketOptions.findIndex(m => m.id === market.id);
+                              const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
+                              return !useTraditionalLayout ? '-translate-y-4' : '';
+                            })()}`}>
+                              <div className="flex items-center gap-2 text-sm font-medium text-gray-700 opacity-50">
                                 <span>{getEntryFeeDisplay(market.id)}</span>
                                 <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                 </svg>
-                                <span className="text-[#00ad00] font-semibold">{market.potSize}</span>
+                                <span className="text-[#00aa00] font-bold">{market.potSize}</span>
                               </div>
                             </div>
 
@@ -2287,13 +2291,17 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           </div>
 
                           {/* Entry Fee -> Pot Balance Display */}
-                          <div className="flex justify-center items-center py-2">
-                            <div className="flex items-center gap-2 text-xs font-medium text-gray-700 opacity-60">
+                          <div className={`flex justify-center items-center ${(() => {
+                              const marketIndex = marketOptions.findIndex(m => m.id === market.id);
+                              const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
+                              return !useTraditionalLayout ? '' : 'py-1.5 translate-y-2';
+                            })()}`} >
+                            <div className="flex items-center gap-2 text-xs font-medium text-gray-700 opacity-50">
                               <span>{getEntryFeeDisplay(market.id)}</span>
                               <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                               </svg>
-                              <span className="text-[#00ad00] font-semibold">{market.potSize}</span>
+                              <span className="text-[#00aa00] font-bold">{market.potSize}</span>
                             </div>
                           </div>
 
@@ -2302,7 +2310,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             // Desktop: Check if this market uses traditional layout for translate-y
                             const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                             const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
-                            return !useTraditionalLayout ? '-translate-y-2' : '';
+                            return !useTraditionalLayout ? '' : '';
                           })()}`}>
                             <div className="text-sm font-medium text-gray-600 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                               Pot #{market.potNumber || 'N/A'}
