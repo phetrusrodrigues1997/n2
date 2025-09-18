@@ -574,7 +574,7 @@ export default function App() {
         <div className="relative z-10">
           <div className="max-w-7xl mx-auto flex flex-col ">
           {/* Top row with main header elements */}
-          <div className="flex justify-between items-center mt-3 md:mt-0 px-10 md:px-12">
+          <div className="flex justify-between items-center mt-3 md:mt-0 px-7 md:px-12">
             <div className="flex items-center flex-1">
               {/* Hamburger menu - shows on both desktop and mobile at left edge */}
               <div className="">
@@ -777,7 +777,7 @@ export default function App() {
 
           {/* Market Carousel - only show on home and dashboard sections, on its own line */}
           {(activeSection === 'home') && (
-            <div className="mt-4 md:mt-1 md:translate-y-2 pt-1 md:pt-0 px-6 md:px-8">
+            <div className="mt-4 md:mt-1 md:translate-y-2 pt-1 md:pt-0 px-3 md:px-8">
               {/* Markets Container - Show first 13 on desktop, all on mobile */}
               <div className="flex overflow-x-auto md:overflow-visible scrollbar-hide pb-1"
                 style={{
@@ -824,7 +824,7 @@ export default function App() {
       {/* Mobile Search Bar - Below Header - Always show on mobile when home */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection === 'home' && (
       <div className="md:hidden bg-white py-4">
-        <div className="max-w-7xl mx-auto px-6 md:px-8 flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-3 md:px-8 flex items-center gap-3">
         <div className="relative flex-1">
           <div className="absolute left-3 top-1/2 -translate-y-1/2">
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -876,7 +876,7 @@ export default function App() {
       {/* Second Carousel - Personalized Labels (Below mobile search bar) */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection === 'home' && (
         <section className="relative z-10 md:py-3 bg-white overflow-hidden">
-          <div className="max-w-7xl mx-auto px-6 md:px-8">
+          <div className="max-w-7xl mx-auto px-3 md:px-8">
             <div className="flex items-center gap-4 w-full max-w-full">
               {/* Desktop Search Bar - Left side */}
               <div className="hidden md:flex items-center gap-1">
@@ -966,7 +966,7 @@ export default function App() {
 
                   <div
                     ref={filterCarouselRef}
-                    className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 max-w-full px-6 md:px-8"
+                    className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 max-w-full px-3 md:px-8"
                     onScroll={handleScrollFilter}
                     style={{
                       scrollbarWidth: 'none',
