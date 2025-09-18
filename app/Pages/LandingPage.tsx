@@ -1439,7 +1439,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               <div className="flex-shrink-0">
                                 <div className={`rounded-lg ${(() => {
                                   const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                                  return marketIndex === 0 ? 'w-28 h-28' : 'w-20 h-20';
+                                  return marketIndex === 0 ? 'w-24 h-24' : 'w-16 h-16';
                                 })()} bg-white overflow-hidden relative`}>
                                 {market.icon && (market.icon.slice(0, 1) === '/') ? (
                                 <img
@@ -1468,7 +1468,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   {(() => {
                                     const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                                     const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
-                                    const wrapLimit = useTraditionalLayout ? 30 : 40;
+                                    const wrapLimit = useTraditionalLayout ? 35 : 37;
                                     const truncateLimit = 60;
 
                                     let text = getTranslatedMarketQuestion(market, currentLanguage);
