@@ -567,16 +567,17 @@ export default function App() {
       {/* Hide header and all content when LandingPage is loading or showing coming soon */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && (
         <header
-  className={`z-50 bg-white px-6 md:py-2 md:px-8 sticky top-0 ${
+  className={`z-50 bg-white md:py-2 sticky top-0  ${
     (activeSection === "home") ? "border-b border-gray-200" : ""
   }`}
 >
-        <div className="w-full mx-auto flex flex-col">
+        <div className="relative z-10">
+          <div className="max-w-7xl mx-auto flex flex-col ">
           {/* Top row with main header elements */}
-          <div className="flex justify-between items-center mt-3 md:mt-0">
+          <div className="flex justify-between items-center mt-3 md:mt-0 px-10 md:px-12">
             <div className="flex items-center flex-1">
               {/* Hamburger menu - shows on both desktop and mobile at left edge */}
-              <div className="ml-1.5 md:ml-0">
+              <div className="">
                 <NavigationMenu 
                   activeSection={activeSection} 
                   setActiveSection={setActiveSection} 
@@ -631,7 +632,7 @@ export default function App() {
               {/* Balance display removed - ETH balance handled by wallet */}
 
               {/* Right-side button group - adjust positioning based on connection status */}
-              <div className={`flex items-center ml-auto ${isConnected ? '-mr-4 md:-mr-12' : '-mr-2 md:-mr-8'}`}>
+              <div className={`flex items-center ml-auto ${isConnected ? '-mr-8 md:-mr-16' : '-mr-4 md:-mr-10'}`}>
                 {/* Tight group: Mobile (Bell first) vs Desktop (Language first) */}
                 <div className="flex items-center gap-0">
                   {/* Bell button - Mobile: leftmost, Desktop: rightmost */}
@@ -772,9 +773,11 @@ export default function App() {
             </div>
           </div>
 
+          </div>
+
           {/* Market Carousel - only show on home and dashboard sections, on its own line */}
           {(activeSection === 'home') && (
-            <div className="mt-4 md:mt-1 md:translate-y-2 pt-1 md:pt-0 -mx-4">
+            <div className="mt-4 md:mt-1 md:translate-y-2 pt-1 md:pt-0 px-6 md:px-8">
               {/* Markets Container - Show first 13 on desktop, all on mobile */}
               <div className="flex overflow-x-auto md:overflow-visible scrollbar-hide pb-1"
                 style={{
@@ -810,7 +813,6 @@ export default function App() {
 </button>
 
                 ))}
-                
 
               </div>
             </div>
@@ -821,7 +823,8 @@ export default function App() {
 
       {/* Mobile Search Bar - Below Header - Always show on mobile when home */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection === 'home' && (
-      <div className="md:hidden bg-white px-4 py-4 flex items-center gap-3">
+      <div className="md:hidden bg-white py-4">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 flex items-center gap-3">
         <div className="relative flex-1">
           <div className="absolute left-3 top-1/2 -translate-y-1/2">
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -866,13 +869,14 @@ export default function App() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
           </svg>
         </button>
+        </div>
       </div>
       )}
 
       {/* Second Carousel - Personalized Labels (Below mobile search bar) */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection === 'home' && (
-        <section className="relative z-10 px-4 md:py-3 bg-white overflow-hidden">
-          <div className="w-full mx-auto">
+        <section className="relative z-10 md:py-3 bg-white overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 md:px-8">
             <div className="flex items-center gap-4 w-full max-w-full">
               {/* Desktop Search Bar - Left side */}
               <div className="hidden md:flex items-center gap-1">
@@ -962,7 +966,7 @@ export default function App() {
 
                   <div
                     ref={filterCarouselRef}
-                    className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 max-w-full px-2 md:px-8"
+                    className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 max-w-full px-6 md:px-8"
                     onScroll={handleScrollFilter}
                     style={{
                       scrollbarWidth: 'none',

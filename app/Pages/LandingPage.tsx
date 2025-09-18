@@ -1214,8 +1214,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       <div className="min-h-screen bg-white text-gray-900 overflow-hidden">
 
         {/* Markets Grid */}
-        <section className="relative z-10 px-2 md:px-6 pt-2 md:mt-[5.5rem]">
-          <div className="md:max-w-7xl md:mx-auto">
+        <section className="relative z-10 pt-2 md:mt-[5.5rem]">
+          <div className="max-w-7xl mx-auto px-6 md:px-8">
 
             {/* Mobile Markets Display - All Markets */}
             <div className="md:hidden space-y-2 -translate-y-2">
@@ -1784,8 +1784,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         </section>
 
         {/* Desktop Markets Grid - Full Width */}
-        <section className="relative z-10 px-6 -mt-24 pb-16 hidden md:block">
-          <div className="max-w-7xl mx-auto">
+        <section className="relative z-10 -mt-24 pb-16 hidden md:block">
+          <div className="max-w-7xl mx-auto px-6 md:px-8">
             {/* All Markets Display - Full Width Grid */}
             <div className="grid grid-cols-4 gap-4">
               {(() => {
@@ -2342,8 +2342,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         </section>
 
         {/* Thousands of Winners Section - Desktop */}
-        <section className="relative z-10 px-6 py-16 hidden md:block">
-          <div className="max-w-4xl mx-auto text-center">
+        <section className="relative z-10 py-16 hidden md:block">
+          <div className="max-w-4xl mx-auto px-6 md:px-8 text-center">
             <div className="space-y-4 mb-12">
               <h2 className="text-4xl font-light text-gray-900 tracking-tight">
                 <span className="text-purple-700 font-medium">{t.thousandsOfPlayers}</span>
@@ -2375,8 +2375,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         </section>
 
         {/* Sleek Call to Action - Mobile Only */}
-        <section id="call-to-action" className="relative z-10 px-6 mt-16 mb-16 md:hidden">
-          <div className="max-w-7xl mx-auto text-center">
+        <section id="call-to-action" className="relative z-10 mt-16 mb-16 md:hidden">
+          <div className="max-w-7xl mx-auto px-6 md:px-8 text-center">
             <h2 className="text-2xl font-light text-gray-900 mb-2 tracking-tight">
               <span className="text-purple-700 font-medium">{t.thousandsOfWinners}</span>
             </h2>
@@ -2405,8 +2405,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           </div>
         </section>
 
-        <footer className="relative z-10 px-6 py-10 bg-white text-center text-purple-700 text-sm shadow-md">
-          &copy; {new Date().getFullYear()} {t.footerText}
+        <footer className="relative z-10 py-10 bg-white text-center text-purple-700 text-sm shadow-md">
+          <div className="max-w-7xl mx-auto px-6 md:px-8">
+            &copy; {new Date().getFullYear()} {t.footerText}
+          </div>
         </footer>
 
         {/* Custom Alert */}
