@@ -15,10 +15,11 @@ interface DashboardProps {
   setActiveSection: (section: string) => void;
   selectedMarket?: string;
   currentLanguage?: Language;
+  showEmailManagement?: boolean;
 }
 
 
-const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLanguage = 'en' }: DashboardProps) => {
+const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLanguage = 'en', showEmailManagement = false }: DashboardProps) => {
   const [marketInfo, setMarketInfo] = useState({ name: '', section: '', address: '' });
   const [userPots, setUserPots] = useState<string[]>([]);
   const [selectedMarketAddress, setSelectedMarketAddress] = useState<string>('');
@@ -170,11 +171,12 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
           const userEmailData = await getUserEmail(address);
           console.log('📧 Email data received:', userEmailData);
           if (userEmailData?.email) {
-            console.log('✅ User has email, showing tutorial');
+            console.log('✅ User has email', showEmailManagement ? '- showing email management UI' : '- showing tutorial');
             setHasUserEmail(true);
             setCurrentUserEmail(userEmailData.email);
             setEmail(userEmailData.email); // Pre-fill for editing
-            setShowEmailCollection(false);
+            // Only hide email collection if not explicitly requested for management
+            setShowEmailCollection(showEmailManagement ? true : false);
           } else {
             console.log('❌ User has no email, showing email collection');
             setHasUserEmail(false);
@@ -199,6 +201,14 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
     checkUserEmail();
   }, [address, isConnected]);
 
+  // Show email management UI when requested from external navigation
+  // This should run after the email check to override the default behavior
+  useEffect(() => {
+    if (showEmailManagement && isConnected) {
+      console.log('🔧 Email management requested - forcing email UI to show');
+      setShowEmailCollection(true);
+    }
+  }, [showEmailManagement, isConnected, hasUserEmail]); // Added hasUserEmail to dependency array to run after email check
 
   // Check user participation in pots
   useEffect(() => {

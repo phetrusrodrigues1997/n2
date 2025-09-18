@@ -136,14 +136,31 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
   // Get translations
   const t = getTranslation(currentLanguage);
 
-  // Helper function to format waiting message
-  const getWaitingMessage = (count: number): string => {
-    if (!t.waitingForPlayers) return `Waiting for ${count} more player${count !== 1 ? 's' : ''}`;
-
+  // Helper function to format waiting message with purple styling
+  const getWaitingMessage = (count: number): React.ReactNode => {
     const plural = count !== 1 ? (currentLanguage === 'pt-BR' ? 'es' : 's') : '';
-    return t.waitingForPlayers
-      .replace('{count}', count.toString())
-      .replace('{plural}', plural);
+
+    if (currentLanguage === 'pt-BR') {
+      // Portuguese: "Aguardando mais X jogador(es)" -> "Aguardando mais" + "X jogador(es)"
+      return (
+        <>
+          Aguardando mais{' '}
+          <span className="text-purple-600 font-semibold">
+            {count} jogador{plural}
+          </span>
+        </>
+      );
+    } else {
+      // English: "Waiting for X more player(s)" -> "Waiting for" + "X more player(s)"
+      return (
+        <>
+          Waiting for{' '}
+          <span className="text-purple-600 font-semibold">
+            {count} more player{plural}
+          </span>
+        </>
+      );
+    }
   };
 
   // Helper function to format dynamic messages
@@ -320,7 +337,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
   return (
     <div className="min-h-screen bg-white text-black w-full overflow-x-hidden">
       <div className="w-full mx-auto p-6">
-        <div className="flex items-center justify-center min-h-[80vh] md:min-h-[80vh] mb-24 md:mb-0">
+        <div className="flex items-center justify-center -translate-y-8 md:translate-y-0">
           <div className="text-center w-full max-w-4xl">
             {/* Email Collection Modal */}
             {showEmailCollection && (

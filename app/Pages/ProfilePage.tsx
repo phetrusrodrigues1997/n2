@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, Trophy, Award, Crown, Wallet, DollarSign, Zap, ChevronDown, ChevronUp } from 'lucide-react';
+import { Upload, Trophy, Award, Crown, Wallet, DollarSign, Zap, ChevronDown, ChevronUp, Mail } from 'lucide-react';
 import { useAccount, useReadContract, useBalance } from 'wagmi';
 import { formatUnits } from 'viem';
 import { saveImageUrl, getLatestImageUrl, getUserStats, getLeaderboard, getUserRank } from '../Database/actions';
@@ -272,6 +272,15 @@ const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => 
                   >
                     <Trophy className="w-3.5 h-3.5 text-white group-hover:scale-110 transition-transform duration-200" />
                     <span className="text-white text-xs md:text-sm font-semibold">Referrals</span>
+                  </button>
+
+                  {/* Email Management Button */}
+                  <button
+                    onClick={() => setActiveSection('emailManagement')}
+                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg md:rounded-xl px-3 py-2 md:py-2.5 border border-blue-700/50 transition-all duration-300 group shadow-lg hover:shadow-blue-700/25 hover:scale-105"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-white group-hover:scale-110 transition-transform duration-200" />
+                    <span className="text-white text-xs md:text-sm font-semibold">Manage Email</span>
                   </button>
                 </div>
               </div>
