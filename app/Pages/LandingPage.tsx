@@ -1390,7 +1390,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             '--swap-distance': swapDistance
                           } as React.CSSProperties}
                         >
-                          <div className={`h-full transition-all duration-300 bg-white ${(() => {
+                          <div className={`h-full ${index === 0 ? 'min-h-[320px]' : 'min-h-[220px]'} flex flex-col justify-between transition-all duration-300 bg-white ${(() => {
                             const contractAddress = getContractAddress(market.id);
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
                             const marketIndex = marketOptions.findIndex(m => m.id === market.id);
@@ -1412,12 +1412,13 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             {/* Background Gradient Accent */}
                             <div className="absolute top-0 left-0 right-0 h-1"></div>
 
-
+                            {/* Main content area */}
+                            <div className="flex-1 flex flex-col">
                             {/* Header with Icon, Question, and Percentage */}
-                            <div className="flex items-center gap-3 mb-3 relative">
+                            <div className="flex items-center gap-3 mb-6 relative">
                               {/* Small Square Image */}
                               <div className="flex-shrink-0">
-                                <div className="rounded-lg w-12 h-12 bg-white overflow-hidden relative">
+                                <div className={`rounded-lg ${index === 0 ? 'w-20 h-20' : 'w-16 h-16'} bg-white overflow-hidden relative`}>
                                 {market.icon && (market.icon.slice(0, 1) === '/') ? (
                                 <img
                                     src={market.icon}
@@ -1602,7 +1603,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 const noPercentage = 100 - yesPercentage;
 
                                 return (
-                                  <div className="flex items-center justify-between mb-3">
+                                  <div className="flex items-center justify-between mb-6">
                                     {/* Left side: Yes/No labels stacked */}
                                     <div className="flex flex-col gap-2">
                                       <div className="text-base font-normal text-black">{t.higher}</div>
@@ -1660,6 +1661,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 );
                               }
                             })()}
+                            </div>
 
                             {/* Stats Footer */}
                             <div className={`flex justify-between items-center pt-2 ${(() => {
