@@ -1446,8 +1446,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   {(() => {
                                     const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                                     const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
-                                    const wrapLimit = useTraditionalLayout ? 38 : 49;
-                                    const truncateLimit = 100;
+                                    const wrapLimit = useTraditionalLayout ? 30 : 38;
+                                    const truncateLimit = 60;
 
                                     let text = getTranslatedMarketQuestion(market, currentLanguage);
 
@@ -1456,10 +1456,22 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       text = text.substring(0, truncateLimit) + '...';
                                     }
 
-                                    // Insert line break at wrap limit
+                                    // Insert line break at wrap limit (word boundary aware)
                                     if (text.length > wrapLimit) {
-                                      const beforeBreak = text.substring(0, wrapLimit);
-                                      const afterBreak = text.substring(wrapLimit);
+                                      let breakPoint = wrapLimit;
+
+                                      // Find the last space before the wrap limit to avoid breaking words
+                                      const textUpToLimit = text.substring(0, wrapLimit);
+                                      const lastSpaceIndex = textUpToLimit.lastIndexOf(' ');
+
+                                      // If we found a space and it's not too far back, use it as break point
+                                      if (lastSpaceIndex > 0 && lastSpaceIndex > wrapLimit - 20) {
+                                        breakPoint = lastSpaceIndex;
+                                      }
+
+                                      const beforeBreak = text.substring(0, breakPoint);
+                                      const afterBreak = text.substring(breakPoint).trim(); // trim to remove leading space
+
                                       return (
                                         <>
                                           {beforeBreak}
