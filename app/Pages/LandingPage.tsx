@@ -731,21 +731,24 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     // console.log(`🔍 getRealPotBalance called with marketId: "${marketId}"`);
     // console.log(`🔍 Available potBalances keys:`, Object.keys(potBalances));
     // console.log(`🔍 potBalances object:`, potBalances);
-    
+
     // Check if we have real balance data
     if (potBalances[marketId]) {
       console.log(`✅ Found balance for "${marketId}": ${potBalances[marketId]}`);
       return potBalances[marketId];
     }
 
-    // Try to map market ID to table type, then to display name for lookup
-    const tableType = getTableTypeFromMarketId(marketId);
-    const displayName = getMarketDisplayName(tableType as any); // Type assertion needed
-    // console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
+    // Only try display name mapping for markets that have contracts
+    if (MARKETS_WITH_CONTRACTS.includes(marketId as any)) {
+      // Try to map market ID to table type, then to display name for lookup
+      const tableType = getTableTypeFromMarketId(marketId);
+      const displayName = getMarketDisplayName(tableType as any); // Type assertion needed
+      // console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
 
-    if (potBalances[displayName]) {
-      console.log(`✅ Found balance using display name "${displayName}": ${potBalances[displayName]}`);
-      return potBalances[displayName];
+      if (potBalances[displayName]) {
+        console.log(`✅ Found balance using display name "${displayName}": ${potBalances[displayName]}`);
+        return potBalances[displayName];
+      }
     }
 
     // Fallback to $0 if no data

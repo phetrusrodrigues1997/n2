@@ -53,7 +53,7 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
 
   crypto: {
     id: 'Crypto',
-    name: 'crypto',
+    name: 'Crypto',
     symbol: '',
     contractAddress: '0xe9b69d0EA3a6E018031931d300319769c6629866',
     color: '#FF5733',

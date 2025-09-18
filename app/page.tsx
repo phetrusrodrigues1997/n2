@@ -567,7 +567,7 @@ export default function App() {
       {/* Hide header and all content when LandingPage is loading or showing coming soon */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && (
         <header
-  className={`z-50 bg-white px-4 md:py-2 sticky top-0 ${
+  className={`z-50 bg-white px-6 md:py-2 md:px-8 sticky top-0 ${
     (activeSection === "home") ? "border-b border-gray-200" : ""
   }`}
 >
@@ -631,7 +631,7 @@ export default function App() {
               {/* Balance display removed - ETH balance handled by wallet */}
 
               {/* Right-side button group - adjust positioning based on connection status */}
-              <div className={`flex items-center ml-auto ${isConnected ? '-mr-4 md:-mr-12' : '-mr-2 md:-mr-4'}`}>
+              <div className={`flex items-center ml-auto ${isConnected ? '-mr-4 md:-mr-12' : '-mr-2 md:-mr-8'}`}>
                 {/* Tight group: Mobile (Bell first) vs Desktop (Language first) */}
                 <div className="flex items-center gap-0">
                   {/* Bell button - Mobile: leftmost, Desktop: rightmost */}
@@ -774,7 +774,7 @@ export default function App() {
 
           {/* Market Carousel - only show on home and dashboard sections, on its own line */}
           {(activeSection === 'home') && (
-            <div className="mt-4 md:mt-1 md:translate-y-2 pt-1 md:pt-0 ">
+            <div className="mt-4 md:mt-1 md:translate-y-2 pt-1 md:pt-0 -mx-4">
               {/* Markets Container - Show first 13 on desktop, all on mobile */}
               <div className="flex overflow-x-auto md:overflow-visible scrollbar-hide pb-1"
                 style={{
