@@ -1275,7 +1275,7 @@ export default function App() {
       {!isLandingPageLoading && activeSection === 'home' && showHowItWorksPopup && !isTutorialOpen && (
         <div className="fixed left-0 right-0 md:hidden bg-white z-50" data-how-it-works-popup style={{ bottom: '62px' }}>
           <div
-            className="bg-white border-t border-gray-100 rounded-t-lg px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+            className="bg-white border-t border-gray-200 rounded-t-lg px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
             onClick={() => {
               setActiveSection('discord');
               setShowHowItWorksPopup(false);
