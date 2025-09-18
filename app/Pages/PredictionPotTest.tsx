@@ -85,10 +85,11 @@ const PREDICTION_POT_ABI = [
 interface PredictionPotProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
+  currentLanguage?: Language;
 }
 
 
-const PredictionPotTest =  ({ activeSection, setActiveSection }: PredictionPotProps) => {
+const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: propCurrentLanguage = 'en' }: PredictionPotProps) => {
   const { address, isConnected } = useAccount();
   const { writeContract, data: txHash, isPending } = useWriteContract();
   
@@ -209,18 +210,8 @@ const PredictionPotTest =  ({ activeSection, setActiveSection }: PredictionPotPr
     }
   }, [txHash, isPending, isConfirming, isConfirmed, isError, receiptError, lastAction]);
 
-  const [currentLanguage, setCurrentLanguage] = useState<Language>(() => {
-    const savedLang = Cookies.get('language');
-    if (savedLang && supportedLanguages.some(lang => lang.code === savedLang)) {
-      return savedLang as Language;
-    }
-    return 'en';
-  });
-  
-  // Update cookie when language changes
-  useEffect(() => {
-    Cookies.set('language', currentLanguage, { sameSite: 'lax' });
-  }, [currentLanguage]);
+  // Use language from props (passed from parent component)
+  const currentLanguage = propCurrentLanguage;
   
   const t = getTranslation(currentLanguage);
 

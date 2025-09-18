@@ -1150,14 +1150,14 @@ export default function App() {
 
 
         {activeSection === "comingsoon" && <ComingSoonPage />} 
-        {activeSection === "receive" && <ReceiveSection activeSection={activeSection} setActiveSection={setActiveSection} />}
+        {activeSection === "receive" && <ReceiveSection activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "profile" && <ProfilePage activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "messagesPage" && <MessagingPage activeSection={activeSection} setActiveSection={setActiveSection} onAnnouncementsMarkedAsRead={onAnnouncementsMarkedAsRead} currentLanguage={currentLanguage} />}
         {activeSection === "discord" && <HowItWorksSection setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {/* {activeSection === "notifications" && <CreateMessage />} */}
         {activeSection === "dashboard" && <TutorialBridge key={currentLanguage} activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "notReadyPage" && <NotReadyPage activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
-        {activeSection === "bitcoinPot" && <PredictionPotTest activeSection={activeSection} setActiveSection={setActiveSection} />}
+        {activeSection === "bitcoinPot" && <PredictionPotTest activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "referralProgram" && <ReferralProgram activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "home" && <LandingPage activeSection={activeSection} setActiveSection={setActiveSection} isMobileSearchActive={isMobileSearchActive} searchQuery={searchQuery} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} onLoadingChange={handleLoadingChange} currentLanguage={currentLanguage} tournamentFilter={tournamentFilter} onTutorialStateChange={setIsTutorialOpen} />}
         {activeSection === "makePrediction" && <MakePredicitions activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
@@ -1166,7 +1166,7 @@ export default function App() {
         {activeSection === "ideas" && <IdeasPage activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "news" && <NewsPage onBack={() => setActiveSection('home')} />}
         {activeSection === "bookmarks" && <BookmarksPage activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
-        {activeSection === "adminEvidenceReview" && <AdminEvidenceReviewPage activeSection={activeSection} setActiveSection={setActiveSection} />}
+        {activeSection === "adminEvidenceReview" && <AdminEvidenceReviewPage activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "privatePot" && privatePotAddress && (
           <PrivatePotInterface
             contractAddress={privatePotAddress}

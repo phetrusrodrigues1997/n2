@@ -7,31 +7,15 @@ import { getTranslation, type Language } from '../Languages/languages';
 interface ReceiveSectionProps {
   activeSection?: string;
   setActiveSection?: (section: string) => void;
+  currentLanguage?: Language;
 }
 
-const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiveSection }) => {
+const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiveSection, currentLanguage = 'en' }) => {
   const { address, isConnected } = useAccount();
   const [copied, setCopied] = useState(false);
   const queryClient = useQueryClient();
 
-  // Get current language
-  const [currentLanguage, setCurrentLanguage] = useState<Language>('en');
-
-  useEffect(() => {
-    const handleLanguageChange = (event: CustomEvent) => {
-      setCurrentLanguage(event.detail.language);
-    };
-
-    window.addEventListener('languageChange', handleLanguageChange as EventListener);
-    const savedLanguage = localStorage.getItem('preferredLanguage') as Language;
-    if (savedLanguage) {
-      setCurrentLanguage(savedLanguage);
-    }
-
-    return () => {
-      window.removeEventListener('languageChange', handleLanguageChange as EventListener);
-    };
-  }, []);
+  // Language is now passed as prop from parent component
 
   const t = getTranslation(currentLanguage);
 

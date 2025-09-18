@@ -4,12 +4,12 @@ import { FileText, Clock, AlertTriangle, CheckCircle, XCircle, ChevronDown, Chev
 import { getAllEvidenceSubmissions } from '../Database/actions';
 import { getProvisionalOutcome } from '../Database/OwnerActions';
 import { getMarkets } from '../Constants/markets';
-import { getTranslation } from '../Languages/languages';
+import { getTranslation, Language } from '../Languages/languages';
 import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, TableType } from '../Database/config';
 
 // Dynamic market discovery
-const getMarketsWithContracts = () => {
-  const t = getTranslation('en'); // Default to English for admin
+const getMarketsWithContracts = (language: Language = 'en') => {
+  const t = getTranslation(language);
   const allMarkets = getMarkets(t, 'options');
   return allMarkets.filter(market => market.contractAddress);
 };
@@ -47,16 +47,19 @@ interface MarketOutcome {
 interface AdminEvidenceReviewPageProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
+  currentLanguage?: Language;
 }
 
-const AdminEvidenceReviewPage: React.FC<AdminEvidenceReviewPageProps> = ({ 
-  activeSection, 
-  setActiveSection 
+const AdminEvidenceReviewPage: React.FC<AdminEvidenceReviewPageProps> = ({
+  activeSection,
+  setActiveSection,
+  currentLanguage = 'en'
 }) => {
   const { address, isConnected } = useAccount();
   
   // Get markets with contracts
-  const marketsWithContracts = getMarketsWithContracts();
+  const marketsWithContracts = getMarketsWithContracts(currentLanguage);
+  const t = getTranslation(currentLanguage);
   
   // State management
   const [selectedMarket, setSelectedMarket] = useState<string>(
