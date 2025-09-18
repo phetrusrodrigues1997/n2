@@ -1406,7 +1406,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             '--swap-distance': swapDistance
                           } as React.CSSProperties}
                         >
-                          <div className={`h-full min-h-[295px] flex flex-col justify-between transition-all duration-300 bg-white ${(() => {
+                          <div className={`h-full ${(() => {
+                            const marketIndex = marketOptions.findIndex(m => m.id === market.id);
+                            return marketIndex === 0 ? 'min-h-[295px]' : 'min-h-[260px]';
+                          })()} flex flex-col justify-between transition-all duration-300 bg-white ${(() => {
                             const contractAddress = getContractAddress(market.id);
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
                             const marketIndex = marketOptions.findIndex(m => m.id === market.id);
@@ -1434,7 +1437,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             <div className="flex items-center gap-3 mb-6 relative">
                               {/* Small Square Image */}
                               <div className="flex-shrink-0">
-                                <div className="rounded-lg w-20 h-20 bg-white overflow-hidden relative">
+                                <div className={`rounded-lg ${(() => {
+                                  const marketIndex = marketOptions.findIndex(m => m.id === market.id);
+                                  return marketIndex === 0 ? 'w-28 h-28' : 'w-20 h-20';
+                                })()} bg-white overflow-hidden relative`}>
                                 {market.icon && (market.icon.slice(0, 1) === '/') ? (
                                 <img
                                     src={market.icon}
@@ -1462,7 +1468,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   {(() => {
                                     const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                                     const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
-                                    const wrapLimit = useTraditionalLayout ? 30 : 38;
+                                    const wrapLimit = useTraditionalLayout ? 30 : 40;
                                     const truncateLimit = 60;
 
                                     let text = getTranslatedMarketQuestion(market, currentLanguage);
