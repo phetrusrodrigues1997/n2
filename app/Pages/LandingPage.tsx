@@ -1441,14 +1441,35 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 }`}>                <p className="text-sm leading-tight font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]" style={{
                                   color: '#374151',
                                   fontWeight: '650',
-                                  maxHeight: '2.5rem',
-                                  overflow: 'hidden'
+                                  whiteSpace: 'nowrap'
                                 }}>
                                   {(() => {
                                     const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                                     const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
-                                    const charLimit = useTraditionalLayout ? 53 : 75; // Mobile: increased chars for traditional, increased for new style
-                                    return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
+                                    const wrapLimit = useTraditionalLayout ? 38 : 49;
+                                    const truncateLimit = 100;
+
+                                    let text = getTranslatedMarketQuestion(market, currentLanguage);
+
+                                    // Truncate if over 100 characters
+                                    if (text.length > truncateLimit) {
+                                      text = text.substring(0, truncateLimit) + '...';
+                                    }
+
+                                    // Insert line break at wrap limit
+                                    if (text.length > wrapLimit) {
+                                      const beforeBreak = text.substring(0, wrapLimit);
+                                      const afterBreak = text.substring(wrapLimit);
+                                      return (
+                                        <>
+                                          {beforeBreak}
+                                          <br />
+                                          {afterBreak}
+                                        </>
+                                      );
+                                    }
+
+                                    return text;
                                   })()}
                                 </p>
                               </div>
