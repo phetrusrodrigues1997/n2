@@ -1151,7 +1151,7 @@ export default function App() {
 
         {activeSection === "comingsoon" && <ComingSoonPage />} 
         {activeSection === "receive" && <ReceiveSection activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
-        {activeSection === "profile" && <ProfilePage activeSection={activeSection} setActiveSection={setActiveSection} />}
+        {activeSection === "profile" && <ProfilePage activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "messagesPage" && <MessagingPage activeSection={activeSection} setActiveSection={setActiveSection} onAnnouncementsMarkedAsRead={onAnnouncementsMarkedAsRead} currentLanguage={currentLanguage} />}
         {activeSection === "discord" && <HowItWorksSection setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {/* {activeSection === "notifications" && <CreateMessage />} */}

@@ -208,7 +208,6 @@ export interface Translations {
   emailCollection: string;
 
   // Email Management
-  manageEmail: string;
   yourEmail: string;
   updateEmailAddress: string;
   updateEmail: string;
@@ -369,7 +368,6 @@ export interface Translations {
   predictionsClosed: string;
   youChose: string;
   for: string;
-  predictionHistory: string;
   predictions: string;
   showingLatest: string;
   tomorrow: string;
@@ -377,7 +375,6 @@ export interface Translations {
   activePrediction: string;
   makePrediction: string;
   underReview: string;
-  status: string;
   evidenceSubmittedAt: string;
   submitEvidence: string;
   evidenceSubmissionTerms: string;
@@ -464,6 +461,28 @@ export interface Translations {
   detailedTournamentStep5Description: string;
   detailedTournamentStep6Title: string;
   detailedTournamentStep6Description: string;
+
+  // ProfilePage translations
+  referrals: string;
+  manageEmail: string;
+  tapForStats: string;
+  newBadge: string;
+  profile: string;
+  totalEarnings: string;
+  potsWon: string;
+  winRate: string;
+  globalRank: string;
+  unranked: string;
+  predictionHistory: string;
+  estPredictions: string;
+  status: string;
+  active: string;
+  newTrader: string;
+  globalLeaderboard: string;
+  rank: string;
+  trader: string;
+  earnings: string;
+  accuracy: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -936,7 +955,26 @@ export const translations: Record<Language, Translations> = {
     // LandingPage hero section
     thousandsOfPlayers: 'Thousands of players,',
     thousandsOfWinners: 'Thousands of winners,',
-    lastStandingQuestion: 'will you be among the last 5 standing?'
+    lastStandingQuestion: 'will you be among the last 5 standing?',
+
+    // ProfilePage translations
+    referrals: 'Referrals',
+    tapForStats: 'Tap for Stats & Earnings',
+    newBadge: 'New',
+    profile: 'Profile',
+    totalEarnings: 'Total Earnings',
+    potsWon: 'Pots Won',
+    winRate: 'Win Rate',
+    globalRank: 'Global Rank',
+    unranked: 'Unranked',
+    estPredictions: 'Est. Predictions',
+    active: 'Active',
+    newTrader: 'New Trader',
+    globalLeaderboard: 'Global Leaderboard',
+    rank: 'Rank',
+    trader: 'Trader',
+    earnings: 'Earnings',
+    accuracy: 'Accuracy'
   },
   'pt-BR': {
     // Hero Section
@@ -1406,7 +1444,26 @@ export const translations: Record<Language, Translations> = {
     // LandingPage hero section
     thousandsOfPlayers: 'Milhares de jogadores,',
     thousandsOfWinners: 'Milhares de vencedores,',
-    lastStandingQuestion: 'você estará entre os 5 últimos de pé?'
+    lastStandingQuestion: 'você estará entre os 5 últimos de pé?',
+
+    // ProfilePage translations
+    referrals: 'Indicações',
+    tapForStats: 'Toque para Ver Estatísticas e Ganhos',
+    newBadge: 'Novo',
+    profile: 'Perfil',
+    totalEarnings: 'Ganhos Totais',
+    potsWon: 'Potes Ganhos',
+    winRate: 'Taxa de Vitória',
+    globalRank: 'Ranking Global',
+    unranked: 'Sem Ranking',
+    estPredictions: 'Est. Previsões',
+    active: 'Ativo',
+    newTrader: 'Novo Trader',
+    globalLeaderboard: 'Ranking Global',
+    rank: 'Posição',
+    trader: 'Trader',
+    earnings: 'Ganhos',
+    accuracy: 'Precisão'
   },
 };
 
