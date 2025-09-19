@@ -1160,15 +1160,15 @@ export default function App() {
 
       {/* Mobile Bottom Navigation */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'ideas' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && activeSection !== 'discord' && (
-        <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white/90 backdrop-blur-xl z-40 border-t border-gray-100/50">
-          <div className="flex items-center justify-around py-4 px-1">
+        <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40 border-t border-gray-100/50">
+          <div className="flex items-center justify-around py-2 px-1">
             <button
               onClick={(e) => {
                 console.log('Mobile HOME button clicked');
                 setActiveSection('home');
                 setIsMobileSearchActive(false);
               }}
-              className={`flex flex-col items-center justify-center min-w-[60px] py-2 px-3 transition-all duration-200 ${
+              className={`flex flex-col items-center justify-center min-w-[60px] py-1 px-3 transition-all duration-200 ${
                 (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot')
                   ? 'text-black'
                   : 'text-gray-400 hover:text-gray-600 active:scale-95'
@@ -1195,7 +1195,7 @@ export default function App() {
 
             <button
               onClick={() => setActiveSection('liveMarkets')}
-              className={`flex flex-col items-center justify-center min-w-[60px] py-2 px-3 transition-all duration-200 ${
+              className={`flex flex-col items-center justify-center min-w-[60px] py-1 px-3 transition-all duration-200 ${
                 activeSection === 'liveMarkets'
                   ? 'text-black'
                   : 'text-gray-400 hover:text-gray-600 active:scale-95'
@@ -1224,7 +1224,7 @@ export default function App() {
                 console.log('Mobile NEWS button clicked');
                 setActiveSection('news');
               }}
-              className={`flex flex-col items-center justify-center min-w-[60px] py-2 px-3 transition-all duration-200 ${
+              className={`flex flex-col items-center justify-center min-w-[60px] py-1 px-3 transition-all duration-200 ${
                 activeSection === 'news'
                   ? 'text-black'
                   : 'text-gray-400 hover:text-gray-600 active:scale-95'
@@ -1258,7 +1258,7 @@ export default function App() {
                 console.log('Mobile my markets button clicked - should navigate to bookmarks');
                 setActiveSection('bookmarks');
               }}
-              className={`flex flex-col items-center justify-center min-w-[60px] py-2 px-3 transition-all duration-200 ${
+              className={`flex flex-col items-center justify-center min-w-[60px] py-1 px-3 transition-all duration-200 ${
                 (activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile')
                   ? 'text-black'
                   : 'text-gray-400 hover:text-gray-600 active:scale-95'
