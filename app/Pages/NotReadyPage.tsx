@@ -389,11 +389,11 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
             <div className="bg-white rounded-3xl border-0 p-8 md:p-12 text-center">
               <div className="flex flex-col items-center space-y-6">
                 {/* Ghostie Image */}
-                <img 
+                {/* <img 
                   src="/ghostienobg.png" 
                   alt="Not ready yet" 
                   className="w-24 h-24 md:w-32 md:h-32 opacity-80"
-                />
+                /> */}
                 
                 {/* Main Message */}
                 <div className="space-y-4">

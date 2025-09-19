@@ -9,11 +9,11 @@ const ComingSoonPage: React.FC<ComingSoonPageProps> = () => {
     <div className="min-h-screen w-full bg-black flex flex-col items-center justify-center px-4">
       {/* Ghostie Image */}
       <div className="mb-8">
-        <img 
+        {/* <img 
           src="/ghostienobg.png" 
           alt="Ghostie" 
           className="w-16 h-16 md:w-16 md:h-16 animate-pulse"
-        />
+        /> */}
       </div>
 
       {/* Coming Soon Text */}

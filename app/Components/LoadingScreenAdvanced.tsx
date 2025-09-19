@@ -47,15 +47,15 @@ export default function LoadingScreenAdvanced({
         <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-3xl p-12">
           {/* Ghostie Logo */}
           <div className="flex justify-center mb-6">
-            <img
+            {/* <img
               src="/ghostienobg.png"
               alt="Prediwin Logo"
               className="w-20 h-20 md:w-24 md:h-24 opacity-90"
-            />
+            /> */}
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl font-black text-purple-700 mb-4 tracking-tight">{title}</h1>
+          <h1 className="text-4xl font-black text-purple-700 mb-4 tracking-tight">{title}</h1>
           <p className="text-gray-600 text-base mb-8">
             {subtitle}
           </p>

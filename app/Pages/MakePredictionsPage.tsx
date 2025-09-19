@@ -1156,11 +1156,11 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
           <div className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 text-center shadow-2xl">
             {/* Ghostie Logo */}
             <div className="flex justify-center mb-6">
-              <img
+              {/* <img
                 src="/ghostienobg.png"
                 alt="Ghostie"
                 className="w-20 h-20 md:w-24 md:h-24 opacity-90"
-              />
+              /> */}
             </div>
             
             {/* Header */}

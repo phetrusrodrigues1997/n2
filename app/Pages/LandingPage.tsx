@@ -389,37 +389,30 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     {
       title: t.globalCompetition || "Global Competition",
       content: t.globalCompetitionDesc || "Join thousands of users worldwide in predicting market movements. Every prediction counts towards building a global community of forecasters.",
-      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     },
     {
       title: t.dailyPredictions || "Daily Predictions",
       content: t.dailyPredictionsDesc || "Make your prediction each day before midnight. Will Bitcoin go up or down tomorrow? Simple yes/no predictions with real rewards.",
-      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     },
     {
       title: t.tutorialStep5Title || "Weekly Predictions",
       content: t.tutorialStep5Description || "Some tournaments happen weekly, and begin one week before the first day of the event. Examples include Formula 1 races, NBA playoffs, and World Cup matches.",
-      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     },
     {
       title: t.dynamicPricing || "Dynamic Pricing",
       content: t.dynamicPricingDesc || "Entry fees start low and increase daily. Early predictors pay less, while late entries face higher stakes. Time is money!",
-      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     },
     {
       title: t.secondChances || "Second Chances",
       content: t.secondChancesDesc || "Made a wrong prediction? Pay a re-entry fee to get back in the game. No permanent eliminations - just strategic comebacks.",
-      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     },
     {
       title: t.finalShowdown || "Final Showdown",
       content: t.finalShowdownDesc || "Saturday night is elimination time. Correct predictors stay in and share the prize. Wrong predictors face the music.",
-      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     },
     {
       title: t.liveStats || "Live Statistics",
       content: t.liveStatsDesc || "Track your performance, view global prediction trends, and see real-time market sentiment. Data drives decisions.",
-      icon: <img src="/ghostienobg.png" alt="Ghostie" className="w-8 h-8" />
     },
     
   ];
@@ -1734,12 +1727,12 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               }
                               return !useTraditionalLayout ? '-translate-y-8' : '';
                             })()}`}>
-                              <div className="flex items-center gap-2 text-sm font-medium text-gray-700 opacity-50">
-                                <span className= "font-bold" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>{getEntryFeeDisplay(market.id)}</span>
-                                <svg className="w-4 h-4 font-medium text-gray-700 opacity-50 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <div className="flex items-center gap-2 text-sm text-gray-700 opacity-100">
+                                <span className= "font-bold opacity-50" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>{getEntryFeeDisplay(market.id)}</span>
+                                <svg className="w-4 h-4 font-medium text-gray-700 opacity-40 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                 </svg>
-                                <span className="text-[#00aa00] font-bold">{market.potSize}</span>
+                                <span className="text-[#039905] font-bold" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>{market.potSize}</span>
                               </div>
                             </div>
 
@@ -2341,12 +2334,12 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                               return !useTraditionalLayout ? '' : 'py-1.5 translate-y-2';
                             })()}`} >
-                            <div className="flex items-center gap-2 text-xs font-medium text-gray-700 opacity-50">
-                              <span className= "font-bold" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>{getEntryFeeDisplay(market.id)}</span>
+                            <div className="flex items-center gap-2 text-sm text-gray-700 opacity-100">
+                              <span className= "font-bold opacity-50" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>{getEntryFeeDisplay(market.id)}</span>
                               <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                               </svg>
-                              <span className="text-[#00aa00] font-bold">{market.potSize}</span>
+                              <span className="text-[#039905] font-bold" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>{market.potSize}</span>
                             </div>
                           </div>
 
