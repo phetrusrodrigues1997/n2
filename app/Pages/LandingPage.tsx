@@ -1514,8 +1514,27 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 const contractAddress = getContractAddress(market.id);
                                 const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
-                                // Only show thermometer for traditional layout (even index markets)
-                                if (useTraditionalLayout && predictionPercentages[market.tabId || market.id] && !isEliminated) {
+                                // Show percentage and chance for first market, thermometer for others
+                                if (marketIndex === 0 && predictionPercentages[market.tabId || market.id] && !isEliminated) {
+                                  return (
+                                    <div className="absolute top-1/2 right-0 transform -translate-y-1/2">
+                                      <div className="text-right flex flex-col items-end">
+                                        {/* Just percentage for first market - vertically centered */}
+                                        <div className="text-base font-bold text-gray-900 leading-none">
+                                          {(() => {
+                                            const totalVotes = predictionPercentages[market.tabId || market.id]?.totalPredictions ?? 0;
+                                            const positive = Math.round((predictionPercentages[market.tabId || market.id]?.positivePercentage ?? 0) / 100 * totalVotes);
+                                            const negative = totalVotes - positive;
+                                            const smoothedPercentage = (((positive + 0.5) / (positive + negative + 1)) * 100).toFixed(0);
+                                            return smoothedPercentage;
+                                          })()}%
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                }
+                                // Only show thermometer for traditional layout (even index markets), but not for first market
+                                else if (useTraditionalLayout && predictionPercentages[market.tabId || market.id] && !isEliminated && marketIndex !== 0) {
                                   return (
                                     <div className="absolute top-0 right-0">
                                       <div className="text-right flex flex-col items-end">
@@ -2125,7 +2144,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
-                              // Only show thermometer for traditional layout (even index markets)
+                              // Only show thermometer for traditional layout (even index markets) - Desktop shows full thermometer including first market
                               if (useTraditionalLayout && predictionPercentages[market.tabId || market.id] && !isEliminated) {
                                 return (
                                   <div className="absolute top-0 -right-1">
