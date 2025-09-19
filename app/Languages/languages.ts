@@ -989,10 +989,11 @@ export const translations: Record<Language, Translations> = {
     // Tips carousel
     tipLabel: 'Tip',
     tip1: 'Users who research their questions tend to have a higher accuracy',
-    tip2: 'Check recent news and trends before making predictions',
+    tip2: 'Review and change your predictions before the end of the day (daily pots) or end of the week (weekly pots)',
     tip3: 'Consider market sentiment and historical patterns',
     tip4: 'Diversify your predictions across different markets',
-    tip5: 'Set realistic expectations and manage risk accordingly'
+    tip5: 'Set realistic expectations and manage risk accordingly',
+  
   },
   'pt-BR': {
     // Hero Section
@@ -1486,11 +1487,12 @@ export const translations: Record<Language, Translations> = {
 
     // Tips carousel
     tipLabel: 'Dica',
-    tip1: 'Usuários que pesquisam suas questões tendem a ter maior precisão',
-    tip2: 'Verifique notícias recentes e tendências antes de fazer previsões',
-    tip3: 'Considere o sentimento do mercado e padrões históricos',
-    tip4: 'Diversifique suas previsões em diferentes mercados',
-    tip5: 'Defina expectativas realistas e gerencie o risco adequadamente'
+    tip1: 'Usuários que pesquisam antes de tentar prever tendem a ter maior precisão',
+    tip2: 'Revise e ajuste suas previsões antes do fim do dia (potes diários) ou fim das semana (potes semanais)',
+    tip3: 'Considere o sentimento em torno do tópico e padrões históricos',
+    tip4: 'Diversifique suas previsões entrando em diferentes potes',
+    tip5: 'Defina expectativas realistas e nao se deixe levar pela emoção',
+  
   },
 };
 

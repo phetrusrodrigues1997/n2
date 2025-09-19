@@ -1368,7 +1368,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 // Apply pagination
                 const displayedMarkets = orderedMarkets.slice(0, displayedMarketsCount);
 
-                return displayedMarkets.map((market, index) => {
+                return displayedMarkets.map((market: Market, index: number) => {
                   // Calculate animation classes
                   const isSwapping = swapAnimation && swapAnimation.isAnimating;
                   const isSwappingToFirst = isSwapping && swapAnimation.toIndex === index;
