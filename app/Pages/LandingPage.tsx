@@ -1578,7 +1578,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               if (useTraditionalLayout) {
                                 // Traditional buttons (even index markets)
                                 return (
-                                  <div className="flex justify-center gap-2 mb-3 translate-y-3">
+                                  <div className={`flex justify-center gap-2 mb-3 ${marketIndex === 0 ? '-translate-y-1' : 'translate-y-3'}`}>
                                     <button
                                       onClick={handleButtonClick(market.id, 'positive', (e) => {
                                         e.stopPropagation();
@@ -1625,7 +1625,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 if (!percentages) {
                                   // Fallback to traditional if no data
                                   return (
-                                    <div className="flex justify-center gap-2 mb-3 translate-y-3">
+                                    <div className={`flex justify-center gap-2 mb-3 ${marketIndex === 0 ? '-translate-y-1' : 'translate-y-3'}`}>
                                       <button
                                         onClick={handleButtonClick(market.id, 'positive', (e) => {
                                           e.stopPropagation();
@@ -1658,7 +1658,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 const noPercentage = 100 - yesPercentage;
 
                                 return (
-                                  <div className="flex items-center justify-between mb-6">
+                                  <div className={`flex items-center justify-between ${marketIndex === 0 ? 'mb-3 -translate-y-3' : 'mb-6'}`}>
                                     {/* Left side: Yes/No labels stacked */}
                                     <div className="flex flex-col gap-2">
                                       <div className="text-base font-normal text-black">{t.higher}</div>
@@ -1722,6 +1722,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             <div className={`flex justify-center items-center ${(() => {
                               const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                               const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
+                              // For first market on mobile, add additional -translate-y
+                              if (marketIndex === 0) {
+                                return '-translate-y-6';
+                              }
                               return !useTraditionalLayout ? '-translate-y-4' : '';
                             })()}`}>
                               <div className="flex items-center gap-2 text-sm font-medium text-gray-700 opacity-50">
@@ -1732,6 +1736,20 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 <span className="text-[#00aa00] font-bold">{market.potSize}</span>
                               </div>
                             </div>
+
+                            {/* Tip sentence for first market only */}
+                            {(() => {
+                              const marketIndex = marketOptions.findIndex(m => m.id === market.id);
+                              return marketIndex === 0 ? (
+                                <div className="flex justify-center -translate-y-2 mb-2">
+                                  <p className="text-xs text-gray-500 text-center px-4">
+                                    <span className="text-gray-600 font-medium opacity-100">Pro Tip</span>
+                                    <span className="text-gray-400 font-bold mx-1 opacity-100" style={{ fontSize: '8px' }}>•</span>
+                                    <span className="text-xs text-gray-500 text-center opacity-50">Users who do research tend to have a higher accuracy</span>
+                                  </p>
+                                </div>
+                              ) : null;
+                            })()}
 
                             {/* Stats Footer */}
                             <div className={`flex justify-between items-center pt-2 ${(() => {
