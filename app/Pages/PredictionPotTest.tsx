@@ -1260,17 +1260,28 @@ useEffect(() => {
 
                   {/* Enter Pot - Only show if no free entries available and not loading and not final day */}
                   {freeEntriesAvailable === 0 && !potInfoLoading && !potInfo.isFinalDay && (
-                    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                    <div className="relative">
+                      {/* Players Still Left Display - Subtle, top right */}
+                      <div className="absolute -top-6 right-0 text-right">
+                        <div className="text-gray-500 text-sm">
+                          {participants ?
+                            Array.from(new Set(participants)).filter(addr =>
+                              !wrongPredictionsAddresses.includes(addr.toLowerCase())
+                            ).length : 0} remaining / {participants ? Array.from(new Set(participants)).length : 0} total
+                        </div>
+                      </div>
+
+                      <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                       {/* Header */}
-                      {/* <div className="mb-6">
+                      <div className="mb-6">
                         <h3 className="text-gray-900 font-semibold text-xl mb-2">
                           <span className="md:hidden">{t.joinTournament || 'Join Tournament'}</span>
                           <span className="hidden md:block">{t.joinPredictionsTournament || 'Join Predictions Tournament'}</span>
                         </h3>
                         <p className="text-gray-600 text-sm">
-                          Enter the pot and compete for the prize.
+                          Enter the pot & compete for the prize.
                         </p>
-                      </div> */}
+                      </div>
 
                       {/* Entry price highlight */}
                       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
@@ -1330,6 +1341,7 @@ useEffect(() => {
                             </>
                           )}
                       </button>
+                    </div>
                     </div>
                   )}
                 </div>
@@ -1406,24 +1418,15 @@ useEffect(() => {
     <div className="bg-[#2C2C47] p-4 rounded-lg mb-4 border-2 border-cyan-500">
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-[#F5F5F5] font-medium">👥 Pot Participants</h3>
-        <div className="text-sm font-semibold space-x-3">
-          <span className="text-red-500">
+        <div className="text-sm font-semibold">
+          <span className="text-cyan-400">
             {participants ? Array.from(new Set(participants)).length : 0} unique
-          </span>
-          <span className="text-green-500">
-            {participants ? 
-              Array.from(new Set(participants)).filter(addr => 
-                !wrongPredictionsAddresses.includes(addr.toLowerCase())
-              ).length : 0} eligible
           </span>
         </div>
       </div>
       <div className="space-y-2">
         <div className="text-sm text-[#A0A0B0]">
-          {participants?.length || 0} total entries • {participants ? Array.from(new Set(participants)).length : 0} unique addresses • {participants ? 
-            Array.from(new Set(participants)).filter(addr => 
-              !wrongPredictionsAddresses.includes(addr.toLowerCase())
-            ).length : 0} eligible to predict
+          {participants?.length || 0} total entries
         </div>
         {participants && participants.length > 0 ? (
           <select 
