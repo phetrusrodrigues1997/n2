@@ -123,6 +123,16 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   // Contract-specific timer mapping using the centralized logic
   const [contractTimers, setContractTimers] = useState<Record<string, string>>({});
 
+  // Tips carousel state
+  const tips = [
+    "Users who research their questions tend to have a higher accuracy",
+    "Check recent news and trends before making predictions",
+    "Consider market sentiment and historical patterns",
+    "Diversify your predictions across different markets",
+    "Set realistic expectations and manage risk accordingly"
+  ];
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+
   useEffect(() => {
     const updateAllTimers = async () => {
       if (contractAddresses.length === 0) return;
@@ -142,6 +152,15 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     const interval = setInterval(updateAllTimers, 1000);
     return () => clearInterval(interval);
   }, [contractAddresses]);
+
+  // Tips carousel auto-rotation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTipIndex((prevIndex) => (prevIndex + 1) % tips.length);
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, [tips.length]);
 
   // Pagination state
   const [displayedMarketsCount, setDisplayedMarketsCount] = useState(12);
@@ -1408,7 +1427,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                         >
                           <div className={`h-full ${(() => {
                             const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                            return marketIndex === 0 ? 'min-h-[295px]' : 'min-h-[260px]';
+                            return marketIndex === 0 ? 'min-h-[315px]' : 'min-h-[260px]';
                           })()} flex flex-col justify-between transition-all duration-300 bg-white ${(() => {
                             const contractAddress = getContractAddress(market.id);
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
@@ -1724,7 +1743,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                               // For first market on mobile, add additional -translate-y
                               if (marketIndex === 0) {
-                                return '-translate-y-2';
+                                return '-translate-y-4';
                               }
                               return !useTraditionalLayout ? '-translate-y-8' : '';
                             })()}`}>
@@ -1741,12 +1760,25 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             {(() => {
                               const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                               return marketIndex === 0 ? (
-                                <div className="flex justify-center translate-y-2 mb-2">
-                                  <p className="text-xs text-gray-500 text-center px-4">
-                                    <span className="text-gray-600 font-medium opacity-100">Pro Tip</span>
-                                    <span className="text-gray-400 font-bold mx-1 opacity-100" style={{ fontSize: '8px' }}>•</span>
-                                    <span className="text-xs text-gray-500 text-center opacity-50">Users who research the topic tend to have a higher prediction accuracy</span>
-                                  </p>
+                                <div className="flex justify-center -translate-y-1 mb-2">
+                                  <div className="text-xs text-gray-500 text-center px-4">
+                                    <p className="transition-opacity duration-300 mb-1">
+                                      <span className="text-gray-600 font-medium">Tip</span>
+                                      <span className="text-gray-400 font-bold mx-1" style={{ fontSize: '8px' }}>•</span>
+                                      <span className="opacity-75">{tips[currentTipIndex]}</span>
+                                    </p>
+                                    {/* Carousel indicators */}
+                                    <div className="flex justify-center gap-1 mt-1">
+                                      {tips.map((_, index) => (
+                                        <div
+                                          key={index}
+                                          className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                                            index === currentTipIndex ? 'bg-gray-600' : 'bg-gray-300'
+                                          }`}
+                                        />
+                                      ))}
+                                    </div>
+                                  </div>
                                 </div>
                               ) : null;
                             })()}
