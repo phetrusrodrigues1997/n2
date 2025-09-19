@@ -786,7 +786,7 @@ export default function App() {
                 }}
               >
                 {/* Show first 13 items on desktop, all on mobile */}
-                {(isMobile ? marketOptions : marketOptions.slice(0, 12)).map((market) => (
+                {(isMobile ? marketOptions : marketOptions.slice(0, 13)).map((market) => (
                   <button
   key={market.id}
   onClick={() => {

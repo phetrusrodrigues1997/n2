@@ -1730,13 +1730,13 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                               // For first market on mobile, add additional -translate-y
                               if (marketIndex === 0) {
-                                return '-translate-y-2';
+                                return '-translate-y-3';
                               }
                               return !useTraditionalLayout ? '-translate-y-8' : '';
                             })()}`}>
                               <div className="flex items-center gap-2 text-sm font-medium text-gray-700 opacity-50">
-                                <span>{getEntryFeeDisplay(market.id)}</span>
-                                <svg className="w-4 h-4 font-medium text-gray-700 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <span className= "font-bold" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>{getEntryFeeDisplay(market.id)}</span>
+                                <svg className="w-4 h-4 font-medium text-gray-700 opacity-50 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                 </svg>
                                 <span className="text-[#00aa00] font-bold">{market.potSize}</span>
@@ -1752,7 +1752,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     <div className="flex-1 flex items-center justify-start">
                                       <p className="transition-opacity duration-300 leading-tight">
                                         <span className="text-[#040404] font-semibold">{t.tipLabel}</span>
-                                        <span className="text-gray-400 font-bold mx-1" style={{ fontSize: '8px' }}>•</span>
+                                        <span className="text-gray-400 font-bold mx-1 opacity-50" style={{ fontSize: '8px' }}>•</span>
                                         <span className="opacity-80">{tips[currentTipIndex]}</span>
                                       </p>
                                     </div>
@@ -2342,7 +2342,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               return !useTraditionalLayout ? '' : 'py-1.5 translate-y-2';
                             })()}`} >
                             <div className="flex items-center gap-2 text-xs font-medium text-gray-700 opacity-50">
-                              <span>{getEntryFeeDisplay(market.id)}</span>
+                              <span className= "font-bold" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>{getEntryFeeDisplay(market.id)}</span>
                               <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                               </svg>
