@@ -66,6 +66,7 @@
 
 html,
 body {
+  
   background: linear-gradient(to bottom,
       var(--background-end) 0%,
       var(--background-mid) 40%,

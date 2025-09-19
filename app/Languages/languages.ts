@@ -1488,7 +1488,7 @@ export const translations: Record<Language, Translations> = {
     // Tips carousel
     tipLabel: 'Dica',
     tip1: 'Usuários que pesquisam antes de tentar prever tendem a ter uma precisão maior',
-    tip2: 'Revise e ajuste suas previsões antes do fim do dia (potes diários) ou fim das semana (potes semanais)',
+    tip2: 'Revise suas previsões antes do fim do dia (diários) ou fim da semana (semanais)',
     tip3: 'Considere o sentimento em torno do tópico e padrões históricos',
     tip4: 'Diversifique suas previsões entrando em diferentes potes',
     tip5: 'Defina expectativas realistas e nao se deixe levar pela emoção',

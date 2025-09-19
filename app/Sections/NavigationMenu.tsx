@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Menu, X } from 'lucide-react';
 import { useAccount, useDisconnect } from 'wagmi';
 import { FaDiscord } from 'react-icons/fa';
@@ -84,19 +85,20 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
       {isMenuOpen && (
         <>
           {isMobile ? (
-            <>
-              {/* Backdrop to prevent clicks on background elements */}
-              <div 
-                className="fixed inset-0 bg-black bg-opacity-50 z-[60]"
-                onClick={() => setIsMenuOpen(false)}
-                style={{ touchAction: 'none' }}
-              />
-              {/* Mobile overlay */}
-              <div 
-                id="mobile-menu-overlay" 
-                className="fixed top-0 left-0 w-4/5 h-full bg-white z-[70] flex flex-col shadow-lg"
+            createPortal(
+              <>
+                {/* Backdrop to prevent clicks on background elements */}
+                <div
+                  className="fixed inset-0 bg-black bg-opacity-50 z-[200]"
+                  onClick={() => setIsMenuOpen(false)}
+                  style={{ touchAction: 'none' }}
+                />
+                {/* Mobile overlay */}
+                <div
+                  id="mobile-menu-overlay"
+                  className="fixed top-0 left-0 w-4/5 h-full bg-white z-[250] flex flex-col shadow-lg"
                 onClick={(e) => e.stopPropagation()}
-                style={{ 
+                style={{
                   transform: 'translateX(0)',
                   transition: 'transform 0.3s ease-in-out'
                 }}
@@ -239,29 +241,34 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                 </div>
               </div>
             </div>
-            </>
+            </>,
+            document.body
+            )
           ) : (
-            // Desktop dropdown (unchanged)
-            <div className="absolute bg-white top-12 z-[60] w-48 mt-2 rounded-md shadow-lg left-0 border border-gray-200">
-              <div className="py-2">
-                {desktopMenuItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      setActiveSection(item.id);
-                      setIsMenuOpen(false);
-                    }}
-                    className={`block w-full text-left px-4 py-2 ${
-                      activeSection === item.id
-                        ? 'bg-gray-100 text-[#000070]'
-                        : 'text-black hover:bg-gray-50'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            // Desktop dropdown with portal
+            createPortal(
+              <div className="absolute bg-white top-12 z-[60] w-48 mt-2 rounded-md shadow-lg left-0 border border-gray-200">
+                <div className="py-2">
+                  {desktopMenuItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        setActiveSection(item.id);
+                        setIsMenuOpen(false);
+                      }}
+                      className={`block w-full text-left px-4 py-2 ${
+                        activeSection === item.id
+                          ? 'bg-gray-100 text-[#000070]'
+                          : 'text-black hover:bg-gray-50'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>,
+              document.body
+            )
           )}
         </>
       )}

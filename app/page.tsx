@@ -164,7 +164,7 @@ export default function App() {
     if (activeSection === 'home' && !isLandingPageLoading && !isTutorialOpen) {
       const timer = setTimeout(() => {
         setShowHowItWorksPopup(true);
-      }, 8000);
+      }, 2000);
 
       return () => clearTimeout(timer);
     }
@@ -567,7 +567,7 @@ export default function App() {
       {/* Hide header and all content when LandingPage is loading or showing coming soon */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && (
         <header
-  className={`sticky top-0 z-[100] bg-white md:py-2 backdrop-blur-sm border-b border-gray-100 overflow-x-hidden ${
+  className={`z-50 bg-white md:py-2 sticky top-0 overflow-x-hidden  ${
     (activeSection === "home") ? "border-b border-gray-200" : ""
   }`}
 >
@@ -777,18 +777,16 @@ export default function App() {
 
           {/* Market Carousel - only show on home and dashboard sections, on its own line */}
           {(activeSection === 'home') && (
-            <div className="mt-4 md:mt-1 md:translate-y-2 pt-1 md:pt-0 overflow-hidden">
-              <div className="max-w-7xl mx-auto px-3 md:px-8">
-                <div className="relative min-w-0 overflow-hidden">
-                  {/* Markets Container - Show first 13 on desktop, all on mobile */}
-                  <div className="flex overflow-x-auto md:overflow-visible scrollbar-hide pb-1 max-w-full"
+            <div className="mt-4 md:mt-1 md:translate-y-2 pt-1 md:pt-0 px-3 md:px-8 ">
+              {/* Markets Container - Show first 13 on desktop, all on mobile */}
+              <div className="flex overflow-x-auto md:overflow-visible scrollbar-hide pb-1"
                 style={{
                   scrollbarWidth: 'none',
                   msOverflowStyle: 'none'
                 }}
               >
                 {/* Show first 13 items on desktop, all on mobile */}
-                {(isMobile ? marketOptions : marketOptions.slice(0, 14)).map((market) => (
+                {(isMobile ? marketOptions : marketOptions.slice(0, 12)).map((market) => (
                   <button
   key={market.id}
   onClick={() => {
@@ -800,7 +798,7 @@ export default function App() {
     transition-opacity duration-200
     ${selectedMarket === market.id && activeCarousel === 'first'
       ? 'text-[rgba(0,0,0,0.9)] font-semibold opacity-100'
-      : 'font-medium text-gray-700 opacity-75 hover:opacity-85'
+      : 'text-[rgba(0,0,0,0.9)] font-medium opacity-70 hover:opacity-85'
     }
   `}
   style={{
@@ -816,8 +814,6 @@ export default function App() {
 
                 ))}
 
-                  </div>
-                </div>
               </div>
             </div>
           )}

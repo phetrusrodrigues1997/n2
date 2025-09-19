@@ -1054,38 +1054,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   };
 
 
-  // Function to handle market selection with position swap animation
-  // const handleMarketSelection = (newMarketId: string, currentMarketsList: any[]) => {
-  //   // If it's the same market, don't do anything
-  //   if (newMarketId === selectedMarket) return;
-
-  //   // Find indices of current selected and new selected markets
-  //   const currentSelectedIndex = currentMarketsList.findIndex(market => market.tabId === selectedMarket);
-  //   const newSelectedIndex = currentMarketsList.findIndex(market => market.tabId === newMarketId);
-
-  //   if (currentSelectedIndex === -1 || newSelectedIndex === -1) return;
-
-  //   // If new selected is already first, no need to animate
-  //   if (newSelectedIndex === 0) {
-  //     setSelectedMarket?.(newMarketId);
-  //     return;
-  //   }
-
-  //   // Start swap animation
-  //   setSwapAnimation({
-  //     fromIndex: currentSelectedIndex,
-  //     toIndex: newSelectedIndex,
-  //     isAnimating: true
-  //   });
-
-  //   // After animation completes, update the selected market
-  //   setTimeout(() => {
-  //     setSelectedMarket?.(newMarketId);
-  //     setSwapAnimation(null);
-  //   }, 600); // Match CSS animation duration
-  // };
-
-
   // Utility function to truncate text without trailing spaces before ellipsis
   const truncateText = (text: string, maxLength: number = 80) => {
     if (text.length <= maxLength) return text;
@@ -1429,7 +1397,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               handleMarketClick(market.id);
                             }
                           }}
-                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500  hover:shadow-purple-200 ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
+                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 ${(() => {
+                            const marketIndex = marketOptions.findIndex(m => m.id === market.id);
+                            return marketIndex === 0 ? '' : 'hover:shadow-purple-200';
+                          })()} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
                             } ${animatingMarket === market.tabId ? 'animate-scale-once' : ''} ${(() => {
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
@@ -1441,8 +1412,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                         >
                           <div className={`h-full ${(() => {
                             const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                            return marketIndex === 0 ? 'min-h-[325px]' : 'min-h-[260px]';
-                          })()} flex flex-col justify-between transition-all duration-300 bg-white ${(() => {
+                            return marketIndex === 0 ? 'min-h-[325px] bg-[#fefefe]' : 'min-h-[260px] bg-white';
+                          })()} flex flex-col justify-between transition-all duration-300 ${(() => {
                             const contractAddress = getContractAddress(market.id);
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
                             const marketIndex = marketOptions.findIndex(m => m.id === market.id);
@@ -1453,7 +1424,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                             if (isEliminated) {
                               classes += ' border border-gray-300 rounded-lg';
-                            } else if (market.tabId === selectedMarket) {
+                            } 
+                            
+                            else if (market.tabId === selectedMarket) {
                               classes += ' border-b border-gray-200 shadow-lg shadow-purple-100/50';
                             } else {
                               classes += ' border-b border-gray-200';
