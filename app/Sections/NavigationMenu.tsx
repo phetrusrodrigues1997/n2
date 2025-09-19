@@ -75,7 +75,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
       {/* Hamburger menu button - now shown on both desktop and mobile */}
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="p-2 rounded-lg"
+        className="py-2 rounded-lg"
         aria-label="Toggle menu"
       >
         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
