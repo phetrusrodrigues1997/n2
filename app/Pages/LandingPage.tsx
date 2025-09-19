@@ -1743,7 +1743,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                               // For first market on mobile, add additional -translate-y
                               if (marketIndex === 0) {
-                                return '-translate-y-4';
+                                return '-translate-y-2';
                               }
                               return !useTraditionalLayout ? '-translate-y-8' : '';
                             })()}`}>
@@ -1761,12 +1761,14 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                               return marketIndex === 0 ? (
                                 <div className="flex justify-center -translate-y-1 mb-2">
-                                  <div className="text-xs text-gray-500 text-center px-4">
-                                    <p className="transition-opacity duration-300 mb-1">
-                                      <span className="text-gray-600 font-medium">Tip</span>
-                                      <span className="text-gray-400 font-bold mx-1" style={{ fontSize: '8px' }}>•</span>
-                                      <span className="opacity-75">{tips[currentTipIndex]}</span>
-                                    </p>
+                                  <div className="text-xs text-gray-500 text-center px-4 h-12 flex flex-col">
+                                    <div className="flex-1 flex items-center justify-center">
+                                      <p className="transition-opacity duration-300 leading-tight">
+                                        <span className="text-gray-600 font-medium">Pro Tip</span>
+                                        <span className="text-gray-400 font-bold mx-1" style={{ fontSize: '8px' }}>•</span>
+                                        <span className="opacity-75">{tips[currentTipIndex]}</span>
+                                      </p>
+                                    </div>
                                     {/* Carousel indicators */}
                                     <div className="flex justify-center gap-1 mt-1">
                                       {tips.map((_, index) => (
