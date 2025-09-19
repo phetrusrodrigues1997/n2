@@ -2278,8 +2278,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   {/* Right side: Percentages and buttons */}
                                   <div className="flex items-center gap-3">
                                     <div className="flex flex-col gap-1 text-right">
-                                      <div className="text-sm font-bold text-gray-900">{yesPercentage}%</div>
-                                      <div className="text-sm font-bold text-gray-900">{noPercentage}%</div>
+                                      <div className="text-lg font-bold text-gray-900">{yesPercentage}%</div>
+                                      <div className="text-lg font-bold text-gray-900">{noPercentage}%</div>
                                     </div>
                                     <div className="flex flex-col gap-1">
                                       <button
@@ -2332,7 +2332,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           <div className={`flex justify-center items-center ${(() => {
                               const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                               const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
-                              return !useTraditionalLayout ? '' : 'py-1.5 translate-y-2';
+                              return !useTraditionalLayout ? '-translate-y-2' : 'py-1.5 translate-y-1';
                             })()}`} >
                             <div className="flex items-center gap-2 text-sm text-gray-700 opacity-100">
                               <span className= "font-bold opacity-50" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>{getEntryFeeDisplay(market.id)}</span>
@@ -2553,9 +2553,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
               {/* Modal Header */}
               <div className="flex items-center justify-between px-5 md:px-6 py-6 border-b border-gray-200">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-purple-600">
-                    {tutorialSteps[tutorialStep].icon}
-                  </div>
+                  
                   <div>
                     <h2 className="text-sm md:text-lg font-semibold text-gray-900">
                       {t.howItWorksTitle || "How It Works"}
@@ -2619,7 +2617,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                   <button
                     onClick={closeTutorial}
-                    className="hidden md:block text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                    aria-label="Close tutorial"
                   >
                     <X className="w-5 h-5" />
                   </button>

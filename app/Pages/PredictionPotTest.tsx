@@ -1260,49 +1260,42 @@ useEffect(() => {
 
                   {/* Enter Pot - Only show if no free entries available and not loading and not final day */}
                   {freeEntriesAvailable === 0 && !potInfoLoading && !potInfo.isFinalDay && (
-                    <div className="bg-white border-2 border-black rounded-xl p-6 shadow-lg ">
-                      {/* Header with icon - responsive text */}
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 bg-purple-700 rounded-xl flex items-center justify-center">
-                          <span className="text-white text-lg">🎯</span>
-                        </div>
-                        <div>
-                          <h3 className="text-black font-bold text-lg">
-                            <span className="md:hidden">{t.joinTournament || 'Join Tournament'}</span>
-                            <span className="hidden md:block">{t.joinPredictionsTournament || 'Join Predictions Tournament'}</span>
-                          </h3>
-                          {/* <p className="text-black text-sm">
-                            <span className="md:hidden">{t.competeMobile || 'Compete & win'}</span>
-                          </p> */}
-                        </div>
-                      </div>
-                      
+                    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                      {/* Header */}
+                      {/* <div className="mb-6">
+                        <h3 className="text-gray-900 font-semibold text-xl mb-2">
+                          <span className="md:hidden">{t.joinTournament || 'Join Tournament'}</span>
+                          <span className="hidden md:block">{t.joinPredictionsTournament || 'Join Predictions Tournament'}</span>
+                        </h3>
+                        <p className="text-gray-600 text-sm">
+                          Enter the pot and compete for the prize.
+                        </p>
+                      </div> */}
+
                       {/* Entry price highlight */}
-                      <div className="bg-black p-4 rounded-lg mb-4 border border-black">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                             <img
                               src="https://dynamic-assets.coinbase.com/dbb4b4983bde81309ddab83eb598358eb44375b930b94687ebe38bc22e52c3b2125258ffb8477a5ef22e33d6bd72e32a506c391caa13af64c00e46613c3e5806/asset_icons/4113b082d21cc5fab17fc8f2d19fb996165bcce635e6900f7fc2d57c4ef33ae9.png"
                               alt="ETH"
-                              className="w-8 h-8"
+                              className="w-6 h-6"
                             />
-                            <div>
-                              <div className="text-white font-bold text-lg">
-                                ${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)}
-                              </div>
-                              <div className="text-green-400 text-sm">
-                              {t.dynamicPricing || 'Dynamic Pricing'} ⚡
-                              </div>
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-gray-900 font-semibold text-lg">
+                              ${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)} USD
+                            </div>
+                            <div className="text-purple-600 text-sm font-medium">
+                              {t.dynamicPricing || 'Dynamic Pricing'}
                             </div>
                           </div>
-                          
                         </div>
                       </div>
-                        
-                      {/* Referral Code Input - responsive text */}
-                      <div className="mb-4">
-                        <label className="text-black text-sm mb-2 block flex items-center gap-2">
-                          <span>🎁</span>
+
+                      {/* Referral Code Input */}
+                      <div className="mb-6">
+                        <label className="text-gray-700 text-sm font-medium mb-2 block">
                           <span className="md:hidden">{t.referralCodeShort || 'Referral Code'}</span>
                           <span className="hidden md:block">{t.referralCode || 'Referral Code (Optional)'}</span>
                         </label>
@@ -1311,30 +1304,29 @@ useEffect(() => {
                           placeholder={t.enterCode || 'Enter code...'}
                           value={inputReferralCode}
                           onChange={(e) => setInputReferralCode(e.target.value.toUpperCase())}
-                          className="w-full px-4 py-3 bg-white border-2 border-black rounded-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-700 focus:border-purple-700 transition-all duration-200"
+                          className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                           maxLength={8}
                         />
                       </div>
-                        
-                      {/* Action button - responsive text */}
+
+                      {/* Action button */}
                       <button
                         onClick={() => handleEnterPot(false)}
                         disabled={isActuallyLoading}
-                        className="w-full bg-purple-700 hover:bg-black text-white px-6 py-4 rounded-lg font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                        className="w-full bg-purple-700 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                       >
                         {isActuallyLoading && lastAction === 'enterPot'
                           ? (
                             <div className="flex items-center gap-2">
-                              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                               <span className="md:hidden">{t.processingMobile || 'Processing...'}</span>
-                              <span className="hidden md:block">{t.processingYourEntry || 'Processing...'}</span>
+                              <span className="hidden md:block">{t.processingYourEntry || 'Processing your entry...'}</span>
                             </div>
                           )
                           : (
                             <>
-                              <span>🚀</span>
-                              <span className="md:hidden">{t.enterButtonShort || 'Enter'}</span>
-                              <span className="hidden md:block">{t.enterButton || 'Enter'}</span>
+                              <span className="md:hidden">{t.enterButtonShort || 'Enter Tournament'}</span>
+                              <span className="hidden md:block">{t.enterButton || 'Enter Tournament'}</span>
                             </>
                           )}
                       </button>

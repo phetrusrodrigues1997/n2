@@ -2112,26 +2112,44 @@ export async function isMarketBookmarked(walletAddress: string, marketId: string
 
 export async function getPredictionPercentages(marketId: string) {
   try {
-    // Use the SAME date calculation functions that store predictions for consistency
-    const tomorrowDateStr = getTomorrowUKDateString(); // Tomorrow's UK date
-
-    console.log(`📊 getPredictionPercentages called with marketId: "${marketId}", tomorrowDate: ${tomorrowDateStr}`);
-
     // Get table type from market ID
     const tableType = getTableTypeFromMarketId(marketId);
-    
+
+    // Get the contract address for this table type to check if it's penalty-exempt
+    const contractAddress = Object.keys(CONTRACT_TO_TABLE_MAPPING).find(
+      address => CONTRACT_TO_TABLE_MAPPING[address as keyof typeof CONTRACT_TO_TABLE_MAPPING] === tableType
+    );
+
+    let predictionDate: string;
+
+    if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+      // For penalty-exempt contracts like Formula 1, use the event date
+      const eventDate = getEventDate(contractAddress);
+      if (eventDate) {
+        predictionDate = eventDate;
+      } else {
+        // Fallback to tomorrow if no event date is configured
+        predictionDate = getTomorrowUKDateString();
+      }
+    } else {
+      // For regular contracts, use tomorrow's date
+      predictionDate = getTomorrowUKDateString();
+    }
+
+    console.log(`📊 getPredictionPercentages called with marketId: "${marketId}", predictionDate: ${predictionDate}, isPenaltyExempt: ${contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)}`);
+
     // Get the appropriate table using the existing getTableFromType function
     const BetsTable = getTableFromType(tableType);
 
     console.log(`📊 Using table type: "${tableType}" for market: "${marketId}"`);
 
-    // Query the appropriate table - only for tomorrow's date
+    // Query the appropriate table - using the correct prediction date
     const bets = await getDbForRead()
       .select({
         prediction: BetsTable.prediction
       })
       .from(BetsTable)
-      .where(eq(BetsTable.betDate, tomorrowDateStr));
+      .where(eq(BetsTable.betDate, predictionDate));
     
     // Count positive and negative predictions
     let totalPositive = 0;

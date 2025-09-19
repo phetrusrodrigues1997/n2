@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Wallet, Gamepad2, User } from 'lucide-react';
 import { useAccount, useDisconnect } from 'wagmi';
 import { FaDiscord } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
@@ -62,12 +62,8 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
     { id: 'createPot', label: t.privateMarkets || 'Private Pots' },
     { id: 'liveMarkets', label: t.liveMarkets || 'Live Markets' },
     { id: 'news', label: 'News' },
-    { id: 'receive', label: t.fundAccount || 'Fund Account' },
-    { id: 'AI', label: t.games || 'Games' },
-    { id: 'profile', label: t.statsRankings || 'Stats & Rankings' },
     { id: 'bookmarks', label: t.myPots || 'My Pots' },
     { id: 'ideas', label: t.ideas || 'Ideas' },
-
   ];
 
   return (
@@ -251,7 +247,49 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
           ) : (
             // Desktop dropdown with portal
             createPortal(
-              <div className="fixed bg-white top-12 z-[60] w-48 mt-2 rounded-md shadow-lg right-4 border border-gray-200">
+              <div className="fixed bg-white top-12 z-[60] w-64 mt-2 rounded-lg shadow-xl right-4 border border-gray-200">
+                {/* Header section with icon shortcuts */}
+                <div className="border-b border-gray-100 p-4">
+                  <div className="flex items-center justify-around">
+                    {/* Deposit Icon */}
+                    <button
+                      onClick={() => {
+                        setActiveSection('receive');
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex flex-col items-center gap-1 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <Wallet className="w-6 h-6 text-gray-700" />
+                      <span className="text-xs text-gray-600 font-medium">Deposit</span>
+                    </button>
+
+                    {/* Games Icon */}
+                    <button
+                      onClick={() => {
+                        setActiveSection('AI');
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex flex-col items-center gap-1 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <Gamepad2 className="w-6 h-6 text-gray-700" />
+                      <span className="text-xs text-gray-600 font-medium">Games</span>
+                    </button>
+
+                    {/* Profile Icon */}
+                    <button
+                      onClick={() => {
+                        setActiveSection('profile');
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex flex-col items-center gap-1 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <User className="w-6 h-6 text-gray-700" />
+                      <span className="text-xs text-gray-600 font-medium">Profile</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Menu items */}
                 <div className="py-2">
                   {desktopMenuItems.map((item) => (
                     <button

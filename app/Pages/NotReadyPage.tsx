@@ -428,7 +428,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
                                 startDate: getTournamentStartDate(eventDate),
                                 eventDate: eventDate
                               })
-                            : (t.inviteFriends || "👻 Invite your friends! We'll notify you via email when there are enough players to start the predictions tournament!")
+                            : (t.inviteFriends || " Invite your friends! We'll notify you via email when there are enough players to start the predictions tournament!")
                     }
                   </p>
                 </div>

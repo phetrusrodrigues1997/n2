@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Wallet, Mail, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Wallet, Mail, X, ChevronLeft, ChevronRight, TrendingUp, DollarSign, Users, Trophy, Target, Calendar } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { useAccount } from 'wagmi';
 import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, PENALTY_EXEMPT_CONTRACTS } from '../Database/config';
@@ -88,60 +88,96 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
   // Get translations
   const t = getTranslation(currentLanguage);
 
-  // Define tutorial steps based on penalty exemption (detailed, spoon-feeding version)
+  // Define tutorial steps with visual enhancements
   const tutorialSteps = useMemo(() => {
     if (isPenaltyExempt) {
       return [
         {
           title: t.detailedTournamentStep1Title,
-          description: t.detailedTournamentStep1Description
+          description: t.detailedTournamentStep1Description,
+          icon: Trophy,
+          color: 'from-yellow-500 to-orange-500',
+          highlights: ['Tournament Format', 'Weekly Competition']
         },
         {
           title: t.detailedTournamentStep2Title,
-          description: t.detailedTournamentStep2Description
+          description: t.detailedTournamentStep2Description,
+          icon: Calendar,
+          color: 'from-blue-500 to-indigo-500',
+          highlights: ['One Week Duration', 'Event-Based Timing']
         },
         {
           title: t.detailedTournamentStep3Title,
-          description: t.detailedTournamentStep3Description
+          description: t.detailedTournamentStep3Description,
+          icon: Target,
+          color: 'from-green-500 to-emerald-500',
+          highlights: ['Daily Predictions', 'Strategic Choices']
         },
         {
           title: t.detailedTournamentStep4Title,
-          description: t.detailedTournamentStep4Description
+          description: t.detailedTournamentStep4Description,
+          icon: DollarSign,
+          color: 'from-purple-500 to-violet-500',
+          highlights: ['Fixed Entry Fee', 'Fair Competition']
         },
         {
           title: t.detailedTournamentStep5Title,
-          description: t.detailedTournamentStep5Description
+          description: t.detailedTournamentStep5Description,
+          icon: Users,
+          color: 'from-cyan-500 to-blue-500',
+          highlights: ['Community Driven', 'Global Participation']
         },
         {
           title: t.detailedTournamentStep6Title,
-          description: t.detailedTournamentStep6Description
+          description: t.detailedTournamentStep6Description,
+          icon: TrendingUp,
+          color: 'from-emerald-500 to-teal-500',
+          highlights: ['Winner Takes All', 'Skill-Based Rewards']
         }
       ];
     } else {
       return [
         {
           title: t.detailedStep1Title,
-          description: t.detailedStep1Description
+          description: t.detailedStep1Description,
+          icon: Users,
+          color: 'from-blue-500 to-indigo-500',
+          highlights: ['Global Competition', 'Community Building']
         },
         {
           title: t.detailedStep2Title,
-          description: t.detailedStep2Description
+          description: t.detailedStep2Description,
+          icon: Calendar,
+          color: 'from-green-500 to-emerald-500',
+          highlights: ['Daily Predictions', 'Midnight Deadline']
         },
         {
           title: t.detailedStep3Title,
-          description: t.detailedStep3Description
+          description: t.detailedStep3Description,
+          icon: TrendingUp,
+          color: 'from-orange-500 to-red-500',
+          highlights: ['Market Analysis', 'Yes/No Predictions']
         },
         {
           title: t.detailedStep4Title,
-          description: t.detailedStep4Description
+          description: t.detailedStep4Description,
+          icon: DollarSign,
+          color: 'from-purple-500 to-violet-500',
+          highlights: ['Dynamic Pricing', 'Early Entry Advantage']
         },
         {
           title: t.detailedStep5Title,
-          description: t.detailedStep5Description
+          description: t.detailedStep5Description,
+          icon: Target,
+          color: 'from-cyan-500 to-blue-500',
+          highlights: ['Second Chances', 'Strategic Comebacks']
         },
         {
           title: t.detailedStep6Title,
-          description: t.detailedStep6Description
+          description: t.detailedStep6Description,
+          icon: Trophy,
+          color: 'from-yellow-500 to-orange-500',
+          highlights: ['Prize Pool', 'Winner Rewards']
         }
       ];
     }
@@ -700,7 +736,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
             {/* Tutorial Screen - Show when email is collected or skipped */}
             {!isLoadingEmail && !showEmailCollection && isConnected && (
               <div className="max-w-5xl mx-auto opacity-100 px-0 md:px-4">
-                {/* Back to Email Collection Button */}
+                {/* Back to Email Collection Button
                 <div className="mb-6 px-4 md:px-0">
                   <button
                     onClick={() => setShowEmailCollection(true)}
@@ -709,7 +745,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                     <span>←</span>
                     <span>{currentUserEmail ? t.manageEmail : t.emailCollection}</span>
                   </button>
-                </div>
+                </div> */}
 
                 {/* Tutorial Content */}
                 <div className="bg-white rounded-none md:rounded-3xl border-0 p-0 md:p-6 md:mb-8 mb-16">
@@ -722,7 +758,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                       onClick={handleSkipClick}
                       className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-8 py-3 rounded-2xl transition-all duration-300 font-medium text-base transform hover:scale-[1.02] active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl"
                     >
-                      {t.skipButton}
+                      {currentStep === tutorialSteps.length - 1 ? 'Continue' : t.skipButton}
                     </button>
                   </div>
 
@@ -752,22 +788,54 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                     </div>
 
                     {/* Current Step Display */}
-                    <div className="bg-white border-0 md:border border-gray-200/60 rounded-none md:rounded-2xl p-4 md:p-8 shadow-none md:shadow-sm min-h-[200px] md:min-h-[240px] flex items-center overflow-hidden mx-0 md:mx-0">
-                      <div className="flex flex-col md:flex-row items-start gap-3 md:gap-6 w-full">
-                        <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl w-10 h-10 md:w-16 md:h-16 flex items-center justify-center font-medium text-base md:text-2xl flex-shrink-0 mx-auto md:mx-0">
-                          {currentStep + 1}
+                    <div className="bg-white border-0 md:border border-gray-200/60 rounded-none md:rounded-2xl p-4 md:p-8 shadow-none md:shadow-sm min-h-[280px] md:min-h-[320px] flex items-center overflow-hidden mx-0 md:mx-0">
+                      <div className="flex flex-col items-center md:items-start gap-4 md:gap-6 w-full">
+                        {/* Icon and Step Number */}
+                        <div className="flex items-center gap-4 w-full justify-center md:justify-start">
+                          <div className={`bg-gradient-to-br ${tutorialSteps[currentStep]?.color} text-white rounded-xl w-12 h-12 md:w-16 md:h-16 flex items-center justify-center flex-shrink-0 shadow-lg`}>
+                            {tutorialSteps[currentStep]?.icon &&
+                              React.createElement(tutorialSteps[currentStep].icon, {
+                                className: "w-6 h-6 md:w-8 md:h-8"
+                              })
+                            }
+                          </div>
+                          {/* <div className="bg-gray-100 text-gray-700 rounded-lg w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-semibold text-sm md:text-base flex-shrink-0">
+                            {currentStep + 1}
+                          </div> */}
                         </div>
-                        <div className="min-w-0 flex-1 text-center md:text-left px-2 md:px-0">
-                          <h3 className="text-lg md:text-2xl font-medium text-gray-900 mb-3 md:mb-4 break-words leading-tight">
+
+                        {/* Content */}
+                        <div className="min-w-0 flex-1 text-center md:text-left w-full">
+                          <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4 break-words leading-tight">
                             {tutorialSteps[currentStep]?.title}
                           </h3>
-                          <p className="text-sm md:text-lg text-gray-600 font-light leading-relaxed break-words hyphens-auto text-left md:text-left px-2 md:px-0 space-y-2">
-                            {tutorialSteps[currentStep]?.description.split('. ').map((sentence, index, array) => (
-                              <span key={index} className="block">
-                                {sentence}{index < array.length - 1 ? '.' : ''}
+
+                          {/* Key Highlights */}
+                          <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
+                            {tutorialSteps[currentStep]?.highlights.map((highlight, index) => (
+                              <span
+                                key={index}
+                                className={`px-3 py-1 rounded-full text-xs font-medium text-white bg-gradient-to-r ${tutorialSteps[currentStep]?.color} shadow-sm`}
+                              >
+                                {highlight}
                               </span>
                             ))}
-                          </p>
+                          </div>
+
+                          {/* Description with better formatting */}
+                          <div className="text-sm md:text-base text-gray-600 leading-relaxed space-y-3">
+                            {tutorialSteps[currentStep]?.description.split('. ').map((sentence, index, array) => {
+                              if (!sentence.trim()) return null;
+                              return (
+                                <p key={index} className="text-left md:text-left">
+                                  <span className="inline-flex items-start gap-2">
+                                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                                    <span>{sentence}{index < array.length - 1 ? '.' : ''}</span>
+                                  </span>
+                                </p>
+                              );
+                            })}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -819,7 +887,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                       onClick={handleSkipClick}
                       className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-3 rounded-2xl transition-all duration-300 font-medium text-base transform hover:scale-[1.02] active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl w-full"
                     >
-                      {t.skipButton}
+                      {currentStep === tutorialSteps.length - 1 ? 'Continue' : t.skipButton}
                     </button>
                   </div>
 
