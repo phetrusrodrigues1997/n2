@@ -1724,9 +1724,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                               // For first market on mobile, add additional -translate-y
                               if (marketIndex === 0) {
-                                return '-translate-y-6';
+                                return '-translate-y-2';
                               }
-                              return !useTraditionalLayout ? '-translate-y-4' : '';
+                              return !useTraditionalLayout ? '-translate-y-8' : '';
                             })()}`}>
                               <div className="flex items-center gap-2 text-sm font-medium text-gray-700 opacity-50">
                                 <span>{getEntryFeeDisplay(market.id)}</span>
@@ -1741,11 +1741,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             {(() => {
                               const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                               return marketIndex === 0 ? (
-                                <div className="flex justify-center -translate-y-2 mb-2">
+                                <div className="flex justify-center translate-y-2 mb-2">
                                   <p className="text-xs text-gray-500 text-center px-4">
                                     <span className="text-gray-600 font-medium opacity-100">Pro Tip</span>
                                     <span className="text-gray-400 font-bold mx-1 opacity-100" style={{ fontSize: '8px' }}>•</span>
-                                    <span className="text-xs text-gray-500 text-center opacity-50">Users who do research tend to have a higher accuracy</span>
+                                    <span className="text-xs text-gray-500 text-center opacity-50">Users who research the topic tend to have a higher prediction accuracy</span>
                                   </p>
                                 </div>
                               ) : null;
