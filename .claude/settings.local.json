@@ -36,7 +36,8 @@
       "Bash(where android)",
       "Read(//c/Program Files/**)",
       "Bash(keytool:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Read(//c/Users/grasi/**)"
     ],
     "deny": [],
     "ask": [],

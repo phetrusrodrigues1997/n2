@@ -942,6 +942,19 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
         setIsLoading(false);
         return;
       }
+
+      // Check if this is a penalty-exempt contract and if we're on race day
+      if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+        const eventDate = getEventDate(contractAddress);
+        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+
+        if (eventDate === today) {
+          showMessage('Predictions are not allowed today. Please make your prediction before the event starts.');
+          setIsLoading(false);
+          return;
+        }
+      }
+
       await placeBitcoinBet(address, prediction, selectedTableType, marketQuestion, contractAddress);
       
       

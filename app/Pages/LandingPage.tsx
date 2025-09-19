@@ -10,6 +10,7 @@ import { getMarkets, Market } from '../Constants/markets';
 import { CustomAlert, useCustomAlert } from '../Components/CustomAlert';
 import { addBookmark, removeBookmark, isMarketBookmarked, getPredictionPercentages, getTomorrowsBet, placeBitcoinBet, isEliminated } from '../Database/actions';
 import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, getTableTypeFromMarketId, MARKETS_WITH_CONTRACTS, PENALTY_EXEMPT_CONTRACTS, calculateEntryFee, PENALTY_EXEMPT_ENTRY_FEE } from '../Database/config';
+import { getEventDate } from '../Database/eventDates';
 import { getPrice } from '../Constants/getPrice';
 import { useContractData } from '../hooks/useContractData';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
@@ -150,7 +151,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTipIndex((prevIndex) => (prevIndex + 1) % 5); // 5 tips total
-    }, 4000);
+    }, 9000);
 
     return () => clearInterval(interval);
   }, []);
@@ -964,7 +965,18 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       const marketData = getMarkets(getTranslation(currentLanguage), marketId);
       const marketQuestion = marketData[0]?.question || 'Market prediction';
 
-      // Place/update the prediction  
+      // Check if this is a penalty-exempt contract and if we're on race day
+      if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+        const eventDate = getEventDate(contractAddress);
+        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+
+        if (eventDate === today) {
+          showAlert('Predictions are not allowed today. Please make your prediction before the event starts.', 'error', 'Race Day Restriction');
+          return;
+        }
+      }
+
+      // Place/update the prediction
       await placeBitcoinBet(address, newVote, tableType, marketQuestion, contractAddress);
 
       // Update local state immediately for better UX
