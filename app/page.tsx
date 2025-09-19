@@ -164,7 +164,7 @@ export default function App() {
     if (activeSection === 'home' && !isLandingPageLoading && !isTutorialOpen) {
       const timer = setTimeout(() => {
         setShowHowItWorksPopup(true);
-      }, 2000);
+      }, 8000);
 
       return () => clearTimeout(timer);
     }
