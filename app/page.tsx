@@ -1161,7 +1161,7 @@ export default function App() {
       {/* Mobile Bottom Navigation */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'ideas' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && activeSection !== 'discord' && (
         <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40 border-t border-gray-100/50">
-          <div className="flex items-center justify-around py-0.5 px-1">
+          <div className="flex items-center justify-around py-2 px-1">
             <button
               onClick={(e) => {
                 console.log('Mobile HOME button clicked');
@@ -1175,7 +1175,7 @@ export default function App() {
               }`}
             >
               <div className="relative mb-1">
-                <svg className={`w-6 h-6 transition-all duration-200 ${
+                <svg className={`w-5 h-5 transition-all duration-200 ${
                   (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot')
                     ? 'text-black'
                     : 'text-gray-400'
@@ -1202,7 +1202,7 @@ export default function App() {
               }`}
             >
               <div className="relative mb-1">
-                <svg className={`w-6 h-6 transition-all duration-200 ${
+                <svg className={`w-5 h-5 transition-all duration-200 ${
                   activeSection === 'liveMarkets'
                     ? 'text-black'
                     : 'text-gray-400'
@@ -1231,7 +1231,7 @@ export default function App() {
               }`}
             >
               <div className="relative mb-1">
-                <svg className={`w-6 h-6 transition-all duration-200 ${
+                <svg className={`w-5 h-5 transition-all duration-200 ${
                   activeSection === 'news'
                     ? 'text-black'
                     : 'text-gray-400'
@@ -1265,7 +1265,7 @@ export default function App() {
               }`}
             >
               <div className="relative mb-1">
-                <svg className={`w-6 h-6 transition-all duration-200 ${
+                <svg className={`w-5 h-5 transition-all duration-200 ${
                   (activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile')
                     ? 'text-black'
                     : 'text-gray-400'
