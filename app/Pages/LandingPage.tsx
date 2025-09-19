@@ -1763,7 +1763,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             })()}`}>
                               <div className="flex items-center gap-2 text-sm font-medium text-gray-700 opacity-50">
                                 <span>{getEntryFeeDisplay(market.id)}</span>
-                                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 font-medium text-gray-700 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                 </svg>
                                 <span className="text-[#00aa00] font-bold">{market.potSize}</span>
@@ -1806,9 +1806,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                               return !useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
                             })()}`}>
-                              <div className="text-sm font-medium text-gray-600 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
+                              <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                                 {t.potNumber} #{market.potNumber || 'N/A'}
-                                <span className="text-gray-400 font-bold" style={{ fontSize: '8px' }}>•</span>
+                                <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
                                 <RefreshCw className="w-3 h-3" />
                                 {(() => {
                                   const contractAddress = getContractAddress(market.id);
@@ -2384,9 +2384,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             const useTraditionalLayout = ((marketIndex + 1) % 5 === 0) || marketIndex === 0;
                             return !useTraditionalLayout ? '' : '';
                           })()}`}>
-                            <div className="text-sm font-medium text-gray-600 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
+                            <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                               {t.potNumber} #{market.potNumber || 'N/A'}
-                              <span className="text-gray-400 font-bold" style={{ fontSize: '8px' }}>•</span>
+                              <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
                               <RefreshCw className="w-3 h-3" />
                               {(() => {
                                 const contractAddress = getContractAddress(market.id);
