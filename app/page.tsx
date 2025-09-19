@@ -164,7 +164,7 @@ export default function App() {
     if (activeSection === 'home' && !isLandingPageLoading && !isTutorialOpen) {
       const timer = setTimeout(() => {
         setShowHowItWorksPopup(true);
-      }, 8000);
+      }, 7000);
 
       return () => clearTimeout(timer);
     }
@@ -1264,7 +1264,7 @@ export default function App() {
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
             </div>
-            <span className="text-[13px] font-medium truncate max-w-[60px]">
+            <span className="text-[13px] font-medium truncate max-w-[75px]">
                {t.bottomNavMyPots}
             </span>
           </button>
