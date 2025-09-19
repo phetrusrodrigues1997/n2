@@ -893,7 +893,7 @@ export const translations: Record<Language, Translations> = {
     bottomNavMyPots: 'My Pots',
 
     // MakePredictionsPage (VERY LIMITED - only safe display strings)
-    loadingPredictions: 'Loading your predictions...',
+    loadingPredictions: 'Loading your information...',
     loadingScreenSubtitle: 'Just a moment...',
     finalPredictions: 'Final Predictions',
     congratulationsFinal10: 'Congratulations! You are down to the last 5. Make your predictions as you normally would and if you win we will notify you.',
@@ -1393,7 +1393,7 @@ export const translations: Record<Language, Translations> = {
     bottomNavMyPots: 'Meus potes',
 
     // MakePredictionsPage (VERY LIMITED - only safe display strings)
-    loadingPredictions: 'Carregando suas previsões...',
+    loadingPredictions: 'Carregando sua informação...',
     finalPredictions: 'Previsões Finais',
     congratulationsFinal10: 'Parabéns! Você está entre os 10 últimos. Faça suas previsões normalmente e se ganhar, nós te notificaremos.',
     gotIt: 'Entendi! 🎯',

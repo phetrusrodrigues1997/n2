@@ -210,12 +210,47 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
     }
   }, [showEmailManagement, isConnected, hasUserEmail]); // Added hasUserEmail to dependency array to run after email check
 
-  // Check user participation in pots
+  // Check user participation in pots and redirect if already participating
   useEffect(() => {
     if (!isConnected || !address) {
       setUserPots([]);
+      return;
     }
-  }, [address, isConnected]);
+
+    // Check if user is participant in the selected market
+    const selectedMarketAddress = Cookies.get('selectedMarket');
+    const participatingPots: string[] = [];
+
+    console.log('🔍 TutorialBridge Participant Check:');
+    console.log('  - selectedMarketAddress:', selectedMarketAddress);
+    console.log('  - contractAddresses:', contractAddresses);
+    console.log('  - participantsData:', participantsData);
+
+    // Check all contracts
+    participantsData.forEach((participants, index) => {
+      if (participants && Array.isArray(participants)) {
+        const isParticipant = participants.some(
+          (participant: string) => participant.toLowerCase() === address.toLowerCase()
+        );
+        if (isParticipant) {
+          participatingPots.push(contractAddresses[index]);
+        }
+      }
+    });
+
+    setUserPots(participatingPots);
+    const isParticipantInSelected = participatingPots.includes(selectedMarketAddress || '');
+
+    // Check if user is special user (admin)
+    const SPECIAL_ADDRESS = '0xA90611B6AFcBdFa9DDFfCB2aa2014446297b6680';
+    const isSpecialUser = address && address.toLowerCase() === SPECIAL_ADDRESS.toLowerCase();
+
+    // If user is already a participant and not admin, redirect to MakePredictionsPage
+    if (isParticipantInSelected && !isSpecialUser && contractAddresses.length > 0) {
+      console.log('User is already a participant, redirecting to makePrediction');
+      setActiveSection('makePrediction');
+    }
+  }, [address, isConnected, participantsData, contractAddresses, setActiveSection]);
 
   // Load pot info for selected market
   useEffect(() => {
