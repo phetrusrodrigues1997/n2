@@ -1244,7 +1244,7 @@ export const translations: Record<Language, Translations> = {
     detailedTournamentStep5Description: 'O torneio continua por toda a temporada (várias semanas ou meses). Cada semana, mais jogadores são eliminados até restar apenas uma pessoa. Você precisa fazer previsões corretas consistentemente durante toda a temporada para reivindicar o prêmio final.',
 
     detailedTournamentStep6Title: '👑 Passo 6: Vencedor Leva Tudo',
-    detailedTournamentStep6Description: 'A última pessoa de pé no final da temporada ganha todo o pote acumulado! Diferente dos torneios diários onde jogadores finais dividem o prêmio, torneios de temporada têm um único vencedor. O prêmio pode ser massivo já que cresce durante toda a temporada com todas as taxas de entrada e reentrada.',
+    detailedTournamentStep6Description: ' O prêmio pode ser gigante já que cresce durante toda a temporada com todas as taxas de entrada e reentrada.',
 
     // Email Collection
     readyToPlay: 'Seja notificado!',

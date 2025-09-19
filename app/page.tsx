@@ -62,7 +62,6 @@ export default function App() {
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false); // Track language dropdown state
   const [tournamentFilter, setTournamentFilter] = useState<'all' | 'daily' | 'weekly' | 'recently'>('all'); // Filter for daily/weekly/recently started tournaments
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false); // Track filter dropdown state
-  const [showHowItWorksPopup, setShowHowItWorksPopup] = useState(false); // Track how it works popup
   const [isTutorialOpen, setIsTutorialOpen] = useState(false); // Track tutorial modal state
 
   // Get ETH balance
@@ -160,29 +159,7 @@ export default function App() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [isFilterDropdownOpen]);
 
-  // Show "How it works" popup after 2 seconds on home page (but not when tutorial is open)
-  useEffect(() => {
-    if (activeSection === 'home' && !isLandingPageLoading && !isTutorialOpen) {
-      const timer = setTimeout(() => {
-        setShowHowItWorksPopup(true);
-      }, 7000);
 
-      return () => clearTimeout(timer);
-    }
-  }, [activeSection, isLandingPageLoading, isTutorialOpen]);
-
-  // Close "How it works" popup when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element;
-      if (showHowItWorksPopup && !target.closest('[data-how-it-works-popup]')) {
-        setShowHowItWorksPopup(false);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [showHowItWorksPopup]);
 
   // Fetch ETH price
   useEffect(() => {
@@ -1183,118 +1160,132 @@ export default function App() {
 
       {/* Mobile Bottom Navigation */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'ideas' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && activeSection !== 'discord' && (
-        <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40 border-t border-gray-200">
-        <div className="flex items-center justify-around py-2">
-          <button
-            onClick={(e) => {
-              console.log('Mobile HOME button clicked');
-              setActiveSection('home');
-              setIsMobileSearchActive(false);
-            }}
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${(activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot') ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
+        <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white/90 backdrop-blur-xl z-40 border-t border-gray-100/50">
+          <div className="flex items-center justify-around py-4 px-1">
+            <button
+              onClick={(e) => {
+                console.log('Mobile HOME button clicked');
+                setActiveSection('home');
+                setIsMobileSearchActive(false);
+              }}
+              className={`flex flex-col items-center justify-center min-w-[60px] py-2 px-3 transition-all duration-200 ${
+                (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot')
+                  ? 'text-black'
+                  : 'text-gray-400 hover:text-gray-600 active:scale-95'
               }`}
-          >
-            <div className={`w-4 h-4 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${(activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot') ? 'bg-transparent' : ''
-              }`}>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9,22 9,12 15,12 15,22"></polyline>
-              </svg>
-            </div>
-            <span className="text-[13px] font-medium">{t.bottomNavHome}</span>
-          </button>
-
-          <button
-            onClick={() => setActiveSection('liveMarkets')}
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${activeSection === 'liveMarkets' ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
-              }`}
-          >
-            <div className={`w-4 h-4 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${activeSection === 'liveMarkets' ? 'bg-transparent' : ''
-              }`}>
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M3.05 3.05a7 7 0 0 0 0 9.9.5.5 0 0 1-.707.707 8 8 0 0 1 0-11.314.5.5 0 0 1 .707.707m2.122 2.122a4 4 0 0 0 0 5.656.5.5 0 1 1-.708.708 5 5 0 0 1 0-7.072.5.5 0 0 1 .708.708m5.656-.708a.5.5 0 0 1 .708 0 5 5 0 0 1 0 7.072.5.5 0 1 1-.708-.708 4 4 0 0 0 0-5.656.5.5 0 0 1 0-.708m2.122-2.12a.5.5 0 0 1 .707 0 8 8 0 0 1 0 11.313.5.5 0 0 1-.707-.707 7 7 0 0 0 0-9.9.5.5 0 0 1 0-.707zM10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/>
-              </svg>
-            </div>
-            <span className="text-[13px] font-medium">{t.bottomNavLive}</span>
-          </button>
-
-              <button
-            onClick={() => {
-              console.log('Mobile NEWS button clicked');
-              setActiveSection('news');
-            }}
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${activeSection === 'news' ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'}`}
-          >
-            <div className={`w-4 h-4 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${activeSection === 'news' ? 'bg-transparent' : ''}`}>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
-                <path d="M18 14h-8"/>
-                <path d="M15 18h-5"/>
-                <path d="M10 6h8v4h-8V6z"/>
-              </svg>
-            </div>
-            <span className="text-[13px] font-medium">News</span>
-          </button>
-          
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('Mobile my markets button clicked - should navigate to bookmarks');
-              setActiveSection('bookmarks');
-            }}
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-200 ${(activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile') ? 'text-slate-900 opacity-100' : 'text-gray-500 opacity-70'
-              }`}
-          >
-            <div className={`w-4 h-4 rounded-full flex items-center justify-center mb-0.5 transition-all duration-200 ${(activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile') ? 'bg-transparent' : ''
-              }`}>
-              <svg className="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-            </div>
-            <span className="text-[13px] font-medium truncate max-w-[75px]">
-               {t.bottomNavMyPots}
-            </span>
-          </button>
-        </div>
-        </div>
-      )}
-
-      {/* How it works popup - extension of bottom navigation */}
-      {!isLandingPageLoading && activeSection === 'home' && showHowItWorksPopup && !isTutorialOpen && (
-        <div className="fixed left-0 right-0 md:hidden bg-white z-50" data-how-it-works-popup style={{ bottom: '62px' }}>
-          <div
-            className="bg-white border-t border-gray-200 rounded-t-lg px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
-            onClick={() => {
-              setActiveSection('discord');
-              setShowHowItWorksPopup(false);
-            }}
-          >
-            <div className="flex items-center justify-center relative">
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
-                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                </div>
-                <h3 className="text-sm font-medium text-purple-600">{t.howItWorks}</h3>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowHowItWorksPopup(false);
-                }}
-                className="absolute right-0 text-purple-500 hover:text-purple-700 p-1"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+            >
+              <div className="relative mb-1">
+                <svg className={`w-6 h-6 transition-all duration-200 ${
+                  (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot')
+                    ? 'text-black'
+                    : 'text-gray-400'
+                }`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9,22 9,12 15,12 15,22"></polyline>
                 </svg>
-              </button>
-            </div>
+              </div>
+              <span className={`text-xs transition-all duration-200 ${
+                (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot')
+                  ? 'font-black text-black'
+                  : 'font-medium text-gray-400'
+              }`}>
+                {t.bottomNavHome}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveSection('liveMarkets')}
+              className={`flex flex-col items-center justify-center min-w-[60px] py-2 px-3 transition-all duration-200 ${
+                activeSection === 'liveMarkets'
+                  ? 'text-black'
+                  : 'text-gray-400 hover:text-gray-600 active:scale-95'
+              }`}
+            >
+              <div className="relative mb-1">
+                <svg className={`w-6 h-6 transition-all duration-200 ${
+                  activeSection === 'liveMarkets'
+                    ? 'text-black'
+                    : 'text-gray-400'
+                }`} fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M3.05 3.05a7 7 0 0 0 0 9.9.5.5 0 0 1-.707.707 8 8 0 0 1 0-11.314.5.5 0 0 1 .707.707m2.122 2.122a4 4 0 0 0 0 5.656.5.5 0 1 1-.708.708 5 5 0 0 1 0-7.072.5.5 0 0 1 .708.708m5.656-.708a.5.5 0 0 1 .708 0 5 5 0 0 1 0 7.072.5.5 0 1 1-.708-.708 4 4 0 0 0 0-5.656.5.5 0 0 1 0-.708m2.122-2.12a.5.5 0 0 1 .707 0 8 8 0 0 1 0 11.313.5.5 0 0 1-.707-.707 7 7 0 0 0 0-9.9.5.5 0 0 1 0-.707zM10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/>
+                </svg>
+              </div>
+              <span className={`text-xs transition-all duration-200 ${
+                activeSection === 'liveMarkets'
+                  ? 'font-black text-black'
+                  : 'font-medium text-gray-400'
+              }`}>
+                {t.bottomNavLive}
+              </span>
+            </button>
+
+            <button
+              onClick={() => {
+                console.log('Mobile NEWS button clicked');
+                setActiveSection('news');
+              }}
+              className={`flex flex-col items-center justify-center min-w-[60px] py-2 px-3 transition-all duration-200 ${
+                activeSection === 'news'
+                  ? 'text-black'
+                  : 'text-gray-400 hover:text-gray-600 active:scale-95'
+              }`}
+            >
+              <div className="relative mb-1">
+                <svg className={`w-6 h-6 transition-all duration-200 ${
+                  activeSection === 'news'
+                    ? 'text-black'
+                    : 'text-gray-400'
+                }`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
+                  <path d="M18 14h-8"/>
+                  <path d="M15 18h-5"/>
+                  <path d="M10 6h8v4h-8V6z"/>
+                </svg>
+              </div>
+              <span className={`text-xs transition-all duration-200 ${
+                activeSection === 'news'
+                  ? 'font-black text-black'
+                  : 'font-medium text-gray-400'
+              }`}>
+                News
+              </span>
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Mobile my markets button clicked - should navigate to bookmarks');
+                setActiveSection('bookmarks');
+              }}
+              className={`flex flex-col items-center justify-center min-w-[60px] py-2 px-3 transition-all duration-200 ${
+                (activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile')
+                  ? 'text-black'
+                  : 'text-gray-400 hover:text-gray-600 active:scale-95'
+              }`}
+            >
+              <div className="relative mb-1">
+                <svg className={`w-6 h-6 transition-all duration-200 ${
+                  (activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile')
+                    ? 'text-black'
+                    : 'text-gray-400'
+                }`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <span className={`text-xs transition-all duration-200 truncate max-w-[60px] ${
+                (activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile')
+                  ? 'font-black text-black'
+                  : 'font-medium text-gray-400'
+              }`}>
+                {t.bottomNavMyPots}
+              </span>
+            </button>
           </div>
         </div>
       )}
+
 
       {/* Toast Notification */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && showToast && (
