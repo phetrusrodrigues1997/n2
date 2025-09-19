@@ -1160,7 +1160,7 @@ export default function App() {
 
       {/* Mobile Bottom Navigation */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'ideas' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && activeSection !== 'discord' && (
-        <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40 border-t border-gray-100/50">
+        <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40 border-t border-gray-200">
           <div className="flex items-center justify-around py-2 px-1">
             <button
               onClick={(e) => {
