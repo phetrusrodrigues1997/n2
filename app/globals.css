@@ -310,6 +310,12 @@ button[aria-label="Toggle menu"] {
   transition: all 0.2s ease-in-out !important;
 }
 
+/* Override for hamburger menu in bottom navigation */
+div[class*="fixed bottom-0"] button[aria-label="Toggle menu"] {
+  transform: translateX(0) !important;
+  background-color: transparent !important;
+}
+
 
 
 button[aria-label="Toggle menu"] svg {
@@ -320,6 +326,16 @@ button[aria-label="Toggle menu"] svg {
 
 button[aria-label="Toggle menu"]:hover svg {
   stroke: #666666 !important;
+}
+
+/* Override SVG colors for bottom navigation hamburger menu */
+div[class*="fixed bottom-0"] button[aria-label="Toggle menu"] svg {
+  stroke: #9ca3af !important; /* gray-400 - default state */
+  transition: all 0.2s ease-in-out !important;
+}
+
+div[class*="fixed bottom-0"] button[aria-label="Toggle menu"]:hover svg {
+  stroke: #6b7280 !important; /* gray-500 - hover state */
 }
 
 

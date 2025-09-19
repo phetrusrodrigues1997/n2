@@ -527,16 +527,6 @@ export default function App() {
           {/* Top row with main header elements */}
           <div className="flex justify-between items-center mt-3 md:mt-0 px-7 md:px-12">
             <div className="flex items-center flex-1">
-              {/* Hamburger menu - shows on both desktop and mobile at left edge */}
-              <div className="md:hidden">
-                <NavigationMenu 
-                  activeSection={activeSection} 
-                  setActiveSection={setActiveSection} 
-                  onMenuToggle={setIsNavigationMenuOpen}
-                  onTriggerWallet={navigateToWallet}
-                  currentLanguage={currentLanguage}
-                />
-              </div>
 
               {/* Logo */}
               <div className="relative -ml-2">
@@ -1220,38 +1210,6 @@ export default function App() {
             </button>
 
             <button
-              onClick={() => {
-                console.log('Mobile NEWS button clicked');
-                setActiveSection('news');
-              }}
-              className={`flex flex-col items-center justify-center min-w-[60px] py-0.5 px-3 transition-all duration-200 ${
-                activeSection === 'news'
-                  ? 'text-black'
-                  : 'text-gray-400 hover:text-gray-600 active:scale-95'
-              }`}
-            >
-              <div className="relative mb-1">
-                <svg className={`w-5 h-5 transition-all duration-200 ${
-                  activeSection === 'news'
-                    ? 'text-black'
-                    : 'text-gray-400'
-                }`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
-                  <path d="M18 14h-8"/>
-                  <path d="M15 18h-5"/>
-                  <path d="M10 6h8v4h-8V6z"/>
-                </svg>
-              </div>
-              <span className={`text-xs transition-all duration-200 ${
-                activeSection === 'news'
-                  ? 'font-black text-black'
-                  : 'font-medium text-gray-400'
-              }`}>
-                News
-              </span>
-            </button>
-
-            <button
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -1282,6 +1240,21 @@ export default function App() {
                 {t.bottomNavMyPots}
               </span>
             </button>
+
+            <div className="flex flex-col items-center justify-center min-w-[60px] py-0.5 px-3">
+              <div className="relative mb-1">
+                <div className="flex items-center justify-center w-5 h-5">
+                  <NavigationMenu
+                    activeSection={activeSection}
+                    setActiveSection={setActiveSection}
+                    onMenuToggle={setIsNavigationMenuOpen}
+                    onTriggerWallet={navigateToWallet}
+                    currentLanguage={currentLanguage}
+                  />
+                </div>
+              </div>
+              <span className="text-xs font-medium text-gray-400">More</span>
+            </div>
           </div>
         </div>
       )}
