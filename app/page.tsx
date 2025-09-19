@@ -512,33 +512,6 @@ export default function App() {
   }, [tournamentFilter]);
 
 
-
-
-
-
-
-
-
-
-
-
-
-  // if (!isMounted) {
-  //   return (
-  //     <div className="flex flex-col items-center justify-center h-screen bg-invisible text-white">
-  //       <div className="p-8 bg-invisible rounded-lg shadow-2xl border border-[#fefefe] max-w-md w-full">
-  //         <div className="text-center mb-6">
-  //           <h2 className="text-xl font-medium mb-2">Loading Application</h2>
-  //           <p className="text-[#d3c81a]">Please wait while we initialize the interface</p>
-  //         </div>
-  //         <div className="flex justify-center">
-  //           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#fefefe]"></div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   // Handle loading change from LandingPage
   const handleLoadingChange = (isLoading: boolean) => {
     setIsLandingPageLoading(isLoading);
@@ -577,7 +550,7 @@ export default function App() {
           <div className="flex justify-between items-center mt-3 md:mt-0 px-7 md:px-12">
             <div className="flex items-center flex-1">
               {/* Hamburger menu - shows on both desktop and mobile at left edge */}
-              <div className="">
+              <div className="md:hidden">
                 <NavigationMenu 
                   activeSection={activeSection} 
                   setActiveSection={setActiveSection} 
@@ -632,7 +605,7 @@ export default function App() {
               {/* Balance display removed - ETH balance handled by wallet */}
 
               {/* Right-side button group - adjust positioning based on connection status */}
-              <div className={`flex items-center ml-auto ${isConnected ? '-mr-8 md:-mr-16' : '-mr-4 md:-mr-10'}`}>
+              <div className={`flex items-center ml-auto ${isConnected ? '-mr-8 md:-mr-20' : '-mr-4 md:-mr-10'}`}>
                 {/* Tight group: Mobile (Bell first) vs Desktop (Language first) */}
                 <div className="flex items-center gap-0">
                   {/* Bell button - Mobile: leftmost, Desktop: rightmost */}
@@ -745,7 +718,16 @@ export default function App() {
                             </div>
                           </div>
                         ) : (
-                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-700 via-purple-900 to-black hover:from-indigo-300 hover:via-violet-400 hover:via-fuchsia-400 hover:via-rose-400 hover:via-amber-300 hover:to-teal-400 transition-all duration-200 hover:shadow-xl hover:scale-105"></div>
+                          // <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-700 via-purple-900 to-black hover:from-indigo-300 hover:via-violet-400 hover:via-fuchsia-400 hover:via-rose-400 hover:via-amber-300 hover:to-teal-400 transition-all duration-200 hover:shadow-xl hover:scale-105"></div>
+                          <div className=" ml-2 translate-x-2">
+                <NavigationMenu 
+                  activeSection={activeSection} 
+                  setActiveSection={setActiveSection} 
+                  onMenuToggle={setIsNavigationMenuOpen}
+                  onTriggerWallet={navigateToWallet}
+                  currentLanguage={currentLanguage}
+                />
+              </div>
                         )}
                       </div>
                     )}

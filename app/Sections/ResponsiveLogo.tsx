@@ -36,13 +36,13 @@ const ResponsiveLogo = ({ onClick }: ResponsiveLogoProps) => {
           <span className="flex items-center whitespace-nowrap text-2xl font-extrabold tracking-wide">
             <span className="text-purple-700">Prediwin</span>
             {/* <span className="text-black">.com</span> */}
-           <Image
+           {/* <Image
   src="/ghostienobg.png"
   alt="Icon"
   width={38}
   height={26}
   className="flex-shrink-0"
-/>
+/> */}
             
           </span>
           
@@ -50,13 +50,13 @@ const ResponsiveLogo = ({ onClick }: ResponsiveLogoProps) => {
           <span className="flex items-center whitespace-nowrap text-3xl font-extrabold tracking-wide">
             <span className="text-purple-700">Prediwin</span>
             {/* <span className="text-black">.com</span> */}
-            <Image
+            {/* <Image
   src="/ghostienobg.png"
   alt="Icon"
   width={38}
   height={26}
   className="flex-shrink-0"
-/>
+/> */}
           </span>
 
         )}

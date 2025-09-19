@@ -74,7 +74,11 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
     <nav className="relative">
       {/* Hamburger menu button - now shown on both desktop and mobile */}
       <button
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsMenuOpen(!isMenuOpen);
+        }}
         className="py-2 rounded-lg"
         aria-label="Toggle menu"
       >
@@ -247,7 +251,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
           ) : (
             // Desktop dropdown with portal
             createPortal(
-              <div className="absolute bg-white top-12 z-[60] w-48 mt-2 rounded-md shadow-lg left-0 border border-gray-200">
+              <div className="fixed bg-white top-12 z-[60] w-48 mt-2 rounded-md shadow-lg right-4 border border-gray-200">
                 <div className="py-2">
                   {desktopMenuItems.map((item) => (
                     <button
@@ -265,6 +269,33 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                       {item.label}
                     </button>
                   ))}
+
+                  {/* Wallet and Logout options for desktop when connected */}
+                  {isConnected && (
+                    <>
+                      <div className="border-t border-gray-100 my-1"></div>
+                      <button
+                        onClick={() => {
+                          if (onTriggerWallet) {
+                            onTriggerWallet();
+                          }
+                          setIsMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-blue-600 hover:bg-gray-50 hover:text-blue-700"
+                      >
+                        {t.wallet || "Wallet"}
+                      </button>
+                      <button
+                        onClick={() => {
+                          disconnect();
+                          setIsMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50 hover:text-red-700"
+                      >
+                        {t.logOut || "Log out"}
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>,
               document.body
