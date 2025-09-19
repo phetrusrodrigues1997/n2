@@ -800,7 +800,7 @@ export default function App() {
     transition-opacity duration-200
     ${selectedMarket === market.id && activeCarousel === 'first'
       ? 'text-[rgba(0,0,0,0.9)] font-semibold opacity-100'
-      : 'font-medium text-gray-700 opacity-65 hover:opacity-85'
+      : 'font-medium text-gray-700 opacity-75 hover:opacity-85'
     }
   `}
   style={{

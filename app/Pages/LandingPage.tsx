@@ -1441,7 +1441,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                         >
                           <div className={`h-full ${(() => {
                             const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                            return marketIndex === 0 ? 'min-h-[315px]' : 'min-h-[260px]';
+                            return marketIndex === 0 ? 'min-h-[325px]' : 'min-h-[260px]';
                           })()} flex flex-col justify-between transition-all duration-300 bg-white ${(() => {
                             const contractAddress = getContractAddress(market.id);
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
@@ -1775,16 +1775,16 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                               return marketIndex === 0 ? (
                                 <div className="flex justify-start mb-2">
-                                  <div className="text-sm text-gray-500 text-left h-12 flex flex-col">
+                                  <div className="text-base text-gray-500 text-left h-12 flex flex-col">
                                     <div className="flex-1 flex items-center justify-start">
                                       <p className="transition-opacity duration-300 leading-tight">
                                         <span className="text-[#040404] font-semibold">{t.tipLabel}</span>
                                         <span className="text-gray-400 font-bold mx-1" style={{ fontSize: '8px' }}>•</span>
-                                        <span className="opacity-75">{tips[currentTipIndex]}</span>
+                                        <span className="opacity-80">{tips[currentTipIndex]}</span>
                                       </p>
                                     </div>
                                     {/* Carousel indicators */}
-                                    <div className="flex justify-center gap-1 mt-1">
+                                    <div className="flex justify-center gap-1 mt-2">
                                       {tips.map((_, index) => (
                                         <div
                                           key={index}
