@@ -1774,11 +1774,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             {(() => {
                               const marketIndex = marketOptions.findIndex(m => m.id === market.id);
                               return marketIndex === 0 ? (
-                                <div className="flex justify-center mb-2">
-                                  <div className="text-sm text-gray-500 text-center px-4 h-12 flex flex-col">
-                                    <div className="flex-1 flex items-center justify-center">
+                                <div className="flex justify-start mb-2">
+                                  <div className="text-sm text-gray-500 text-left h-12 flex flex-col">
+                                    <div className="flex-1 flex items-center justify-start">
                                       <p className="transition-opacity duration-300 leading-tight">
-                                        <span className="text-gray-600 font-medium">{t.tipLabel}</span>
+                                        <span className="text-[#040404] font-semibold">{t.tipLabel}</span>
                                         <span className="text-gray-400 font-bold mx-1" style={{ fontSize: '8px' }}>•</span>
                                         <span className="opacity-75">{tips[currentTipIndex]}</span>
                                       </p>

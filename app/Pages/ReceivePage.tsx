@@ -83,7 +83,7 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
 
         {!isConnected || !address ? (
           /* Not Connected State */
-          <div className="bg-white rounded-3xl border-2 border-gray-200 p-8 text-center shadow-xl">
+          <div className="bg-white rounded-3xl border border-gray-200 p-8 text-center shadow-xl">
             <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <Wallet className="w-10 h-10 text-purple-600" />
             </div>
@@ -96,7 +96,7 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
           /* Connected State */
           <div className="space-y-6">
             {/* Combined QR Code & Address Section */}
-            <div className="bg-white rounded-3xl border-2 border-gray-200 p-5 shadow-xl">
+            <div className="bg-white rounded-3xl border border-gray-200 p-5 shadow-xl">
               <div className="text-center mb-4">
                 <div className="inline-flex items-center gap-2 bg-purple-100 px-3 py-1.5 rounded-full mb-3">
                   <QrCode className="w-4 h-4 text-purple-600" />

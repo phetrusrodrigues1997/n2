@@ -1206,7 +1206,7 @@ export const translations: Record<Language, Translations> = {
     receiveETH: 'Receber ETH',
     copyAddress: 'Copiar Endereço',
     copied: 'Copiado!',
-    baseNetworkOnly: 'Apenas Rede Base',
+    baseNetworkOnly: 'Somente Rede Base',
 
     // Detailed Tutorial Steps (Daily Markets)
     detailedStep1Title: '💰 Passo 1: Entre no Torneio',
@@ -1587,7 +1587,7 @@ export const getTranslatedMarketQuestion = (market: any, language: Language): st
     'formula1': t.formula1Question,
     'Music Charts': language === 'en'
       ? 'Espresso reaches #1 on Spotify Global'
-      : 'Espresso alcançará #1 no Spotify Global',
+      : 'Espresso vai alcancar #1 no Spotify Global',
     // Additional markets
     'X Trending Topics': language === 'en'
       ? 'Which topic will rank #1 on X trending topics in the United States by 21:00 UTC today?'
@@ -1722,7 +1722,7 @@ export const translateMarketQuestion = (questionText: string, language: Language
     // Core market questions from markets.ts
     'Bitcoin closes higher than opening price': 'Bitcoin fechará em alta em relação ao preço de abertura',
     'Solo female artist has #1 song on Spotify Global': 'Artista feminina solo terá música #1 no Spotify Global',
-    'Espresso reaches #1 on Spotify Global': 'Espresso alcançará #1 no Spotify Global',
+    'Espresso reaches #1 on Spotify Global': 'Espresso vai alcancar #1 no Spotify Global',
 
     // Markets without contracts
     'Chelsea beats Manchester United': 'Chelsea ganhará do Manchester United',
