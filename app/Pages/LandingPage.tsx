@@ -124,13 +124,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   const [contractTimers, setContractTimers] = useState<Record<string, string>>({});
 
   // Tips carousel state
-  const tips = [
-    "Users who research their questions tend to have a higher accuracy",
-    "Check recent news and trends before making predictions",
-    "Consider market sentiment and historical patterns",
-    "Diversify your predictions across different markets",
-    "Set realistic expectations and manage risk accordingly"
-  ];
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
 
   useEffect(() => {
@@ -156,11 +149,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   // Tips carousel auto-rotation
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTipIndex((prevIndex) => (prevIndex + 1) % tips.length);
-    }, 8000);
+      setCurrentTipIndex((prevIndex) => (prevIndex + 1) % 5); // 5 tips total
+    }, 4000);
 
     return () => clearInterval(interval);
-  }, [tips.length]);
+  }, []);
 
   // Pagination state
   const [displayedMarketsCount, setDisplayedMarketsCount] = useState(12);
@@ -367,6 +360,15 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
 
   const t = getTranslation(currentLanguage);
+
+  // Tips array using translations
+  const tips = [
+    t.tip1,
+    t.tip2,
+    t.tip3,
+    t.tip4,
+    t.tip5
+  ];
 
   // Close tutorial language dropdown when clicking outside
   useEffect(() => {
@@ -1764,7 +1766,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   <div className="text-xs text-gray-500 text-center px-4 h-12 flex flex-col">
                                     <div className="flex-1 flex items-center justify-center">
                                       <p className="transition-opacity duration-300 leading-tight">
-                                        <span className="text-gray-600 font-medium">Pro Tip</span>
+                                        <span className="text-gray-600 font-medium">{t.tipLabel}</span>
                                         <span className="text-gray-400 font-bold mx-1" style={{ fontSize: '8px' }}>•</span>
                                         <span className="opacity-75">{tips[currentTipIndex]}</span>
                                       </p>
@@ -1793,7 +1795,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               return !useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
                             })()}`}>
                               <div className="text-sm font-medium text-gray-600 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
-                                Pot #{market.potNumber || 'N/A'}
+                                {t.potNumber} #{market.potNumber || 'N/A'}
                                 <span className="text-gray-400 font-bold" style={{ fontSize: '8px' }}>•</span>
                                 <RefreshCw className="w-3 h-3" />
                                 {(() => {
@@ -2371,7 +2373,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             return !useTraditionalLayout ? '' : '';
                           })()}`}>
                             <div className="text-sm font-medium text-gray-600 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
-                              Pot #{market.potNumber || 'N/A'}
+                              {t.potNumber} #{market.potNumber || 'N/A'}
                               <span className="text-gray-400 font-bold" style={{ fontSize: '8px' }}>•</span>
                               <RefreshCw className="w-3 h-3" />
                               {(() => {

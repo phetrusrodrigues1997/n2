@@ -13,6 +13,7 @@ export interface Translations {
   higher: string;
   lower: string;
   comingSoon: string;
+  potNumber: string
   
   // Market Questions
   bitcoinQuestion: string;
@@ -483,6 +484,14 @@ export interface Translations {
   trader: string;
   earnings: string;
   accuracy: string;
+
+  // Tips carousel
+  tipLabel: string;
+  tip1: string;
+  tip2: string;
+  tip3: string;
+  tip4: string;
+  tip5: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -499,6 +508,7 @@ export const translations: Record<Language, Translations> = {
     higher: 'Yes',
     lower: 'No',
     comingSoon: 'market coming soon!',
+    potNumber: 'Pot',
     
     // Market Questions
     bitcoinQuestion: 'Bitcoin closes higher than opening price',
@@ -974,7 +984,15 @@ export const translations: Record<Language, Translations> = {
     rank: 'Rank',
     trader: 'Trader',
     earnings: 'Earnings',
-    accuracy: 'Accuracy'
+    accuracy: 'Accuracy',
+
+    // Tips carousel
+    tipLabel: 'Tip',
+    tip1: 'Users who research their questions tend to have a higher accuracy',
+    tip2: 'Check recent news and trends before making predictions',
+    tip3: 'Consider market sentiment and historical patterns',
+    tip4: 'Diversify your predictions across different markets',
+    tip5: 'Set realistic expectations and manage risk accordingly'
   },
   'pt-BR': {
     // Hero Section
@@ -989,6 +1007,7 @@ export const translations: Record<Language, Translations> = {
     higher: 'Sim',
     lower: 'Nao',
     comingSoon: 'mercado em breve!',
+    potNumber:'Pote',
     
     // Market Questions
     bitcoinQuestion: 'Bitcoin fechará em alta em relação ao preço de abertura',
@@ -1463,7 +1482,15 @@ export const translations: Record<Language, Translations> = {
     rank: 'Posição',
     trader: 'Trader',
     earnings: 'Ganhos',
-    accuracy: 'Precisão'
+    accuracy: 'Precisão',
+
+    // Tips carousel
+    tipLabel: 'Dica',
+    tip1: 'Usuários que pesquisam suas questões tendem a ter maior precisão',
+    tip2: 'Verifique notícias recentes e tendências antes de fazer previsões',
+    tip3: 'Considere o sentimento do mercado e padrões históricos',
+    tip4: 'Diversifique suas previsões em diferentes mercados',
+    tip5: 'Defina expectativas realistas e gerencie o risco adequadamente'
   },
 };
 
