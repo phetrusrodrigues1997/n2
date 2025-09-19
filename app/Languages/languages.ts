@@ -988,11 +988,11 @@ export const translations: Record<Language, Translations> = {
 
     // Tips carousel
     tipLabel: 'Tip',
-    tip1: 'Users who research their questions tend to have a higher accuracy',
-    tip2: 'Review and change your predictions before the end of the day (daily pots) or end of the week (weekly pots)',
-    tip3: 'Consider market sentiment and historical patterns',
-    tip4: 'Diversify your predictions across different markets',
-    tip5: 'Set realistic expectations and manage risk accordingly',
+    tip1: 'Users who research their questions tend to have a higher accuracy.',
+    tip2: 'Review and change your predictions before the end of the day (daily pots) or end of the week (weekly pots).',
+    tip3: 'Consider market sentiment and historical patterns.',
+    tip4: 'Diversify your predictions across different markets.',
+    tip5: 'Set realistic expectations and manage risk accordingly.',
   
   },
   'pt-BR': {
@@ -1487,11 +1487,11 @@ export const translations: Record<Language, Translations> = {
 
     // Tips carousel
     tipLabel: 'Dica',
-    tip1: 'Usuários que pesquisam antes de tentar prever tendem a ter uma precisão maior',
-    tip2: 'Revise suas previsões antes do fim do dia (diários) ou fim da semana (semanais)',
-    tip3: 'Considere o sentimento em torno do tópico e padrões históricos',
-    tip4: 'Diversifique suas previsões entrando em diferentes potes',
-    tip5: 'Defina expectativas realistas e nao se deixe levar pela emoção',
+    tip1: 'Usuários que pesquisam antes de tentar prever tendem a ter uma precisão maior.',
+    tip2: 'Revise suas previsões antes do fim do dia (diários) ou fim da semana (semanais).',
+    tip3: 'Considere o sentimento em torno do tópico e padrões históricos.',
+    tip4: 'Diversifique suas previsões entrando em diferentes potes.',
+    tip5: 'Defina expectativas realistas e nao se deixe levar pela emoção.',
   
   },
 };
