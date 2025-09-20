@@ -1348,7 +1348,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                     : '0px';
 
                   return (
-                    <div key={`mobile-${market.id}-${index}`} className={market.marketIndex === 0 ? 'mt-4' : ''}>
+                    <div key={`mobile-${market.id}-${index}`} className={market.marketIndex === 0 ? 'mt-3' : ''}>
                       <div className="relative">
                         {/* Re-enter button overlay - positioned outside opacity container */}
                         {(() => {

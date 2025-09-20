@@ -530,7 +530,7 @@ export default function App() {
         <div className="relative z-10">
           <div className="max-w-7xl mx-auto flex flex-col ">
           {/* Top row with main header elements */}
-          <div className="flex justify-between items-center mt-3 md:mt-0 px-7 md:px-12">
+          <div className="flex justify-between items-center mt-3 md:mt-0 px-9 md:px-12">
             <div className="flex items-center flex-1">
 
               {/* Logo */}
