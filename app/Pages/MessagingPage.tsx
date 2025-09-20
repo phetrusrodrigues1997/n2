@@ -48,25 +48,16 @@ const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead, currentL
   // Load announcements from database (both global and contract-specific)
   const loadAnnouncements = async () => {
     if (!address) return;
-    
+
     try {
       setLoading(true);
-      
+
       // Get both global and contract-specific announcements for this user
       console.log(`🔍 MessagingPage: Loading announcements for address: ${address}`);
-      
-      // Let's also try getting ALL announcements to see if any exist
-      try {
-        const allAnnouncementsTest = await getAllAnnouncements();
-        console.log(`🔍 MessagingPage: Total announcements in DB:`, allAnnouncementsTest?.length || 0);
-        console.log(`🔍 MessagingPage: First 3 announcements:`, allAnnouncementsTest?.slice(0, 3) || []);
-      } catch (testError) {
-        console.log(`🔍 MessagingPage: Error getting all announcements:`, testError);
-      }
-      
+
       const allAnnouncements = await getUserContractAnnouncements(address);
-      console.log(`🔍 MessagingPage: Raw announcements from DB:`, allAnnouncements);
-      
+      console.log(`🔍 MessagingPage: Found ${allAnnouncements.length} announcements for user`);
+
       // Convert database format to component format
       const formattedAnnouncements: Announcement[] = allAnnouncements.map(announcement => ({
         id: announcement.id,

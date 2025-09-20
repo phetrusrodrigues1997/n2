@@ -2343,6 +2343,28 @@ export async function getAllAnnouncements() {
 }
 
 /**
+ * DEBUG: Gets ALL messages from Messages table (for debugging only)
+ */
+export async function getAllMessagesDebug() {
+  try {
+    console.log('🔍 getAllMessagesDebug: Getting ALL messages from Messages table');
+
+    const allMessages = await db
+      .select()
+      .from(Messages)
+      .orderBy(sql`${Messages.datetime} DESC`);
+
+    console.log(`🔍 getAllMessagesDebug: Found ${allMessages.length} total messages`);
+    console.log(`🔍 getAllMessagesDebug: First 3 messages:`, allMessages.slice(0, 3));
+
+    return allMessages;
+  } catch (error) {
+    console.error("🔍 getAllMessagesDebug: Error fetching all messages:", error);
+    return [];
+  }
+}
+
+/**
  * Gets announcements for contracts user participates in
  * Optimized with automatic limits and recent focus
  */
@@ -2427,7 +2449,7 @@ export async function getUserParticipatingContracts(userAddress: string) {
     const normalizedUserAddress = userAddress.toLowerCase();
     console.log(`🔍 getUserParticipatingContracts: Checking participation for ${normalizedUserAddress}`);
     const contracts: { contractAddress: string; marketType: string }[] = [];
-    
+
     // Debug: Let's see what's in the PotParticipationHistory for this user
     try {
       const allPotHistory = await db
@@ -2438,6 +2460,47 @@ export async function getUserParticipatingContracts(userAddress: string) {
       console.log(`🔍 PotParticipationHistory records for ${normalizedUserAddress}:`, allPotHistory);
     } catch (historyError) {
       console.error(`🔍 Error querying PotParticipationHistory:`, historyError);
+    }
+
+    // Check for contracts with announcements where we might have missed participation
+    // This handles cases where blockchain participation exists but database records are incomplete
+    try {
+      const contractsWithAnnouncements = await db
+        .select({
+          contractAddress: Messages.contractAddress
+        })
+        .from(Messages)
+        .where(
+          and(
+            eq(Messages.from, SYSTEM_ANNOUNCEMENT_SENDER),
+            eq(Messages.to, CONTRACT_PARTICIPANTS),
+            ne(Messages.contractAddress, null)
+          )
+        )
+        .groupBy(Messages.contractAddress);
+
+      console.log(`🔍 Found ${contractsWithAnnouncements.length} contracts with announcements`);
+
+      // For each contract with announcements, assume user participation if we can't detect it
+      // This is a fallback for cases where database participation tracking is incomplete
+      for (const contract of contractsWithAnnouncements) {
+        if (contract.contractAddress) {
+          const contractLower = contract.contractAddress.toLowerCase();
+
+          // Check if we already added this contract
+          const alreadyAdded = contracts.some(c => c.contractAddress === contractLower);
+
+          if (!alreadyAdded) {
+            console.log(`🔍 Adding contract with announcements: ${contractLower}`);
+            contracts.push({
+              contractAddress: contractLower,
+              marketType: 'market' // Default market type
+            });
+          }
+        }
+      }
+    } catch (contractAnnouncementError) {
+      console.error(`🔍 Error checking contracts with announcements:`, contractAnnouncementError);
     }
     
     // Import config dynamically
