@@ -58,6 +58,10 @@ const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead, currentL
       const allAnnouncements = await getUserContractAnnouncements(address);
       console.log(`🔍 MessagingPage: Found ${allAnnouncements.length} announcements for user`);
 
+      if (allAnnouncements.length === 0) {
+        console.log(`🔍 MessagingPage: No announcements found - the general solution may have an issue`);
+      }
+
       // Convert database format to component format
       const formattedAnnouncements: Announcement[] = allAnnouncements.map(announcement => ({
         id: announcement.id,

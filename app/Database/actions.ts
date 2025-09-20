@@ -1,13 +1,13 @@
 "use server";
 
 import {  Messages, LivePredictions, Bookmarks } from "./schema"; // Import the schema
-import { eq, sql, and, inArray } from "drizzle-orm";
+import { eq, sql, and, inArray, ne } from "drizzle-orm";
 import { getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING, getTableTypeFromMarketId, PENALTY_EXEMPT_CONTRACTS, TableType } from "./config";
 import { getEventDate } from "./eventDates";
 import { ReferralCodes, Referrals, FreeEntries, UsersTable } from "./schema";
 import { EvidenceSubmissions, MarketOutcomes, PredictionIdeas, PotParticipationHistory, PotInformation } from "./schema";
 import { recordPotEntry, recordUserPrediction } from './actions3';
-import { desc } from "drizzle-orm";
+import { desc, limit } from "drizzle-orm";
 import { getPrice } from '../Constants/getPrice';
 import { getMarkets } from '../Constants/markets';
 import { getTranslation } from '../Languages/languages';
@@ -2374,11 +2374,34 @@ export async function getUserContractAnnouncements(userAddress: string) {
     // Normalize wallet address for consistency
     const normalizedUserAddress = userAddress.toLowerCase();
     console.log(`🔍 getUserContractAnnouncements: Normalized address ${normalizedUserAddress}`);
-    
-    // 1. Get user's participating contracts (cached/optimized)
+
+    // 1. Get user's participating contracts (with better debugging)
+    console.log(`🔍 getUserContractAnnouncements: About to call getUserParticipatingContracts...`);
     const userContracts = await getUserParticipatingContracts(normalizedUserAddress);
-    const contractAddresses = userContracts.map(c => c.contractAddress);
+    console.log(`🔍 getUserContractAnnouncements: getUserParticipatingContracts returned:`, userContracts);
+
+    const contractAddresses = userContracts.map(c => c.contractAddress.toLowerCase());
     console.log(`🔍 getUserContractAnnouncements: User ${normalizedUserAddress} participates in contracts:`, contractAddresses);
+
+    // DEBUG: Also show which contracts have announcements for comparison
+    console.log(`🔍 getUserContractAnnouncements: Checking for contracts with announcements...`);
+    const contractsWithAnnouncements = await db
+      .select({
+        contractAddress: Messages.contractAddress
+      })
+      .from(Messages)
+      .where(
+        and(
+          eq(Messages.from, SYSTEM_ANNOUNCEMENT_SENDER),
+          eq(Messages.to, CONTRACT_PARTICIPANTS)
+        )
+      )
+      .groupBy(Messages.contractAddress);
+
+    console.log(`🔍 getUserContractAnnouncements: Raw contracts with announcements query result:`, contractsWithAnnouncements);
+    const filteredContracts = contractsWithAnnouncements.filter(c => c.contractAddress !== null);
+    console.log(`🔍 getUserContractAnnouncements: Contracts with announcements (filtered):`,
+      filteredContracts.map(c => c.contractAddress));
     
     // 2. Date filtering - only get recent announcements (last 30 days)
     const thirtyDaysAgo = new Date();
@@ -2431,7 +2454,11 @@ export async function getUserContractAnnouncements(userAddress: string) {
     return combined.slice(0, 100);
       
   } catch (error) {
-    console.error("Error fetching user contract announcements:", error);
+    console.error("🔍 getUserContractAnnouncements: ERROR occurred:", error);
+    console.error("🔍 getUserContractAnnouncements: Error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace'
+    });
     // Return empty array instead of throwing to prevent MessagingPage crashes
     return [];
   }
@@ -2447,109 +2474,38 @@ export async function getUserParticipatingContracts(userAddress: string) {
   try {
     // Normalize wallet address for consistency
     const normalizedUserAddress = userAddress.toLowerCase();
-    console.log(`🔍 getUserParticipatingContracts: Checking participation for ${normalizedUserAddress}`);
+    console.log(`🔍 getUserParticipatingContracts: ENTRY - Checking participation for ${normalizedUserAddress}`);
     const contracts: { contractAddress: string; marketType: string }[] = [];
 
-    // Debug: Let's see what's in the PotParticipationHistory for this user
-    try {
-      const allPotHistory = await db
-        .select()
-        .from(PotParticipationHistory)
-        .where(eq(PotParticipationHistory.walletAddress, normalizedUserAddress))
-        .limit(10);
-      console.log(`🔍 PotParticipationHistory records for ${normalizedUserAddress}:`, allPotHistory);
-    } catch (historyError) {
-      console.error(`🔍 Error querying PotParticipationHistory:`, historyError);
-    }
 
-    // Check for contracts with announcements where we might have missed participation
-    // This handles cases where blockchain participation exists but database records are incomplete
-    try {
-      const contractsWithAnnouncements = await db
-        .select({
-          contractAddress: Messages.contractAddress
-        })
-        .from(Messages)
-        .where(
-          and(
-            eq(Messages.from, SYSTEM_ANNOUNCEMENT_SENDER),
-            eq(Messages.to, CONTRACT_PARTICIPANTS),
-            ne(Messages.contractAddress, null)
-          )
-        )
-        .groupBy(Messages.contractAddress);
-
-      console.log(`🔍 Found ${contractsWithAnnouncements.length} contracts with announcements`);
-
-      // For each contract with announcements, assume user participation if we can't detect it
-      // This is a fallback for cases where database participation tracking is incomplete
-      for (const contract of contractsWithAnnouncements) {
-        if (contract.contractAddress) {
-          const contractLower = contract.contractAddress.toLowerCase();
-
-          // Check if we already added this contract
-          const alreadyAdded = contracts.some(c => c.contractAddress === contractLower);
-
-          if (!alreadyAdded) {
-            console.log(`🔍 Adding contract with announcements: ${contractLower}`);
-            contracts.push({
-              contractAddress: contractLower,
-              marketType: 'market' // Default market type
-            });
-          }
-        }
-      }
-    } catch (contractAnnouncementError) {
-      console.error(`🔍 Error checking contracts with announcements:`, contractAnnouncementError);
-    }
     
     // Import config dynamically
     const config = await import('./config');
     const CONTRACT_TO_TABLE_MAPPING = config.CONTRACT_TO_TABLE_MAPPING;
     
-    // Check each contract type for user participation (predictions OR pot entry)
+    // Check each contract type for user participation (pot entry only, no predictions check)
     for (const [contractAddress, tableType] of Object.entries(CONTRACT_TO_TABLE_MAPPING)) {
       let userParticipates = false;
-      
+
       try {
-        // First, check if user has entered this pot (via PotParticipationHistory)
+        // Check if user has entered this pot (via PotParticipationHistory)
         const potParticipation = await db
           .select()
           .from(PotParticipationHistory)
           .where(
             and(
               eq(PotParticipationHistory.walletAddress, normalizedUserAddress),
-              eq(PotParticipationHistory.contractAddress, contractAddress.toLowerCase()), // Normalize contract address
+              eq(PotParticipationHistory.contractAddress, contractAddress.toLowerCase()),
               eq(PotParticipationHistory.eventType, 'entry')
             )
-          )
-          .limit(1);
-        
-        console.log(`🔍 Contract ${contractAddress} (${tableType}): PotParticipationHistory found: ${potParticipation.length > 0}`);
-        
-        if (potParticipation.length > 0) {
-          userParticipates = true;
-        } else {
-          // Fallback: check if user has made predictions using scalable approach
-          try {
-            const BetsTable = getTableFromType(tableType);
-            const predictions = await db
-              .select()
-              .from(BetsTable)
-              .where(eq(BetsTable.walletAddress, normalizedUserAddress))
-              .limit(1);
-            userParticipates = predictions.length > 0;
-            console.log(`🔍 Contract ${contractAddress} (${tableType}): Predictions found: ${predictions.length > 0}`);
-          } catch (tableError) {
-            console.error(`Error getting table for type ${tableType}:`, tableError);
-            userParticipates = false;
-          }
-        }
+          );
+
+        userParticipates = potParticipation.length > 0;
+        console.log(`🔍 Contract ${contractAddress} (${tableType}): PotParticipationHistory found: ${userParticipates}`);
       } catch (queryError) {
         console.error(`Error checking ${tableType} participation for ${userAddress}:`, queryError);
-        // Continue with other contracts even if one fails
       }
-      
+
       if (userParticipates) {
         console.log(`✅ Adding contract ${contractAddress} (${tableType}) to user's participating contracts`);
         contracts.push({ contractAddress, marketType: tableType });
@@ -2559,7 +2515,11 @@ export async function getUserParticipatingContracts(userAddress: string) {
     console.log(`🔍 getUserParticipatingContracts: Final result for ${normalizedUserAddress}:`, contracts);
     return contracts;
   } catch (error) {
-    console.error("Error getting user participating contracts:", error);
+    console.error("🔍 getUserParticipatingContracts: ERROR occurred:", error);
+    console.error("🔍 getUserParticipatingContracts: Error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace'
+    });
     return [];
   }
 }
