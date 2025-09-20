@@ -1844,20 +1844,21 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 }
                               })()}
                             </div>
+
+                            {/* Carousel indicators for first market only */}
+                            {market.marketIndex === 0 && (
+                              <div className="flex justify-center gap-1 mt-2">
+                                {tips.map((_, index) => (
+                                  <div
+                                    key={index}
+                                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                      index === currentTipIndex ? 'bg-gray-600' : 'bg-gray-300'
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                            )}
                           </div>
-                          {/* Carousel indicators for first market only */}
-                          {market.marketIndex === 0 && (
-                            <div className="flex justify-center gap-1 pb-2 -translate-y-2">
-                              {tips.map((_, index) => (
-                                <div
-                                  key={index}
-                                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                                    index === currentTipIndex ? 'bg-gray-600' : 'bg-gray-300'
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                          )}
                         </div>
                       </div>
                     </div>
