@@ -337,11 +337,11 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
   return (
     <div className="min-h-screen bg-white text-black w-full overflow-x-hidden">
       <div className="w-full mx-auto p-6">
-        {/* Back Button */}
-        <div className="mb-6">
+        {/* Back Button - Always visible for all UI states */}
+        <div className="mb-6 relative z-10">
           <button
             onClick={() => setActiveSection('home')}
-            className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
+            className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-purple-300"
           >
             <span>←</span>
             <span>{t.backToMarkets || 'Back to Markets'}</span>
@@ -460,7 +460,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
                                     startDate: getTournamentStartDate(eventDate),
                                     eventDate: eventDate
                                   })
-                                : (t.inviteFriends || "Invite your friends! We'll notify you when there are enough players to start.")
+                                : (t.inviteFriends || "Invite your friends! We'll notify you when there are enough players.")
                         }
                       </p>
                     </div>

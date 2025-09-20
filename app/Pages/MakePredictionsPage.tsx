@@ -1183,6 +1183,17 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       )}
       
       <div className="min-h-screen bg-white p-4 relative overflow-hidden">
+        {/* Back Button - Always visible for all UI states */}
+        <div className="mb-6 relative z-10">
+          <button
+            onClick={() => setActiveSection('home')}
+            className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-purple-300"
+          >
+            <span>←</span>
+            <span>{t.backToMarkets || 'Back to Markets'}</span>
+          </button>
+        </div>
+
       {/* Dynamic background elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-1/4 left-1/6 w-64 h-64 bg-gray-900 rounded-full blur-3xl animate-pulse"></div>

@@ -658,7 +658,7 @@ export default function App() {
                       onClick={() => setActiveSection('receive')}
                       className={`hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer order-2`}
                   >
-                    <div className="text-xs text-gray-600 font-medium whitespace-nowrap">{isMobile ? t.yourBalanceMobile : t.yourBalance}</div>
+                    <div className="text-xs text-gray-600 font-medium whitespace-nowrap">{t.yourBalance}</div>
                     <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
                       {ethBalance.data ? formatBalance(ethBalance.data.value) : '$0.00'}
                     </div>
@@ -686,7 +686,7 @@ export default function App() {
                             }}
                             className="flex flex-col items-center bg-transparent text-gray-700 font-medium text-xs hover:bg-gray-100 cursor-pointer px-2 py-1 rounded-md transition-colors duration-200"
                           >
-                            <div className="text-xs text-gray-600 font-medium whitespace-nowrap">{isMobile ? t.yourBalanceMobile : t.yourBalance}</div>
+                            <div className="text-xs text-gray-600 font-medium whitespace-nowrap">{t.yourBalance}</div>
                             <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
                               {ethBalance.data ? formatBalance(ethBalance.data.value) : '$0.00'}
                             </div>
@@ -742,7 +742,7 @@ export default function App() {
                 }}
               >
                 {/* Show first 13 items on desktop, all on mobile */}
-                {(isMobile ? marketOptions : marketOptions.slice(0, 13)).map((market) => (
+                {(isMobile ? marketOptions : marketOptions.slice(0, 14)).map((market) => (
                   <button
   key={market.id}
   onClick={() => {
@@ -1232,7 +1232,7 @@ export default function App() {
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
               </div>
-              <span className={`text-xs transition-all duration-200 truncate max-w-[60px] ${
+              <span className={`text-xs transition-all duration-200 truncate max-w-[80px] ${
                 (activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile')
                   ? 'font-black text-black'
                   : 'font-medium text-gray-400'

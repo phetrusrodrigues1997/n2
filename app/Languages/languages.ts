@@ -195,7 +195,6 @@ export interface Translations {
   searchPotsPlaceholder: string;
   howItWorks: string;
   yourBalance: string;
-  yourBalanceMobile: string;
   signIn: string;
 
   // Email Collection
@@ -609,7 +608,7 @@ export const translations: Record<Language, Translations> = {
     finalDayEliminated: '🏆 The final day has arrived and winners are being determined. Unfortunately, you were eliminated earlier in the tournament. Better luck next time!',
     potIsLive: '🚀 This pot is now live and accepting predictions! You shouldn\'t be seeing this page - try refreshing or navigating back.',
     potReadyToStart: '🎉 Great news! This pot has enough players and is ready to start. Predictions will begin on {date} when the pot officially opens!',
-    inviteFriends: ' Invite your friends! We\'ll notify you via email when there are enough players to start the predictions tournament!',
+    inviteFriends: ' Invite your friends! We\'ll notify you via email when there are enough players.',
     tournamentWillBegin: '🏁 The tournament will begin on {startDate} - one week before the event ({eventDate})! Get ready to make your predictions.',
     potLiveWithPlayers: 'Pot is live with {count} players!',
     starts: 'Starts {date}',
@@ -688,7 +687,6 @@ export const translations: Record<Language, Translations> = {
     search: 'Search',
     howItWorks: 'How it works',
     yourBalance: 'Your balance',
-    yourBalanceMobile: 'Balance',
     signIn: 'Sign In',
 
     // Filter
@@ -801,7 +799,7 @@ export const translations: Record<Language, Translations> = {
 
     // Discord FAQ
     faqTitle: 'Frequently Asked Questions',
-    backToMarkets: 'Back to markets',
+    backToMarkets: 'Back Home',
     stillHaveQuestions: 'Still have questions? Join our community for more support.',
     joinCommunitySupport: 'Join our community for more support.',
     discordSupport: 'Discord Support',
@@ -1111,7 +1109,7 @@ export const translations: Record<Language, Translations> = {
     finalDayEliminated: '🏆 O dia final chegou e os vencedores estão sendo determinados. Infelizmente, você foi eliminado mais cedo no torneio. Boa sorte na próxima!',
     potIsLive: '🚀 Este pote agora está ao vivo e aceitando previsões! Você não deveria estar vendo esta página - tente atualizar ou voltar.',
     potReadyToStart: '🎉 Ótimas notícias! Este pote tem jogadores suficientes e está pronto para começar. As previsões começarão em {date} quando o pote abrir oficialmente!',
-    inviteFriends: ' Convide seus amigos! Notificaremos você por email quando houver jogadores suficientes para começar o torneio de previsões!',
+    inviteFriends: ' Convide seus amigos! Notificaremos você por email quando houver jogadores suficientes.',
     tournamentWillBegin: '🏁 O torneio começará em {startDate} - uma semana antes do evento ({eventDate})! Prepare-se para fazer suas previsões.',
     potLiveWithPlayers: 'Pote ao vivo com {count} jogadores!',
     starts: 'Começa em {date}',
@@ -1188,7 +1186,6 @@ export const translations: Record<Language, Translations> = {
     search: 'Buscar',
     howItWorks: 'Como funciona',
     yourBalance: 'Seu saldo',
-    yourBalanceMobile: 'Saldo',
     signIn: 'Entrar',
 
     // Filter
@@ -1301,7 +1298,7 @@ export const translations: Record<Language, Translations> = {
 
     // Discord FAQ
     faqTitle: 'Perguntas Frequentes',
-    backToMarkets: 'Voltar aos mercados',
+    backToMarkets: 'Voltar ao Início',
     stillHaveQuestions: 'Ainda tem dúvidas? Junte-se à nossa comunidade para mais suporte.',
     joinCommunitySupport: 'Junte-se à nossa comunidade para mais suporte.',
     discordSupport: 'Suporte Discord',

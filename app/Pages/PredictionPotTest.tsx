@@ -1024,7 +1024,7 @@ useEffect(() => {
               <div className="mt-4">
                 <button 
                   onClick={() => setActiveSection('home')}
-                  className="text-sm text-gray-500 hover:text-black transition-colors"
+                  className="text-sm text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-purple-300"
                 >
                   {t.backToHome || '← Back to Home'}
                 </button>

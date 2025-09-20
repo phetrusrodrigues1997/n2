@@ -532,7 +532,7 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                   <div className="mb-6 flex justify-between items-center">
                     <button
                       onClick={() => setActiveSection('home')}
-                      className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
+                      className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-purple-300"
                     >
                       <span>←</span>
                       <span>{t.back}</span>
