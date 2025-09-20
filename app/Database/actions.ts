@@ -43,17 +43,11 @@ const getTomorrowUKDateString = (date: Date = new Date()): string => {
 
 const getUKTime = (date: Date = new Date()): Date => {
   // Convert to UK timezone and return as Date object
-  const ukTimeString = date.toLocaleString('en-US', {
-    timeZone: 'Europe/London',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
+  const ukTimeString = date.toLocaleString('sv-SE', {
+    timeZone: 'Europe/London'
   });
 
+  // sv-SE locale gives us YYYY-MM-DD HH:mm:ss format which is ISO-like and safe for new Date()
   return new Date(ukTimeString);
 };
 

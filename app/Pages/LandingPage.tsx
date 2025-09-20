@@ -834,7 +834,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     
     // Check if we have prediction data directly
     if (userPredictions[marketId]) {
-      console.log(`✅ Found prediction for "${marketId}"`);
+      // console.log(`✅ Found prediction for "${marketId}"`);
       return userPredictions[marketId];
     }
 
@@ -844,7 +844,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     // console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
 
     if (userPredictions[displayName]) {
-      console.log(`✅ Found prediction using display name "${displayName}"`);
+      // console.log(`✅ Found prediction using display name "${displayName}"`);
       return userPredictions[displayName];
     }
 
@@ -958,13 +958,13 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       const marketData = getMarkets(getTranslation(currentLanguage), marketId);
       const marketQuestion = marketData[0]?.question || 'Market prediction';
 
-      // Check if this is a penalty-exempt contract and if we're on race day
+      // Check if this is a penalty-exempt contract and if we're day
       if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
         const eventDate = getEventDate(contractAddress);
         const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-
+        console.log("Event date:", eventDate, "Today's date:", today);
         if (eventDate === today) {
-          showAlert('Predictions are not allowed today. Please make your prediction before the event starts.', 'error', 'Race Day Restriction');
+          showAlert('Predictions are not allowed on the day of the event.', 'error', 'Restriction');
           return;
         }
       }
