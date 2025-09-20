@@ -337,6 +337,17 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
   return (
     <div className="min-h-screen bg-white text-black w-full overflow-x-hidden">
       <div className="w-full mx-auto p-6">
+        {/* Back Button */}
+        <div className="mb-6">
+          <button
+            onClick={() => setActiveSection('home')}
+            className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-light text-sm tracking-wide"
+          >
+            <span>←</span>
+            <span>{t.backToMarkets || 'Back to Markets'}</span>
+          </button>
+        </div>
+
         <div className="flex items-center justify-center -translate-y-8 md:translate-y-0">
           <div className="text-center w-full max-w-4xl">
             {/* Email Collection Modal */}
@@ -386,7 +397,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
             )}
 
             {/* Main Not Ready Message */}
-            <div className="bg-white rounded-3xl border-0 px-8 py-16 md:p-12  text-center">
+            <div className="bg-white rounded-3xl border-0 p-8 translate-y-2 md:p-12 md:translate-y-0  text-center">
               <div className="flex flex-col items-center space-y-6">
                 {/* Ghostie Image */}
                 {/* <img 

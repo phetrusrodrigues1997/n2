@@ -1159,14 +1159,14 @@ export default function App() {
                 setIsMobileSearchActive(false);
               }}
               className={`flex flex-col items-center justify-center min-w-[60px] py-0.5 px-3 transition-all duration-200 ${
-                (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot')
+                (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot' || activeSection === 'notReadyPage')
                   ? 'text-black'
                   : 'text-gray-400 hover:text-gray-600 active:scale-95'
               }`}
             >
               <div className="relative mb-1">
                 <svg className={`w-5 h-5 transition-all duration-200 ${
-                  (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot')
+                  (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot' || activeSection === 'notReadyPage')
                     ? 'text-black'
                     : 'text-gray-400'
                 }`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -1175,7 +1175,7 @@ export default function App() {
                 </svg>
               </div>
               <span className={`text-xs transition-all duration-200 ${
-                (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot')
+                (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot' || activeSection === 'notReadyPage')
                   ? 'font-black text-black'
                   : 'font-medium text-gray-400'
               }`}>
