@@ -1412,7 +1412,12 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
                             // Reduce bottom padding for non-traditional layouts to make div shorter
-                            let classes = market.useTraditionalLayout ? 'p-2 pb-5' : 'p-2 pb-0';
+                            let classes = market.useTraditionalLayout ? 'p-4 pb-5' : 'p-4 pb-0';
+
+                            // Add extra top padding for first market
+                            if (market.marketIndex === 0) {
+                              classes = classes.replace('p-4', 'px-4 pt-4 pb-4');
+                            }
 
                             if (isEliminated) {
                               classes += ' border border-gray-300 rounded-lg';
@@ -1420,6 +1425,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             
                             else if (market.tabId === selectedMarket) {
                               classes += ' border-b border-gray-200 shadow-lg shadow-purple-100/50';
+                            } else if (market.marketIndex === 0) {
+                              // No bottom border for first market
+                              classes += '';
                             } else {
                               classes += ' border-b border-gray-200';
                             }
@@ -1750,17 +1758,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         <span className="opacity-80">{tips[currentTipIndex]}</span>
                                       </p>
                                     </div>
-                                    {/* Carousel indicators */}
-                                    <div className="flex justify-center gap-1 mt-2">
-                                      {tips.map((_, index) => (
-                                        <div
-                                          key={index}
-                                          className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                                            index === currentTipIndex ? 'bg-gray-600' : 'bg-gray-300'
-                                          }`}
-                                        />
-                                      ))}
-                                    </div>
                                   </div>
                                 </div>
                               ) : null;
@@ -1848,6 +1845,19 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               })()}
                             </div>
                           </div>
+                          {/* Carousel indicators for first market only */}
+                          {market.marketIndex === 0 && (
+                            <div className="flex justify-center gap-1 pb-2 -translate-y-2">
+                              {tips.map((_, index) => (
+                                <div
+                                  key={index}
+                                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                    index === currentTipIndex ? 'bg-gray-600' : 'bg-gray-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
