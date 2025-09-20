@@ -1329,7 +1329,14 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 // Apply pagination
                 const displayedMarkets = orderedMarkets.slice(0, displayedMarketsCount);
 
-                return displayedMarkets.map((market: Market, index: number) => {
+                // Pre-calculate layout data for performance optimization
+                const marketsWithLayoutData = displayedMarkets.map((market: Market, index: number) => {
+                  const marketIndex = marketOptions.findIndex(m => m.id === market.id);
+                  const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
+                  return { ...market, marketIndex, useTraditionalLayout };
+                });
+
+                return marketsWithLayoutData.map((market, index: number) => {
                   // Calculate animation classes
                   const isSwapping = swapAnimation && swapAnimation.isAnimating;
                   const isSwappingToFirst = isSwapping && swapAnimation.toIndex === index;
@@ -1341,7 +1348,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                     : '0px';
 
                   return (
-                    <div key={`mobile-${market.id}-${index}`}>
+                    <div key={`mobile-${market.id}-${index}`} className={market.marketIndex === 0 ? 'mt-4' : ''}>
                       <div className="relative">
                         {/* Re-enter button overlay - positioned outside opacity container */}
                         {(() => {
@@ -1390,10 +1397,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               handleMarketClick(market.id);
                             }
                           }}
-                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 ${(() => {
-                            const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                            return marketIndex === 0 ? '' : 'hover:shadow-purple-200';
-                          })()} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
+                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 ${market.marketIndex === 0 ? 'shadow-[0_0_20px_rgba(147,51,234,0.3)]' : 'hover:shadow-purple-200'} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
                             } ${animatingMarket === market.tabId ? 'animate-scale-once' : ''} ${(() => {
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
@@ -1403,17 +1407,12 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             '--swap-distance': swapDistance
                           } as React.CSSProperties}
                         >
-                          <div className={`h-full ${(() => {
-                            const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                            return marketIndex === 0 ? 'min-h-[325px] bg-[#fefefe]' : 'min-h-[260px] bg-white';
-                          })()} flex flex-col justify-between transition-all duration-300 ${(() => {
+                          <div className={`h-full ${market.marketIndex === 0 ? 'min-h-[325px] bg-[#fefefe]' : 'min-h-[260px] bg-white'} flex flex-col justify-between transition-all duration-300 ${(() => {
                             const contractAddress = getContractAddress(market.id);
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
-                            const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                            const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
 
                             // Reduce bottom padding for non-traditional layouts to make div shorter
-                            let classes = useTraditionalLayout ? 'p-2 pb-5' : 'p-2 pb-0';
+                            let classes = market.useTraditionalLayout ? 'p-2 pb-5' : 'p-2 pb-0';
 
                             if (isEliminated) {
                               classes += ' border border-gray-300 rounded-lg';
@@ -1436,10 +1435,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             <div className="flex items-center gap-3 mb-6 relative">
                               {/* Small Square Image */}
                               <div className="flex-shrink-0">
-                                <div className={`rounded-lg ${(() => {
-                                  const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                                  return marketIndex === 0 ? 'w-24 h-24' : 'w-16 h-16';
-                                })()} bg-white overflow-hidden relative`}>
+                                <div className={`rounded-lg ${market.marketIndex === 0 ? 'w-24 h-24' : 'w-16 h-16'} bg-white overflow-hidden relative`}>
                                 {market.icon && (market.icon.slice(0, 1) === '/') ? (
                                 <img
                                     src={market.icon}
@@ -1455,19 +1451,13 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               </div>
 
                               {/* Question */}
-                              <div className={`flex-1 flex items-center ${(() => {
-                                  const index = marketOptions.findIndex(m => m.id === market.id);
-                                  return ((index + 1) % 3 === 0) || index === 1 ? 'pr-16' : 'pr-4';
-                                })()
-                                }`}>                <p className="text-sm leading-tight font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]" style={{
+                              <div className={`flex-1 flex items-center ${market.useTraditionalLayout ? 'pr-16' : 'pr-4'}`}>                <p className="text-sm leading-tight font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]" style={{
                                   color: '#374151',
                                   fontWeight: '650',
                                   whiteSpace: 'nowrap'
                                 }}>
                                   {(() => {
-                                    const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                                    const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
-                                    const wrapLimit = useTraditionalLayout ? 30 : 37;
+                                    const wrapLimit = market.useTraditionalLayout ? 30 : 37;
                                     const truncateLimit = 60;
 
                                     let text = getTranslatedMarketQuestion(market, currentLanguage);
@@ -1509,13 +1499,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                               {(() => {
                                 // Mobile: Alternating layout system
-                                const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                                const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
                                 const contractAddress = getContractAddress(market.id);
                                 const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
                                 // Show percentage and chance for first market, thermometer for others
-                                if (marketIndex === 0 && predictionPercentages[market.tabId || market.id] && !isEliminated) {
+                                if (market.marketIndex === 0 && predictionPercentages[market.tabId || market.id] && !isEliminated) {
                                   return (
                                     <div className="absolute top-1/2 right-0 transform -translate-y-1/2">
                                       <div className="text-right flex flex-col items-end">
@@ -1534,7 +1522,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   );
                                 }
                                 // Only show thermometer for traditional layout (even index markets), but not for first market
-                                else if (useTraditionalLayout && predictionPercentages[market.tabId || market.id] && !isEliminated && marketIndex !== 0) {
+                                else if (market.useTraditionalLayout && predictionPercentages[market.tabId || market.id] && !isEliminated && market.marketIndex !== 0) {
                                   return (
                                     <div className="absolute top-0 right-0">
                                       <div className="text-right flex flex-col items-end">
@@ -1590,13 +1578,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                             {(() => {
                               // Mobile: Alternating button layout system
-                              const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                              const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
-
-                              if (useTraditionalLayout) {
+                              if (market.useTraditionalLayout) {
                                 // Traditional buttons (even index markets)
                                 return (
-                                  <div className={`flex justify-center gap-2 mb-3 ${marketIndex === 0 ? '-translate-y-1' : 'translate-y-3'}`}>
+                                  <div className={`flex justify-center gap-2 mb-3 ${market.marketIndex === 0 ? '-translate-y-1' : 'translate-y-3'}`}>
                                     <button
                                       onClick={handleButtonClick(market.id, 'positive', (e) => {
                                         e.stopPropagation();
@@ -1643,7 +1628,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 if (!percentages) {
                                   // Fallback to traditional if no data
                                   return (
-                                    <div className={`flex justify-center gap-2 mb-3 ${marketIndex === 0 ? '-translate-y-1' : 'translate-y-3'}`}>
+                                    <div className={`flex justify-center gap-2 mb-3 ${market.marketIndex === 0 ? '-translate-y-1' : 'translate-y-3'}`}>
                                       <button
                                         onClick={handleButtonClick(market.id, 'positive', (e) => {
                                           e.stopPropagation();
@@ -1676,7 +1661,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 const noPercentage = 100 - yesPercentage;
 
                                 return (
-                                  <div className={`flex items-center justify-between ${marketIndex === 0 ? 'mb-3 -translate-y-3' : 'mb-6'}`}>
+                                  <div className={`flex items-center justify-between ${market.marketIndex === 0 ? 'mb-3 -translate-y-3' : 'mb-6'}`}>
                                     {/* Left side: Yes/No labels stacked */}
                                     <div className="flex flex-col gap-2">
                                       <div className="text-base font-normal text-black">{t.higher}</div>
@@ -1738,13 +1723,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                             {/* Entry Fee -> Pot Balance Display */}
                             <div className={`flex justify-center items-center ${(() => {
-                              const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                              const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
                               // For first market on mobile, add additional -translate-y
-                              if (marketIndex === 0) {
+                              if (market.marketIndex === 0) {
                                 return '-translate-y-3';
                               }
-                              return !useTraditionalLayout ? '-translate-y-8' : '';
+                              return !market.useTraditionalLayout ? '-translate-y-8' : '';
                             })()}`}>
                               <div className="flex items-center gap-2 text-sm text-gray-700 opacity-100">
                                 <span className= "font-bold opacity-50" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>{getEntryFeeDisplay(market.id)}</span>
@@ -1757,8 +1740,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                             {/* Tip sentence for first market only */}
                             {(() => {
-                              const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                              return marketIndex === 0 ? (
+                              return market.marketIndex === 0 ? (
                                 <div className="flex justify-start mb-2">
                                   <div className="text-base text-gray-500 text-left h-12 flex flex-col">
                                     <div className="flex-1 flex items-center justify-start">
@@ -1787,9 +1769,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             {/* Stats Footer */}
                             <div className={`flex justify-between items-center pt-2 ${(() => {
                               // Mobile: Check if this market uses traditional layout for translate-y
-                              const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                              const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
-                              return !useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
+                              return !market.useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
                             })()}`}>
                               <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                                 {t.potNumber} #{market.potNumber || 'N/A'}
@@ -2007,7 +1987,14 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 // Apply pagination for desktop
                 const displayedMarkets = orderedMarkets.slice(0, displayedMarketsCount);
 
-                return displayedMarkets.map((market, index) => {
+                // Pre-calculate layout data for performance optimization
+                const marketsWithLayoutData = displayedMarkets.map((market: Market, index: number) => {
+                  const marketIndex = marketOptions.findIndex(m => m.id === market.id);
+                  const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
+                  return { ...market, marketIndex, useTraditionalLayout };
+                });
+
+                return marketsWithLayoutData.map((market, index) => {
                   // Calculate animation classes
                   const isSwapping = swapAnimation && swapAnimation.isAnimating;
                   const isSwappingToFirst = isSwapping && swapAnimation.toIndex === index;
@@ -2112,11 +2099,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             {/* Question */}
                             {(() => {
                               // Determine if thermometer will be shown to adjust question width
-                              const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                              const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
-                              const showThermometer = useTraditionalLayout && predictionPercentages[market.tabId || market.id] && !isEliminated;
+                              const showThermometer = market.useTraditionalLayout && predictionPercentages[market.tabId || market.id] && !isEliminated;
 
                               return (
                                 <div className={`flex-1 ${showThermometer ? 'pr-16' : 'pr-4'}`}>
@@ -2127,9 +2112,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     overflow: 'hidden'
                                   }}>
                                     {(() => {
-                                      const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                                      const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
-                                      const charLimit = useTraditionalLayout ? 35 : 50; // Desktop: keep traditional tight, moderate expansion for new style
+                                      const charLimit = market.useTraditionalLayout ? 35 : 50; // Desktop: keep traditional tight, moderate expansion for new style
                                       return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
                                     })()}
                                   </p>
@@ -2139,13 +2122,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                             {(() => {
                               // Alternating layout system
-                              const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                              const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
                               // Only show thermometer for traditional layout (even index markets) - Desktop shows full thermometer including first market
-                              if (useTraditionalLayout && predictionPercentages[market.tabId || market.id] && !isEliminated) {
+                              if (market.useTraditionalLayout && predictionPercentages[market.tabId || market.id] && !isEliminated) {
                                 return (
                                   <div className="absolute top-0 -right-1">
                                     <div className="text-right flex flex-col items-end">
@@ -2201,10 +2182,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                           {(() => {
                             // Alternating button layout system
-                            const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                            const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
-
-                            if (useTraditionalLayout) {
+                            if (market.useTraditionalLayout) {
                               // Traditional buttons (even index markets)
                               return (
                                 <div className="flex justify-center gap-2 mb-3 translate-y-2">
@@ -2349,9 +2327,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                           {/* Entry Fee -> Pot Balance Display */}
                           <div className={`flex justify-center items-center ${(() => {
-                              const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                              const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
-                              return !useTraditionalLayout ? '-translate-y-2' : 'py-1.5 translate-y-1';
+                              return !market.useTraditionalLayout ? '-translate-y-2' : 'py-1.5 translate-y-1';
                             })()}`} >
                             <div className="flex items-center gap-2 text-sm text-gray-700 opacity-100">
                               <span className= "font-bold opacity-50" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>{getEntryFeeDisplay(market.id)}</span>
@@ -2365,9 +2341,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           {/* Stats Footer - Compact */}
                           <div className={`flex justify-between items-center pt-2 ${(() => {
                             // Desktop: Check if this market uses traditional layout for translate-y
-                            const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                            const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
-                            return !useTraditionalLayout ? '' : '';
+                            return !market.useTraditionalLayout ? '' : '';
                           })()}`}>
                             <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                               {t.potNumber} #{market.potNumber || 'N/A'}
