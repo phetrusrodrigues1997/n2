@@ -386,7 +386,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
             )}
 
             {/* Main Not Ready Message */}
-            <div className="bg-white rounded-3xl border-0 p-8 md:p-12 text-center">
+            <div className="bg-white rounded-3xl border-0 px-8 py-16 md:p-12  text-center">
               <div className="flex flex-col items-center space-y-6">
                 {/* Ghostie Image */}
                 {/* <img 
@@ -396,41 +396,64 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
                 /> */}
                 
                 {/* Main Message */}
-                <div className="space-y-4">
-                  <h1 className="text-2xl md:text-3xl font-light text-gray-900">
-                    {isFinalDay && isEliminated
-                      ? (t.tournamentComplete || "Tournament Complete - You Were Eliminated")
-                      : hasEnoughPlayers && potInfo.hasStarted
-                        ? (t.potIsActive || "Pot is Active! Ready to Predict")
-                        : hasEnoughPlayers && !potInfo.hasStarted
-                          ? isPenaltyExempt ? (t.tournamentStartingSoon || "Tournament Starting Soon!") : (t.potIsReady || "Pot is Ready! Starting Soon")
-                          : isPenaltyExempt
-                            ? (t.tournamentStartingSoon || "Tournament Starting Soon!") // For penalty-exempt, never show "not ready" message
-                            : (t.notReadyYet || "This pot isn't ready to begin yet")
-                    }
-                  </h1>
-                  <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
-                    {isFinalDay && isEliminated
-                      ? (t.finalDayEliminated || "🏆 The final day has arrived and winners are being determined. Unfortunately, you were eliminated earlier in the tournament. Better luck next time!")
-                      : hasEnoughPlayers && potInfo.hasStarted
-                        ? (t.potIsLive || "🚀 This pot is now live and accepting predictions! You shouldn't be seeing this page - try refreshing or navigating back.")
-                        : hasEnoughPlayers && !potInfo.hasStarted
-                          ? isPenaltyExempt && eventDate
-                            ? formatMessage(t.tournamentWillBegin || "🏁 The tournament will begin on {startDate} - one week before the event ({eventDate})! Get ready to make your predictions.", {
-                                startDate: getTournamentStartDate(eventDate),
-                                eventDate: eventDate
-                              })
-                            : formatMessage(t.potReadyToStart || "🎉 Great news! This pot has enough players and is ready to start. Predictions will begin on {date} when the pot officially opens!", {
-                                date: getNextCalendarDayUTC()
-                              })
-                          : isPenaltyExempt && eventDate
-                            ? formatMessage(t.tournamentWillBegin || "🏁 The tournament will begin on {startDate} - one week before the event ({eventDate})! Get ready to make your predictions.", {
-                                startDate: getTournamentStartDate(eventDate),
-                                eventDate: eventDate
-                              })
-                            : (t.inviteFriends || " Invite your friends! We'll notify you via email when there are enough players to start the predictions tournament!")
-                    }
-                  </p>
+                <div className="bg-gradient-to-br from-white via-purple-50/30 to-blue-50/20 rounded-2xl border border-purple-100/40 p-6 md:p-8 shadow-lg shadow-purple-100/20">
+                  <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
+                    {/* Icon */}
+                    <div className="flex-shrink-0">
+                      <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl flex items-center justify-center shadow-md border border-purple-100/50">
+                        {isFinalDay && isEliminated ? (
+                          <div className="text-2xl md:text-3xl">🏆</div>
+                        ) : hasEnoughPlayers && potInfo.hasStarted ? (
+                          <div className="text-2xl md:text-3xl">🚀</div>
+                        ) : hasEnoughPlayers && !potInfo.hasStarted ? (
+                          <div className="text-2xl md:text-3xl">🎉</div>
+                        ) : isPenaltyExempt ? (
+                          <div className="text-2xl md:text-3xl">🏁</div>
+                        ) : (
+                          <Clock className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 text-center md:text-left space-y-3">
+                      <h1 className="text-xl md:text-2xl font-semibold text-gray-900 leading-tight">
+                        {isFinalDay && isEliminated
+                          ? (t.tournamentComplete || "Tournament Complete - You Were Eliminated")
+                          : hasEnoughPlayers && potInfo.hasStarted
+                            ? (t.potIsActive || "Pot is Active! Ready to Predict")
+                            : hasEnoughPlayers && !potInfo.hasStarted
+                              ? isPenaltyExempt ? (t.tournamentStartingSoon || "Tournament Starting Soon!") : (t.potIsReady || "Pot is Ready! Starting Soon")
+                              : isPenaltyExempt
+                                ? (t.tournamentStartingSoon || "Tournament Starting Soon!")
+                                : (t.notReadyYet || "This pot isn't ready to begin yet")
+                        }
+                      </h1>
+
+                      <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                        {isFinalDay && isEliminated
+                          ? (t.finalDayEliminated || "The final day has arrived and winners are being determined. Unfortunately, you were eliminated earlier in the tournament.")
+                          : hasEnoughPlayers && potInfo.hasStarted
+                            ? (t.potIsLive || "This pot is now live and accepting predictions! Try refreshing or navigating back.")
+                            : hasEnoughPlayers && !potInfo.hasStarted
+                              ? isPenaltyExempt && eventDate
+                                ? formatMessage(t.tournamentWillBegin || "Tournament begins on {startDate} - one week before the event ({eventDate})!", {
+                                    startDate: getTournamentStartDate(eventDate),
+                                    eventDate: eventDate
+                                  })
+                                : formatMessage(t.potReadyToStart || "Great news! This pot has enough players and will start on {date}!", {
+                                    date: getNextCalendarDayUTC()
+                                  })
+                              : isPenaltyExempt && eventDate
+                                ? formatMessage(t.tournamentWillBegin || "Tournament begins on {startDate} - one week before the event ({eventDate})!", {
+                                    startDate: getTournamentStartDate(eventDate),
+                                    eventDate: eventDate
+                                  })
+                                : (t.inviteFriends || "Invite your friends! We'll notify you when there are enough players to start.")
+                        }
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Status Display - Only show if not eliminated on final day */}
