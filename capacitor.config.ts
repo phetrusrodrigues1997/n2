@@ -7,7 +7,8 @@ const config: CapacitorConfig = {
   server: {
     url: 'https://prediwin.com',
     androidScheme: 'https',
-    iosScheme: 'https'
+    iosScheme: 'https',
+    cleartext: true
   },
   plugins: {
     SplashScreen: {
@@ -26,6 +27,9 @@ const config: CapacitorConfig = {
     },
     App: {
       launchUrl: 'https://prediwin.com'
+    },
+    Browser: {
+      presentationStyle: 'popover'
     }
   }
 };
