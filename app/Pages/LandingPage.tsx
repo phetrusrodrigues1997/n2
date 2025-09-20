@@ -1397,7 +1397,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               handleMarketClick(market.id);
                             }
                           }}
-                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 ${market.marketIndex === 0 ? 'shadow-[-4px_0_24px_rgba(147,51,234,0.06),_0_-1px_40px_rgba(147,51,234,0.03),_1px_4px_40px_rgba(59,130,246,0.03)]' : 'hover:shadow-purple-200'} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
+                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 ${market.marketIndex === 0 ? 'shadow-[-2px_0_16px_rgba(147,51,234,0.06),_0_-1px_20px_rgba(147,51,234,0.02),_2px_0_16px_rgba(59,130,246,0.06),_0_2px_16px_rgba(59,130,246,0.02)]' : 'hover:shadow-purple-200'} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
                             } ${animatingMarket === market.tabId ? 'animate-scale-once' : ''} ${(() => {
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
