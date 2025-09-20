@@ -1733,7 +1733,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             <div className={`flex justify-center items-center ${(() => {
                               // For first market on mobile, add additional -translate-y
                               if (market.marketIndex === 0) {
-                                return '-translate-y-3';
+                                return '-translate-y-1';
                               }
                               return !market.useTraditionalLayout ? '-translate-y-8' : '';
                             })()}`}>
