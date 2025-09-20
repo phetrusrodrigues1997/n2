@@ -243,12 +243,17 @@ export default function App() {
       setHasUnreadAnnouncementsState(false);
       return;
     }
-    
+
     try {
       // Get all announcements for the user
       const allAnnouncements = await getUnreadAnnouncements(address);
+      console.log('🔔 checkUnreadAnnouncements: Total announcements:', allAnnouncements.length);
+
       // Filter using cookies to find truly unread ones
       const unreadAnnouncements = filterUnreadAnnouncements(allAnnouncements);
+      console.log('🔔 checkUnreadAnnouncements: Unread announcements:', unreadAnnouncements.length);
+      console.log('🔔 Setting hasUnreadAnnouncementsState to:', unreadAnnouncements.length > 0);
+
       setHasUnreadAnnouncementsState(unreadAnnouncements.length > 0);
     } catch (error) {
       console.error('Error checking unread announcements:', error);
@@ -590,7 +595,7 @@ export default function App() {
                       <Bell className="w-5 h-5 text-gray-800 stroke-2 hover:text-black transition-colors" fill="white" />
                       {/* Purple dot indicator for unread announcements */}
                       {hasUnreadAnnouncementsState && (
-                        <div className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></div>
+                        <div className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-purple-500 rounded-full border-2 border-white animate-pulse"></div>
                       )}
                     </button>
                   )}

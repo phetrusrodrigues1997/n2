@@ -2536,7 +2536,7 @@ export async function getUnreadAnnouncements(userAddress: string) {
     
     // Get user's contracts for filtering
     const userContracts = await getUserParticipatingContracts(normalizedUserAddress);
-    const contractAddresses = userContracts.map(c => c.contractAddress);
+    const contractAddresses = userContracts.map(c => c.contractAddress.toLowerCase());
     
     // Get all global announcements
     const globalAnnouncements = await db
