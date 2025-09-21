@@ -58,6 +58,8 @@ export interface Translations {
   yourGoal: string;
 
   // PredictionPotTest specific
+  enterAndCompete: string;
+  playersRemaining: string; // Added for the players remaining message
   bitcoinPotTitle: string;
   connectWalletPrompt: string;
   alreadyInPot: string;
@@ -224,6 +226,7 @@ export interface Translations {
   dailyPredictionsDesc: string;
   dynamicPricing: string;
   dynamicPricingDesc: string;
+  prize: string;
   secondChances: string;
   secondChancesDesc: string;
   finalShowdown: string;
@@ -552,6 +555,8 @@ export const translations: Record<Language, Translations> = {
     yourGoal: 'Your Goal:',
 
     // PredictionPotTest specific
+    enterAndCompete: 'Will you be among the last 5 players?',
+    playersRemaining: 'players remaining',
     bitcoinPotTitle: 'Prediction Market',
     connectWalletPrompt: 'Please connect your wallet to interact with the contract.',
     alreadyInPot: "🎉 You're in!",
@@ -767,11 +772,12 @@ export const translations: Record<Language, Translations> = {
     // Tutorial - How It Works
     skipButton: 'Skip →',
     globalCompetition: 'Global competition',
-    globalCompetitionDesc: 'Players worldwide compete in the same prediction tournaments.',
+    globalCompetitionDesc: 'Players worldwide competing to be among the last 5 in our prediction tournaments.',
     dailyPredictions: 'Daily predictions',
     dailyPredictionsDesc: 'Choose a question, enter the tournament, and predict what\'s gonna happen tomorrow!',
     dynamicPricing: 'Entry fee',
     dynamicPricingDesc: 'Entry fees start low but will double after the 5th day - join early to save!',
+    prize: 'Pot balance (Prize)',
     secondChances: 'Second chances',
     secondChancesDesc: 'Eliminated? Pay today\'s fee to re-enter anytime.',
     finalShowdown: 'Final showdown',
@@ -1051,6 +1057,8 @@ export const translations: Record<Language, Translations> = {
     yourGoal: 'Seu Objetivo:',
 
     // PredictionPotTest specific
+    enterAndCompete: 'Você vai estar entre os últimos 5 jogadores?',
+    playersRemaining: 'jogadores restantes',
     bitcoinPotTitle: 'Detalhes do Pote',
     connectWalletPrompt: 'Por favor, conecte sua carteira para interagir com o contrato.',
     alreadyInPot: "🎉 Você está no Pote!",
@@ -1131,8 +1139,8 @@ export const translations: Record<Language, Translations> = {
     saveAmount: 'ECONOMIZE',
     usingDiscount: 'Usando Desconto...',
     payToEnter: 'Pagar para Entrar',
-    joinTournament: 'Participar do Torneio',
-    joinPredictionsTournament: 'Participar do Torneio de Previsões',
+    joinTournament: 'Participe do Torneio',
+    joinPredictionsTournament: 'Participe do Torneio de Previsões',
     referralCodeShort: 'Código de Referência (Opcional)',
     enterCode: 'Digite o código...',
     processingMobile: 'Processando...',
@@ -1266,11 +1274,12 @@ export const translations: Record<Language, Translations> = {
     // Tutorial - How It Works
     skipButton: 'Pular →',
     globalCompetition: 'Competição global',
-    globalCompetitionDesc: 'Jogadores do mundo todo competem nos mesmos torneios de previsão.',
+    globalCompetitionDesc: 'Usuários do mundo todo competem para estar entre os últimos 5 jogadores nos nossos torneios de previsão.',
     dailyPredictions: 'Previsões diárias',
     dailyPredictionsDesc: 'Escolha uma pergunta, entre no torneio e preveja o que vai acontecer amanhã!',
     dynamicPricing: 'Preço de Entrada',
     dynamicPricingDesc: 'As taxas de entrada começam baixas, mas dobrarão após o 5º dia - entre cedo para economizar!',
+    prize: 'Saldo do Pote (Prêmio)',
     secondChances: 'Segunda chance',
     secondChancesDesc: 'Eliminado? Pague a taxa de hoje para entrar novamente a qualquer momento.',
     finalShowdown: 'Confronto final',

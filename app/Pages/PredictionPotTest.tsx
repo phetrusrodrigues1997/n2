@@ -1249,7 +1249,7 @@ useEffect(() => {
                           {participants ?
                             Array.from(new Set(participants)).filter(addr =>
                               !wrongPredictionsAddresses.includes(addr.toLowerCase())
-                            ).length : 0} players remaining / {participants ? Array.from(new Set(participants)).length : 0} total
+                            ).length : 0} {t.playersRemaining} / {participants ? Array.from(new Set(participants)).length : 0} total
                         </div>
                       </div>
 
@@ -1261,7 +1261,7 @@ useEffect(() => {
                           <span className="hidden md:block">{t.joinPredictionsTournament || 'Join Predictions Tournament'}</span>
                         </h3>
                         <p className="text-gray-600 text-sm">
-                          Enter the pot & compete for the prize.
+                          {t.enterAndCompete || 'Will you be among the last 5?'}
                         </p>
                       </div>
 
@@ -1276,11 +1276,17 @@ useEffect(() => {
                             />
                           </div>
                           <div className="flex-1">
+                            <div className="text-purple-600 text-sm font-medium">
+                              {t.dynamicPricing || 'Dynamic Pricing'}
+                            </div>
                             <div className="text-gray-900 font-semibold text-lg">
                               ${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)} USD
                             </div>
-                            <div className="text-purple-600 text-sm font-medium">
-                              {t.dynamicPricing || 'Dynamic Pricing'}
+                            <div className="mt-3 text-green-600 text-sm font-medium">
+                              {t.prize || 'Pot balance (Prize)'}
+                            </div>
+                            <div className="text-gray-900 font-semibold text-lg">
+                               ${potBalance ? ethToUsd(potBalance).toFixed(2) : '0.00'}
                             </div>
                           </div>
                         </div>
