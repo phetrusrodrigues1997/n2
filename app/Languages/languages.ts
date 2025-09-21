@@ -770,7 +770,7 @@ export const translations: Record<Language, Translations> = {
     globalCompetitionDesc: 'Players worldwide compete in the same prediction tournaments.',
     dailyPredictions: 'Daily predictions',
     dailyPredictionsDesc: 'Choose a question, enter the tournament, and predict what\'s gonna happen tomorrow!',
-    dynamicPricing: 'Dynamic pricing',
+    dynamicPricing: 'Entry fee',
     dynamicPricingDesc: 'Entry fees start low but will double after the 5th day - join early to save!',
     secondChances: 'Second chances',
     secondChancesDesc: 'Eliminated? Pay today\'s fee to re-enter anytime.',
@@ -985,11 +985,11 @@ export const translations: Record<Language, Translations> = {
     accuracy: 'Accuracy',
 
     // Tips carousel
-    tipLabel: 'Tip',
+    tipLabel: 'Pro Tip',
     tip1: 'Users who research their questions tend to have a higher accuracy.',
-    tip2: 'Finish your predictions by the end of the day/week. Pots happen daily or weekly.',
-    tip3: 'Consider market sentiment and historical patterns.',
-    tip4: 'Diversify your predictions across different markets.',
+    tip2: 'Enter your predictions by the end of the day or week. Pots have daily or weekly questions.',
+    tip3: 'Consider the sentiment around the question and historical patterns.',
+    tip4: 'Diversify your predictions by entering different pots',
     tip5: 'Set realistic expectations and manage risk accordingly.',
   
   },
@@ -1269,7 +1269,7 @@ export const translations: Record<Language, Translations> = {
     globalCompetitionDesc: 'Jogadores do mundo todo competem nos mesmos torneios de previsão.',
     dailyPredictions: 'Previsões diárias',
     dailyPredictionsDesc: 'Escolha uma pergunta, entre no torneio e preveja o que vai acontecer amanhã!',
-    dynamicPricing: 'Preços dinâmicos',
+    dynamicPricing: 'Preço de Entrada',
     dynamicPricingDesc: 'As taxas de entrada começam baixas, mas dobrarão após o 5º dia - entre cedo para economizar!',
     secondChances: 'Segunda chance',
     secondChancesDesc: 'Eliminado? Pague a taxa de hoje para entrar novamente a qualquer momento.',
@@ -1483,9 +1483,9 @@ export const translations: Record<Language, Translations> = {
     accuracy: 'Precisão',
 
     // Tips carousel
-    tipLabel: 'Dica',
+    tipLabel: 'Dicas',
     tip1: 'Usuários que pesquisam antes de tentar prever tendem a ter uma precisão maior.',
-    tip2: 'Termine suas previsões até o fim do dia/semana. Potes podem ser diários ou semanais.',
+    tip2: 'Insira suas previsões até o fim do dia ou da semana. Os potes podem ser diários ou semanais.',
     tip3: 'Considere o sentimento em torno do tópico e padrões históricos.',
     tip4: 'Diversifique suas previsões entrando em diferentes potes.',
     tip5: 'Defina expectativas realistas e nao se deixe levar pela emoção.',

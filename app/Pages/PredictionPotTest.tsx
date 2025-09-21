@@ -147,6 +147,7 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
   
   // Referral system state (simplified for navigation button)
   const [inputReferralCode, setInputReferralCode] = useState<string>('');
+  const [isReferralDropdownOpen, setIsReferralDropdownOpen] = useState<boolean>(false);
   const [freeEntriesAvailable, setFreeEntriesAvailable] = useState<number>(0);
   const [reEntryFee, setReEntryFee] = useState<number | null>(null);
   const [allReEntryFees, setAllReEntryFees] = useState<{market: string, fee: number}[]>([]);
@@ -1126,28 +1127,9 @@ useEffect(() => {
             </div>
           )}
 
-          {/* User will be automatically redirected to MakePredictionsPage if already a participant */}
 
 
-          {/* Voting Preference Display */}
-          {isConnected && contractAddress && !isParticipant && !reEntryFee && votingPreference && selectedMarketForVoting && hasEnoughParticipants() && (
-            <div className="mb-6">
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4 text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <span className="text-2xl">🎯</span>
-                  <h3 className="text-lg font-semibold text-gray-900">Your Prediction Ready</h3>
-                </div>
-                <p className="text-gray-700">
-                  You are about to vote for: <span className="font-bold text-purple-700">
-                    {votingPreference === 'positive' ? 'Yes' : 'No'}
-                  </span>
-                </p>
-                <p className="text-sm text-gray-600 mt-1">
-                  This will be automatically submitted when you make predictions
-                </p>
-              </div>
-            </div>
-          )}
+          
 
           {/* User Actions - Show countdown or pot entry based on day */}
           {isConnected && contractAddress && !isParticipant && !reEntryFee && (
@@ -1267,7 +1249,7 @@ useEffect(() => {
                           {participants ?
                             Array.from(new Set(participants)).filter(addr =>
                               !wrongPredictionsAddresses.includes(addr.toLowerCase())
-                            ).length : 0} remaining / {participants ? Array.from(new Set(participants)).length : 0} total
+                            ).length : 0} players remaining / {participants ? Array.from(new Set(participants)).length : 0} total
                         </div>
                       </div>
 
@@ -1304,27 +1286,40 @@ useEffect(() => {
                         </div>
                       </div>
 
-                      {/* Referral Code Input */}
+                      {/* Referral Code Dropdown */}
                       <div className="mb-6">
-                        <label className="text-gray-700 text-sm font-medium mb-2 block">
-                          <span className="md:hidden">{t.referralCodeShort || 'Referral Code'}</span>
-                          <span className="hidden md:block">{t.referralCode || 'Referral Code (Optional)'}</span>
-                        </label>
-                        <input
-                          type="text"
-                          placeholder={t.enterCode || 'Enter code...'}
-                          value={inputReferralCode}
-                          onChange={(e) => setInputReferralCode(e.target.value.toUpperCase())}
-                          className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                          maxLength={8}
-                        />
+                        <div
+                          className="flex items-center justify-between cursor-pointer bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-lg p-3 transition-colors"
+                          onClick={() => setIsReferralDropdownOpen(!isReferralDropdownOpen)}
+                        >
+                          <span className="text-gray-700 text-sm font-medium">
+                            <span className="md:hidden">{t.referralCodeShort || 'Referral Code'}</span>
+                            <span className="hidden md:block">{t.referralCode || 'Referral Code (Optional)'}</span>
+                          </span>
+                          <div className="w-5 h-5 flex items-center justify-center text-gray-600 font-bold text-lg">
+                            {isReferralDropdownOpen ? '−' : '+'}
+                          </div>
+                        </div>
+
+                        {isReferralDropdownOpen && (
+                          <div className="mt-2">
+                            <input
+                              type="text"
+                              placeholder={t.enterCode || 'Enter code...'}
+                              value={inputReferralCode}
+                              onChange={(e) => setInputReferralCode(e.target.value.toUpperCase())}
+                              className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                              maxLength={8}
+                            />
+                          </div>
+                        )}
                       </div>
 
                       {/* Action button */}
                       <button
                         onClick={() => handleEnterPot(false)}
                         disabled={isActuallyLoading}
-                        className="w-full bg-purple-700 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                        className="w-full bg-green-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                       >
                         {isActuallyLoading && lastAction === 'enterPot'
                           ? (
