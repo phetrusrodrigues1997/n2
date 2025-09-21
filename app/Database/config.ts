@@ -223,6 +223,24 @@ export const getMarketDisplayName = (tableType: TableType): string => {
   }
 };
 
+// Smart market naming for user-facing messages (shows "Pot #1" for trending, market names for others)
+export const getSmartMarketDisplayName = (tableType: TableType): string => {
+  switch (tableType) {
+    case 'featured':
+      return 'Pot #1'; // Use "Pot #1" instead of confusing "Trending"
+    case 'crypto':
+      return 'Crypto';
+    case 'stocks':
+      return 'Stocks';
+    case 'music':
+      return 'Music';
+    case 'formula1':
+      return 'Formula 1';
+    default:
+      return tableType; // fallback to the original table type
+  }
+};
+
 // UK timezone helper function
 export const getUKTime = (date: Date = new Date()): Date => {
   // Use Intl.DateTimeFormat to get UK time directly

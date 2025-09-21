@@ -109,6 +109,13 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
     setUserPots(participatingPots);
   }, [address, isConnected]); // Remove unstable array dependencies
 
+  // Helper function to get pot number from contract address
+  const getPotNumber = (contractAddress: string): number => {
+    const markets = getMarkets(t, 'options');
+    const market = markets.find(m => m.contractAddress === contractAddress);
+    return market?.potNumber || 0;
+  };
+
   // Helper function to check if there are enough participants for a contract
   const hasEnoughParticipants = (contractAddress: string): boolean => {
     const contractIndex = contractAddresses.findIndex(addr => addr === contractAddress);
@@ -381,9 +388,14 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                         })()}
                       </h3>
 
-                      {/* Market Name */}
+                      {/* Market Name / Pot Number */}
                       <p className="text-gray-600 text-sm">
                         {(() => {
+                          if (!bookmark.contractAddress) return bookmark.marketId;
+
+                          const potNumber = getPotNumber(bookmark.contractAddress);
+                          if (potNumber === 1) return 'Pot #1';
+
                           const liveData = getCurrentMarketData(bookmark.marketId, bookmark.marketCategory);
                           if (liveData?.name) {
                             return getMarketDisplayName(liveData.name, currentLanguage);
@@ -482,7 +494,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                         </div>
                         <div>
                           <h3 className="font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
-                            {marketName}
+                            {getPotNumber(contractAddress) === 1 ? 'Pot #1' : marketName}
                           </h3>
                           <div className="flex items-center gap-2">
                             {hasEnoughParticipants(contractAddress) && (

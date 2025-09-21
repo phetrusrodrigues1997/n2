@@ -170,48 +170,206 @@ const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead, currentL
 
   // Function to translate announcement messages
   const translateAnnouncementMessage = (message: string): string => {
-    const t = getTranslation(currentLanguage); // Use the current language from props
+    console.log('🔍 [Translation] Input message:', message);
+    console.log('🔍 [Translation] Current language:', currentLanguage);
 
-    // Pattern matching for different announcement types
+    const t = getTranslation(currentLanguage);
 
-    // Penalty-exempt tournament announcements
-    if (message.includes('📝 Note: The') && message.includes('tournament will start one week before the event')) {
-      // Extract market name and dates from the message
-      const marketMatch = message.match(/📝 Note: The (.+?) tournament will start/);
-      const eventDateMatch = message.match(/event \((.+?)\)/);
-      const startDateMatch = message.match(/Tournament begins on (.+?)\./);
+    // NEW: Tournament announcement pattern (🏆)
+    if (message.includes('🏆') && message.includes('tournament is now active')) {
+      console.log('🔍 [Translation] Matched tournament pattern');
+      const participantMatch = message.match(/We have (\d+) participants/);
+      const marketMatch = message.match(/🏆 (.+?) tournament is now active/);
+      const dateMatch = message.match(/officially begins on (.+?)\./);
 
-      if (marketMatch && eventDateMatch && startDateMatch) {
+      console.log('🔍 [Translation] Tournament matches:', { participantMatch, marketMatch, dateMatch });
+
+      if (participantMatch && marketMatch && dateMatch) {
+        const participants = participantMatch[1];
         const marketName = marketMatch[1];
-        const eventDate = eventDateMatch[1];
-        const startDate = startDateMatch[1];
+        const startDate = dateMatch[1];
 
-        return `${t.penaltyExemptTournamentNote} ${marketName} ${t.tournamentWillStart} (${eventDate}). ${t.oneWeekBeforeEvent} ${startDate}. ${t.getReadyToPredictions}`;
+        if (currentLanguage === 'pt-BR') {
+          const translated = `🏆 Torneio ${marketName} está ativo! Temos ${participants} participantes prontos para competir. O torneio começa oficialmente em ${startDate}. Hora de afiar suas habilidades de previsão! 🎯`;
+          console.log('🔍 [Translation] Tournament translated to PT:', translated);
+          return translated;
+        }
+        console.log('🔍 [Translation] Tournament keeping English');
+        return message; // Keep English as default
       }
     }
 
-    // Regular pot ready announcements
-    if (message.includes('🎉 Great news! Your pot is ready') || (message.includes('🎉 Awesome! Your') && message.includes('pot is ready'))) {
-      // Extract participant count and market type
-      const participantMatch = message.match(/with (\d+) participants/);
-      const marketMatch = message.match(/Your (.+?) pot is ready/);
-      const dayMatch = message.match(/Starting on (.+?) when/);
+    // NEW: Launch announcement pattern (🚀)
+    if (message.includes('🚀 Let\'s go!') && message.includes('participants and is now live')) {
+      const participantMatch = message.match(/reached (\d+) participants/);
+      const dateMatch = message.match(/Daily predictions begin (.+?)\./);
 
-      if (participantMatch && dayMatch) {
+      if (participantMatch && dateMatch) {
         const participants = participantMatch[1];
-        const day = dayMatch[1];
-        const marketType = marketMatch ? marketMatch[1] : 'market';
+        const startDate = dateMatch[1];
 
-        // For now, keep English (can be extended for other languages)
-        if (participants === '2') {
-          return `🎉 Great news! Your pot is ready with ${participants} participants! Starting on ${day} when the pot officially begins.`;
-        } else {
-          return `🎉 Awesome! Your ${marketType} pot is ready with ${participants} participants! Starting on ${day} when the pot officially begins.`;
+        if (currentLanguage === 'pt-BR') {
+          return `🚀 Vamos lá! Seu pote alcançou ${participants} participantes e está ativo! Previsões diárias começam ${startDate}. Que vença o melhor previsor! 🎯`;
+        }
+        return message; // Keep English as default
+      }
+    }
+
+    // NEW: Market launch announcement pattern (🎉)
+    if (message.includes('🎉') && message.includes('is officially live with') && message.includes('participants!')) {
+      const marketMatch = message.match(/🎉 (.+?) is officially live/);
+      const participantMatch = message.match(/live with (\d+) participants/);
+      const dateMatch = message.match(/Daily challenges start (.+?)\./);
+
+      if (marketMatch && participantMatch && dateMatch) {
+        const marketName = marketMatch[1];
+        const participants = participantMatch[1];
+        const startDate = dateMatch[1];
+
+        if (currentLanguage === 'pt-BR') {
+          return `🎉 ${marketName} está oficialmente ativo com ${participants} participantes! Pronto para testar suas habilidades de previsão? Desafios diários começam ${startDate}. Boa sorte! 💪`;
+        }
+        return message; // Keep English as default
+      }
+    }
+
+    // NEW: Outcome winner announcements (🎉 Fantastic!)
+    if (message.includes('🎉 Fantastic! Users who predicted') && message.includes('challenge!')) {
+      console.log('🔍 [Translation] Matched outcome winner pattern');
+      const outcomeMatch = message.match(/predicted (POSITIVE|NEGATIVE) won/);
+      const marketMatch = message.match(/won today's (.+?) challenge!/);
+
+      console.log('🔍 [Translation] Outcome matches:', { outcomeMatch, marketMatch });
+
+      if (outcomeMatch && marketMatch) {
+        const outcome = outcomeMatch[1];
+        const marketName = marketMatch[1];
+
+        if (currentLanguage === 'pt-BR') {
+          const translated = `🎉 Fantástico! Usuários que previram ${outcome === 'POSITIVE' ? 'POSITIVO' : 'NEGATIVO'} ganharam o desafio de ${marketName} de hoje!`;
+          console.log('🔍 [Translation] Outcome translated to PT:', translated);
+          return translated;
+        }
+        console.log('🔍 [Translation] Outcome keeping English');
+        return message; // Keep English as default
+      }
+    }
+
+    // LEGACY: Check for old-style outcome messages (Great news!)
+    if (message.includes('Great news! Users who predicted') && (message.includes('correctly predicted') || message.includes('question'))) {
+      console.log('🔍 [Translation] Matched LEGACY outcome pattern');
+      const outcomeMatch = message.match(/predicted (POSITIVE|NEGATIVE)/);
+      const marketMatch = message.match(/today's (.+?) (question|market)/);
+
+      console.log('🔍 [Translation] Legacy outcome matches:', { outcomeMatch, marketMatch });
+
+      if (outcomeMatch && marketMatch) {
+        const outcome = outcomeMatch[1];
+        const marketName = marketMatch[1];
+
+        if (currentLanguage === 'pt-BR') {
+          const translated = `🎉 Ótimas notícias! Usuários que previram ${outcome === 'POSITIVE' ? 'POSITIVO' : 'NEGATIVO'} acertaram a questão de ${marketName} de hoje!`;
+          console.log('🔍 [Translation] Legacy outcome translated to PT:', translated);
+          return translated;
+        }
+        console.log('🔍 [Translation] Legacy outcome keeping English');
+        return message; // Keep English as default
+      }
+    }
+
+    // NEW: Elimination messages (various emojis)
+    if (message.includes('users were eliminated this round') || message.includes('Your prediction was off this time')) {
+      console.log('🔍 [Translation] Matched elimination pattern');
+
+      if (message.includes('Amazing! No one was eliminated')) {
+        console.log('🔍 [Translation] Perfect round elimination');
+        if (currentLanguage === 'pt-BR') {
+          const translated = message.replace('Amazing! No one was eliminated this round - all predictions were spot on!', 'Incrível! Ninguém foi eliminado desta rodada - todas as previsões estavam certas!');
+          console.log('🔍 [Translation] Perfect round translated to PT:', translated);
+          return translated;
+        }
+      } else if (message.includes('Your prediction was off this time')) {
+        console.log('🔍 [Translation] Single elimination');
+        const marketMatch = message.match(/jump back into the (.+?) action!/);
+        if (marketMatch && currentLanguage === 'pt-BR') {
+          const marketName = marketMatch[1];
+          const translated = `📉 Sua previsão estava errada desta vez. Pague a taxa de entrada de hoje para voltar à ação de ${marketName}!`;
+          console.log('🔍 [Translation] Single elimination translated to PT:', translated);
+          return translated;
+        }
+      } else if (message.includes('users were eliminated this round')) {
+        console.log('🔍 [Translation] Multiple eliminations');
+        const eliminatedMatch = message.match(/(\d+) users were eliminated/);
+        console.log('🔍 [Translation] Elimination count match:', eliminatedMatch);
+        if (eliminatedMatch && currentLanguage === 'pt-BR') {
+          const count = eliminatedMatch[1];
+          const translated = `😱 Rodada difícil! ${count} usuários foram eliminados. Se foi você, pague a taxa de entrada de hoje para voltar à competição!`;
+          console.log('🔍 [Translation] Multiple eliminations translated to PT:', translated);
+          return translated;
         }
       }
     }
 
+    // LEGACY: Handle elimination text in combined messages
+    if (message.includes('were eliminated. If that\'s you, pay today\'s entry fee to re-enter')) {
+      console.log('🔍 [Translation] Matched LEGACY elimination in combined message');
+      const eliminatedMatch = message.match(/(\d+) users were eliminated/);
+      console.log('🔍 [Translation] Legacy elimination count match:', eliminatedMatch);
+
+      if (eliminatedMatch && currentLanguage === 'pt-BR') {
+        const count = eliminatedMatch[1];
+        // Translate the elimination part
+        const translated = message.replace(
+          new RegExp(`${count} users were eliminated\\. If that's you, pay today's entry fee to re-enter.*$`),
+          `${count} usuários foram eliminados. Se foi você, pague a taxa de entrada de hoje para voltar à competição!`
+        );
+        console.log('🔍 [Translation] Legacy elimination translated to PT:', translated);
+        return translated;
+      }
+    }
+
+    // LEGACY: Old-style pot ready announcements (🎉 Awesome!)
+    if (message.includes('🎉 Awesome! Your') && message.includes('pot is ready with') && message.includes('participants!')) {
+      console.log('🔍 [Translation] Matched LEGACY pot ready pattern');
+      const marketMatch = message.match(/Your (.+?) pot is ready/);
+      const participantMatch = message.match(/with (\d+) participants/);
+      const dateMatch = message.match(/Starting on (.+?) when/);
+
+      console.log('🔍 [Translation] Legacy pot ready matches:', { marketMatch, participantMatch, dateMatch });
+
+      if (marketMatch && participantMatch && dateMatch) {
+        const marketName = marketMatch[1];
+        const participants = participantMatch[1];
+        const startDate = dateMatch[1];
+
+        if (currentLanguage === 'pt-BR') {
+          // Use smart naming: "Trending" -> "Pot #1"
+          const translatedMarketName = marketName === 'Trending' ? 'Pot #1' : marketName;
+          const translated = `🎉 Incrível! Seu pote ${translatedMarketName} está pronto com ${participants} participantes! Começando em ${startDate} quando o pote oficialmente inicia.`;
+          console.log('🔍 [Translation] Legacy pot ready translated to PT:', translated);
+          return translated;
+        }
+        console.log('🔍 [Translation] Legacy pot ready keeping English');
+        return message; // Keep English as default
+      }
+    }
+
+    // Legacy patterns (for old messages that might still exist)
+    if (message.includes('📝 Note: The') && message.includes('tournament will start one week before the event')) {
+      console.log('🔍 [Translation] Matched legacy tournament pattern');
+      if (currentLanguage === 'pt-BR') {
+        // Basic Portuguese translation for legacy messages
+        const translated = message.replace('Note:', 'Nota:')
+                    .replace('tournament will start one week before the event', 'torneio começará uma semana antes do evento')
+                    .replace('Tournament begins on', 'Torneio começa em')
+                    .replace('Get ready to make your predictions!', 'Prepare-se para fazer suas previsões!');
+        console.log('🔍 [Translation] Legacy tournament translated to PT:', translated);
+        return translated;
+      }
+    }
+
     // Return original message if no pattern matches
+    console.log('🔍 [Translation] No pattern matched, returning original message');
     return message;
   };
 

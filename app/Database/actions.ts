@@ -2614,15 +2614,19 @@ export async function notifyMarketOutcome(
   try {
     console.log(`📢 Sending market outcome notification for ${contractAddress}: ${outcome}`);
 
+    // Use smart market naming for better user experience
+    const { getSmartMarketDisplayName } = await import('./config');
+    const smartMarketName = getSmartMarketDisplayName(marketType as any);
+
     const winnerMessage = outcome === 'positive'
-      ? `🎉 Great news! Users who predicted POSITIVE won today's ${marketType} market!`
-      : `🎉 Great news! Users who predicted NEGATIVE won today's ${marketType} market!`;
+      ? `🎉 Fantastic! Users who predicted POSITIVE won today's ${smartMarketName} challenge!`
+      : `🎉 Fantastic! Users who predicted NEGATIVE won today's ${smartMarketName} challenge!`;
 
     const eliminationSummary = eliminatedCount === 0
-      ? ` Amazing! No one was eliminated this round - all predictions were correct!`
+      ? ` Amazing! No one was eliminated this round - all predictions were spot on! 🎯`
       : eliminatedCount === 1
-        ? ` Your prediction was incorrect this time. Pay today's entry fee to re-enter the ${marketType} pot!`
-        : ` Were you one of the unlucky ones? ${eliminatedCount} users were eliminated. If that's you, pay today's entry fee to re-enter!`;
+        ? ` Your prediction was off this time. Pay today's entry fee to jump back into the ${smartMarketName} action!`
+        : ` ${eliminatedCount} users were eliminated this round. If that's you, pay today's entry fee to re-enter the competition!`;
 
     const message = winnerMessage + eliminationSummary;
 
@@ -2682,11 +2686,15 @@ export async function notifyEliminatedUsers(
   try {
     console.log(`📉 Sending elimination notification for ${contractAddress} to ${eliminatedCount} users`);
     
+    // Use smart market naming for better user experience
+    const { getSmartMarketDisplayName } = await import('./config');
+    const smartMarketName = getSmartMarketDisplayName(marketType as any);
+
     const message = eliminatedCount === 0
-      ? `🎉 Amazing! No one was eliminated this round - all predictions were correct!`
+      ? `🎉 Amazing! No one was eliminated this round - all predictions were spot on! 🎯`
       : eliminatedCount === 1
-        ? `📉 Your prediction was incorrect this time. Pay today's entry fee to re-enter the ${marketType} pot!`
-        : `😱 Were you one of the unlucky ones? ${eliminatedCount} users were eliminated. If that's you, pay today's entry fee to re-enter!`;
+        ? `📉 Your prediction was off this time. Pay today's entry fee to jump back into the ${smartMarketName} action!`
+        : `😱 Tough round! ${eliminatedCount} users were eliminated. If that's you, pay today's entry fee to re-enter the competition!`;
     
     const result = await createContractAnnouncementSafe(message, contractAddress);
     
@@ -2946,14 +2954,14 @@ export async function notifyMinimumPlayersReached(
     };
 
     // Check if this is a penalty-exempt contract
-    const { PENALTY_EXEMPT_CONTRACTS, getMarketDisplayName } = await import('./config');
+    const { PENALTY_EXEMPT_CONTRACTS, getMarketDisplayName, getSmartMarketDisplayName } = await import('./config');
     const { getEventDate } = await import('./eventDates');
 
     const isPenaltyExempt = PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
     const eventDate = isPenaltyExempt ? getEventDate(contractAddress) : null;
 
-    // Get user-friendly market name instead of table type
-    const friendlyMarketName = getMarketDisplayName(marketType as TableType);
+    // Get user-friendly market name (shows "Pot #1" for trending, market names for others)
+    const friendlyMarketName = getSmartMarketDisplayName(marketType as TableType);
 
     let message: string;
 
@@ -2982,13 +2990,13 @@ export async function notifyMinimumPlayersReached(
         return 'soon';
       };
 
-      message = `📝 Note: The ${friendlyMarketName} tournament will start one week before the event (${eventDate}). Tournament begins on ${getTournamentStartDate(eventDate)}. Get ready to make your predictions!`;
+      message = `🏆 ${friendlyMarketName} tournament is now active! We have ${currentParticipants} participants ready to compete. The tournament officially begins on ${getTournamentStartDate(eventDate)}. Time to sharpen your prediction skills! 🎯`;
     } else {
       // Regular contract behavior
       const nextDay = getNextCalendarDayUTC();
       message = currentParticipants === 2
-        ? `🎉 Great news! Your pot is ready with ${currentParticipants} participants! Starting on ${nextDay} when the pot officially begins.`
-        : `🎉 Awesome! Your ${friendlyMarketName} pot is ready with ${currentParticipants} participants! Starting on ${nextDay} when the pot officially begins.`;
+        ? `🚀 Let's go! Your pot has reached ${currentParticipants} participants and is now live! Daily predictions begin ${nextDay}. May the best predictor win! 🎯`
+        : `🎉 ${friendlyMarketName} is officially live with ${currentParticipants} participants! Ready to test your prediction skills? Daily challenges start ${nextDay}. Good luck! 💪`;
     }
     
     // Create the announcement directly since we've already checked for duplicates

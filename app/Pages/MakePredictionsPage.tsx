@@ -10,7 +10,7 @@ import { getMarkets } from '../Constants/markets';
 import { getTranslation, Language, translateMarketQuestion } from '../Languages/languages';
 import { getPrice } from '../Constants/getPrice';
 import { useQueryClient } from '@tanstack/react-query';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, BASE_ENTRY_FEE, calculateEntryFee, loadWrongPredictionsData, calculateParticipantStats, PENALTY_EXEMPT_CONTRACTS, PENALTY_EXEMPT_ENTRY_FEE, getFormattedTimerForContract, formatTimerDisplay, getTimerUrgency, getTimerDataForContract } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, getSmartMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, BASE_ENTRY_FEE, calculateEntryFee, loadWrongPredictionsData, calculateParticipantStats, PENALTY_EXEMPT_CONTRACTS, PENALTY_EXEMPT_ENTRY_FEE, getFormattedTimerForContract, formatTimerDisplay, getTimerUrgency, getTimerDataForContract } from '../Database/config';
 import { getEventDate } from '../Database/eventDates';
 import LoadingScreenAdvanced from '../Components/LoadingScreenAdvanced';
 
@@ -1360,7 +1360,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
               
               <h2 className="text-xl font-semibold text-gray-900 mb-2">{t.reentryRequired || "Re-entry Required"}</h2>
               <p className="text-gray-600 text-sm mb-6">
-{t.wrongPredictionIn || "Wrong prediction in"} {selectedTableType ? getMarketDisplayName(selectedTableType) : 'this market'}. {t.payTodaysEntryFee || "Pay today's entry fee to continue."}
+{t.wrongPredictionIn || "Wrong prediction in"} {selectedTableType ? getSmartMarketDisplayName(selectedTableType) : 'this market'}. {t.payTodaysEntryFee || "Pay today's entry fee to continue."}
               </p>
               
               <button
