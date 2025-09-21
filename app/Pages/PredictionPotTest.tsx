@@ -152,6 +152,7 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
   const [reEntryFee, setReEntryFee] = useState<number | null>(null);
   const [allReEntryFees, setAllReEntryFees] = useState<{market: string, fee: number}[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
+  const [isSkeletonLoading, setIsSkeletonLoading] = useState<boolean>(false);
   const [wrongPredictionsAddresses, setWrongPredictionsAddresses] = useState<string[]>([]);
   
   
@@ -328,15 +329,54 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
     }
   }, [selectedTableType]);
 
-  // Initial loading screen effect with progressive steps
-  useEffect(() => {
-    // Complete loading after 4 seconds (same duration as LoadingScreenAdvanced)
-    const timer = setTimeout(() => {
-      setIsInitialLoading(false);
-    }, 4000);
+  // Track timing for proper loading sequence
+  const [loadingStartTime] = useState<number>(Date.now());
+  const [dataLoadCompleteTime, setDataLoadCompleteTime] = useState<number | null>(null);
 
-    return () => clearTimeout(timer);
-  }, []);
+  // Monitor when all essential data loading is complete
+  useEffect(() => {
+    if (!potInfoLoading && !isLoadingPrice) {
+      setDataLoadCompleteTime(Date.now());
+    }
+  }, [potInfoLoading, isLoadingPrice]);
+
+  // Manage loading phases based on real data loading + minimum timing
+  useEffect(() => {
+    if (dataLoadCompleteTime === null) return; // Data not loaded yet
+
+    const elapsedTime = dataLoadCompleteTime - loadingStartTime;
+    const minLoadingScreenTime = 5000; // 5 seconds minimum for LoadingScreenAdvanced
+
+    if (elapsedTime >= minLoadingScreenTime) {
+      // Data loaded and minimum time met - proceed to skeleton
+      setIsInitialLoading(false);
+      setIsSkeletonLoading(true);
+
+      // Show skeleton for 3 seconds then complete
+      const skeletonTimer = setTimeout(() => {
+        setIsSkeletonLoading(false);
+      }, 3000);
+
+      return () => clearTimeout(skeletonTimer);
+    } else {
+      // Data loaded quickly - wait for minimum time then proceed
+      const remainingTime = minLoadingScreenTime - elapsedTime;
+
+      const phase1Timer = setTimeout(() => {
+        setIsInitialLoading(false);
+        setIsSkeletonLoading(true);
+
+        // Show skeleton for 3 seconds then complete
+        const skeletonTimer = setTimeout(() => {
+          setIsSkeletonLoading(false);
+        }, 3000);
+
+        return () => clearTimeout(skeletonTimer);
+      }, remainingTime);
+
+      return () => clearTimeout(phase1Timer);
+    }
+  }, [dataLoadCompleteTime, loadingStartTime]);
 
   // Fetch ETH price
   useEffect(() => {
@@ -990,11 +1030,68 @@ useEffect(() => {
   }
 }, [isConfirmed, lastAction]);
 
-  // Show loading screen for initial load or during post-entry processing
-  if (isInitialLoading || postEntryLoading) {
+  // Skeleton component for PredictionPotTest
+  const PredictionPotSkeleton = () => (
+    <div className="min-h-screen bg-invisible p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Back button skeleton */}
+        <div className="mb-6">
+          <div className="h-6 bg-gray-200 rounded w-20 animate-pulse"></div>
+        </div>
+
+        {/* Main content skeleton */}
+        <div className="bg-invisible rounded-lg p-6 mb-6">
+          {/* Entry fee section skeleton */}
+          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-6 animate-pulse">
+            <div className="mb-6">
+              <div className="h-6 bg-gray-200 rounded w-48 mb-2"></div>
+              <div className="h-4 bg-gray-100 rounded w-32"></div>
+            </div>
+
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
+                <div className="flex-1">
+                  <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+                  <div className="h-6 bg-gray-200 rounded w-32 mb-3"></div>
+                  <div className="h-4 bg-gray-100 rounded w-28 mb-2"></div>
+                  <div className="h-6 bg-gray-200 rounded w-40"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Referral dropdown skeleton */}
+            <div className="mb-6">
+              <div className="h-12 bg-gray-100 rounded-lg"></div>
+            </div>
+
+            {/* Action button skeleton */}
+            <div className="h-12 bg-gray-200 rounded-lg"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Show LoadingScreenAdvanced first
+  if (isInitialLoading) {
     return (
-      <LoadingScreenAdvanced 
-        subtitle={postEntryLoading ? (t.processingYourEntry || "Processing your entry...") : (t.preparingYourPots || "Preparing your pots...")} 
+      <LoadingScreenAdvanced
+        subtitle={t.preparingYourPots || "Preparing your pots..."}
+      />
+    );
+  }
+
+  // Show skeleton loading second
+  if (isSkeletonLoading) {
+    return <PredictionPotSkeleton />;
+  }
+
+  // Show post-entry loading
+  if (postEntryLoading) {
+    return (
+      <LoadingScreenAdvanced
+        subtitle={t.processingYourEntry || "Processing your entry..."}
       />
     );
   }

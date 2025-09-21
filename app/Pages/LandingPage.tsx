@@ -74,6 +74,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
   // Loading state
   const [isLoading, setIsLoading] = useState(true);
+  const [isSkeletonLoading, setIsSkeletonLoading] = useState(false);
 
   // Animation state for selected market
   const [animatingMarket, setAnimatingMarket] = useState<string | null>(null);
@@ -340,17 +341,26 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     // Notify parent that loading started
     onLoadingChange?.(true);
 
-    // Complete loading after 4 seconds (same duration as LoadingScreenAdvanced)
-    const timer = setTimeout(() => {
+    // Phase 1: LoadingScreenAdvanced for 5 seconds
+    const phase1Timer = setTimeout(() => {
       setIsLoading(false);
+      setIsSkeletonLoading(true);
+    }, 5000);
+
+    // Phase 2: Skeleton loading for 4 seconds (total 9 seconds)
+    const phase2Timer = setTimeout(() => {
+      setIsSkeletonLoading(false);
       setIsVisible(true);
       // Notify parent that loading is complete
       onLoadingChange?.(false);
-    }, 4000);
+    }, 9000);
 
     // Language is now managed by parent component
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(phase1Timer);
+      clearTimeout(phase2Timer);
+    };
   }, []);
 
 
@@ -1125,10 +1135,85 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     }
   };
 
+  // Skeleton component for market cards
+  const MarketCardSkeleton = () => (
+    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm animate-pulse">
+      {/* Header skeleton */}
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex-1">
+          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+          <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+        </div>
+        <div className="w-6 h-6 bg-gray-200 rounded"></div>
+      </div>
 
-  // Show loading screen
+      {/* Price and timer skeleton */}
+      <div className="mb-4">
+        <div className="h-6 bg-gray-200 rounded w-20 mb-2"></div>
+        <div className="h-4 bg-gray-100 rounded w-16"></div>
+      </div>
+
+      {/* Progress bar skeleton */}
+      <div className="mb-4">
+        <div className="h-2 bg-gray-100 rounded-full"></div>
+      </div>
+
+      {/* Buttons skeleton */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="h-12 bg-gray-200 rounded-lg"></div>
+        <div className="h-12 bg-gray-200 rounded-lg"></div>
+      </div>
+    </div>
+  );
+
+  // Show LoadingScreenAdvanced first
   if (isLoading) {
     return <LoadingScreenAdvanced subtitle={t.loadingPredictions ||"Just a moment..."} />;
+  }
+
+  // Show skeleton loading second
+  if (isSkeletonLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Header area skeleton */}
+        <div className="bg-white border-b border-gray-200 p-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded w-48 mb-4"></div>
+              <div className="flex gap-4 overflow-x-auto">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="h-10 bg-gray-100 rounded-lg w-24 flex-shrink-0"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main content skeleton */}
+        <div className="max-w-7xl mx-auto p-4">
+          {/* Stats cards skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-8 h-8 bg-gray-200 rounded"></div>
+                  <div className="h-4 bg-gray-200 rounded w-16"></div>
+                </div>
+                <div className="h-8 bg-gray-200 rounded w-20 mb-2"></div>
+                <div className="h-4 bg-gray-100 rounded w-24"></div>
+              </div>
+            ))}
+          </div>
+
+          {/* Market cards skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(9)].map((_, i) => (
+              <MarketCardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

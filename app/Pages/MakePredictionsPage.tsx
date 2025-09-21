@@ -111,6 +111,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
+  const [isSkeletonLoading, setIsSkeletonLoading] = useState<boolean>(false);
+  const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
   const [tomorrowsBet, setTomorrowsBet] = useState<TodaysBet | null>(null);
   const [todaysBet, setTodaysBet] = useState<TodaysBet | null>(null);
@@ -191,15 +193,54 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     }
   };
 
-  // Initial loading screen effect
-  useEffect(() => {
-    // Complete loading after 4 seconds
-    const timer = setTimeout(() => {
-      setIsInitialLoading(false);
-    }, 6000);
+  // Track timing for proper loading sequence
+  const [loadingStartTime] = useState<number>(Date.now());
+  const [dataLoadCompleteTime, setDataLoadCompleteTime] = useState<number | null>(null);
 
-    return () => clearTimeout(timer);
-  }, []);
+  // Monitor when all data loading is complete
+  useEffect(() => {
+    if (isDataLoaded && !isBetLoading) {
+      setDataLoadCompleteTime(Date.now());
+    }
+  }, [isDataLoaded, isBetLoading]);
+
+  // Manage loading phases based on real data loading + minimum timing
+  useEffect(() => {
+    if (dataLoadCompleteTime === null) return; // Data not loaded yet
+
+    const elapsedTime = dataLoadCompleteTime - loadingStartTime;
+    const minLoadingScreenTime = 5000; // 5 seconds minimum for LoadingScreenAdvanced
+
+    if (elapsedTime >= minLoadingScreenTime) {
+      // Data loaded and minimum time met - proceed to skeleton
+      setIsInitialLoading(false);
+      setIsSkeletonLoading(true);
+
+      // Show skeleton for 3 seconds then complete
+      const skeletonTimer = setTimeout(() => {
+        setIsSkeletonLoading(false);
+      }, 3000);
+
+      return () => clearTimeout(skeletonTimer);
+    } else {
+      // Data loaded quickly - wait for minimum time then proceed
+      const remainingTime = minLoadingScreenTime - elapsedTime;
+
+      const phase1Timer = setTimeout(() => {
+        setIsInitialLoading(false);
+        setIsSkeletonLoading(true);
+
+        // Show skeleton for 3 seconds then complete
+        const skeletonTimer = setTimeout(() => {
+          setIsSkeletonLoading(false);
+        }, 3000);
+
+        return () => clearTimeout(skeletonTimer);
+      }, remainingTime);
+
+      return () => clearTimeout(phase1Timer);
+    }
+  }, [dataLoadCompleteTime, loadingStartTime]);
 
   // Show final day popup when it's the final day
   useEffect(() => {
@@ -230,7 +271,6 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   const [userEvidenceSubmission, setUserEvidenceSubmission] = useState<EvidenceSubmission | null>(null);
   const [timeUntilEvidenceExpires, setTimeUntilEvidenceExpires] = useState<number>(0);
   const [isEvidenceSectionExpanded, setIsEvidenceSectionExpanded] = useState<boolean>(false);
-  const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
   
   // Admin evidence review state
   const [allEvidenceSubmissions, setAllEvidenceSubmissions] = useState<any[]>([]);
@@ -1116,9 +1156,66 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     );
   }
 
-  // Show initial loading screen first
+  // Skeleton component for MakePredictionsPage
+  const PredictionsSkeleton = () => (
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Back button skeleton */}
+        <div className="mb-6">
+          <div className="h-6 bg-gray-200 rounded w-20 animate-pulse"></div>
+        </div>
+
+        {/* Header skeleton */}
+        <div className="text-center mb-8 animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-4"></div>
+          <div className="h-4 bg-gray-100 rounded w-48 mx-auto"></div>
+        </div>
+
+        {/* Info cards skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-8 h-8 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 rounded w-16"></div>
+              </div>
+              <div className="h-6 bg-gray-200 rounded w-20 mb-2"></div>
+              <div className="h-4 bg-gray-100 rounded w-24"></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Main prediction card skeleton */}
+        <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-sm animate-pulse">
+          <div className="text-center mb-8">
+            <div className="h-6 bg-gray-200 rounded w-72 mx-auto mb-4"></div>
+            <div className="h-4 bg-gray-100 rounded w-48 mx-auto"></div>
+          </div>
+
+          {/* Timer skeleton */}
+          <div className="text-center mb-8">
+            <div className="h-12 bg-gray-200 rounded w-32 mx-auto mb-2"></div>
+            <div className="h-4 bg-gray-100 rounded w-24 mx-auto"></div>
+          </div>
+
+          {/* Prediction buttons skeleton */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="h-16 bg-gray-200 rounded-lg"></div>
+            <div className="h-16 bg-gray-200 rounded-lg"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Show LoadingScreenAdvanced first
   if (isInitialLoading) {
     return <LoadingScreenAdvanced subtitle={t.loadingPredictions || "Loading your predictions..."} />;
+  }
+
+  // Show skeleton loading second
+  if (isSkeletonLoading) {
+    return <PredictionsSkeleton />;
   }
 
   // If user is not a participant in the pot
