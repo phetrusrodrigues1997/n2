@@ -519,7 +519,7 @@ export const translations: Record<Language, Translations> = {
     teslaQuestion: 'Tesla stock closes higher than opening pricesldflflkdlkfldkflgkdflgkdlfgkldfkglkflgklfg lklgkdfg flgkdlfgkldfkglkflgklfg lklgkdfg',
     nvidiaQuestion: 'Will NVIDIA stock end the day higher?',
     sp500Question: 'Will S&P 500 end the day higher?',
-    formula1Question: 'Verstappen wins first race of the season',
+    formula1Question: 'Lewis Hamilton finishes on the podium',
     
     // How It Works Section
     howItWorksTitle: 'How It Works',
@@ -777,7 +777,7 @@ export const translations: Record<Language, Translations> = {
     dailyPredictionsDesc: 'Choose a question, enter the tournament, and predict what\'s gonna happen tomorrow!',
     dynamicPricing: 'Entry fee',
     dynamicPricingDesc: 'Entry fees start low but will double after the 5th day - join early to save!',
-    prize: 'Pot balance (Prize)',
+    prize: 'Pot balance - Prize',
     secondChances: 'Second chances',
     secondChancesDesc: 'Eliminated? Pay today\'s fee to re-enter anytime.',
     finalShowdown: 'Final showdown',
@@ -1021,7 +1021,7 @@ export const translations: Record<Language, Translations> = {
     teslaQuestion: 'Ação da Tesla fechará em alta em relação ao preço de abertura',
     nvidiaQuestion: 'A ação da NVIDIA terminará o dia em alta?',
     sp500Question: 'O S&P 500 terminará o dia em alta?',
-    formula1Question: 'Verstappen vai vencer a primeira corrida da temporada',
+    formula1Question: 'Lewis hamilton terminará entre os três primeiros',
     
     // How It Works Section
     howItWorksTitle: 'Como Funciona',
@@ -1279,7 +1279,7 @@ export const translations: Record<Language, Translations> = {
     dailyPredictionsDesc: 'Escolha uma pergunta, entre no torneio e preveja o que vai acontecer amanhã!',
     dynamicPricing: 'Preço de Entrada',
     dynamicPricingDesc: 'As taxas de entrada começam baixas, mas dobrarão após o 5º dia - entre cedo para economizar!',
-    prize: 'Saldo do Pote (Prêmio)',
+    prize: 'Saldo do Pote - Prêmio',
     secondChances: 'Segunda chance',
     secondChancesDesc: 'Eliminado? Pague a taxa de hoje para entrar novamente a qualquer momento.',
     finalShowdown: 'Confronto final',
@@ -1722,8 +1722,8 @@ export const translateMarketQuestion = (questionText: string, language: Language
     // Bitcoin (if it appears)
     'Will Bitcoin end the day higher?': 'O Bitcoin terminará o dia em alta?',
 
-    // Formula 1 Verstappen question
-    'Verstappen wins first race of the season': 'Verstappen vai vencer a primeira corrida da temporada',
+    // Formula 1 question
+    'Lewis Hamilton finishes on the podium': 'Lewis hamilton terminará entre os três primeiros',
 
     // Core market questions from markets.ts
     'Bitcoin closes higher than opening price': 'Bitcoin fechará em alta em relação ao preço de abertura',
@@ -1750,7 +1750,7 @@ export const translateMarketQuestion = (questionText: string, language: Language
     // Handle case where questions might already be in Portuguese
     'A ação da Tesla terminará o dia em alta?': 'A ação da Tesla terminará o dia em alta?',
     'Bitcoin fechará em alta em relação ao preço de abertura': 'Bitcoin fechará em alta em relação ao preço de abertura',
-    'Verstappen vai vencer a primeira corrida da temporada': 'Verstappen vai vencer a primeira corrida da temporada',
+    'Lewis hamilton terminará entre os três primeiros': 'Lewis hamilton terminará entre os três primeiros',
   };
   
   // Debug logging (can be removed in production)

@@ -1286,7 +1286,7 @@ useEffect(() => {
                               {t.prize || 'Pot balance (Prize)'}
                             </div>
                             <div className="text-gray-900 font-semibold text-lg">
-                               ${potBalance ? ethToUsd(potBalance).toFixed(2) : '0.00'}
+                               ${potBalance ? ethToUsd(potBalance).toFixed(2) : '0.00'} USD
                             </div>
                           </div>
                         </div>
