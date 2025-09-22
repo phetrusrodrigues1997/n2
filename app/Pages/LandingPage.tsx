@@ -1565,7 +1565,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   whiteSpace: 'nowrap'
                                 }}>
                                   {(() => {
-                                    const wrapLimit = market.useTraditionalLayout ? 30 : 37;
+                                    const wrapLimit = market.useTraditionalLayout ? 25 : 37;
                                     const truncateLimit = 60;
 
                                     let text = getTranslatedMarketQuestion(market, currentLanguage);
