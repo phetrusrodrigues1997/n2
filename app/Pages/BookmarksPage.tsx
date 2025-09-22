@@ -9,7 +9,6 @@ import { CONTRACT_TO_TABLE_MAPPING, MIN_PLAYERS, MIN_PLAYERS2 } from '../Databas
 import { getMarkets } from '../Constants/markets';
 import { getTranslation, Language, getMarketDisplayName, translateMarketQuestion } from '../Languages/languages';
 import { useContractData } from '../hooks/useContractData';
-import { useCountdownTimer } from '../hooks/useCountdownTimer';
 import LoadingScreen from '../Components/LoadingScreen';
 
 
@@ -34,8 +33,8 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
   const [loading, setLoading] = useState(true);
   const [removing, setRemoving] = useState<string | null>(null);
   
-  // 24-hour countdown timer using custom hook
-  const timeUntilMidnight = useCountdownTimer();
+  // Contract-specific timer mapping using the centralized logic
+  const [contractTimers, setContractTimers] = useState<Record<string, string>>({});
   
   // Markets you've entered functionality
   const [userPots, setUserPots] = useState<string[]>([]);
@@ -108,6 +107,27 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
 
     setUserPots(participatingPots);
   }, [address, isConnected]); // Remove unstable array dependencies
+
+  // Contract-specific timer logic (same as LandingPage.tsx)
+  useEffect(() => {
+    const updateAllTimers = async () => {
+      if (contractAddresses.length === 0) return;
+
+      const { getFormattedTimerForContract } = await import('../Database/config');
+      const newTimers: Record<string, string> = {};
+
+      for (const contractAddress of contractAddresses) {
+        newTimers[contractAddress] = getFormattedTimerForContract(contractAddress);
+      }
+
+      setContractTimers(newTimers);
+    };
+
+    updateAllTimers();
+
+    const interval = setInterval(updateAllTimers, 1000);
+    return () => clearInterval(interval);
+  }, [contractAddresses]);
 
   // Helper function to get pot number from contract address
   const getPotNumber = (contractAddress: string): number => {
@@ -499,7 +519,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                           <div className="flex items-center gap-2">
                             {hasEnoughParticipants(contractAddress) && (
                               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
-                               {t.nextQuestion} {timeUntilMidnight}
+                               {t.nextQuestion} {contractTimers[contractAddress] || ''}
                               </span>
                             )}
                           </div>

@@ -14,6 +14,9 @@ export interface Translations {
   lower: string;
   comingSoon: string;
   potNumber: string
+  meansYouPay: string;
+  canWin: string;
+  canWinPotBalance: string;
   
   // Market Questions
   bitcoinQuestion: string;
@@ -49,6 +52,8 @@ export interface Translations {
   tutorialStep5Description: string;
   tutorialStep6Title: string;
   tutorialStep6Description: string;
+  entryFeeExample: string;
+  potBalanceExample: string;
   skipTutorial: string;
   previous: string;
   next: string;
@@ -58,6 +63,7 @@ export interface Translations {
   yourGoal: string;
 
   // PredictionPotTest specific
+  todaysquestion: string;
   enterAndCompete: string;
   playersRemaining: string; // Added for the players remaining message
   bitcoinPotTitle: string;
@@ -225,7 +231,6 @@ export interface Translations {
   dailyPredictions: string;
   dailyPredictionsDesc: string;
   dynamicPricing: string;
-  dynamicPricingDesc: string;
   prize: string;
   secondChances: string;
   secondChancesDesc: string;
@@ -511,6 +516,9 @@ export const translations: Record<Language, Translations> = {
     lower: 'No',
     comingSoon: 'market coming soon!',
     potNumber: 'Pot',
+    meansYouPay: 'means you pay',
+    canWin: '(entry fee) and can win',
+    canWinPotBalance: '(pot balance)',
     
     // Market Questions
     bitcoinQuestion: 'Bitcoin closes higher than opening price',
@@ -536,14 +544,14 @@ export const translations: Record<Language, Translations> = {
     // Tutorial Section
     tutorialStep1Title: 'Weekly Prediction Markets',
     tutorialStep1Description: 'Survive the week by making correct predictions across crypto, stocks, sports and more. Entry fees increase daily (Sun $0.01 → Fri $0.06).',
-    tutorialStep2Title: 'Get Your Tokens & Enter the Pot',
-    tutorialStep2Description: 'You need USDC (for pot entries) and ETH (for gas fees ~$0.01). Buy them on our Buy page or receive from any wallet. Then pay the daily entry fee to join any prediction market. Sundays are cheapest at $0.01 USDC!',
-    tutorialStep3Title: 'Daily Predictions (Sunday-Friday)',
-    tutorialStep3Description: 'Every day, predict tomorrow\'s outcome in your chosen market. Wrong predictions require a re-entry fee to continue playing.',
-    tutorialStep4Title: 'Saturday Results & New Pot',
-    tutorialStep4Description: 'Winners split the pot every Saturday. The game restarts Sunday with fresh entry fees and a new weekly cycle.',
+    tutorialStep2Title: 'What are the prizes?',
+    tutorialStep2Description: 'Each tournament has its own pot that grows every time a player enters or re-enters the tournament. The more players, the bigger the rewards for the winners!',
+    tutorialStep3Title: 'Get Your Tokens & Enter the Pot',
+    tutorialStep3Description: 'You need USDC (for pot entries) and ETH (for gas fees ~$0.01). Buy them on our Buy page or receive from any wallet. Then pay the daily entry fee to join any prediction market. Sundays are cheapest at $0.01 USDC!',
+    tutorialStep4Title: 'Daily Predictions (Sunday-Friday)',
+    tutorialStep4Description: 'Every day, predict tomorrow\'s outcome in your chosen market. Wrong predictions require a re-entry fee to continue playing.',
     tutorialStep5Title: 'Weekly Tournaments',
-    tutorialStep5Description: 'Some tournaments have weekly questions and begin one week prior to the first day of the season. Examples include Formula 1, NBA, and World Cup tournaments.',
+    tutorialStep5Description: 'Some tournaments have weekly questions. Examples include Formula 1, NBA, and World Cup tournaments.',
     tutorialStep6Title: 'Ready to Start?',
     tutorialStep6Description: 'Choose your market, join early for the best prices, make smart predictions, and survive to split the pot!',
     skipTutorial: 'Skip Tutorial',
@@ -555,6 +563,7 @@ export const translations: Record<Language, Translations> = {
     yourGoal: 'Your Goal:',
 
     // PredictionPotTest specific
+    todaysquestion: 'Today\'s question is:',
     enterAndCompete: 'Will you be among the last 5 players?',
     playersRemaining: 'players remaining',
     bitcoinPotTitle: 'Prediction Market',
@@ -772,16 +781,17 @@ export const translations: Record<Language, Translations> = {
     // Tutorial - How It Works
     skipButton: 'Skip →',
     globalCompetition: 'Global competition',
-    globalCompetitionDesc: 'Players worldwide competing to be among the last 5 in our prediction tournaments.',
+    globalCompetitionDesc: 'You\'re about to see the question of the day for our prediction tournaments.',
     dailyPredictions: 'Daily predictions',
     dailyPredictionsDesc: 'Choose a question, enter the tournament, and predict what\'s gonna happen tomorrow!',
-    dynamicPricing: 'Entry fee',
-    dynamicPricingDesc: 'Entry fees start low but will double after the 5th day - join early to save!',
+    dynamicPricing: 'Entry Fees Grow the Pots',
+    entryFeeExample: '$2.00',
+    potBalanceExample: '$10,000',
     prize: 'Pot balance - Prize',
     secondChances: 'Second chances',
     secondChancesDesc: 'Eliminated? Pay today\'s fee to re-enter anytime.',
     finalShowdown: 'Final showdown',
-    finalShowdownDesc: 'Tournament runs until final 10 players remain for the last day.',
+    finalShowdownDesc: 'Tournaments with daily questions run until final 5 players remain for the last day. Tournaments with weekly questions run for the full season or until one player remains.',
     liveStats: 'Live stats',
     liveStatsDesc: 'Stay informed with up-to-date information for each pot.',
 
@@ -854,7 +864,7 @@ export const translations: Record<Language, Translations> = {
     connectWalletBookmarks: 'Connect your wallet to view your bookmarked pots.',
     loadingBookmarks: 'Loading your bookmarks...',
     yourPots: 'Your Pots',
-    potsBookmarkedEntered: 'Pots you\'ve bookmarked and entered',
+    potsBookmarkedEntered: 'The pots you need to monitor',
     enteredPots: 'Entered pots',
     bookmarked: 'Bookmarked',
     noBookmarksYet: 'No bookmarks yet',
@@ -1013,6 +1023,9 @@ export const translations: Record<Language, Translations> = {
     lower: 'Nao',
     comingSoon: 'mercado em breve!',
     potNumber:'Pote',
+    meansYouPay: 'significa que você paga',
+    canWin: '(taxa de entrada) e pode ganhar',
+    canWinPotBalance: '(saldo do pote)',
     
     // Market Questions
     bitcoinQuestion: 'Bitcoin fechará em alta em relação ao preço de abertura',
@@ -1038,14 +1051,14 @@ export const translations: Record<Language, Translations> = {
     // Tutorial Section
     tutorialStep1Title: 'Bem-vindo aos Mercados de Previsão',
     tutorialStep1Description: 'Junte-se a milhares de jogadores em competições diárias de previsão onde habilidade e estratégia ganham recompensas reais.',
-    tutorialStep2Title: 'Obtenha Tokens e Entre no Pote',
-    tutorialStep2Description: 'Você precisa de USDC (para entradas) e ETH (para taxas de gás ~$0.01). Compre na nossa página ou receba de qualquer carteira. Depois pague a taxa diária para entrar no mercado de previsão. Domingos custam apenas $0.01 USDC!',
-    tutorialStep3Title: 'Faça Suas Previsões (Ter-Qui)',
-    tutorialStep3Description: 'Previsões abrem de terça a quinta-feira. Preveja se Bitcoin vai subir ou descer no próximo dia. Escolha sabiamente - sua previsão determina seu destino.',
-    tutorialStep4Title: 'Dia dos Resultados Sexta',
-    tutorialStep4Description: 'Vencedores são determinados sexta à meia-noite UTC. Preditores corretos dividem o pote igualmente. Preditores errados ficam temporariamente bloqueados da próxima rodada.',
+    tutorialStep2Title: 'Quais são os premios?',
+    tutorialStep2Description: 'Cada torneio possui o seu próprio pote que cresce cada vez que um jogador entra ou re-entra no torneio. Quanto mais jogadores, maiores as recompensas para os ganhadores!',
+    tutorialStep3Title: 'Obtenha Tokens e Entre no Pote',
+    tutorialStep3Description: 'Você precisa de USDC (para entradas) e ETH (para taxas de gás ~$0.01). Compre na nossa página ou receba de qualquer carteira. Depois pague a taxa diária para entrar no mercado de previsão. Domingos custam apenas $0.01 USDC!',
+    tutorialStep4Title: 'Faça Suas Previsões (Ter-Qui)',
+    tutorialStep4Description: 'Previsões abrem de terça a quinta-feira. Preveja se Bitcoin vai subir ou descer no próximo dia. Escolha sabiamente - sua previsão determina seu destino.',
     tutorialStep5Title: 'Torneios Semanais',
-    tutorialStep5Description: 'Alguns torneios têm perguntas semanais e começam uma semana antes do primeiro dia da temporada. Exemplos incluem Fórmula 1, NBA e Copa do Mundo.',
+    tutorialStep5Description: 'Alguns torneios têm perguntas semanais. Exemplos incluem Fórmula 1, NBA e Copa do Mundo.',
     tutorialStep6Title: 'Pronto para Jogar?',
     tutorialStep6Description: 'Agora você entende as regras. Conecte sua carteira e faça sua primeira previsão para começar a ganhar!',
     skipTutorial: 'Pular Tutorial',
@@ -1057,6 +1070,7 @@ export const translations: Record<Language, Translations> = {
     yourGoal: 'Seu Objetivo:',
 
     // PredictionPotTest specific
+    todaysquestion: 'A pergunta de hoje é:',
     enterAndCompete: 'Você vai estar entre os últimos 5 jogadores?',
     playersRemaining: 'jogadores restantes',
     bitcoinPotTitle: 'Detalhes do Pote',
@@ -1274,16 +1288,17 @@ export const translations: Record<Language, Translations> = {
     // Tutorial - How It Works
     skipButton: 'Pular →',
     globalCompetition: 'Competição global',
-    globalCompetitionDesc: 'Usuários do mundo todo competem para estar entre os últimos 5 jogadores nos nossos torneios de previsão.',
+    globalCompetitionDesc: 'Você está prestes a ver a pergunta do dia dos nossos torneios de previsão.',
     dailyPredictions: 'Previsões diárias',
     dailyPredictionsDesc: 'Escolha uma pergunta, entre no torneio e preveja o que vai acontecer amanhã!',
-    dynamicPricing: 'Preço de Entrada',
-    dynamicPricingDesc: 'As taxas de entrada começam baixas, mas dobrarão após o 5º dia - entre cedo para economizar!',
+    dynamicPricing: 'Taxas de Entrada Crescem os Potes',
+    entryFeeExample: '$2.00',
+    potBalanceExample: '$10,000',
     prize: 'Saldo do Pote - Prêmio',
     secondChances: 'Segunda chance',
     secondChancesDesc: 'Eliminado? Pague a taxa de hoje para entrar novamente a qualquer momento.',
     finalShowdown: 'Confronto final',
-    finalShowdownDesc: 'O torneio continua até restarem apenas 10 jogadores para a final.',
+    finalShowdownDesc: 'Torneios com perguntas diárias continuam até que 5 jogadores cheguem ao último dia. Torneios com perguntas semanais duram por toda a temporada ou até que reste apenas um jogador.',
     liveStats: 'Estatísticas ao vivo',
     liveStatsDesc: 'Mantenha-se informado com informações atualizadas para cada pote.',
 
@@ -1356,7 +1371,7 @@ export const translations: Record<Language, Translations> = {
     connectWalletBookmarks: 'Conecte sua carteira para ver seus potes favoritados.',
     loadingBookmarks: 'Carregando seus favoritos...',
     yourPots: 'Seus Potes',
-    potsBookmarkedEntered: 'Potes que você favoritou e entrou',
+    potsBookmarkedEntered: 'Os potes que você precisa monitorar',
     enteredPots: 'Potes que entrou',
     bookmarked: 'Favoritados',
     noBookmarksYet: 'Nenhum favorito ainda',

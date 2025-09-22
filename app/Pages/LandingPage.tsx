@@ -401,16 +401,25 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       content: t.globalCompetitionDesc || "Join thousands of users worldwide in predicting market movements. Every prediction counts towards building a global community of forecasters.",
     },
     {
+      title: t.tutorialStep2Title || "Growing Tournament Pots",
+      content: t.tutorialStep2Description || "Each tournament has its own pot that grows every time a player enters or re-enters. The more players, the bigger the rewards!",
+    },
+    {
+      title: t.dynamicPricing || "Entry Fees Grow the Pots",
+      content: (
+        <div>
+          
+          <span style={{color: '#6B7280', fontWeight: 'bold', opacity: 0.7}}>{t.entryFeeExample}</span> → <span style={{color: '#039905', fontWeight: 'bold'}}>{t.potBalanceExample}</span> {t.meansYouPay} {t.entryFeeExample} {t.canWin} {t.potBalanceExample} {t.canWinPotBalance}.
+        </div>
+      ),
+    },
+    {
       title: t.dailyPredictions || "Daily Predictions",
       content: t.dailyPredictionsDesc || "Make your prediction each day before midnight. Will Bitcoin go up or down tomorrow? Simple yes/no predictions with real rewards.",
     },
     {
       title: t.tutorialStep5Title || "Weekly Predictions",
       content: t.tutorialStep5Description || "Some tournaments happen weekly, and begin one week before the first day of the event. Examples include Formula 1 races, NBA playoffs, and World Cup matches.",
-    },
-    {
-      title: t.dynamicPricing || "Dynamic Pricing",
-      content: t.dynamicPricingDesc || "Entry fees start low and increase daily. Early predictors pay less, while late entries face higher stakes. Time is money!",
     },
     {
       title: t.secondChances || "Second Chances",
@@ -420,11 +429,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       title: t.finalShowdown || "Final Showdown",
       content: t.finalShowdownDesc || "Saturday night is elimination time. Correct predictors stay in and share the prize. Wrong predictors face the music.",
     },
-    {
-      title: t.liveStats || "Live Statistics",
-      content: t.liveStatsDesc || "Track your performance, view global prediction trends, and see real-time market sentiment. Data drives decisions.",
-    },
-    
+
   ];
   
   

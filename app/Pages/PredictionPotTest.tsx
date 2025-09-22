@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAccount, useWriteContract, useReadContract, useWaitForTransactionReceipt, useBalance } from 'wagmi';
-import { Wallet } from 'lucide-react';
+import { Wallet, Users } from 'lucide-react';
 import { formatUnits, parseEther } from 'viem';
 import Cookies from 'js-cookie';
 import { Language, getTranslation, supportedLanguages } from '../Languages/languages';
@@ -1260,7 +1260,25 @@ useEffect(() => {
               ) : (
                 /* Regular pot entry - Tournament active */
                 <div className="space-y-4">
-                  
+
+
+                  {/* Market Question Display - Show full question before Join Pot */}
+                  {marketQuestion && (
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-purple-600 text-xs font-medium">?</span>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-gray-500 text-xs font-medium mb-1 tracking-wide">{t.todaysquestion}</h4>
+                          <p className="text-gray-800 text-sm leading-relaxed font-normal">
+                            {marketQuestion}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Loading state for pot info */}
                   {potInfoLoading && (
                     <div className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg">
@@ -1339,18 +1357,7 @@ useEffect(() => {
 
                   {/* Enter Pot - Only show if no free entries available and not loading and not final day */}
                   {freeEntriesAvailable === 0 && !potInfoLoading && !potInfo.isFinalDay && (
-                    <div className="relative">
-                      {/* Players Still Left Display - Subtle, top right */}
-                      <div className="absolute -top-6 right-0 text-right">
-                        <div className="text-gray-500 text-sm">
-                          {participants ?
-                            Array.from(new Set(participants)).filter(addr =>
-                              !wrongPredictionsAddresses.includes(addr.toLowerCase())
-                            ).length : 0} {t.playersRemaining} / {participants ? Array.from(new Set(participants)).length : 0} total
-                        </div>
-                      </div>
-
-                      <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                       {/* Header */}
                       <div className="mb-6">
                         <h3 className="text-gray-900 font-semibold text-xl mb-2">
@@ -1440,10 +1447,25 @@ useEffect(() => {
                           )}
                       </button>
                     </div>
-                    </div>
                   )}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Players Remaining Display - Bottom of page with purple mobile styling */}
+          {!potInfoLoading && !potInfo.isFinalDay && participants && (
+            <div className="mb-6 bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
+                  <Users className="w-1.5 h-1.5 text-white" />
+                </div>
+                <span className="font-black text-purple-700 text-xs tracking-wider">
+                  {Array.from(new Set(participants)).filter(addr =>
+                    !wrongPredictionsAddresses.includes(addr.toLowerCase())
+                  ).length} <span className="text-purple-900">{t.playersRemaining} / </span>{Array.from(new Set(participants)).length} total
+                </span>
+              </div>
             </div>
           )}
 

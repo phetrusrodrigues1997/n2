@@ -1310,7 +1310,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                 <Users className="w-1.5 h-1.5 text-white" />
               </div>
               <span className={'font-black text-purple-700 text-xs tracking-wider'}>
-                {participantStats.eligibleParticipants}/{participantStats.uniqueAddresses} <span className='text-purple-900'>players left</span>
+                {participantStats.eligibleParticipants} <span className='text-purple-900'>{t.playersRemaining} / </span>{participantStats.uniqueAddresses} total
               </span>
             </div>
           </div>
@@ -1322,7 +1322,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
             </div>
             <div className="flex items-center gap-1 md:gap-2">
               <span className="text-lg md:text-2xl font-semibold text-gray-900">{participantStats.eligibleParticipants}</span>
-              <span className="text-xs text-gray-500">left</span>
+              <span className="text-xs text-gray-500">{t.playersRemaining}</span>
               <span className="text-gray-400 text-sm md:text-lg font-light">/</span>
               <span className="text-md md:text-lg font-medium text-gray-600">{participantStats.uniqueAddresses}</span>
               <span className="text-xs text-gray-500">total</span>
@@ -1943,9 +1943,9 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
               <div className="flex items-center justify-between">
                 <h3 className="text-xl font-black text-gray-900 tracking-tight">{t.predictionHistory || 'Prediction History'}</h3>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 font-medium">
+                  {/* <span className="text-sm text-gray-500 font-medium">
                     {predictionHistory.length} {predictionHistory.length === 1 ? (currentLanguage === 'pt-BR' ? 'previsão' : 'prediction') : (t.predictions || 'predictions')}
-                  </span>
+                  </span> */}
                   <ChevronDown 
                     className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
                       isPredictionHistoryCollapsed ? 'transform rotate-0' : 'transform rotate-180'
