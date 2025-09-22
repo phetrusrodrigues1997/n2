@@ -1554,7 +1554,12 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               </div>
 
                               {/* Question */}
-                              <div className={`flex-1 flex items-center ${market.useTraditionalLayout ? 'pr-16' : 'pr-4'}`}>                <p className="text-sm leading-tight font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]" style={{
+                              <div className={`flex-1 flex items-center ${(() => {
+                                const contractAddress = getContractAddress(market.id);
+                                const isEliminated = contractAddress && eliminationStatus[contractAddress];
+                                const showThermometer = market.useTraditionalLayout && !isEliminated && market.marketIndex !== 0;
+                                return showThermometer ? 'pr-16' : 'pr-4';
+                              })()}`}>                <p className="text-sm leading-tight font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]" style={{
                                   color: '#374151',
                                   fontWeight: '650',
                                   whiteSpace: 'nowrap'
@@ -2197,7 +2202,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               // Determine if thermometer will be shown to adjust question width
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
-                              const showThermometer = market.useTraditionalLayout && predictionPercentages[market.tabId || market.id] && !isEliminated;
+                              const showThermometer = market.useTraditionalLayout && !isEliminated;
 
                               return (
                                 <div className={`flex-1 ${showThermometer ? 'pr-16' : 'pr-4'}`}>
