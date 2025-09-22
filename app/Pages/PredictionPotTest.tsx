@@ -1540,7 +1540,7 @@ useEffect(() => {
         <h3 className="text-[#F5F5F5] font-medium">👥 Pot Participants</h3>
         <div className="text-sm font-semibold">
           <span className="text-cyan-400">
-            {participants ? Array.from(new Set(participants)).length : 0} unique
+            {participants ? Array.from(new Set(participants)).length : 0} players left
           </span>
         </div>
       </div>
