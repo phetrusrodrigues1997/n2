@@ -531,16 +531,16 @@ export default function App() {
           <div className="max-w-7xl mx-auto flex flex-col ">
           {/* Top row with main header elements */}
           <div className="flex justify-between items-center mt-3 md:mt-0 px-9 md:px-12">
-            <div className="flex items-center flex-1">
+            <div className="flex items-center flex-1 gap-6">
 
               {/* Logo */}
-              <div className="relative -ml-2">
+              <div className="relative -ml-2 flex-shrink-0">
                 <div className="absolute -inset-1 rounded-full blur-md"></div>
                 <ResponsiveLogo onClick={() => setActiveSection('home')} />
               </div>
 
               {/* Search Bar - Desktop only, right of logo */}
-              <div className="hidden md:flex items-center gap-3 ml-6 flex-1">
+              <div className="hidden md:flex items-center gap-3 flex-1">
                 <div className="relative">
                   <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
                     <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

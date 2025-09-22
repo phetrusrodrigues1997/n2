@@ -90,6 +90,7 @@ export interface Translations {
   amazonQuestion?: string; // Added for the Amazon stock question
   metaQuestion?: string; // Added for the Meta stock question
   dogecoinQuestion?: string; // Added for the Dogecoin question
+
   
   // PredictionPotTest interface elements
   processingYourEntry?: string;
@@ -100,6 +101,7 @@ export interface Translations {
   backToHome?: string;
   back?: string;
   waitingForPlayers?: string; // Added for the waiting for players message
+  entryFeePredictionPotTest: string;
 
   // NotReadyPage translations
   getNotified?: string;
@@ -607,6 +609,7 @@ export const translations: Record<Language, Translations> = {
     backToHome: '← Back to Home',
     back: 'Back',
     waitingForPlayers: 'Waiting for {count} more player{plural}',
+    entryFeePredictionPotTest: 'Entry Fee',
 
     // NotReadyPage translations
     getNotified: 'Get Notified',
@@ -1103,6 +1106,7 @@ export const translations: Record<Language, Translations> = {
     goldQuestion: 'O Ouro terminará o dia em alta?',
     howItWorksLink: 'Como funciona?', // Added for the link to the How It Works section
     chelseaManUtdQuestion: 'Chelsea ganhará do Manchester United?',
+    entryFeePredictionPotTest: 'Taxa de Entrada',
    
     referralProgram: 'Indicações', // Added for referral navigation links
     referralCode: 'Código de Referência (Opcional)', // Added for referral code input label

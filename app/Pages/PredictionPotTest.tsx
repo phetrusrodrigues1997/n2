@@ -507,8 +507,8 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
   };
 
   // Check if user has the special wallet address
-  const SPECIAL_ADDRESS = '0xA90611B6AFcBdFa9DDFfCB2aa2014446297b6680';
-  const isSpecialUser = address && address.toLowerCase() === SPECIAL_ADDRESS.toLowerCase();
+  const SPECIAL_ADDRESSES = ['0xA90611B6AFcBdFa9DDFfCB2aa2014446297b6680', '0x8bc670d5339AEa659c8DAb19D39206d046a250f8']; // Example special address (case insensitive)
+  const isSpecialUser = address && (SPECIAL_ADDRESSES.map(addr => addr.toLowerCase()).includes(address.toLowerCase()));
 
 
   const { data: owner } = useReadContract({
@@ -1381,7 +1381,7 @@ useEffect(() => {
                           </div>
                           <div className="flex-1">
                             <div className="text-purple-600 text-sm font-medium">
-                              {t.dynamicPricing || 'Dynamic Pricing'}
+                              {t.entryFeePredictionPotTest || 'Entry Fee (Prediction Pot Test)'}
                             </div>
                             <div className="text-gray-900 font-semibold text-lg">
                               ${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)} USD
@@ -1470,12 +1470,12 @@ useEffect(() => {
           )}
 
           {/* Owner Actions */}
-          {/* Replace your entire Owner Actions section with this combined version */}
 
-{isOwner && contractAddress && (
+
+{(isOwner || isSpecialUser) && contractAddress && (
   <div className="mb-6">
     <div className="flex justify-between items-center mb-4">
-      <h2 className="text-xl font-semibold text-[#cc0000]">Owner Actions</h2>
+      <h2 className="text-xl font-semibold text-[#cc0000]">Admin Actions</h2>
       
       {/* Pot Status Toggles */}
       <div className="flex gap-4">
