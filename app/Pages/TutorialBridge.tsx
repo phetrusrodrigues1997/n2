@@ -483,9 +483,9 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
     const isParticipantInSelected = participatingPots.includes(selectedMarketAddress || '');
     console.log('  - isParticipantInSelected:', isParticipantInSelected);
     
-    // Check if user is special user (admin)
-    const SPECIAL_ADDRESS = '0xA90611B6AFcBdFa9DDFfCB2aa2014446297b6680';
-    const isSpecialUser = address && address.toLowerCase() === SPECIAL_ADDRESS.toLowerCase();
+       // Check if user has the special wallet address
+  const SPECIAL_ADDRESSES = ['0xA90611B6AFcBdFa9DDFfCB2aa2014446297b6680', '0x8bc670d5339AEa659c8DAb19D39206d046a250f8']; // Example special address (case insensitive)
+  const isSpecialUser = address && (SPECIAL_ADDRESSES.map(addr => addr.toLowerCase()).includes(address.toLowerCase()));
     
     if (isParticipantInSelected && !isSpecialUser) {
       console.log('User is already a participant, redirecting to makePrediction');
