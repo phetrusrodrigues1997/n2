@@ -1557,7 +1557,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               <div className={`flex-1 flex items-center ${(() => {
                                 const contractAddress = getContractAddress(market.id);
                                 const isEliminated = contractAddress && eliminationStatus[contractAddress];
-                                const showThermometer = market.useTraditionalLayout && !isEliminated && market.marketIndex !== 0;
+                                const showThermometer = market.useTraditionalLayout && !isEliminated;
                                 return showThermometer ? 'pr-16' : 'pr-4';
                               })()}`}>                <p className="text-sm leading-tight font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]" style={{
                                   color: '#374151',
