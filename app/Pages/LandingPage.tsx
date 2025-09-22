@@ -841,7 +841,15 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   // Helper function to get user prediction for a market (handles naming mismatch)
   const getUserPrediction = (marketId: string): TodaysBet | null => {
     // console.log(`🔍 getUserPrediction called with marketId: "${marketId}"`);
-    
+
+    // Only return predictions for markets that have deployed contracts
+    // This prevents button state from bleeding across markets
+    const contractAddress = getContractAddress(marketId);
+    if (!contractAddress) {
+      // console.log(`❌ No contract address for "${marketId}", no prediction available`);
+      return null;
+    }
+
     // Check if we have prediction data directly
     if (userPredictions[marketId]) {
       // console.log(`✅ Found prediction for "${marketId}"`);
@@ -1597,27 +1605,30 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 const contractAddress = getContractAddress(market.id);
                                 const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
-                                // Show percentage and chance for first market, thermometer for others
-                                if (market.marketIndex === 0 && predictionPercentages[market.tabId || market.id] && !isEliminated) {
+                                // Show percentage for first market - always display, fallback to 0%
+                                if (market.marketIndex === 0 && !isEliminated) {
                                   return (
                                     <div className="absolute top-1/2 right-0 transform -translate-y-1/2">
                                       <div className="text-right flex flex-col items-end">
                                         {/* Just percentage for first market - vertically centered */}
                                         <div className="text-base font-bold text-gray-900 leading-none">
                                           {(() => {
-                                            const totalVotes = predictionPercentages[market.tabId || market.id]?.totalPredictions ?? 0;
-                                            const positive = Math.round((predictionPercentages[market.tabId || market.id]?.positivePercentage ?? 0) / 100 * totalVotes);
+                                            const percentageData = predictionPercentages[market.tabId || market.id];
+                                            if (!percentageData) return '0%'; // Fallback to 0%
+
+                                            const totalVotes = percentageData.totalPredictions ?? 0;
+                                            const positive = Math.round((percentageData.positivePercentage ?? 0) / 100 * totalVotes);
                                             const negative = totalVotes - positive;
                                             const smoothedPercentage = (((positive + 0.5) / (positive + negative + 1)) * 100).toFixed(0);
-                                            return smoothedPercentage;
-                                          })()}%
+                                            return smoothedPercentage + '%';
+                                          })()}
                                         </div>
                                       </div>
                                     </div>
                                   );
                                 }
-                                // Only show thermometer for traditional layout (even index markets), but not for first market
-                                else if (market.useTraditionalLayout && predictionPercentages[market.tabId || market.id] && !isEliminated && market.marketIndex !== 0) {
+                                // Show thermometer for traditional layout (even index markets), but not for first market
+                                else if (market.useTraditionalLayout && !isEliminated && market.marketIndex !== 0) {
                                   return (
                                     <div className="absolute top-0 right-0">
                                       <div className="text-right flex flex-col items-end">
@@ -1635,15 +1646,21 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             {/* Progress arc */}
                                             <path
                                               d="M 10 45 A 40 40 0 0 1 90 45"
-                                              stroke={
-                                                predictionPercentages[market.tabId || market.id].positivePercentage >= 80 ? '#10b981' :
-                                                  predictionPercentages[market.tabId || market.id].positivePercentage >= 60 ? '#f59e0b' :
-                                                    predictionPercentages[market.tabId || market.id].positivePercentage >= 40 ? '#f97316' : '#ef4444'
-                                              }
+                                              stroke={(() => {
+                                                const percentageData = predictionPercentages[market.tabId || market.id];
+                                                const positivePercentage = percentageData?.positivePercentage ?? 0;
+                                                return positivePercentage >= 80 ? '#10b981' :
+                                                  positivePercentage >= 60 ? '#f59e0b' :
+                                                    positivePercentage >= 40 ? '#f97316' : '#ef4444';
+                                              })()}
                                               strokeWidth="6"
                                               fill="none"
                                               strokeLinecap="round"
-                                              strokeDasharray={`${predictionPercentages[market.tabId || market.id].positivePercentage * 1.26} 126`}
+                                              strokeDasharray={(() => {
+                                                const percentageData = predictionPercentages[market.tabId || market.id];
+                                                const positivePercentage = percentageData?.positivePercentage ?? 0;
+                                                return `${positivePercentage * 1.26} 126`;
+                                              })()}
                                               className="transition-all duration-300"
                                             />
                                           </svg>
@@ -1652,8 +1669,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           <div className="absolute inset-0 flex flex-col items-center justify-center mt-6">
                                             <div className="text-base font-bold text-gray-900 leading-none">
                                               {(() => {
-                                                const totalVotes = predictionPercentages[market.tabId || market.id]?.totalPredictions ?? 0;
-                                                const positive = Math.round((predictionPercentages[market.tabId || market.id]?.positivePercentage ?? 0) / 100 * totalVotes);
+                                                const percentageData = predictionPercentages[market.tabId || market.id];
+                                                if (!percentageData) return '0'; // Fallback to 0%
+
+                                                const totalVotes = percentageData.totalPredictions ?? 0;
+                                                const positive = Math.round((percentageData.positivePercentage ?? 0) / 100 * totalVotes);
                                                 const negative = totalVotes - positive;
                                                 const smoothedPercentage = (((positive + 0.5) / (positive + negative + 1)) * 100).toFixed(0);
                                                 return smoothedPercentage;
@@ -1718,42 +1738,20 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   </div>
                                 );
                               } else {
-                                // Percentage-styled buttons (odd index markets)
+                                // Non-traditional layout: always show percentage layout with fallback to 0%
                                 const percentages = predictionPercentages[market.tabId || market.id];
-                                if (!percentages) {
-                                  // Fallback to traditional if no data
-                                  return (
-                                    <div className={`flex justify-center gap-2 mb-3 ${market.marketIndex === 0 ? '-translate-y-1' : 'translate-y-3'}`}>
-                                      <button
-                                        onClick={handleButtonClick(market.id, 'positive', (e) => {
-                                          e.stopPropagation();
-                                          e.preventDefault();
-                                          handleMarketClick(market.id);
-                                        })}
-                                        className="bg-purple-50 hover:bg-blue-200 text-purple-700 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center"
-                                      >
-                                        {t.higher}
-                                      </button>
-                                      <button
-                                        onClick={handleButtonClick(market.id, 'negative', (e) => {
-                                          e.stopPropagation();
-                                          e.preventDefault();
-                                          handleMarketClick(market.id);
-                                        })}
-                                        className="bg-blue-50 hover:bg-purple-200 text-blue-700  rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center"
-                                      >
-                                        {t.lower}
-                                      </button>
-                                    </div>
-                                  );
-                                }
 
-                                // Calculate percentages
-                                const totalVotes = percentages.totalPredictions ?? 0;
-                                const positive = Math.round((percentages.positivePercentage ?? 0) / 100 * totalVotes);
-                                const negative = totalVotes - positive;
-                                const yesPercentage = Math.round(((positive + 0.5) / (positive + negative + 1)) * 100);
-                                const noPercentage = 100 - yesPercentage;
+                                // Calculate percentages with fallback to 0%
+                                let yesPercentage = 0;
+                                let noPercentage = 0;
+
+                                if (percentages) {
+                                  const totalVotes = percentages.totalPredictions ?? 0;
+                                  const positive = Math.round((percentages.positivePercentage ?? 0) / 100 * totalVotes);
+                                  const negative = totalVotes - positive;
+                                  yesPercentage = Math.round(((positive + 0.5) / (positive + negative + 1)) * 100);
+                                  noPercentage = 100 - yesPercentage;
+                                }
 
                                 return (
                                   <div className={`flex items-center justify-between ${market.marketIndex === 0 ? 'mb-3 -translate-y-3' : 'mb-6'}`}>
@@ -2223,8 +2221,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
-                              // Only show thermometer for traditional layout (even index markets) - Desktop shows full thermometer including first market
-                              if (market.useTraditionalLayout && predictionPercentages[market.tabId || market.id] && !isEliminated) {
+                              // Show thermometer for traditional layout (even index markets) - Desktop shows full thermometer including first market
+                              if (market.useTraditionalLayout && !isEliminated) {
                                 return (
                                   <div className="absolute top-0 -right-1">
                                     <div className="text-right flex flex-col items-end">
@@ -2242,15 +2240,21 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           {/* Progress arc */}
                                           <path
                                             d="M 10 45 A 40 40 0 0 1 90 45"
-                                            stroke={
-                                              predictionPercentages[market.tabId || market.id].positivePercentage >= 80 ? '#10b981' :
-                                                predictionPercentages[market.tabId || market.id].positivePercentage >= 60 ? '#f59e0b' :
-                                                  predictionPercentages[market.tabId || market.id].positivePercentage >= 40 ? '#f97316' : '#ef4444'
-                                            }
+                                            stroke={(() => {
+                                              const percentageData = predictionPercentages[market.tabId || market.id];
+                                              const positivePercentage = percentageData?.positivePercentage ?? 0;
+                                              return positivePercentage >= 80 ? '#10b981' :
+                                                positivePercentage >= 60 ? '#f59e0b' :
+                                                  positivePercentage >= 40 ? '#f97316' : '#ef4444';
+                                            })()}
                                             strokeWidth="6"
                                             fill="none"
                                             strokeLinecap="round"
-                                            strokeDasharray={`${predictionPercentages[market.tabId || market.id].positivePercentage * 1.26} 126`}
+                                            strokeDasharray={(() => {
+                                              const percentageData = predictionPercentages[market.tabId || market.id];
+                                              const positivePercentage = percentageData?.positivePercentage ?? 0;
+                                              return `${positivePercentage * 1.26} 126`;
+                                            })()}
                                             className="transition-all duration-300"
                                           />
                                         </svg>
@@ -2259,8 +2263,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         <div className="absolute inset-0 flex flex-col items-center justify-center mt-6">
                                           <div className="text-base font-bold text-gray-900 leading-none">
                                             {(() => {
-                                              const totalVotes = predictionPercentages[market.tabId || market.id]?.totalPredictions ?? 0;
-                                              const positive = Math.round((predictionPercentages[market.tabId || market.id]?.positivePercentage ?? 0) / 100 * totalVotes);
+                                              const percentageData = predictionPercentages[market.tabId || market.id];
+                                              if (!percentageData) return '0'; // Fallback to 0%
+
+                                              const totalVotes = percentageData.totalPredictions ?? 0;
+                                              const positive = Math.round((percentageData.positivePercentage ?? 0) / 100 * totalVotes);
                                               const negative = totalVotes - positive;
                                               const smoothedPercentage = (((positive + 0.5) / (positive + negative + 1)) * 100).toFixed(0);
                                               return smoothedPercentage;
@@ -2325,42 +2332,20 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 </div>
                               );
                             } else {
-                              // Percentage-styled buttons (odd index markets)
+                              // Non-traditional layout: always show percentage layout with fallback to 0%
                               const percentages = predictionPercentages[market.tabId || market.id];
-                              if (!percentages) {
-                                // Fallback to traditional if no data
-                                return (
-                                  <div className="flex justify-center gap-2 mb-3 translate-y-2">
-                                    <button
-                                      onClick={handleButtonClick(market.id, 'positive', (e) => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        handleMarketClick(market.id);
-                                      })}
-                                      className="bg-purple-50 hover:bg-blue-200 text-purple-700 px-14 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 flex-1 max-w-[130px]"
-                                    >
-                                      {t.higher}
-                                    </button>
-                                    <button
-                                      onClick={handleButtonClick(market.id, 'negative', (e) => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        handleMarketClick(market.id);
-                                      })}
-                                      className="bg-blue-50 hover:bg-purple-200 text-blue-700 px-14 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 flex-1 max-w-[130px]"
-                                    >
-                                      {t.lower}
-                                    </button>
-                                  </div>
-                                );
-                              }
 
-                              // Calculate percentages
-                              const totalVotes = percentages.totalPredictions ?? 0;
-                              const positive = Math.round((percentages.positivePercentage ?? 0) / 100 * totalVotes);
-                              const negative = totalVotes - positive;
-                              const yesPercentage = Math.round(((positive + 0.5) / (positive + negative + 1)) * 100);
-                              const noPercentage = 100 - yesPercentage;
+                              // Calculate percentages with fallback to 0%
+                              let yesPercentage = 0;
+                              let noPercentage = 0;
+
+                              if (percentages) {
+                                const totalVotes = percentages.totalPredictions ?? 0;
+                                const positive = Math.round((percentages.positivePercentage ?? 0) / 100 * totalVotes);
+                                const negative = totalVotes - positive;
+                                yesPercentage = Math.round(((positive + 0.5) / (positive + negative + 1)) * 100);
+                                noPercentage = 100 - yesPercentage;
+                              }
 
                               return (
                                 <div className="flex items-center justify-between mb-3">
