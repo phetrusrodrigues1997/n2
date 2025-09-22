@@ -2210,7 +2210,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     overflow: 'hidden'
                                   }}>
                                     {(() => {
-                                      const charLimit = market.useTraditionalLayout ? 35 : 50; // Desktop: keep traditional tight, moderate expansion for new style
+                                      const charLimit = market.useTraditionalLayout ? 30 : 45; // Desktop: keep traditional tight, moderate expansion for new style
                                       return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
                                     })()}
                                   </p>
