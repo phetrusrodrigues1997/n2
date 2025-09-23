@@ -15,22 +15,10 @@ import { getEventDate } from '../Database/eventDates';
 import LoadingScreenAdvanced from '../Components/LoadingScreenAdvanced';
 
 
-// UK timezone helper function (simplified and more reliable)
-const getUKTime = (date: Date = new Date()): Date => {
-  // Use Intl.DateTimeFormat to get UK time directly
-  const ukTimeString = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/London',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  }).format(date);
-  
-  // Parse the UK time string (format: YYYY-MM-DD, HH:MM:SS)
-  return new Date(ukTimeString.replace(', ', 'T'));
+// UTC timezone helper function for consistency with backend
+const getUTCTime = (date: Date = new Date()): Date => {
+  // Return the date as-is since Date objects are inherently UTC-based when using UTC methods
+  return new Date(date.getTime());
 };
 
 
@@ -333,8 +321,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     if (!SHOW_RESULTS_DAY_INFO) {
       return true; // Always allow betting when testing toggle is off (and pot has started)
     }
-    const ukNow = getUKTime();
-    const day = ukNow.getDay(); // 0 = Sunday, 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday, 6 = Saturday
+    const utcNow = getUTCTime();
+    const day = utcNow.getUTCDay(); // 0 = Sunday, 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday, 6 = Saturday
     return day !== 6; // All days except Saturday
   };
 
@@ -343,8 +331,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     if (!SHOW_RESULTS_DAY_INFO) {
       return false; // Never show results day when testing toggle is off
     }
-    const ukNow = getUKTime();
-    const day = ukNow.getDay();
+    const utcNow = getUTCTime();
+    const day = utcNow.getUTCDay();
     return day === 6; // Saturday
   };
 
@@ -372,19 +360,19 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  // Get tonight's midnight (when new question becomes available) - UK timezone
+  // Get tonight's midnight (when new question becomes available) - UTC timezone
   const getTonightMidnight = (): Date => {
-    const ukNow = getUKTime();
-    // Create tomorrow's midnight in UK timezone
-    const tomorrow = new Date(ukNow.getFullYear(), ukNow.getMonth(), ukNow.getDate() + 1, 0, 0, 0, 0);
+    const utcNow = getUTCTime();
+    // Create tomorrow's midnight in UTC timezone
+    const tomorrow = new Date(Date.UTC(utcNow.getUTCFullYear(), utcNow.getUTCMonth(), utcNow.getUTCDate() + 1, 0, 0, 0, 0));
     return tomorrow;
   };
 
-  // Get tomorrow's midnight (when previous prediction outcome will be revealed - 24 hours after next question) - UK timezone
+  // Get tomorrow's midnight (when previous prediction outcome will be revealed - 24 hours after next question) - UTC timezone
   const getTomorrowMidnight = (): Date => {
-    const ukNow = getUKTime();
-    // Create day after tomorrow's midnight in UK timezone
-    const dayAfterTomorrow = new Date(ukNow.getFullYear(), ukNow.getMonth(), ukNow.getDate() + 2, 0, 0, 0, 0);
+    const utcNow = getUTCTime();
+    // Create day after tomorrow's midnight in UTC timezone
+    const dayAfterTomorrow = new Date(Date.UTC(utcNow.getUTCFullYear(), utcNow.getUTCMonth(), utcNow.getUTCDate() + 2, 0, 0, 0, 0));
     return dayAfterTomorrow;
   };
 
@@ -392,14 +380,14 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   const getPredictionDeadline = (): Date => {
     if (isPenaltyExempt && eventDate) {
       // For penalty-exempt contracts, deadline is 23:59 of the event date
-      // Parse the event date in UK timezone (same as getUKTime logic)
+      // Parse the event date in UTC timezone for consistency
       const eventDateParts = eventDate.split('-');
       const year = parseInt(eventDateParts[0]);
       const month = parseInt(eventDateParts[1]) - 1; // Month is 0-indexed
       const day = parseInt(eventDateParts[2]);
 
-      // Create date at 23:59:59 in UK timezone
-      const eventDateObj = new Date(year, month, day, 23, 59, 59, 0);
+      // Create date at 23:59:59 in UTC timezone
+      const eventDateObj = new Date(Date.UTC(year, month, day, 23, 59, 59, 0));
       return eventDateObj;
     } else {
       // For regular contracts, use the standard tomorrow midnight logic

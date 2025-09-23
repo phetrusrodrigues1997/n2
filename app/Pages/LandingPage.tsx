@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
 import { formatUnits } from 'viem';
-import { checkMissedPredictionPenalty } from '../Database/actions3';
+// Removed checkMissedPredictionPenalty import - penalties now handled server-side in setDailyOutcome
 import { ArrowRight, Bookmark, Check, BookOpen, ChevronRight, ChevronLeft, X, CheckCircle2, DollarSign, Target, TrendingUp, Users, Calendar, BarChart2, RefreshCw, Plus } from 'lucide-react';
 import { Language, getTranslation, supportedLanguages, getTranslatedMarketQuestion } from '../Languages/languages';
 import { getMarkets, Market } from '../Constants/markets';
@@ -591,45 +591,29 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     Cookies.set('potBalances', JSON.stringify(newPotBalances), { expires: 1 / 24 }); // 1 hour expiry
   }, [ethPrice, balancesData.length, ...balancesData.map(b => b?.value)]);
 
-  // Check for missed prediction penalties when user connects
+  // Check elimination status when user connects (penalties now handled server-side in setDailyOutcome)
   useEffect(() => {
-    const runPenaltyChecks = async () => {
+    const checkEliminationStatus = async () => {
       if (!isConnected || !address) {
         return;
       }
 
-      console.log('🔍 Running penalty checks for all markets...');
+      console.log('🔍 Checking elimination status for all markets...');
 
-      // Check each contract for missed predictions and elimination status
+      // Check each contract for elimination status only
       const newEliminationStatus: Record<string, boolean> = {};
 
       for (const contractAddress of contractAddresses) {
         try {
-          // Skip automatic penalty checks for exempt contracts, but still check elimination status
-          if (PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
-            const marketType = CONTRACT_TO_TABLE_MAPPING[contractAddress];
-            console.log(`⏭️ Skipping automatic penalty check for ${marketType} (${contractAddress}) - contract is penalty exempt`);
-            console.log(`🔍 Checking elimination status for penalty-exempt contract ${marketType} (${contractAddress})`);
-
-            // Still check if user is eliminated (has re-entry fee) from manual setDailyOutcome elimination
-            const reEntryFee = await isEliminated(address, marketType);
-            newEliminationStatus[contractAddress] = reEntryFee !== null && reEntryFee > 0;
-            console.log(`🔍 Elimination status for penalty-exempt ${marketType}: ${newEliminationStatus[contractAddress]}`);
-            continue;
-          }
-
           const marketType = CONTRACT_TO_TABLE_MAPPING[contractAddress];
-          console.log(`🔍 Starting penalty check for ${marketType} (${contractAddress}) with wallet ${address}`);
-          await checkMissedPredictionPenalty(address, contractAddress, marketType);
+          console.log(`🔍 Checking elimination status for ${marketType} (${contractAddress})`);
 
           // Check if user is eliminated (has re-entry fee)
           const reEntryFee = await isEliminated(address, marketType);
           newEliminationStatus[contractAddress] = reEntryFee !== null && reEntryFee > 0;
           console.log(`🔍 Elimination status for ${marketType}: ${newEliminationStatus[contractAddress]}`);
-
-          console.log(`✅ Penalty check completed for ${marketType}`);
         } catch (error) {
-          console.error(`❌ Error checking penalties for ${contractAddress}:`, error);
+          console.error(`❌ Error checking elimination status for ${contractAddress}:`, error);
           newEliminationStatus[contractAddress] = false; // Default to not eliminated on error
         }
       }
@@ -638,7 +622,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       setEliminationStatus(newEliminationStatus);
     };
 
-    runPenaltyChecks();
+    checkEliminationStatus();
   }, [isConnected, address]);
 
   // Fetch pot information for all contracts

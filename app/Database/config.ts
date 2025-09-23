@@ -4,7 +4,7 @@ import { getEventDate } from './eventDates';
 
 // Minimum players required to start a pot
 export const MIN_PLAYERS = 5; // Minimum participants for pot
-export const MIN_PLAYERS2 = 3; // Minimum participants for all other pots
+export const MIN_PLAYERS2 = 2; // Minimum participants for all other pots
 
 // Dynamic pricing configuration
 export const BASE_ENTRY_FEE = 0.02; // Base entry fee in USD (used when pot hasn't started)
@@ -241,8 +241,9 @@ export const getSmartMarketDisplayName = (tableType: TableType): string => {
   }
 };
 
-// UK timezone helper function
+/** @deprecated Use getCurrentUTCTime() instead - kept for backward compatibility */
 export const getUKTime = (date: Date = new Date()): Date => {
+  console.warn('🚨 DEPRECATED: getUKTime() is deprecated. Use getCurrentUTCTime() instead');
   // Use Intl.DateTimeFormat to get UK time directly
   const ukTime = new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Europe/London',
@@ -265,11 +266,11 @@ export const getUKTime = (date: Date = new Date()): Date => {
   return new Date(year, month, day, hour, minute, second);
 };
 
-// Get tonight's midnight (UK timezone) - when timer resets to 24 hours
+// Get tonight's midnight (UTC timezone) - when timer resets to 24 hours
 export const getTonightMidnight = (): Date => {
-  const ukNow = getUKTime();
-  // Create tomorrow's midnight in UK timezone
-  const tomorrow = new Date(ukNow.getFullYear(), ukNow.getMonth(), ukNow.getDate() + 1, 0, 0, 0, 0);
+  const utcNow = getCurrentUTCTime();
+  // Create tomorrow's midnight in UTC timezone
+  const tomorrow = new Date(Date.UTC(utcNow.getUTCFullYear(), utcNow.getUTCMonth(), utcNow.getUTCDate() + 1, 0, 0, 0, 0));
   return tomorrow;
 };
 
@@ -281,17 +282,57 @@ export const formatTime = (milliseconds: number): string => {
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 };
 
-// Calculate time until midnight UK time
+// Calculate time until midnight UTC time
 export const getTimeUntilMidnight = (): string => {
-  const ukNow = getUKTime();
+  const utcNow = getCurrentUTCTime();
   const tonightMidnight = getTonightMidnight();
-  const timeLeft = tonightMidnight.getTime() - ukNow.getTime();
+  const timeLeft = tonightMidnight.getTime() - utcNow.getTime();
 
   if (timeLeft <= 0) {
     return '00:00:00';
   } else {
     return formatTime(timeLeft);
   }
+};
+
+// ========================================
+// CENTRALIZED UTC DATE/TIME FUNCTIONS
+// ========================================
+
+/**
+ * Get current UTC time as Date object
+ * Use this instead of new Date() throughout the codebase for consistency
+ */
+export const getCurrentUTCTime = (): Date => {
+  return new Date();
+};
+
+/**
+ * Get current UTC date as YYYY-MM-DD string
+ * Use this instead of today.toISOString().split('T')[0] throughout the codebase
+ */
+export const getCurrentUTCDateString = (): string => {
+  return new Date().toISOString().split('T')[0];
+};
+
+/**
+ * Get UTC timestamp X hours ago
+ * Use this for grace period calculations (e.g., 20 hours ago)
+ */
+export const getUTCTimeHoursAgo = (hours: number): Date => {
+  const hoursAgo = new Date();
+  hoursAgo.setTime(hoursAgo.getTime() - (hours * 60 * 60 * 1000));
+  return hoursAgo;
+};
+
+/**
+ * Get tomorrow's UTC date as YYYY-MM-DD string
+ * Use this for daily tournament prediction dates
+ */
+export const getTomorrowUTCDateString = (): string => {
+  const tomorrow = new Date();
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  return tomorrow.toISOString().split('T')[0]; // YYYY-MM-DD format in UTC
 };
 
 // ========================================
@@ -327,7 +368,7 @@ export const getTimerUrgency = (days: number, hours: number, minutes: number, se
 
 // Calculate timer data for any contract (handles both regular and penalty-exempt)
 export const getTimerDataForContract = (contractAddress?: string): TimerData => {
-  const ukNow = getUKTime();
+  const utcNow = getCurrentUTCTime();
   let targetTime: Date;
 
   if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
@@ -335,7 +376,7 @@ export const getTimerDataForContract = (contractAddress?: string): TimerData => 
     const eventDate = getEventDate(contractAddress);
 
     if (eventDate) {
-      // Parse the event date in UK timezone
+      // Parse the event date in UTC timezone
       const eventDateParts = eventDate.split('-');
       if (eventDateParts.length === 3) {
         const year = parseInt(eventDateParts[0]);
@@ -343,10 +384,10 @@ export const getTimerDataForContract = (contractAddress?: string): TimerData => 
         const day = parseInt(eventDateParts[2]);
 
         // Check if event is in the past - if so, use prediction deadline (23:59)
-        const eventStartTime = new Date(year, month, day, 0, 0, 0, 0);
-        if (eventStartTime.getTime() < ukNow.getTime()) {
+        const eventStartTime = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+        if (eventStartTime.getTime() < utcNow.getTime()) {
           // Event is in past, use prediction deadline
-          targetTime = new Date(year, month, day, 23, 59, 59, 0);
+          targetTime = new Date(Date.UTC(year, month, day, 23, 59, 59, 0));
         } else {
           // Event is in future, countdown to event start
           targetTime = eventStartTime;
@@ -364,7 +405,7 @@ export const getTimerDataForContract = (contractAddress?: string): TimerData => 
     targetTime = getTonightMidnight();
   }
 
-  const diffMs = targetTime.getTime() - ukNow.getTime();
+  const diffMs = targetTime.getTime() - utcNow.getTime();
 
   if (diffMs <= 0) {
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };

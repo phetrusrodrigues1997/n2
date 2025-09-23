@@ -2,7 +2,7 @@
 
 import { eq, and, desc, asc } from 'drizzle-orm';
 import { PotParticipationHistory, UserPredictionHistory } from './schema';
-import { getBetsTableName, getWrongPredictionsTableName, TableType } from './config';
+import { getBetsTableName, getWrongPredictionsTableName, TableType, getCurrentUTCTime, getCurrentUTCDateString } from './config';
 import { getDbForWrite, getDbForRead, getDb } from "./db";
 import { neon } from "@neondatabase/serverless";
 
@@ -99,10 +99,9 @@ export async function isUserActiveOnDate(
       .orderBy(asc(PotParticipationHistory.eventTimestamp));
 
     // Filter events that happened ON OR BEFORE the target date (users can predict on entry day)
-    // Since we only have eventTimestamp now, extract date string from timestamp for comparison
-    // This avoids timezone complexity - we just check if the event date <= target date
+    // Extract UTC date string from timestamp for comparison
     const relevantEvents = events.filter(event => {
-      const eventDateStr = new Date(event.eventTimestamp).toISOString().split('T')[0]; // YYYY-MM-DD
+      const eventDateStr = new Date(event.eventTimestamp).toISOString().split('T')[0]; // YYYY-MM-DD UTC
       return eventDateStr <= targetDate;
     });
     
@@ -144,10 +143,9 @@ export async function getEligiblePredictors(
       .orderBy(asc(PotParticipationHistory.eventTimestamp));
 
     // Filter events that happened ON OR BEFORE the target date (users can predict on entry day)
-    // Since we only have eventTimestamp now, extract date string from timestamp for comparison
-    // This avoids timezone complexity - we just check if the event date <= target date
+    // Extract UTC date string from timestamp for comparison
     const relevantEvents = events.filter(event => {
-      const eventDateStr = new Date(event.eventTimestamp).toISOString().split('T')[0]; // YYYY-MM-DD
+      const eventDateStr = new Date(event.eventTimestamp).toISOString().split('T')[0]; // YYYY-MM-DD UTC
       return eventDateStr <= targetDate;
     });
     
@@ -161,15 +159,16 @@ export async function getEligiblePredictors(
     
     for (const event of relevantEvents) {
       const currentEvent = userEventMap.get(event.walletAddress);
-      if (!currentEvent || 
+      if (!currentEvent ||
           new Date(event.eventTimestamp).getTime() > new Date(currentEvent.eventTimestamp).getTime()) {
         userEventMap.set(event.walletAddress, event);
       }
     }
 
-    // Filter users whose most recent event was an entry (meaning they're active)
+    // Filter users whose most recent event was an entry OR re-entry (meaning they're active)
+    // FIXED: Include both 'entry' and 're-entry' events for consistency with grace period logic
     const eligibleUsers = Array.from(userEventMap.entries())
-      .filter(([_, event]) => event.eventType === 'entry')
+      .filter(([_, event]) => event.eventType === 'entry' || event.eventType === 're-entry')
       .map(([walletAddress, _]) => walletAddress);
 
     console.log(`📊 Found ${eligibleUsers.length} eligible predictors for ${targetDate}: ${eligibleUsers.slice(0, 3).join(', ')}${eligibleUsers.length > 3 ? '...' : ''}`);
@@ -230,282 +229,6 @@ export async function getUserParticipationHistory(
   }
 }
 
-/**
- * Checks if a user missed making predictions they were required to make and should be penalized.
- * This function should be called when users visit the prediction page to immediately block
- * users who failed to make required predictions, rather than waiting for daily outcome processing.
- * 
- * @param walletAddress - The user's wallet address
- * @param contractAddress - The prediction pot contract address  
- * @param tableType - The table type ('featured', 'crypto', etc.)
- * @returns void - Directly adds user to wrong predictions table if they missed today's prediction
- */
-export async function checkMissedPredictionPenalty(
-  walletAddress: string,
-  contractAddress: string,
-  tableType: TableType
-): Promise<void> {
-  try {
-    console.log(`🔍 === STARTING PENALTY CHECK ===`);
-    console.log(`🔍 Wallet: ${walletAddress}`);
-    console.log(`🔍 Contract: ${contractAddress}`);
-    console.log(`🔍 Market Type: ${tableType}`);
-
-    // Get today's date
-    const today = new Date();
-    const todayString = today.toISOString().split('T')[0]; // YYYY-MM-DD
-
-    console.log(`🔍 Today: ${todayString}`);
-
-    const sql = neon(process.env.DATABASE_URL!);
-
-    // STEP 0: Check pot information to see if pot has started and when
-    console.log(`🔍 STEP 0: Checking pot information for contract: ${contractAddress}`);
-    
-    const potInfo = await sql`
-      SELECT has_started, started_on_date, is_final_day 
-      FROM pot_information 
-      WHERE contract_address = ${contractAddress.toLowerCase()}
-      LIMIT 1
-    `;
-    
-    console.log(`🔍 Pot information result:`, potInfo);
-    
-    // If no pot information exists or pot hasn't started, no penalties
-    if (potInfo.length === 0) {
-      console.log(`✅ No pot information found for ${contractAddress} - no penalties required`);
-      return;
-    }
-    
-    const potData = potInfo[0];
-    const hasStarted = potData.has_started;
-    const startedOnDate = potData.started_on_date;
-    
-    console.log(`🔍 Pot has started: ${hasStarted}, Started on: ${startedOnDate}`);
-    
-    if (!hasStarted || !startedOnDate) {
-      console.log(`✅ Pot hasn't started yet (${hasStarted}) or no start date (${startedOnDate}) - no predictions required yet, EXITING`);
-      return;
-    }
-    
-    // Users should not be penalized on the day the pot started
-    if (startedOnDate === todayString) {
-      console.log(`✅ Today is the pot start date (${startedOnDate}) - no prediction penalty for start date, EXITING`);
-      return;
-    }
-    
-    console.log(`🔍 Pot started on ${startedOnDate}, today is ${todayString} - continuing penalty check...`);
-
-    console.log(`🗓️ Checking if ${walletAddress} made prediction for TODAY: ${todayString}`);
-
-    // STEP 1: Check if user is currently a participant in this pot
-    console.log(`🔍 STEP 1: Checking participation for wallet: ${walletAddress.toLowerCase()}, contract: ${contractAddress}`);
-    
-    // First, let's see ALL entries for this user/contract combo for debugging
-    const allEntries = await sql`
-      SELECT event_type, event_timestamp, wallet_address, contract_address
-      FROM pot_participation_history
-      WHERE wallet_address = ${walletAddress.toLowerCase()} 
-      AND contract_address = ${contractAddress.toLowerCase()}
-      ORDER BY event_timestamp DESC
-    `;
-    
-    console.log(`🔍 All participation history for this user/contract:`, allEntries);
-    
-    // Let's also check what entries exist for just this wallet (any contract)
-    const walletEntries = await sql`
-      SELECT event_type, event_timestamp, wallet_address, contract_address
-      FROM pot_participation_history
-      WHERE wallet_address = ${walletAddress.toLowerCase()}
-      ORDER BY event_timestamp DESC
-      LIMIT 5
-    `;
-    
-    console.log(`🔍 Recent entries for this wallet (any contract):`, walletEntries);
-    
-    // And let's check what entries exist for just this contract (any wallet)
-    const contractEntries = await sql`
-      SELECT event_type, event_timestamp, wallet_address, contract_address
-      FROM pot_participation_history
-      WHERE contract_address = ${contractAddress}
-      ORDER BY event_timestamp DESC
-      LIMIT 5
-    `;
-    
-    console.log(`🔍 Recent entries for this contract (any wallet):`, contractEntries);
-    
-    // Simplified participation check - just check if they have any entry without a later exit
-    const participantCheck = await sql`
-      SELECT COUNT(*) as participant_count
-      FROM pot_participation_history
-      WHERE wallet_address = ${walletAddress.toLowerCase()} 
-      AND contract_address = ${contractAddress.toLowerCase()}
-      AND event_type = 'entry'
-      AND NOT EXISTS (
-        SELECT 1 FROM pot_participation_history ph2
-        WHERE ph2.wallet_address = ${walletAddress.toLowerCase()}
-        AND ph2.contract_address = ${contractAddress.toLowerCase()}
-        AND ph2.event_type = 'exit'
-        AND ph2.event_timestamp > pot_participation_history.event_timestamp
-      )
-    `;
-
-    console.log(`🔍 Participation query result:`, participantCheck);
-    const isParticipant = parseInt(participantCheck[0].participant_count) > 0;
-    console.log(`🔍 Is participant? ${isParticipant} (count: ${participantCheck[0].participant_count})`);
-    
-    if (!isParticipant) {
-      console.log(`❌ User ${walletAddress} is not showing as participant in ${contractAddress} - this might be incorrect!`);
-      console.log(`🔍 Debug: Check the participation history above to see if there's an issue with the query logic`);
-      return;
-    }
-
-    console.log(`🎯 User ${walletAddress} IS a participant - checking penalty status...`);
-
-    // STEP 2: Check if user is already in wrong predictions table (don't double-penalize)
-    console.log(`🔍 STEP 2: Checking if already penalized for table type: ${tableType}`);
-    
-    const wrongTable = getWrongPredictionsTableName(tableType);
-    console.log(`🔍 Using wrong predictions table: ${wrongTable}`);
-    
-    // Use template string for table name since sql.identifier doesn't exist in Neon
-    // Note: wrong predictions tables use "walletAddress" column (camelCase)
-    const alreadyPenalized = await sql(
-      `SELECT COUNT(*) as penalty_count
-       FROM "${wrongTable}"
-       WHERE "walletAddress" = $1`,
-      [walletAddress.toLowerCase()]
-    );
-
-    console.log(`🔍 Already penalized query result:`, alreadyPenalized);
-    const penaltyCount = parseInt(alreadyPenalized[0].penalty_count);
-    console.log(`🔍 Penalty count: ${penaltyCount}`);
-
-    if (penaltyCount > 0) {
-      console.log(`✅ User ${walletAddress} already in wrong predictions table - no additional penalty needed`);
-      return;
-    }
-
-    console.log(`🔍 User ${walletAddress} is participant and not yet penalized - checking today's prediction...`);
-
-    // STEP 3: Get the bets table for this market type
-    const tableName = getBetsTableName(tableType);
-
-    // Check if they entered or re-entered the pot within the last 20 hours
-    // This gives users exactly 20 hours from their entry/re-entry timestamp before penalties can apply
-    console.log(`🔍 STEP 4: Checking if user entered/re-entered within the last 20 hours`);
-
-    // Calculate 20 hours ago from now
-    const twentyHoursAgo = new Date(today.getTime() - (20 * 60 * 60 * 1000));
-    
-    console.log(`🔍 Current time: ${today.toISOString()}`);
-    console.log(`🔍 20 hours ago: ${twentyHoursAgo.toISOString()}`);
-    
-    const recentEntryCheck = await sql`
-      SELECT COUNT(*) as entry_count, MAX(event_timestamp) as latest_entry_timestamp
-      FROM pot_participation_history
-      WHERE wallet_address = ${walletAddress.toLowerCase()} 
-      AND contract_address = ${contractAddress.toLowerCase()}
-      AND event_type IN ('entry', 're-entry')
-      AND event_timestamp > ${twentyHoursAgo.toISOString()}
-    `;
-
-    console.log(`🔍 Recent entry query result:`, recentEntryCheck);
-    const enteredWithin20Hours = parseInt(recentEntryCheck[0].entry_count) > 0;
-    const latestEntryTimestamp = recentEntryCheck[0].latest_entry_timestamp;
-    console.log(`🔍 Entered within 20 hours? ${enteredWithin20Hours} (count: ${recentEntryCheck[0].entry_count}, latest: ${latestEntryTimestamp})`);
-
-    if (enteredWithin20Hours) {
-      const entryTime = new Date(latestEntryTimestamp);
-      const hoursAgo = Math.round((today.getTime() - entryTime.getTime()) / (1000 * 60 * 60 * 100)) / 100; // Round to 2 decimals
-      console.log(`✅ User ${walletAddress} entered/re-entered ${hoursAgo} hours ago (${latestEntryTimestamp}) - still within 20-hour grace period`);
-      return;
-    }
-
-    // Check if they made a prediction for today
-    console.log(`🔍 STEP 5: Checking predictions for table: ${tableName}, date: ${todayString}`);
-    
-    // Use template string for table name
-    const result = await sql(
-      `SELECT COUNT(*) as prediction_count 
-       FROM ${tableName}
-       WHERE wallet_address = $1 
-       AND bet_date = $2`,
-      [walletAddress.toLowerCase(), todayString]
-    );
-
-    console.log(`🔍 Prediction query result:`, result);
-    const predictionCount = parseInt(result[0].prediction_count);
-    console.log(`📊 Found ${predictionCount} predictions for ${walletAddress} on ${todayString} in ${tableName}`);
-
-    if (predictionCount === 0) {
-      console.log(`❌ PENALTY REQUIRED: User ${walletAddress} missed required prediction for ${todayString}`);
-      console.log(`🔍 Calling addMissedPredictionPenalty with params:`, {
-        walletAddress,
-        tableType,
-        todayString
-      });
-      
-      await addMissedPredictionPenalty(walletAddress, tableType, todayString);
-      console.log(`✅ Successfully added ${walletAddress} to wrong predictions table for ${tableType}`);
-    } else {
-      console.log(`✅ User ${walletAddress} made prediction for ${todayString} - no penalty needed`);
-    }
-
-  } catch (error) {
-    console.error('Error checking missed prediction penalty:', error);
-    // On error, do nothing (safer to allow than incorrectly penalize)
-  }
-}
-
-/**
- * Helper function to add a user to the wrong predictions table for missing a required prediction
- */
-async function addMissedPredictionPenalty(
-  walletAddress: string,
-  tableType: TableType,
-  missedDate: string
-): Promise<{ success: boolean; message: string }> {
-  try {
-    console.log(`🚫 STARTING addMissedPredictionPenalty for ${walletAddress} (${tableType}, ${missedDate})`);
-
-    // Import the wrong predictions tables (we need to add this import at the top)
-    // For now, use direct SQL to avoid circular imports
-    const sql = neon(process.env.DATABASE_URL!);
-    
-    const wrongTableName = getWrongPredictionsTableName(tableType);
-    console.log(`🔍 Using wrong table name: ${wrongTableName} for table type: ${tableType}`);
-    console.log(`🔍 About to insert:`, {
-      wallet_address: walletAddress.toLowerCase(),
-      wrong_prediction_date: missedDate,
-      table: wrongTableName
-    });
-
-    // Use template string for table name
-    // Note: wrong predictions tables use "walletAddress" and "wrong_prediction_date" columns
-    const insertResult = await sql(
-      `INSERT INTO "${wrongTableName}" ("walletAddress", wrong_prediction_date, created_at)
-       VALUES ($1, $2, NOW())
-       RETURNING "walletAddress", wrong_prediction_date`,
-      [walletAddress.toLowerCase(), missedDate]
-    );
-
-    console.log(`🔍 Insert result:`, insertResult);
-    console.log(`✅ Successfully added ${walletAddress} to ${wrongTableName} for ${missedDate}`);
-    return { success: true, message: 'Penalty added successfully' };
-
-  } catch (error) {
-    console.error('❌ Error adding missed prediction penalty:', error);
-    console.error('❌ Error details:', {
-      name: error instanceof Error ? error.name : 'Unknown',
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : 'No stack trace'
-    });
-    return { success: false, message: 'Failed to add penalty' };
-  }
-}
-
-
 
 
 export async function clearPotParticipationHistory(contract: string) {
@@ -551,7 +274,7 @@ export async function recordUserPrediction(
         .set({
           prediction,
           contractAddress: normalizedContractAddress, // Update contract address in case it changed
-          createdAt: new Date(), // Update timestamp to reflect the change
+          createdAt: getCurrentUTCTime(), // Update timestamp to reflect the change
         })
         .where(
           and(

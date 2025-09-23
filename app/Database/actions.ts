@@ -2,19 +2,25 @@
 
 import {  Messages, LivePredictions, Bookmarks } from "./schema"; // Import the schema
 import { eq, sql, and, inArray, ne } from "drizzle-orm";
-import { getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING, getTableTypeFromMarketId, PENALTY_EXEMPT_CONTRACTS, TableType } from "./config";
+import { getWrongPredictionsTableFromType, getTableFromType, CONTRACT_TO_TABLE_MAPPING, getTableTypeFromMarketId, PENALTY_EXEMPT_CONTRACTS, TableType, getCurrentUTCTime, getCurrentUTCDateString, getTomorrowUTCDateString } from "./config";
 import { getEventDate } from "./eventDates";
 import { ReferralCodes, Referrals, FreeEntries, UsersTable } from "./schema";
 import { EvidenceSubmissions, MarketOutcomes, PredictionIdeas, PotParticipationHistory, PotInformation } from "./schema";
 import { recordPotEntry, recordUserPrediction } from './actions3';
-import { desc, limit } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 import { getPrice } from '../Constants/getPrice';
 import { getMarkets } from '../Constants/markets';
 import { getTranslation } from '../Languages/languages';
 import { db, getDbForRead } from "./db";
 
-// UK timezone helper functions - Simplified approach using native JS timezone support
+// ⚠️ DEPRECATED: Legacy UK timezone helper functions - DO NOT USE IN NEW CODE
+// These functions are kept for backward compatibility only
+// Use UTC functions from config.ts for all new implementations
+// TODO: Migrate remaining usages to UTC and remove these functions
+
+/** @deprecated Use getCurrentUTCDateString() from config.ts instead */
 const getUKDateString = (date: Date = new Date()): string => {
+  console.warn('🚨 DEPRECATED: getUKDateString() is deprecated. Use getCurrentUTCDateString() from config.ts');
   // Use toLocaleDateString with Europe/London timezone for accurate BST/GMT handling
   const ukDateString = date.toLocaleDateString('en-CA', {
     timeZone: 'Europe/London',
@@ -26,7 +32,9 @@ const getUKDateString = (date: Date = new Date()): string => {
   return ukDateString;
 };
 
+/** @deprecated Use getTomorrowUTCDateString() from config.ts instead */
 const getTomorrowUKDateString = (date: Date = new Date()): string => {
+  console.warn('🚨 DEPRECATED: getTomorrowUKDateString() is deprecated. Use getTomorrowUTCDateString() from config.ts');
   // Create a new date object to avoid mutating the original
   const tomorrow = new Date(date.getTime() + 24 * 60 * 60 * 1000); // Add 1 day in milliseconds
 
@@ -41,7 +49,12 @@ const getTomorrowUKDateString = (date: Date = new Date()): string => {
   return tomorrowUK;
 };
 
+// UTC prediction date function moved to config.ts for centralization
+// Use getTomorrowUTCDateString() from config.ts import instead
+
+/** @deprecated Use getCurrentUTCTime() from config.ts instead */
 const getUKTime = (date: Date = new Date()): Date => {
+  console.warn('🚨 DEPRECATED: getUKTime() is deprecated. Use getCurrentUTCTime() from config.ts for consistency');
   // Convert to UK timezone and return as Date object
   const ukTimeString = date.toLocaleString('sv-SE', {
     timeZone: 'Europe/London'
@@ -379,14 +392,16 @@ export async function placeBitcoinBet(walletAddress: string, prediction: 'positi
   try {
     // Normalize wallet address for consistency
     const normalizedWalletAddress = walletAddress.toLowerCase();
-    
+
+    // Get current UTC time for timestamps
+    const now = getCurrentUTCTime();
+
     // Note: Saturday restrictions removed for new tournament format
     // Final day restrictions now handled dynamically via pot_information table
-    
-    // Get prediction date - either from event mapping or tomorrow's date (in UK timezone)
-    const now = new Date();
+
+    // Get prediction date - either from event mapping or tomorrow's date (in UTC)
     const eventDate = contractAddress ? getEventDate(contractAddress) : null;
-    const predictionDate = eventDate || getTomorrowUKDateString(now);
+    const predictionDate = eventDate || getTomorrowUTCDateString();
     
     const betsTable = getTableFromType(typeTable);
     const wrongPredictionTable = getWrongPredictionsTableFromType(typeTable);
@@ -414,14 +429,13 @@ export async function placeBitcoinBet(walletAddress: string, prediction: 'positi
 
     if (existingBet.length > 0) {
       // 3. If a bet exists, update the prediction
-      // Create UK timezone timestamp for updated_at
-      const ukUpdatedAt = getUKTime(now);
-      
+      // Use UTC timestamp for consistency with elimination system
+
       await db
         .update(betsTable)
-        .set({ 
+        .set({
           prediction,
-          createdAt: ukUpdatedAt // Update timestamp to UK time when prediction changes
+          createdAt: now // Update timestamp to UTC for consistency
         })
         .where(and(
           eq(betsTable.walletAddress, normalizedWalletAddress),
@@ -453,24 +467,22 @@ export async function placeBitcoinBet(walletAddress: string, prediction: 'positi
     }
 
     // 4. Otherwise, insert new bet for tomorrow
-    // Create UK timezone timestamp for created_at
-    const ukCreatedAt = getUKTime(now);
+    // Use UTC timestamp for consistency with elimination system
 
     // DEBUG: Log timezone information
     console.log('=== TIMEZONE DEBUG ===');
-    console.log('Server time (now):', now.toISOString());
-    console.log('UK time (calculated):', ukCreatedAt.toISOString());
-    console.log('Today UK date:', getUKDateString(now));
-    console.log('Tomorrow UK date (bet_date):', predictionDate);
+    console.log('Server time (now UTC):', now.toISOString());
+    console.log('Today UTC date:', getCurrentUTCDateString());
+    console.log('Prediction date:', predictionDate);
     console.log('======================');
-    
+
     const result = await db
       .insert(betsTable)
       .values({
         walletAddress: normalizedWalletAddress,
         prediction,
         betDate: predictionDate,
-        createdAt: ukCreatedAt, // Override default with UK timezone
+        createdAt: now, // Use UTC timestamp for consistency with elimination system
       })
       .returning();
 
@@ -528,11 +540,11 @@ export async function getTomorrowsBet(walletAddress: string, tableType: string) 
         predictionDate = eventDate;
       } else {
         // Fallback to tomorrow if no event date is configured
-        predictionDate = getTomorrowUKDateString();
+        predictionDate = getTomorrowUTCDateString();
       }
     } else {
-      // For regular contracts, use tomorrow's date
-      predictionDate = getTomorrowUKDateString();
+      // For regular contracts, use tomorrow's date in UTC
+      predictionDate = getTomorrowUTCDateString();
     }
 
     const betsTable = getTableFromType(tableType);
@@ -559,7 +571,7 @@ export async function getTodaysBet(walletAddress: string, tableType: string) {
   try {
     // Normalize wallet address for consistency
     const normalizedWalletAddress = walletAddress.toLowerCase();
-    const today = getUKDateString();
+    const today = getCurrentUTCDateString();
     const betsTable = getTableFromType(tableType);
     const result = await db
       .select()
@@ -748,9 +760,9 @@ export async function confirmReferralPotEntry(referredWallet: string): Promise<v
     // Update all referrals for this wallet to confirmed
     const updatedReferrals = await db
       .update(Referrals)
-      .set({ 
+      .set({
         potEntryConfirmed: true,
-        confirmedAt: new Date()
+        confirmedAt: getCurrentUTCTime()
       })
       .where(and(
         eq(Referrals.referredWallet, normalizedReferredWallet),
@@ -812,7 +824,7 @@ async function checkAndUpdateFreeEntries(referrerWallet: string): Promise<void> 
           .update(FreeEntries)
           .set({
             earnedFromReferrals: freeEntriesEarned,
-            updatedAt: new Date(),
+            updatedAt: getCurrentUTCTime(),
           })
           .where(eq(FreeEntries.walletAddress, normalizedReferrerWallet));
       }
@@ -943,7 +955,7 @@ export async function awardTriviaFreeEntry(walletAddress: string): Promise<boole
         .update(FreeEntries)
         .set({
           earnedFromTrivia: sql`${FreeEntries.earnedFromTrivia} + 1`,
-          updatedAt: new Date(),
+          updatedAt: getCurrentUTCTime(),
         })
         .where(eq(FreeEntries.walletAddress, normalizedWalletAddress));
     }
@@ -986,7 +998,7 @@ export async function awardWordleFreeEntry(walletAddress: string): Promise<boole
         .update(FreeEntries)
         .set({
           earnedFromWordle: sql`${FreeEntries.earnedFromWordle} + 1`,
-          updatedAt: new Date(),
+          updatedAt: getCurrentUTCTime(),
         })
         .where(eq(FreeEntries.walletAddress, normalizedWalletAddress));
     }
@@ -1109,7 +1121,7 @@ export async function placeLivePrediction(walletAddress: string, prediction: 'po
   try {
     // Normalize wallet address for consistency
     const normalizedWalletAddress = walletAddress.toLowerCase();
-    const today = getUKDateString();
+    const today = getCurrentUTCDateString();
     
     // SECURITY: Server-side pot participation validation would require contract query here
     // Currently relying on client-side validation with triple-layer security:
@@ -1787,7 +1799,7 @@ export async function submitPredictionIdea({
         walletAddress: sanitizedWalletAddress,
         idea: sanitizedIdea,
         category: sanitizedCategory,
-        submittedAt: new Date(),
+        submittedAt: getCurrentUTCTime(),
         likes: 0,
         status: 'pending'
       })
@@ -1908,7 +1920,7 @@ export async function updatePredictionIdeaStatus({
     const updateData: any = {
       status,
       reviewedBy: reviewedBy.trim().toLowerCase(),
-      reviewedAt: new Date()
+      reviewedAt: getCurrentUTCTime()
     };
 
     if (reviewNotes) {
@@ -1916,7 +1928,7 @@ export async function updatePredictionIdeaStatus({
     }
 
     if (status === 'implemented' && marketAddress) {
-      updateData.implementedAt = new Date();
+      updateData.implementedAt = getCurrentUTCTime();
       updateData.marketAddress = marketAddress.trim();
     }
 
@@ -2123,11 +2135,11 @@ export async function getPredictionPercentages(marketId: string) {
         predictionDate = eventDate;
       } else {
         // Fallback to tomorrow if no event date is configured
-        predictionDate = getTomorrowUKDateString();
+        predictionDate = getTomorrowUTCDateString();
       }
     } else {
-      // For regular contracts, use tomorrow's date
-      predictionDate = getTomorrowUKDateString();
+      // For regular contracts, use tomorrow's date in UTC
+      predictionDate = getTomorrowUTCDateString();
     }
 
     console.log(`📊 getPredictionPercentages called with marketId: "${marketId}", predictionDate: ${predictionDate}, isPenaltyExempt: ${contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)}`);
@@ -2197,7 +2209,7 @@ const CONTRACT_PARTICIPANTS = "CONTRACT_PARTICIPANTS"; // Contract-specific anno
  */
 export async function createAnnouncement(message: string) {
   try {
-    const datetime = new Date().toISOString();
+    const datetime = getCurrentUTCTime().toISOString();
     
     return db
       .insert(Messages)
@@ -2220,7 +2232,7 @@ export async function createAnnouncement(message: string) {
  */
 export async function createContractAnnouncement(message: string, contractAddress: string) {
   try {
-    const datetime = new Date().toISOString();
+    const datetime = getCurrentUTCTime().toISOString();
     
     return db
       .insert(Messages)
