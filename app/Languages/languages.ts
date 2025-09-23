@@ -1604,8 +1604,8 @@ export const getTranslatedMarketQuestion = (market: any, language: Language): st
   const questionMap: Record<string, string> = {
     // Main markets
     'Trending': language === 'en'
-      ? 'Real Madrid draws with Levante FC'
-      : 'Real Madrid empata com o Levante FC',
+      ? 'Liverpool loses to Southampton'
+      : 'Liverpool perde para o Southampton',
     'Crypto': t.bitcoinQuestion,
     'Stocks': t.teslaQuestion,
     'Formula 1': t.formula1Question,
@@ -1745,7 +1745,7 @@ export const translateMarketQuestion = (questionText: string, language: Language
 
     // Core market questions from markets.ts
     'Bitcoin closes higher than opening price': 'Bitcoin fechará em alta em relação ao preço de abertura',
-    'Real Madrid draws with Levante FC': 'Real Madrid empata com o Levante FC',
+    'Liverpool loses to Southampton': 'Liverpool perde para o Southampton',
     'Espresso reaches #1 on Spotify Global': 'Espresso vai alcancar #1 no Spotify Global',
 
     // Markets without contracts

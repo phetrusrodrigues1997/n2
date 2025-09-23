@@ -26,14 +26,15 @@ export interface Market {
 
 const MARKET_DEFINITIONS: Record<string, Market> = {
   // ACTIVE CONTRACTS - Markets with deployed smart contracts
+  // Real Madrid draws with Levante FC
   trending: {
     id: 'Trending',
     name: 'Trending',
     symbol: 'Trending',
     contractAddress: '0xd1547F5bC0390F5020B2A80F262e28ccfeF2bf9c',
     color: '#1DB954',
-    question: 'Real Madrid draws with Levante FC',
-    icon: "/viniciusjr.png",
+    question: 'Liverpool loses to Southampton',
+    icon: "/mosalah.jpeg",
     currentPrice: '$150',
     participants: 42,
     potSize: '$420',
