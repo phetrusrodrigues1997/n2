@@ -105,7 +105,7 @@ const EmailCollection: React.FC<EmailCollectionProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col items-center space-y-4">
+        <div className="flex flex-col items-center space-y-1 -translate-y-12">
           <button
             onClick={handleEmailSubmit}
             disabled={emailSubmitting || !email.trim()}
