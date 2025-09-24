@@ -955,21 +955,42 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       return baseClasses.replace(/bg-\w+-\d+/g, 'bg-gray-100').replace(/hover:bg-\w+-\d+/g, 'hover:bg-gray-200').replace(/text-\w+-\d+/g, 'text-gray-500');
     }
 
-    if (prediction && prediction.prediction === buttonType) {
-      // User has voted for this option - show confirmed styling with white background
+    // If user is participant (purple background), use different button colors for better contrast
+    if (isParticipant && !prediction) {
       if (buttonType === 'positive') {
-        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-white text-purple-600 cursor-default border border-purple-600');
+        // Change from purple to green for better contrast on purple background
+        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-green-600 hover:bg-green-800 text-[#111111]');
       } else {
-        return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-white text-blue-600 cursor-default border border-blue-600');
+        // Change from blue to orange for better contrast on purple background
+        return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-red-600 hover:bg-red-800 text-[#eeeeee]');
+      }
+    }
+
+    if (prediction && prediction.prediction === buttonType) {
+      // User has voted for this option - show confirmed styling
+      if (isParticipant) {
+        // On purple background, use stronger contrast
+        if (buttonType === 'positive') {
+          return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-white text-green-600 cursor-default border-2 border-green-600');
+        } else {
+          return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-white text-orange-600 cursor-default border-2 border-orange-600');
+        }
+      } else {
+        // Original styling for non-participants
+        if (buttonType === 'positive') {
+          return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-white text-purple-600 cursor-default border border-purple-600');
+        } else {
+          return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-white text-blue-600 cursor-default border border-blue-600');
+        }
       }
     }
 
     // If user is participant and has voted for the opposite option, make this button more prominent (change vote)
     if (isParticipant && prediction && prediction.prediction !== buttonType) {
       if (buttonType === 'positive') {
-        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-purple-100 hover:bg-purple-200 text-purple-800');
+        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-green-200 hover:bg-green-300 text-green-800');
       } else {
-        return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-blue-100 hover:bg-blue-200 text-blue-800');
+        return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-red-200 hover:bg-red-300 text-orange-800');
       }
     }
 
@@ -1541,7 +1562,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             // Set background color based on participation status
                             let bgColor = '';
                             if (userIsParticipant) {
-                              bgColor = 'bg-[#fdfdfd]'; // Light grey for entered markets
+                              bgColor = 'bg-gradient-to-br from-purple-50 to-purple-100'; // Light purple gradient for entered markets
                             } else {
                               bgColor = market.marketIndex === 0 ? 'bg-[#fefefe]' : 'bg-white'; // Original colors
                             }
@@ -2217,7 +2238,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           // Set background color based on participation status
                           let bgColor = '';
                           if (userIsParticipant) {
-                            bgColor = 'bg-gray-100'; // Light grey for entered markets
+                            bgColor = 'bg-gradient-to-br from-purple-50 to-purple-100'; // Light purple gradient for entered markets
                           } else {
                             bgColor = 'bg-white'; // Original white color
                           }
@@ -2225,8 +2246,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           let borderClasses = '';
                           if (isEliminated) {
                             borderClasses = 'border border-gray-400 hover:border-gray-500';
+                          } else if (userIsParticipant) {
+                            borderClasses = 'border border-purple-200 hover:border-purple-300'; // Purple border for entered markets
                           } else {
-                            borderClasses = 'border border-gray-200 hover:border-gray-300';
+                            borderClasses = 'border border-gray-200 hover:border-gray-300'; // Original border
                           }
 
                           return `${bgColor} ${borderClasses}`;
