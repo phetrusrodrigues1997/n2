@@ -32,6 +32,7 @@ import IdeasPage from './Pages/IdeasPage';
 import AdminEvidenceReviewPage from './Pages/AdminEvidenceReviewPage';
 import ComingSoonPage from './Pages/ComingSoonPage';
 import NewsPage from './Pages/NewsPage';
+import PotInfoPage from './Pages/PotInfoPage';
 import { getMarkets } from './Constants/markets';
 import { Language, getTranslation, supportedLanguages, getMarketDisplayName, getPersonalizedLabel } from './Languages/languages';
 import { getPrice } from './Constants/getPrice';
@@ -1116,6 +1117,7 @@ export default function App() {
         {activeSection === "messagesPage" && <MessagingPage activeSection={activeSection} setActiveSection={setActiveSection} onAnnouncementsMarkedAsRead={onAnnouncementsMarkedAsRead} currentLanguage={currentLanguage} />}
         {activeSection === "discord" && <HowItWorksSection setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {/* {activeSection === "notifications" && <CreateMessage />} */}
+        {activeSection === "potInfo" && <PotInfoPage currentLanguage={currentLanguage} activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "dashboard" && <TutorialBridge key={currentLanguage} activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "emailManagement" && <TutorialBridge key={`${currentLanguage}-email`} activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} showEmailManagement={true} />}
         {activeSection === "notReadyPage" && <NotReadyPage activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}

@@ -38,7 +38,7 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     currentPrice: '$150',
     participants: 42,
     potSize: '$420',
-    potTopic: 'General',
+    potTopic: 'All in one',
   },
 
     formula1: {
@@ -380,7 +380,7 @@ export const getMarkets = (t: Translation, category: string): Market[] => {
       // Apply potTopic translations
       if (market.potTopic) {
         switch (market.potTopic) {
-          case 'General':
+          case 'All in one':
             translatedMarket.potTopic = t.generalKnowledgeTopic;
             break;
           case 'Formula 1':

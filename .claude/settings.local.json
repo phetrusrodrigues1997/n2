@@ -37,7 +37,8 @@
       "Read(//c/Program Files/**)",
       "Bash(keytool:*)",
       "Bash(npm run lint:*)",
-      "Read(//c/Users/grasi/**)"
+      "Read(//c/Users/grasi/**)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": [],

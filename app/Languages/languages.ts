@@ -539,7 +539,7 @@ export const translations: Record<Language, Translations> = {
     formula1Question: 'Lewis Hamilton finishes on the podium',
 
     // Pot Topics
-    generalKnowledgeTopic: 'General',
+    generalKnowledgeTopic: 'All in one',
     formula1Topic: 'Formula 1',
     cryptoTopic: 'Crypto',
     stocksTopic: 'Stocks',

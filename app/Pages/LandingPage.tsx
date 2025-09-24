@@ -959,10 +959,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     if (isParticipant && !prediction) {
       if (buttonType === 'positive') {
         // Change from purple to green for better contrast on purple background
-        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-green-600 hover:bg-green-800 text-[#111111]');
+        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-green-200 hover:bg-green-400 text-green-700');
       } else {
         // Change from blue to orange for better contrast on purple background
-        return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-red-600 hover:bg-red-800 text-[#eeeeee]');
+        return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-red-200 hover:bg-red-300 text-orange-800');
       }
     }
 
@@ -973,7 +973,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         if (buttonType === 'positive') {
           return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-white text-green-600 cursor-default border-2 border-green-600');
         } else {
-          return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-white text-orange-600 cursor-default border-2 border-orange-600');
+          return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-white text-red-600 cursor-default border-2 border-red-600');
         }
       } else {
         // Original styling for non-participants
@@ -988,7 +988,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     // If user is participant and has voted for the opposite option, make this button more prominent (change vote)
     if (isParticipant && prediction && prediction.prediction !== buttonType) {
       if (buttonType === 'positive') {
-        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-green-200 hover:bg-green-300 text-green-800');
+        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-green-200 hover:bg-green-400 text-green-700');
       } else {
         return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-red-200 hover:bg-red-300 text-orange-800');
       }
@@ -1181,13 +1181,13 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         expires: 7 // Cookie expires in 7 days
       });
 
-      // Always route to TutorialBridge (dashboard) so users can see the chart and choose their action
+      // Route to PotInfoPage first to show market details, then to TutorialBridge
       setTimeout(() => {
         if (reentry) {
           console.log(reentry)
           setActiveSection('makePrediction');
         } else {
-          console.log("Still call this")
+          console.log("Navigate to PotInfoPage first")
           setActiveSection('dashboard');
         }
       }, 200);
@@ -1562,7 +1562,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             // Set background color based on participation status
                             let bgColor = '';
                             if (userIsParticipant) {
-                              bgColor = 'bg-gradient-to-br from-purple-50 to-purple-100'; // Light purple gradient for entered markets
+                              bgColor = 'bg-purple-100'; // Light purple gradient for entered markets
                             } else {
                               bgColor = market.marketIndex === 0 ? 'bg-[#fefefe]' : 'bg-white'; // Original colors
                             }
@@ -2238,7 +2238,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           // Set background color based on participation status
                           let bgColor = '';
                           if (userIsParticipant) {
-                            bgColor = 'bg-gradient-to-br from-purple-50 to-purple-100'; // Light purple gradient for entered markets
+                            bgColor = 'bg-purple-100'; // Light purple gradient for entered markets
                           } else {
                             bgColor = 'bg-white'; // Original white color
                           }
