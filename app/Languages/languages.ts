@@ -539,7 +539,7 @@ export const translations: Record<Language, Translations> = {
     formula1Question: 'Lewis Hamilton finishes on the podium',
 
     // Pot Topics
-    generalKnowledgeTopic: 'General Knowledge',
+    generalKnowledgeTopic: 'General',
     formula1Topic: 'Formula 1',
     cryptoTopic: 'Crypto',
     stocksTopic: 'Stocks',
@@ -1055,7 +1055,7 @@ export const translations: Record<Language, Translations> = {
     formula1Question: 'Lewis hamilton terminará entre os três primeiros',
 
     // Pot Topics
-    generalKnowledgeTopic: 'Conhecimento Geral',
+    generalKnowledgeTopic: 'Geral',
     formula1Topic: 'Fórmula 1',
     cryptoTopic: 'Cripto',
     stocksTopic: 'Ações',

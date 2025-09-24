@@ -1533,8 +1533,20 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             '--swap-distance': swapDistance
                           } as React.CSSProperties}
                         >
-                          <div className={`h-full ${market.marketIndex === 0 ? 'min-h-[325px] bg-[#fefefe]' : 'min-h-[260px] bg-white'} flex flex-col justify-between transition-all duration-300 ${(() => {
+                          <div className={`h-full ${market.marketIndex === 0 ? 'min-h-[325px]' : 'min-h-[260px]'} flex flex-col justify-between transition-all duration-300 ${(() => {
+                            // Check if user is participant to determine background color
                             const contractAddress = getContractAddress(market.id);
+                            const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
+
+                            // Set background color based on participation status
+                            let bgColor = '';
+                            if (userIsParticipant) {
+                              bgColor = 'bg-[#fdfdfd]'; // Light grey for entered markets
+                            } else {
+                              bgColor = market.marketIndex === 0 ? 'bg-[#fefefe]' : 'bg-white'; // Original colors
+                            }
+
+                            // Also get elimination status for border styling
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
                             // Reduce bottom padding for non-traditional layouts to make div shorter
@@ -1547,8 +1559,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                             if (isEliminated) {
                               classes += ' border border-gray-300 rounded-lg';
-                            } 
-                            
+                            }
                             else if (market.marketIndex === 0) {
                               // No bottom border for first market
                               if (market.tabId === selectedMarket) {
@@ -1560,7 +1571,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               classes += ' border-b border-gray-200';
                             }
 
-                            return classes;
+                            return `${bgColor} ${classes}`;
                           })()}`}>
                             {/* Background Gradient Accent */}
                             <div className="absolute top-0 left-0 right-0 h-1"></div>
@@ -2198,15 +2209,27 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           '--swap-distance': swapDistance
                         } as React.CSSProperties}
                       >
-                        <div className={`rounded-2xl p-3 h-full flex flex-col justify-between min-h-[180px] transition-all duration-300 bg-white ${(() => {
+                        <div className={`rounded-2xl p-3 h-full flex flex-col justify-between min-h-[180px] transition-all duration-300 ${(() => {
                           const contractAddress = getContractAddress(market.id);
                           const isEliminated = contractAddress && eliminationStatus[contractAddress];
+                          const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
 
-                          if (isEliminated) {
-                            return 'border border-gray-400 hover:border-gray-500';
+                          // Set background color based on participation status
+                          let bgColor = '';
+                          if (userIsParticipant) {
+                            bgColor = 'bg-gray-100'; // Light grey for entered markets
                           } else {
-                            return 'border border-gray-200 hover:border-gray-300';
+                            bgColor = 'bg-white'; // Original white color
                           }
+
+                          let borderClasses = '';
+                          if (isEliminated) {
+                            borderClasses = 'border border-gray-400 hover:border-gray-500';
+                          } else {
+                            borderClasses = 'border border-gray-200 hover:border-gray-300';
+                          }
+
+                          return `${bgColor} ${borderClasses}`;
                         })()}`}>
 
                           {/* Main content area */}
