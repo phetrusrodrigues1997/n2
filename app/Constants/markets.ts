@@ -15,7 +15,7 @@ export interface Market {
   currentPrice: string
   participants: number
   potSize: string
-  potNumber?: number
+  potTopic?: string
   tabId?: string
 }
 
@@ -38,7 +38,7 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     currentPrice: '$150',
     participants: 42,
     potSize: '$420',
-    potNumber: 1,
+    potTopic: 'General Knowledge',
   },
 
     formula1: {
@@ -52,7 +52,7 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     currentPrice: '$100',
     participants: 0,
     potSize: '$0',
-    potNumber: 2,
+    potTopic: 'Formula 1',
   },
 
   crypto: {
@@ -66,7 +66,7 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     currentPrice: '$100',
     participants: 50,
     potSize: '$500',
-    potNumber: 3,
+    potTopic: 'Crypto',
   },
 
   stocks: {
@@ -80,7 +80,7 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     currentPrice: '$248.50',
     participants: 156,
     potSize: '$1,560',
-    potNumber: 4,
+    potTopic: 'Stocks',
   },
 
   music: {
@@ -94,7 +94,7 @@ const MARKET_DEFINITIONS: Record<string, Market> = {
     currentPrice: '$130',
     participants: 42,
     potSize: '$420',
-    potNumber: 5,
+    potTopic: 'Music',
   },
 
   
@@ -375,6 +375,30 @@ export const getMarkets = (t: Translation, category: string): Market[] => {
       // Apply Tesla question translation for stocks
       if (key === 'stocks') {
         translatedMarket.question = t.teslaQuestion || market.question;
+      }
+
+      // Apply potTopic translations
+      if (market.potTopic) {
+        switch (market.potTopic) {
+          case 'General Knowledge':
+            translatedMarket.potTopic = t.generalKnowledgeTopic;
+            break;
+          case 'Formula 1':
+            translatedMarket.potTopic = t.formula1Topic;
+            break;
+          case 'Crypto':
+            translatedMarket.potTopic = t.cryptoTopic;
+            break;
+          case 'Stocks':
+            translatedMarket.potTopic = t.stocksTopic;
+            break;
+          case 'Music':
+            translatedMarket.potTopic = t.musicTopic;
+            break;
+          default:
+            // Keep original potTopic if no translation found
+            break;
+        }
       }
 
       return translatedMarket;

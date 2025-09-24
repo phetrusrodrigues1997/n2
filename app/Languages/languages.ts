@@ -13,7 +13,6 @@ export interface Translations {
   higher: string;
   lower: string;
   comingSoon: string;
-  potNumber: string
   meansYouPay: string;
   canWin: string;
   canWinPotBalance: string;
@@ -26,7 +25,14 @@ export interface Translations {
   nvidiaQuestion: string;
   sp500Question: string;
   formula1Question: string;
-  
+
+  // Pot Topics
+  generalKnowledgeTopic: string;
+  formula1Topic: string;
+  cryptoTopic: string;
+  stocksTopic: string;
+  musicTopic: string;
+
   // How It Works Section
   howItWorksTitle: string;
   howItWorksSubtitle: string;
@@ -219,9 +225,11 @@ export interface Translations {
 
   // Email Management
   yourEmail: string;
+  updateEmailTitle: string;
   updateEmailAddress: string;
   updateEmail: string;
   updating: string;
+  saveEmail: string;
   changeEmail: string;
   continueToTutorial: string;
   emailNotificationMessage: string;
@@ -517,7 +525,6 @@ export const translations: Record<Language, Translations> = {
     higher: 'Yes',
     lower: 'No',
     comingSoon: 'market coming soon!',
-    potNumber: 'Pot',
     meansYouPay: 'means you pay',
     canWin: '(entry fee) and can win',
     canWinPotBalance: '(pot balance)',
@@ -530,7 +537,14 @@ export const translations: Record<Language, Translations> = {
     nvidiaQuestion: 'Will NVIDIA stock end the day higher?',
     sp500Question: 'Will S&P 500 end the day higher?',
     formula1Question: 'Lewis Hamilton finishes on the podium',
-    
+
+    // Pot Topics
+    generalKnowledgeTopic: 'General Knowledge',
+    formula1Topic: 'Formula 1',
+    cryptoTopic: 'Crypto',
+    stocksTopic: 'Stocks',
+    musicTopic: 'Music',
+
     // How It Works Section
     howItWorksTitle: 'How It Works',
     howItWorksSubtitle: 'Join prediction markets with real rewards and consequences',
@@ -774,9 +788,11 @@ export const translations: Record<Language, Translations> = {
     // Email Management
     manageEmail: 'Manage Email',
     yourEmail: 'Your Email',
+    updateEmailTitle: 'Update Email',
     updateEmailAddress: 'Update your email address',
     updateEmail: 'Update Email',
     updating: 'Updating...',
+    saveEmail: 'Save Email',
     changeEmail: 'Change Email',
     continueToTutorial: 'Continue to Tutorial',
     emailNotificationMessage: 'We\'ll notify you at this address when pots are ready',
@@ -1025,7 +1041,6 @@ export const translations: Record<Language, Translations> = {
     higher: 'Sim',
     lower: 'Nao',
     comingSoon: 'mercado em breve!',
-    potNumber:'Pote',
     meansYouPay: 'significa que você paga',
     canWin: '(taxa de entrada) e pode ganhar',
     canWinPotBalance: '(saldo do pote)',
@@ -1038,7 +1053,14 @@ export const translations: Record<Language, Translations> = {
     nvidiaQuestion: 'A ação da NVIDIA terminará o dia em alta?',
     sp500Question: 'O S&P 500 terminará o dia em alta?',
     formula1Question: 'Lewis hamilton terminará entre os três primeiros',
-    
+
+    // Pot Topics
+    generalKnowledgeTopic: 'Conhecimento Geral',
+    formula1Topic: 'Fórmula 1',
+    cryptoTopic: 'Cripto',
+    stocksTopic: 'Ações',
+    musicTopic: 'Música',
+
     // How It Works Section
     howItWorksTitle: 'Como Funciona',
     howItWorksSubtitle: 'Participe de mercados de previsão com recompensas e consequências reais',
@@ -1282,9 +1304,11 @@ export const translations: Record<Language, Translations> = {
     // Email Management
     manageEmail: 'Gerenciar Email',
     yourEmail: 'Seu Email',
+    updateEmailTitle: 'Atualizar Email',
     updateEmailAddress: 'Atualize seu endereço de email',
     updateEmail: 'Atualizar Email',
     updating: 'Atualizando...',
+    saveEmail: 'Salvar Email',
     changeEmail: 'Alterar Email',
     continueToTutorial: 'Continuar para Tutorial',
     emailNotificationMessage: 'Notificaremos você neste endereço quando os potes estiverem prontos',

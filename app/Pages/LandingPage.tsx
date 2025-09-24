@@ -8,7 +8,7 @@ import { ArrowRight, Bookmark, Check, BookOpen, ChevronRight, ChevronLeft, X, Ch
 import { Language, getTranslation, supportedLanguages, getTranslatedMarketQuestion } from '../Languages/languages';
 import { getMarkets, Market } from '../Constants/markets';
 import { CustomAlert, useCustomAlert } from '../Components/CustomAlert';
-import { addBookmark, removeBookmark, isMarketBookmarked, getPredictionPercentages, getTomorrowsBet, placeBitcoinBet, isEliminated } from '../Database/actions';
+import { addBookmark, removeBookmark, isMarketBookmarked, getPredictionPercentages, getTomorrowsBet, placeBitcoinBet, isEliminated, getUserEmail } from '../Database/actions';
 import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, getTableTypeFromMarketId, MARKETS_WITH_CONTRACTS, PENALTY_EXEMPT_CONTRACTS, calculateEntryFee, PENALTY_EXEMPT_ENTRY_FEE } from '../Database/config';
 import { getEventDate } from '../Database/eventDates';
 import { getPrice } from '../Constants/getPrice';
@@ -16,6 +16,7 @@ import { useContractData } from '../hooks/useContractData';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
 import { set } from 'lodash';
 import LoadingScreenAdvanced from '../Components/LoadingScreenAdvanced';
+import EmailCollection from '../Components/EmailCollection';
 
 // Types for prediction data
 interface TodaysBet {
@@ -173,6 +174,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
   const [isTutorialLanguageDropdownOpen, setIsTutorialLanguageDropdownOpen] = useState(false);
+  const [showTutorialEmailCollection, setShowTutorialEmailCollection] = useState(false);
+  const [userHasEmail, setUserHasEmail] = useState<boolean | null>(null);
 
   // Notify parent when tutorial state changes
   useEffect(() => {
@@ -310,8 +313,23 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     setShowTutorial(false);
     setTutorialStep(0);
     setIsTutorialLanguageDropdownOpen(false);
+    setShowTutorialEmailCollection(false);
     // Set cookie to remember user has seen tutorial
     Cookies.set('landingPageTutorialSeen', 'true', { expires: 1 / 24 }); // 1 hour expiry for testing
+  };
+
+  const handleEmailCollectionComplete = (hasEmail: boolean) => {
+    // Update email status and move to first tutorial step after email collection
+    setUserHasEmail(true);
+    setShowTutorialEmailCollection(false);
+    setTutorialStep(0);
+  };
+
+  const handleEmailCollectionSkip = () => {
+    // Mark as skipped (no email but don't show collection again) and move to first tutorial step
+    setUserHasEmail(false);
+    setShowTutorialEmailCollection(false);
+    setTutorialStep(0);
   };
 
   const handleTutorialLanguageChange = (language: Language) => {
@@ -321,20 +339,46 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     window.dispatchEvent(event);
   };
 
+  // Check user email status when connected (only once)
+  useEffect(() => {
+    const checkUserEmail = async () => {
+      if (isConnected && address && userHasEmail === null) {
+        try {
+          const userEmailData = await getUserEmail(address);
+          setUserHasEmail(!!userEmailData?.email);
+        } catch (error) {
+          console.error('Error checking user email:', error);
+          setUserHasEmail(false);
+        }
+      } else if (!isConnected || !address) {
+        setUserHasEmail(null);
+      }
+    };
+
+    checkUserEmail();
+  }, [isConnected, address, userHasEmail]);
+
   // Check if user has seen tutorial before and show automatically
   useEffect(() => {
     const hasSeenTutorial = Cookies.get('landingPageTutorialSeen');
-    
-    // Only show tutorial if user hasn't seen it before and loading is complete
-    if (!hasSeenTutorial && !isLoading) {
+
+    // Only show tutorial if user hasn't seen it before, loading is complete, and we know email status
+    if (!hasSeenTutorial && !isLoading && userHasEmail !== null && isConnected) {
       // Delay showing tutorial by 1 second after loading completes for better UX
       const tutorialTimer = setTimeout(() => {
         setShowTutorial(true);
+        // If user doesn't have email, start with email collection, otherwise start with tutorial steps
+        if (!userHasEmail) {
+          setShowTutorialEmailCollection(true);
+          setTutorialStep(-1); // Use -1 to indicate email collection step
+        } else {
+          setTutorialStep(0); // Start with first tutorial step
+        }
       }, 1000);
-      
+
       return () => clearTimeout(tutorialTimer);
     }
-  }, [isLoading]);
+  }, [isLoading, userHasEmail, isConnected]);
 
   // Loading effect
   useEffect(() => {
@@ -1848,7 +1892,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               return !market.useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
                             })()}`}>
                               <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
-                                {t.potNumber} #{market.potNumber || 'N/A'}
+                                {market.potTopic || 'N/A'}
                                 <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
                                 <RefreshCw className="w-3 h-3" />
                                 {(() => {
@@ -2421,7 +2465,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             return !market.useTraditionalLayout ? '' : '';
                           })()}`}>
                             <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
-                              {t.potNumber} #{market.potNumber || 'N/A'}
+                              {market.potTopic || 'N/A'}
                               <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
                               <RefreshCw className="w-3 h-3" />
                               {(() => {
@@ -2697,59 +2741,73 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
               {/* Modal Content */}
               <div className="flex-1 p-6">
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">
-                    {tutorialSteps[tutorialStep].title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {tutorialSteps[tutorialStep].content}
-                  </p>
-                </div>
-                
-                {/* Progress Dots */}
-                <div className="flex justify-center gap-2 mt-8">
-                  {tutorialSteps.map((_, index) => (
-                    <div
-                      key={index}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        index === tutorialStep ? 'bg-purple-600' : 'bg-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
+                {showTutorialEmailCollection ? (
+                  /* Email Collection Step */
+                  <EmailCollection
+                    currentLanguage={currentLanguage}
+                    onComplete={handleEmailCollectionComplete}
+                    onSkip={handleEmailCollectionSkip}
+                  />
+                ) : (
+                  /* Normal Tutorial Steps */
+                  <>
+                    <div className="text-center">
+                      <h3 className="text-xl font-bold text-gray-900 mb-4">
+                        {tutorialSteps[tutorialStep].title}
+                      </h3>
+                      <p className="text-gray-600 leading-relaxed">
+                        {tutorialSteps[tutorialStep].content}
+                      </p>
+                    </div>
+
+                    {/* Progress Dots */}
+                    <div className="flex justify-center gap-2 mt-8">
+                      {tutorialSteps.map((_, index) => (
+                        <div
+                          key={index}
+                          className={`w-2 h-2 rounded-full transition-colors ${
+                            index === tutorialStep ? 'bg-purple-600' : 'bg-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
 
-              {/* Modal Footer */}
-              <div className="border-t border-gray-200 p-6">
-                <div className="flex items-center justify-between">
-                  <button
-                    onClick={prevTutorialStep}
-                    disabled={tutorialStep === 0}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    {t.previous || "Previous"}
-                  </button>
-                  
-                  {tutorialStep === tutorialSteps.length - 1 ? (
+              {/* Modal Footer - Only show navigation for tutorial steps, not email collection */}
+              {!showTutorialEmailCollection && (
+                <div className="border-t border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
                     <button
-                      onClick={closeTutorial}
-                      className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+                      onClick={prevTutorialStep}
+                      disabled={tutorialStep === 0}
+                      className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                      <CheckCircle2 className="w-4 h-4" />
-                      {t.startPlaying || "Get Started!"}
+                      <ChevronLeft className="w-4 h-4" />
+                      {t.previous || "Previous"}
                     </button>
-                  ) : (
-                    <button
-                      onClick={nextTutorialStep}
-                      className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
-                    >
-                      {t.next || "Next"}
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  )}
+
+                    {tutorialStep === tutorialSteps.length - 1 ? (
+                      <button
+                        onClick={closeTutorial}
+                        className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        {t.startPlaying || "Get Started!"}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={nextTutorialStep}
+                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+                      >
+                        {t.next || "Next"}
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}

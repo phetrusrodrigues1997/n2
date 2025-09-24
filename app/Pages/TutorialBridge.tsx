@@ -6,9 +6,9 @@ import Cookies from 'js-cookie';
 import { useAccount } from 'wagmi';
 import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, PENALTY_EXEMPT_CONTRACTS } from '../Database/config';
 import { getEventDate } from '../Database/eventDates';
-import { getUserEmail, saveUserEmail } from '../Database/actions';
 import { Language, getTranslation } from '../Languages/languages';
 import { useContractData } from '../hooks/useContractData';
+import EmailManagement from '../Components/EmailManagement';
 
 interface DashboardProps {
   activeSection: string;
@@ -19,7 +19,7 @@ interface DashboardProps {
 }
 
 
-const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLanguage = 'en', showEmailManagement = false }: DashboardProps) => {
+const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLanguage = 'en', showEmailManagement }: DashboardProps) => {
   const [marketInfo, setMarketInfo] = useState({ name: '', section: '', address: '' });
   const [userPots, setUserPots] = useState<string[]>([]);
   const [selectedMarketAddress, setSelectedMarketAddress] = useState<string>('');
@@ -27,14 +27,12 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
   const [selectedIcon, setSelectedIcon] = useState<string>('');
   const [potBalance, setPotBalance] = useState<string>('');
 
-  // Email collection states
-  const [showEmailCollection, setShowEmailCollection] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>('');
-  const [emailSubmitting, setEmailSubmitting] = useState<boolean>(false);
-  const [hasUserEmail, setHasUserEmail] = useState<boolean | null>(null);
-  const [isLoadingEmail, setIsLoadingEmail] = useState<boolean>(true);
-  const [currentUserEmail, setCurrentUserEmail] = useState<string>('');
-  const [isEditingEmail, setIsEditingEmail] = useState<boolean>(false);
+  // Email management state
+  const [showEmailUI, setShowEmailUI] = useState<boolean>(false);
+
+  // Tutorial state
+  const [hasSeenTutorial, setHasSeenTutorial] = useState<boolean | null>(null);
+  const [showTutorial, setShowTutorial] = useState<boolean>(true);
 
   // Carousel state
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -196,55 +194,37 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
     setCurrentStep(stepIndex);
   };
 
-  // Check if user has email when wallet connects
+  // Check if user has seen tutorial before
   useEffect(() => {
-    const checkUserEmail = async () => {
-      console.log('🔍 TutorialBridge - Checking user email. Connected:', isConnected, 'Address:', address);
-      if (isConnected && address) {
-        setIsLoadingEmail(true);
-        console.log('📧 Loading email data...');
-        try {
-          const userEmailData = await getUserEmail(address);
-          console.log('📧 Email data received:', userEmailData);
-          if (userEmailData?.email) {
-            console.log('✅ User has email', showEmailManagement ? '- showing email management UI' : '- showing tutorial');
-            setHasUserEmail(true);
-            setCurrentUserEmail(userEmailData.email);
-            setEmail(userEmailData.email); // Pre-fill for editing
-            // Only hide email collection if not explicitly requested for management
-            setShowEmailCollection(showEmailManagement ? true : false);
-          } else {
-            console.log('❌ User has no email, showing email collection');
-            setHasUserEmail(false);
-            setCurrentUserEmail('');
-            setShowEmailCollection(true);
-          }
-        } catch (error) {
-          console.error('Error checking user email:', error);
-          setHasUserEmail(false);
-          setShowEmailCollection(true);
-        }
-        setIsLoadingEmail(false);
-        console.log('📧 Loading complete');
-      } else {
-        console.log('🔌 Not connected or no address');
-        setHasUserEmail(null);
-        setShowEmailCollection(false);
-        setIsLoadingEmail(false);
+    const checkTutorialStatus = () => {
+      const tutorialSeen = Cookies.get('tutorialBridgeSeen');
+      const hasSeenBefore = tutorialSeen === 'true';
+
+      setHasSeenTutorial(hasSeenBefore);
+      setShowTutorial(!hasSeenBefore);
+
+      console.log('🎓 TutorialBridge: Tutorial seen status:', hasSeenBefore);
+
+      // If user has seen tutorial and is not doing email management, redirect them
+      if (hasSeenBefore && !showEmailManagement && isConnected) {
+        console.log('🔄 TutorialBridge: User has seen tutorial, redirecting to bitcoinPot');
+        // Small delay to prevent immediate redirect flash
+        setTimeout(() => {
+          setActiveSection('bitcoinPot');
+        }, 500);
       }
     };
 
-    checkUserEmail();
-  }, [address, isConnected]);
+    checkTutorialStatus();
+  }, [showEmailManagement, isConnected, setActiveSection]);
 
-  // Show email management UI when requested from external navigation
-  // This should run after the email check to override the default behavior
+  // Show email management UI when requested from props
   useEffect(() => {
     if (showEmailManagement && isConnected) {
-      console.log('🔧 Email management requested - forcing email UI to show');
-      setShowEmailCollection(true);
+      console.log('🔧 Email management requested - showing email UI');
+      setShowEmailUI(true);
     }
-  }, [showEmailManagement, isConnected, hasUserEmail]); // Added hasUserEmail to dependency array to run after email check
+  }, [showEmailManagement, isConnected]);
 
   // Check user participation in pots and redirect if already participating
   useEffect(() => {
@@ -416,38 +396,16 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
     getSelectedMarket();
   }, []); // Only run once on mount
 
-  // Handle email submission
-  const handleEmailSubmit = async () => {
-    if (!email.trim() || !address) return;
 
-    setEmailSubmitting(true);
-    try {
-      const result = await saveUserEmail(address, email.trim());
-      if (result.success) {
-        setHasUserEmail(true);
-        setCurrentUserEmail(email.trim());
-        setShowEmailCollection(false);
-        setIsEditingEmail(false);
-        // Don't clear email anymore since we want to show it
-      } else {
-        console.error('Failed to save email:', result.error);
-        // Could show error message here
-      }
-    } catch (error) {
-      console.error('Error saving email:', error);
-    }
-    setEmailSubmitting(false);
-  };
-
-  // Handle skip email
-  const handleSkipEmail = () => {
-    setShowEmailCollection(false);
-    setHasUserEmail(true); // Prevent showing again this session
-  };
-
-  // Handle skip button click - smart routing based on participation status
+  // Handle tutorial completion/skip - sets cookie and routes user
   const handleSkipClick = () => {
-    
+    // Set cookie to remember user has seen tutorial (18 hour expiry)
+    Cookies.set('tutorialBridgeSeen', 'true', { expires: 18 / 24 });
+    setHasSeenTutorial(true);
+    setShowTutorial(false);
+
+    console.log('🎓 TutorialBridge: Tutorial completed/skipped, cookie set');
+
     if (!isConnected || !address) {
       // Not connected, send to pot entry page which will prompt for wallet connection
       console.log('Skip clicked but user not connected - sending to predictionPotTest');
@@ -496,194 +454,21 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
     }
   };
 
-  // Debug logging for render conditions
-  React.useEffect(() => {
-    console.log('🎨 TutorialBridge Render - States:');
-    console.log('  - isLoadingEmail:', isLoadingEmail);
-    console.log('  - showEmailCollection:', showEmailCollection);
-    console.log('  - isConnected:', isConnected);
-    console.log('  - hasUserEmail:', hasUserEmail);
-    console.log('  - address:', address);
-    console.log('  - Connect Wallet condition (!isConnected):', !isConnected);
-    console.log('  - Loading condition (isLoadingEmail && isConnected):', isLoadingEmail && isConnected);
-    console.log('  - Email collection condition (!isLoadingEmail && showEmailCollection && isConnected):', !isLoadingEmail && showEmailCollection && isConnected);
-    console.log('  - Tutorial condition (!isLoadingEmail && !showEmailCollection && isConnected):', !isLoadingEmail && !showEmailCollection && isConnected);
-  }, [isLoadingEmail, showEmailCollection, isConnected, hasUserEmail, address]);
 
   return (
     <div className="min-h-screen bg-white text-black w-full overflow-x-hidden">
       <div className="w-full mx-auto p-6">
         <div className="flex items-start justify-center pt-4 md:pt-8 min-h-screen">
           <div className="text-center w-full max-w-4xl">
-            {/* Loading State */}
-            {isLoadingEmail && isConnected && (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-              </div>
-            )}
 
-            {/* Modern Professional Email Collection UI */}
-            {!isLoadingEmail && showEmailCollection && isConnected && (
-              <div className="w-full min-h-[70vh] flex items-center justify-center px-4 md:px-8">
-                <div className="relative max-w-xl mx-auto w-full animate-fade-in-up opacity-0" style={{
-                  animation: 'fadeInUp 0.6s ease-out 0.1s forwards'
-                }}>
-                  {/* Top Navigation Bar */}
-                  <div className="mb-6 flex justify-between items-center">
-                    <button
-                      onClick={() => setActiveSection('home')}
-                      className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-purple-300"
-                    >
-                      <span>←</span>
-                      <span>{t.back}</span>
-                    </button>
-                    
-                    {/* Desktop Skip Button - Top Right */}
-                    <button
-                      onClick={handleSkipEmail}
-                      className="hidden md:block text-purple-600 hover:text-gray-700 transition-colors duration-200 font-light text-sm tracking-wide"
-                    >
-                      {t.skipForNow}
-                    </button>
-                  </div>
-
-                  {/* Modern Sleek Container */}
-                  <div className="bg-white rounded-3xl border border-gray-200/60 shadow-lg p-10 md:p-12">
-                    {/* Header Section */}
-                    <div className="text-center mb-12">
-                      <div className="flex items-center justify-center gap-3 mb-6 flex-nowrap">
-                        <h1 className="text-2xl md:text-4xl font-light text-gray-900 tracking-tight flex-shrink-0">
-                          {currentUserEmail && !isEditingEmail ? t.yourEmail : t.readyToPlay}📩
-                        </h1>
-                        
-                      </div>
-
-                      {/* Show current email if exists and not editing */}
-                      {currentUserEmail && !isEditingEmail && (
-                        <div className="mb-6">
-                          <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-4">
-                            <p className="text-green-800 font-medium">{currentUserEmail}</p>
-                          </div>
-                          <p className="text-sm text-gray-500 mb-4">{t.emailNotificationMessage}</p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Input Section - Show when no email or editing */}
-                    {(!currentUserEmail || isEditingEmail) && (
-                      <div className="space-y-8">
-                        <div className="relative group">
-                          <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder={isEditingEmail ? t.updateEmailAddress : t.enterEmailAddress}
-                            className="w-full px-6 py-3 md:px-7 md:py-5
-                             text-lg bg-gray-50/80 border-2 border-gray-200 rounded-2xl focus:border-purple-500
-                             focus:bg-white focus:ring-4 focus:ring-purple-100 focus:outline-none
-                             transition-all duration-300 ease-out placeholder-gray-400 font-normal
-                             tracking-normal text-center hover:border-gray-300 hover:bg-white
-                             hover:shadow-sm focus:shadow-lg"
-                            onKeyPress={(e) => e.key === 'Enter' && handleEmailSubmit()}
-                          />
-                          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                        </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex flex-col items-center space-y-5">
-                        <button
-                          onClick={handleEmailSubmit}
-                          disabled={emailSubmitting || !email.trim()}
-                          className="w-48 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800
-           disabled:bg-black disabled:from-black disabled:to-black disabled:text-white
-           text-white font-medium py-4 px-8 rounded-2xl
-           transition-all duration-300 text-lg disabled:cursor-not-allowed transform hover:scale-[1.02]
-           active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl
-           disabled:opacity-100 disabled:shadow-lg"
-
-                        >
-                          {emailSubmitting ? (
-                            <span className="flex items-center justify-center">
-                              <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
-                              {isEditingEmail ? t.updating : t.joining}
-                            </span>
-                          ) : (
-                            isEditingEmail ? t.updateEmail : t.joinCommunity
-                          )}
-                        </button>
-
-                        {/* Cancel button for editing */}
-                        {isEditingEmail && (
-                          <button
-                            onClick={() => {
-                              setIsEditingEmail(false);
-                              setEmail(currentUserEmail); // Reset to original email
-                            }}
-                            className="w-full text-gray-500 hover:text-gray-700 font-light py-3 px-6 transition-all duration-200 text-base tracking-wide"
-                          >
-                            {t.cancel}
-                          </button>
-                        )}
-
-                        {/* Skip button for new users */}
-                        {!currentUserEmail && (
-                          <button
-                            onClick={handleSkipEmail}
-                            className="w-full md:hidden text-purple-600 hover:text-gray-700 font-light py-3 px-6 transition-all duration-200 text-base tracking-wide"
-                          >
-                            {t.skipForNow}
-                          </button>
-                        )}
-                      </div>
-                      </div>
-                    )}
-
-                    {/* Action buttons when email exists and not editing */}
-                    {currentUserEmail && !isEditingEmail && (
-                      <div className="flex flex-col items-center space-y-5">
-                        <button
-                          onClick={() => setIsEditingEmail(true)}
-                          className="w-48 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800
-                           text-white font-medium py-4 px-8 rounded-2xl
-                           transition-all duration-300 text-lg transform hover:scale-[1.02]
-                           active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl"
-                        >
-                          {t.changeEmail}
-                        </button>
-
-                        <button
-                          onClick={() => setShowEmailCollection(false)}
-                          className="w-full text-purple-600 hover:text-gray-700 font-light py-3 px-6 transition-all duration-200 text-base tracking-wide"
-                        >
-                          {t.continueToTutorial}
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Bottom Note */}
-                    {/* <div className="mt-10 pt-8 border-t border-gray-100">
-                      <p className="text-sm text-gray-400 text-center font-light tracking-wide">
-                        We respect your privacy. No spam, ever. 🔒
-                      </p>
-                    </div> */}
-                  </div>
-
-                </div>
-
-                {/* Enhanced CSS for animations */}
-                <style>{`
-                  @keyframes fadeInUp {
-                    from {
-                      opacity: 0;
-                      transform: translateY(40px) scale(0.95);
-                    }
-                    to {
-                      opacity: 1;
-                      transform: translateY(0) scale(1);
-                    }
-                  }
-                `}</style>
-              </div>
+            {/* Email Management UI */}
+            {showEmailUI && isConnected && (
+              <EmailManagement
+                currentLanguage={currentLanguage}
+                onClose={() => setShowEmailUI(false)}
+                onBack={() => setActiveSection('home')}
+                showBackButton={true}
+              />
             )}
 
             {/* Connect Wallet UI - Show when wallet is not connected */}
@@ -733,8 +518,8 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
               </div>
             )}
 
-            {/* Tutorial Screen - Show when email is collected or skipped */}
-            {!isLoadingEmail && !showEmailCollection && isConnected && (
+            {/* Tutorial Screen - Show when not managing email and tutorial hasn't been seen */}
+            {!showEmailUI && isConnected && showTutorial && (
               <div className="max-w-5xl mx-auto opacity-100 px-0 md:px-4">
                 {/* Back to Email Collection Button
                 <div className="mb-6 px-4 md:px-0">
@@ -902,6 +687,18 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
                   </div>
                 </div>
 
+              </div>
+            )}
+
+            {/* Redirect Message - Show when tutorial was seen and redirecting */}
+            {!showEmailUI && isConnected && hasSeenTutorial && !showTutorial && (
+              <div className="flex items-center justify-center min-h-[50vh]">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                  <p className="text-lg text-gray-600">
+                    {currentLanguage === 'pt-BR' ? 'Redirecionando para as previsões...' : 'Redirecting to predictions...'}
+                  </p>
+                </div>
               </div>
             )}
 
