@@ -4,13 +4,14 @@ import { getEventDate } from './eventDates';
 
 // Minimum players required to start a pot
 export const MIN_PLAYERS = 5; // Minimum participants for pot
-export const MIN_PLAYERS2 = 2; // Minimum participants for all other pots
+export const MIN_PLAYERS2 = 5; // Minimum participants for all other pots
 
 // Dynamic pricing configuration
 export const BASE_ENTRY_FEE = 0.02; // Base entry fee in USD (used when pot hasn't started)
 export const PRICING_TIERS = {
   EARLY_DAYS: [0.02, 0.03, 0.04, 0.05], // Days 1-4 pricing in USD
-  DOUBLING_START_FEE: 0.10, // Starting fee for doubling period (day 5)
+  INCREASING_START_FEE: 0.10, // Starting fee for INCREASING period (day 5)
+  MAX_ENTRY_FEE: 0.25, // Maximum entry fee cap
 } as const;
 
 // Calculate dynamic entry fee based on pot start date
@@ -30,9 +31,10 @@ export const calculateEntryFee = (hasStarted: boolean, startedOnDate: string | n
     return PRICING_TIERS.EARLY_DAYS[daysSinceStart - 1] || BASE_ENTRY_FEE;
   }
   
-  // Day 5+: Double each day starting from 0.10
+  // Day 5+: Multiply by 1.25x each day starting from 0.10, capped at $1.00
   const doublingDays = daysSinceStart - 4; // Days beyond the early pricing period
-  const fee = PRICING_TIERS.DOUBLING_START_FEE * Math.pow(2, doublingDays - 1);
+  const uncappedFee = PRICING_TIERS.INCREASING_START_FEE * Math.pow(1.25, doublingDays - 1);
+  const fee = Math.min(uncappedFee, PRICING_TIERS.MAX_ENTRY_FEE);
   
   return Number(fee.toFixed(2)); // Round to 2 decimal places
 };
@@ -59,7 +61,7 @@ export const PENALTY_EXEMPT_CONTRACTS: string[] = [
 
 // Entry fee for penalty-exempt contracts (in USD)
 // This fee is used for both entry and re-entry for contracts in PENALTY_EXEMPT_CONTRACTS
-export const PENALTY_EXEMPT_ENTRY_FEE = 0.08; //USD
+export const PENALTY_EXEMPT_ENTRY_FEE = 0.04; //USD
 
 // Type for contract addresses
 export type ContractAddress = keyof typeof CONTRACT_TO_TABLE_MAPPING;
