@@ -36,7 +36,9 @@ import {
   AlertCircle,
   CheckCircle2,
   ChevronDown,
-  Crown
+  Crown,
+  Wallet,
+  Eye
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
@@ -159,7 +161,8 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   // Find the index of our contract address in the contractAddresses array
   const contractIndex = contractAddresses.findIndex(addr => addr === contractAddress);
   const participants = contractIndex !== -1 ? participantsData[contractIndex] : undefined;
-  const playerCount = participants ? participants.length : 0;
+  // Use unique participants count like PredictionPotTest does
+  const playerCount = participants ? Array.from(new Set(participants)).length : 0;
   const isParticipant = participants && address ? participants.includes(address as `0x${string}`) : false;
 
   // Check for special admin addresses (same as TutorialBridge)
@@ -201,7 +204,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
     }
 
     const participants = participantsData[contractIndex];
-    const currentCount = participants && Array.isArray(participants) ? participants.length : 0;
+    const currentCount = participants && Array.isArray(participants) ? Array.from(new Set(participants)).length : 0;
     const requiredCount = contractIndex === 0 ? MIN_PLAYERS : MIN_PLAYERS2;
 
     console.log('📊 getParticipantCounts Result:', {
@@ -223,36 +226,22 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const hasEnoughPlayers = isPenaltyExempt ? true : current >= required;
   const isPotReady = hasEnoughPlayers && potInfo.hasStarted;
 
-  // Helper function to get context-aware player information
-  const getPlayerInfo = () => {
-    if (isLoading) return { label: 'Loading...', count: '...', icon: Users };
+  // Helper function to get simplified player message
+  const getPlayerMessage = () => {
+    if (isLoading) return 'Loading...';
 
     if (potInfo.hasStarted) {
       // Tournament has started - show active players
-      return {
-        label: 'Active Players',
-        count: current.toString(),
-        icon: Users
-      };
+      return `${current} players left`;
     } else if (!hasEnoughPlayers) {
       // Not enough players - show waiting count
       const needed = required - current;
-      return {
-        label: `Waiting for ${needed} more`,
-        count: needed > 1 ? 'players' : 'player',
-        icon: Clock
-      };
+      return `Waiting for ${needed} more ${needed > 1 ? 'players' : 'player'}`;
     } else {
       // Has enough players but hasn't started yet
-      return {
-        label: 'Players Ready',
-        count: current.toString(),
-        icon: Target
-      };
+      return `${current} players ready`;
     }
   };
-
-  const playerInfo = getPlayerInfo();
 
   // Load additional data - only after cookies are loaded
   useEffect(() => {
@@ -377,13 +366,35 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
   if (showLoadingScreen) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50/30 flex items-center justify-center">
-        <div className="text-center animate-fade-in-up opacity-0" style={{
-          animation: 'fadeInUp 0.6s ease-out 0.2s forwards'
-        }}>
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-6"></div>
-          <h3 className="text-xl font-light text-gray-900 mb-2">Loading Tournament</h3>
-          <p className="text-gray-600 mb-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50/30 flex items-center justify-center relative">
+        {/* Back button - always visible */}
+        <div className="absolute top-6 left-6 z-10">
+          <button
+            onClick={() => setActiveSection && setActiveSection('home')}
+            className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white/80 hover:bg-white px-4 py-2 rounded-full border border-gray-200/60 hover:border-purple-300 backdrop-blur-sm"
+          >
+            <span>←</span>
+            <span>Back</span>
+          </button>
+        </div>
+
+        <div className="text-center max-w-md mx-auto px-6">
+          {/* Enhanced loading animation */}
+          <div className="relative mb-8">
+            <div className="animate-spin rounded-full h-20 w-20 border-4 border-purple-200 border-t-purple-600 mx-auto"></div>
+            <div className="absolute inset-0 rounded-full h-20 w-20 border-4 border-transparent border-r-purple-400 animate-spin mx-auto" style={{animationDuration: '3s', animationDirection: 'reverse'}}></div>
+          </div>
+
+          {/* Loading title with gradient */}
+          <div className="mb-4">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100 rounded-full px-4 py-2 mb-4">
+              <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-purple-700">Loading Tournament</span>
+            </div>
+          </div>
+
+          <h3 className="text-2xl font-light text-gray-900 mb-3">Getting everything ready</h3>
+          <p className="text-gray-600 leading-relaxed">
             {!cookiesLoaded ? 'Loading tournament data...' :
              !contractAddress ? 'Getting market information...' :
              !market ? 'Finding tournament details...' :
@@ -391,16 +402,18 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
              'Getting tournament information...'}
           </p>
 
-          {/* Back button - only show after some time to avoid accidental clicks */}
-          <div className="animate-fade-in-up opacity-0" style={{
-            animation: 'fadeInUp 0.6s ease-out 2s forwards'
-          }}>
-            <button
-              onClick={() => setActiveSection && setActiveSection('home')}
-              className="text-purple-600 hover:text-purple-800 underline text-sm transition-colors duration-200"
-            >
-              ← Back to markets
-            </button>
+          {/* Loading progress indicators */}
+          <div className="mt-8 flex justify-center space-x-1">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"
+                style={{
+                  animationDelay: `${i * 0.2}s`,
+                  animationDuration: '1.2s'
+                }}
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -532,48 +545,54 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
       <div className="min-h-screen px-4 py-4 md:py-8">
         <div className="max-w-4xl w-full mx-auto">
 
-          {/* Simple Header */}
-          <div className="text-center mb-6">
-            
-            <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-4 leading-snug">
-  <span className="block bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">
-    Current Question
-  </span>
-  <span className="text-gray-800 font-normal">
-    {marketQuestion || market?.question || 'Loading...'}
-  </span>
-</h1>
-
-
+          {/* Modern Premium Header */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100 rounded-full px-4 py-2 mb-6">
+              <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-purple-700">Today's Question</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-light text-gray-900 leading-relaxed max-w-3xl mx-auto">
+              {marketQuestion || market?.question || 'Loading...'}
+            </h1>
           </div>
 
-          {/* Compact Info Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-            <div className="bg-white rounded-lg p-3 border border-gray-200 text-center">
-              <div className="text-lg font-bold text-gray-900">{current}</div>
-              <div className="text-xs text-gray-600">Players</div>
-            </div>
-
-            <div className="bg-white rounded-lg p-3 border border-gray-200 text-center">
-              <div className="text-lg font-bold text-gray-900">
-                ${entryFee?.toFixed(2) || '0.00'}
-              </div>
-              <div className="text-xs text-gray-600">Entry Fee</div>
-            </div>
-
-            <div className="bg-white rounded-lg p-3 border border-gray-200 text-center">
-              <div className="text-lg font-bold text-gray-900">
-                {nextQuestionInfo ? currentTimer : 'Waiting'}
-              </div>
-              <div className="text-xs text-gray-600">
-                {nextQuestionInfo ? 'Deadline' : 'Status'}
-              </div>
-            </div>
+          {/* Small info text above tournament flow */}
+          <div className="flex justify-between items-center mb-3">
+            <div className="text-sm font-black text-purple-700 tracking-wider">{getPlayerMessage()}</div>
+            <button
+              onClick={handleReady}
+              disabled={!isConnected || (isParticipant && userEliminated)}
+              className={`bg-purple-600 hover:bg-purple-700 text-white font-medium rounded transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center gap-2 ${
+                isParticipant && !userEliminated ? 'py-1.5 px-3 text-sm' : 'py-2 px-4 text-sm'
+              }`}
+            >
+              {!isConnected ? (
+                <>
+                  <Wallet className="w-4 h-4" />
+                  Connect Wallet
+                </>
+              ) : isParticipant && userEliminated ? (
+                <>
+                  <X className="w-4 h-4" />
+                  Eliminated
+                </>
+              ) : isParticipant ? (
+                <>
+                  <Eye className="w-4 h-4" />
+                  My Predictions
+                </>
+              ) : (
+                <>
+                  <Trophy className="w-4 h-4" />
+                  Join
+                </>
+              )}
+            </button>
           </div>
 
           {/* Tournament Journey Flow */}
           <div className="bg-white rounded-lg border border-gray-100 p-4 mb-4">
-            <div className="text-xs text-gray-500 mb-3 text-center">Tournament Flow</div>
+            <div className="text-xs text-gray-500 mb-3 text-center">Your progress</div>
 
             <div className="relative flex items-center justify-between px-8 py-2">
               {/* Step 1: Join */}
@@ -674,14 +693,18 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
             
 
-            {/* Critical Return Message */}
-            {isParticipant && !userEliminated && (
-              <div className="mt-3 text-center">
-                <div className="text-sm font-bold text-purple-600">
-                  {/* ⚠️ You must return {isPenaltyExempt ? 'for each race' : 'daily'} to answer the next question */}
+            {/* Next Question Timer */}
+            <div className="mt-6 flex justify-center">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
+                  <Clock className="w-2 h-2 text-white" />
                 </div>
+                <span className="text-xs text-gray-500 font-medium">Next question:</span>
+                <span className="font-black text-gray-900 text-xs tracking-wider">
+                  {currentTimer}
+                </span>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Collapsible Tournament Details */}
@@ -708,6 +731,21 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
             {!isTournamentInfoCollapsed && (
               <div className="p-4 space-y-4">
+                {/* Entry Fee Info */}
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <DollarSign className="w-3 h-3 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">{isParticipant ? 'Re-entry Fee' : 'Entry Fee'}: ${entryFee?.toFixed(2) || '0.00'}</h4>
+                    <p className="text-xs text-gray-600 mt-1">
+                      {isPenaltyExempt
+                        ? `Fixed ${isParticipant ? 're-entry' : 'entry'} fee for all participants - no daily increases.`
+                        : `${isParticipant ? 'Re-entry fee' : 'Entry fee'} increases daily. A higher fee can mean a higher chance of winning due to less players remaining.`
+                      }
+                    </p>
+                  </div>
+                </div>
                 {/* Tournament Type Info */}
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -737,21 +775,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   </div>
                 </div>
 
-                {/* Entry Fee Info */}
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <DollarSign className="w-3 h-3 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900">Entry Fee: ${entryFee?.toFixed(2) || '0.00'}</h4>
-                    <p className="text-xs text-gray-600 mt-1">
-                      {isPenaltyExempt
-                        ? 'Fixed entry fee for all participants - no daily increases.'
-                        : 'Increases daily. A higher fee can mean a higher chance of winning due to less players remaining.'
-                      }
-                    </p>
-                  </div>
-                </div>
+                
 
                 {/* How to Win */}
                 <div className="flex items-start gap-3">
@@ -772,39 +796,6 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             )}
           </div>
 
-          {/* Simple Action Section */}
-          <div className="text-center">
-            {/* User Status
-            {isConnected && (
-              <div className="mb-3">
-                {isParticipant && !userEliminated && (
-                  <div className="text-green-700 text-sm font-medium">✅ You're in this tournament</div>
-                )}
-                {isParticipant && userEliminated && (
-                  <div className="text-red-700 text-sm font-medium">❌ You were eliminated</div>
-                )}
-                {!isParticipant && (
-                  <div className="text-blue-700 text-sm font-medium">🎯 Ready to join?</div>
-                )}
-              </div>
-            )} */}
-
-            {/* Simple Button */}
-            <button
-              onClick={handleReady}
-              disabled={!isConnected || (isParticipant && userEliminated)}
-              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed"
-            >
-              {!isConnected ? t.connectWallet :
-               isParticipant && userEliminated ? "Eliminated" :
-               isParticipant ? "View Tournament" :
-               "Join Tournament"}
-            </button>
-
-            {!isConnected && (
-              <p className="text-xs text-gray-500 mt-2">Connect wallet to join</p>
-            )}
-          </div>
 
         </div>
       </div>
