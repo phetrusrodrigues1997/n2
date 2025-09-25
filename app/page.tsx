@@ -50,7 +50,7 @@ const LIVE_POT_ADDRESS = '0xDc6725F0E3D654c3Fde0480428b194ab19F20a9E';
 
 export default function App() {
   const { address, isConnected } = useAccount();
-  const [activeSection, setActiveSection] = useState('home'); // Default section 
+  const [activeSection, setActiveSection] = useState('comingsoon'); // Default section 
   const [privatePotAddress, setPrivatePotAddress] = useState<string>(''); // For routing to private pots
   const [hasEnteredLivePot, setHasEnteredLivePot] = useState(false); // Track live pot entry
   const [isMobileSearchActive, setIsMobileSearchActive] = useState(false); // Track mobile search state

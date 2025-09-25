@@ -1188,7 +1188,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           setActiveSection('makePrediction');
         } else {
           console.log("Navigate to PotInfoPage first")
-          setActiveSection('dashboard');
+          setActiveSection('potInfo');
         }
       }, 200);
 
