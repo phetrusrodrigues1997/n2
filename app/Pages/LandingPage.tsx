@@ -955,42 +955,21 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       return baseClasses.replace(/bg-\w+-\d+/g, 'bg-gray-100').replace(/hover:bg-\w+-\d+/g, 'hover:bg-gray-200').replace(/text-\w+-\d+/g, 'text-gray-500');
     }
 
-    // If user is participant (purple background), use different button colors for better contrast
-    if (isParticipant && !prediction) {
-      if (buttonType === 'positive') {
-        // Change from purple to green for better contrast on purple background
-        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-green-200 hover:bg-green-400 text-green-700');
-      } else {
-        // Change from blue to orange for better contrast on purple background
-        return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-red-200 hover:bg-red-300 text-orange-800');
-      }
-    }
-
     if (prediction && prediction.prediction === buttonType) {
-      // User has voted for this option - show confirmed styling
-      if (isParticipant) {
-        // On purple background, use stronger contrast
-        if (buttonType === 'positive') {
-          return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-white text-green-600 cursor-default border-2 border-green-600');
-        } else {
-          return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-white text-red-600 cursor-default border-2 border-red-600');
-        }
+      // User has voted for this option - show confirmed styling with white background
+      if (buttonType === 'positive') {
+        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-white text-purple-600 cursor-default border border-purple-600');
       } else {
-        // Original styling for non-participants
-        if (buttonType === 'positive') {
-          return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-white text-purple-600 cursor-default border border-purple-600');
-        } else {
-          return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-white text-blue-600 cursor-default border border-blue-600');
-        }
+        return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-white text-blue-600 cursor-default border border-blue-600');
       }
     }
 
     // If user is participant and has voted for the opposite option, make this button more prominent (change vote)
     if (isParticipant && prediction && prediction.prediction !== buttonType) {
       if (buttonType === 'positive') {
-        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-green-200 hover:bg-green-400 text-green-700');
+        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-purple-100 hover:bg-purple-200 text-purple-800');
       } else {
-        return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-red-200 hover:bg-red-300 text-orange-800');
+        return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-blue-100 hover:bg-blue-200 text-blue-800');
       }
     }
 
@@ -1181,13 +1160,13 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         expires: 7 // Cookie expires in 7 days
       });
 
-      // Route to PotInfoPage first to show market details, then to TutorialBridge
+      // Always route to TutorialBridge (dashboard) so users can see the chart and choose their action
       setTimeout(() => {
         if (reentry) {
           console.log(reentry)
           setActiveSection('makePrediction');
         } else {
-          console.log("Navigate to PotInfoPage first")
+          console.log("Still call this")
           setActiveSection('potInfo');
         }
       }, 200);
@@ -1554,20 +1533,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             '--swap-distance': swapDistance
                           } as React.CSSProperties}
                         >
-                          <div className={`h-full ${market.marketIndex === 0 ? 'min-h-[325px]' : 'min-h-[260px]'} flex flex-col justify-between transition-all duration-300 ${(() => {
-                            // Check if user is participant to determine background color
+                          <div className={`h-full ${market.marketIndex === 0 ? 'min-h-[325px] bg-[#fefefe]' : 'min-h-[260px] bg-white'} flex flex-col justify-between transition-all duration-300 ${(() => {
                             const contractAddress = getContractAddress(market.id);
-                            const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
-
-                            // Set background color based on participation status
-                            let bgColor = '';
-                            if (userIsParticipant) {
-                              bgColor = 'bg-purple-100'; // Light purple gradient for entered markets
-                            } else {
-                              bgColor = market.marketIndex === 0 ? 'bg-[#fefefe]' : 'bg-white'; // Original colors
-                            }
-
-                            // Also get elimination status for border styling
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
                             // Reduce bottom padding for non-traditional layouts to make div shorter
@@ -1580,7 +1547,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                             if (isEliminated) {
                               classes += ' border border-gray-300 rounded-lg';
-                            }
+                            } 
+                            
                             else if (market.marketIndex === 0) {
                               // No bottom border for first market
                               if (market.tabId === selectedMarket) {
@@ -1592,7 +1560,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               classes += ' border-b border-gray-200';
                             }
 
-                            return `${bgColor} ${classes}`;
+                            return classes;
                           })()}`}>
                             {/* Background Gradient Accent */}
                             <div className="absolute top-0 left-0 right-0 h-1"></div>
@@ -2230,29 +2198,15 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           '--swap-distance': swapDistance
                         } as React.CSSProperties}
                       >
-                        <div className={`rounded-2xl p-3 h-full flex flex-col justify-between min-h-[180px] transition-all duration-300 ${(() => {
+                        <div className={`rounded-2xl p-3 h-full flex flex-col justify-between min-h-[180px] transition-all duration-300 bg-white ${(() => {
                           const contractAddress = getContractAddress(market.id);
                           const isEliminated = contractAddress && eliminationStatus[contractAddress];
-                          const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
 
-                          // Set background color based on participation status
-                          let bgColor = '';
-                          if (userIsParticipant) {
-                            bgColor = 'bg-purple-100'; // Light purple gradient for entered markets
-                          } else {
-                            bgColor = 'bg-white'; // Original white color
-                          }
-
-                          let borderClasses = '';
                           if (isEliminated) {
-                            borderClasses = 'border border-gray-400 hover:border-gray-500';
-                          } else if (userIsParticipant) {
-                            borderClasses = 'border border-purple-200 hover:border-purple-300'; // Purple border for entered markets
+                            return 'border border-gray-400 hover:border-gray-500';
                           } else {
-                            borderClasses = 'border border-gray-200 hover:border-gray-300'; // Original border
+                            return 'border border-gray-200 hover:border-gray-300';
                           }
-
-                          return `${bgColor} ${borderClasses}`;
                         })()}`}>
 
                           {/* Main content area */}

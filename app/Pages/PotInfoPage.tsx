@@ -6,12 +6,39 @@ import { useAccount } from 'wagmi';
 import { formatUnits } from 'viem';
 import { getMarkets } from '../Constants/markets';
 import { Language, getTranslation } from '../Languages/languages';
-import { PENALTY_EXEMPT_CONTRACTS, MIN_PLAYERS, MIN_PLAYERS2 } from '../Database/config';
+import {
+  PENALTY_EXEMPT_CONTRACTS,
+  MIN_PLAYERS,
+  MIN_PLAYERS2,
+  calculateEntryFee,
+  PENALTY_EXEMPT_ENTRY_FEE,
+  getTimerDataForContract,
+  formatTimerDisplay
+} from '../Database/config';
+import { getEventDate } from '../Database/eventDates';
 import { useContractData } from '../hooks/useContractData';
 import { getPredictionPercentages, isEliminated } from '../Database/actions';
-import { Clock, Users, Target, TrendingUp, Activity, Zap, X, Trophy } from 'lucide-react';
+import {
+  Clock,
+  Users,
+  Target,
+  TrendingUp,
+  Activity,
+  Zap,
+  X,
+  Trophy,
+  Calendar,
+  DollarSign,
+  Hash,
+  Timer,
+  Info,
+  Play,
+  AlertCircle,
+  CheckCircle2,
+  ChevronDown,
+  Crown
+} from 'lucide-react';
 import Cookies from 'js-cookie';
-import Image from 'next/image';
 
 interface PotInfoPageProps {
   currentLanguage?: Language;
@@ -31,6 +58,11 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const [predictionPercentages, setPredictionPercentages] = useState<{ positivePercentage: number; negativePercentage: number; totalPredictions: number } | null>(null);
   const [userEliminated, setUserEliminated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [questionCount, setQuestionCount] = useState<number | null>(null);
+  const [currentTimer, setCurrentTimer] = useState<string>('');
+  const [isTournamentInfoCollapsed, setIsTournamentInfoCollapsed] = useState<boolean>(true);
+  const [cookiesLoaded, setCookiesLoaded] = useState(false);
+  const [dataLoadingComplete, setDataLoadingComplete] = useState(false);
 
   // Tournament state from NotReadyPage logic
   const [potInfo, setPotInfo] = useState<{
@@ -43,10 +75,60 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
     startedOnDate: null
   });
 
-  // Get market data from cookies (same as TutorialBridge)
-  const contractAddress = Cookies.get('selectedMarket');
-  const marketQuestion = Cookies.get('selectedMarketQuestion') || '';
-  const marketIcon = Cookies.get('selectedMarketIcon') || '';
+  // Get market data from cookies - with proper loading state
+  const [contractAddress, setContractAddress] = useState<string | undefined>(undefined);
+  const [marketQuestion, setMarketQuestion] = useState<string>('');
+  const [marketIcon, setMarketIcon] = useState<string>('');
+
+  // Load cookies on mount with retry mechanism and timeout
+  useEffect(() => {
+    let retryCount = 0;
+    const maxRetries = 10; // Max 5 seconds of retrying
+    let timeoutId: NodeJS.Timeout;
+
+    const loadCookies = () => {
+      const contract = Cookies.get('selectedMarket');
+      const question = Cookies.get('selectedMarketQuestion') || '';
+      const icon = Cookies.get('selectedMarketIcon') || '';
+
+      console.log('🍪 PotInfoPage - Loading cookies (attempt:', retryCount + 1, '):', {
+        contract,
+        question,
+        icon,
+        timestamp: new Date().toISOString()
+      });
+
+      if (contract) {
+        setContractAddress(contract);
+        setMarketQuestion(question);
+        setMarketIcon(icon);
+        setCookiesLoaded(true);
+        console.log('✅ PotInfoPage - Cookies loaded successfully');
+      } else {
+        retryCount++;
+        if (retryCount < maxRetries) {
+          console.log(`⚠️ PotInfoPage - No contract cookie found, retrying... (${retryCount}/${maxRetries})`);
+          timeoutId = setTimeout(loadCookies, 500);
+        } else {
+          console.error('❌ PotInfoPage - Failed to load cookies after maximum retries');
+          // Set cookies loaded to true to avoid infinite loading
+          setCookiesLoaded(true);
+          setDataLoadingComplete(true);
+          setIsLoading(false);
+        }
+      }
+    };
+
+    // Start loading cookies immediately
+    loadCookies();
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, []);
 
 
   // Find market by contract address - need to search all categories
@@ -79,6 +161,12 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const participants = contractIndex !== -1 ? participantsData[contractIndex] : undefined;
   const playerCount = participants ? participants.length : 0;
   const isParticipant = participants && address ? participants.includes(address as `0x${string}`) : false;
+
+  // Check for special admin addresses (same as TutorialBridge)
+  const SPECIAL_ADDRESSES = ['0xA90611B6AFcBdFa9DDFfCB2aa2014446297b6680', '0x8bc670d5339AEa659c8DAb19D39206d046a250f8'];
+  const isSpecialUser = address && SPECIAL_ADDRESSES.map(addr => addr.toLowerCase()).includes(address.toLowerCase());
+
+  
 
 
   // Player count logic from NotReadyPage
@@ -166,11 +254,17 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
   const playerInfo = getPlayerInfo();
 
-  // Load additional data
+  // Load additional data - only after cookies are loaded
   useEffect(() => {
+    if (!cookiesLoaded) {
+      console.log('⏳ PotInfoPage - Waiting for cookies to load...');
+      return;
+    }
+
     console.log('🔄 PotInfoPage - useEffect triggered:', {
       contractAddress,
       address,
+      cookiesLoaded,
       shouldLoad: !!(contractAddress && address)
     });
 
@@ -180,6 +274,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           missingContract: !contractAddress,
           missingAddress: !address
         });
+        setDataLoadingComplete(true);
         setIsLoading(false);
         return;
       }
@@ -193,6 +288,11 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
         console.log('📈 PotInfoPage - Prediction percentages loaded:', percentages);
         setPredictionPercentages(percentages);
 
+        // Get question count (total predictions = current question number)
+        if (percentages && percentages.totalPredictions > 0) {
+          setQuestionCount(percentages.totalPredictions);
+        }
+
         // Check if user is eliminated
         console.log('🔍 PotInfoPage - Checking if user is eliminated...');
         const eliminated = await isEliminated(address, contractAddress);
@@ -203,13 +303,33 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
       } catch (error) {
         console.error('❌ PotInfoPage - Error loading tournament data:', error);
       } finally {
-        console.log('🏁 PotInfoPage - Setting isLoading to false');
+        console.log('🏁 PotInfoPage - Setting data loading complete');
+        setDataLoadingComplete(true);
         setIsLoading(false);
       }
     };
 
     loadTournamentData();
-  }, [contractAddress, address]);
+  }, [contractAddress, address, cookiesLoaded]);
+
+  // Timer update effect
+  useEffect(() => {
+    if (!contractAddress) return;
+
+    const updateTimer = () => {
+      const timerData = getTimerDataForContract(contractAddress);
+      const formattedTimer = formatTimerDisplay(timerData);
+      setCurrentTimer(formattedTimer);
+    };
+
+    // Update immediately
+    updateTimer();
+
+    // Set up interval to update every second
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, [contractAddress]);
 
   // Fetch pot information (same logic as NotReadyPage)
   useEffect(() => {
@@ -242,14 +362,16 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   }, [contractAddress]);
 
   // Show loading screen while data is being fetched
-  const showLoadingScreen = !contractAddress || !market || isLoading;
+  const showLoadingScreen = !cookiesLoaded || !contractAddress || !market || isLoading || !dataLoadingComplete;
 
   console.log('🖥️ PotInfoPage - Render Decision:', {
     showLoadingScreen,
     reasons: {
+      cookiesNotLoaded: !cookiesLoaded,
       noContract: !contractAddress,
       noMarket: !market,
-      isLoading
+      isLoading,
+      dataNotComplete: !dataLoadingComplete
     }
   });
 
@@ -262,9 +384,11 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-6"></div>
           <h3 className="text-xl font-light text-gray-900 mb-2">Loading Tournament</h3>
           <p className="text-gray-600 mb-6">
-            {!contractAddress ? 'Getting market information...' :
+            {!cookiesLoaded ? 'Loading tournament data...' :
+             !contractAddress ? 'Getting market information...' :
              !market ? 'Finding tournament details...' :
-             'Loading predictions and stats...'}
+             !dataLoadingComplete ? 'Loading predictions and stats...' :
+             'Getting tournament information...'}
           </p>
 
           {/* Back button - only show after some time to avoid accidental clicks */}
@@ -289,6 +413,58 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const isWeeklyTournament = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress as any);
   const tournamentType = isWeeklyTournament ? 'Weekly' : 'Daily';
 
+  // Calculate entry fee
+  const getEntryFee = () => {
+    if (!contractAddress) return null;
+    if (isPenaltyExempt) {
+      return PENALTY_EXEMPT_ENTRY_FEE;
+    }
+    return calculateEntryFee(potInfo.hasStarted, potInfo.startedOnDate);
+  };
+
+  const entryFee = getEntryFee();
+
+  // Get next question timing for penalty-exempt contracts
+  const getNextQuestionInfo = () => {
+    if (!contractAddress || !isPenaltyExempt) return null;
+
+    const eventDate = getEventDate(contractAddress);
+    if (!eventDate) return null;
+
+    const eventDateTime = new Date(eventDate + 'T00:00:00Z');
+    const now = new Date();
+
+    if (eventDateTime > now) {
+      return {
+        type: 'event',
+        date: eventDateTime,
+        label: 'Event Date'
+      };
+    } else {
+      // Event has passed, prediction deadline is at 23:59 of the same day
+      const predictionDeadline = new Date(eventDate + 'T23:59:59Z');
+      return {
+        type: 'deadline',
+        date: predictionDeadline,
+        label: 'Prediction Deadline'
+      };
+    }
+  };
+
+  const nextQuestionInfo = getNextQuestionInfo();
+
+  // Get days since tournament started
+  const getDaysSinceStart = () => {
+    if (!potInfo.hasStarted || !potInfo.startedOnDate) return null;
+
+    const startDate = new Date(potInfo.startedOnDate);
+    const today = new Date();
+    const daysDiff = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    return daysDiff + 1; // +1 because start day is day 1
+  };
+
+  const daysSinceStart = getDaysSinceStart();
+
 
   // Status determination (simplified since we don't have potInfo)
   const getStatus = () => {
@@ -307,9 +483,28 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   };
 
   const handleReady = () => {
-    // Navigate to TutorialBridge dashboard using setActiveSection
-    if (setActiveSection) {
-      setActiveSection('dashboard');
+    // Route based on participation status (same logic as TutorialBridge)
+    if (!setActiveSection) return;
+
+    if (!isConnected || !address) {
+      // Not connected, send to pot entry page which will prompt for wallet connection
+      console.log('User not connected - sending to predictionPotTest');
+      setActiveSection('bitcoinPot');
+      return;
+    }
+
+    console.log('🔍 PotInfoPage handleReady - Routing decision:', {
+      isParticipant,
+      isSpecialUser,
+      contractAddress
+    });
+
+    if (isParticipant && !isSpecialUser) {
+      console.log('User is already a participant, redirecting to makePrediction');
+      setActiveSection('makePrediction');
+    } else {
+      console.log('User is not a participant, redirecting to predictionPotTest');
+      setActiveSection('bitcoinPot');
     }
   };
 
@@ -333,199 +528,284 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
         </button>
       </div>
 
-      {/* Main Content */}
-      <div className="flex flex-col md:flex-row min-h-screen px-4 py-4 md:py-8">
-        <div className="max-w-7xl w-full mx-auto flex flex-col md:flex-row gap-6 md:gap-8">
+      {/* Main Content - Full Width Information Layout */}
+      <div className="min-h-screen px-4 py-4 md:py-8">
+        <div className="max-w-4xl w-full mx-auto">
 
-          {/* Left Side - Image (35% on desktop) */}
-          <div className="w-full md:w-[35%] flex flex-col">
-            {/* Large Market Image */}
-            <div className="relative w-full animate-fade-in-up opacity-0" style={{
-              animation: 'fadeInUp 0.6s ease-out 0.2s forwards'
-            }}>
-              <div className="relative aspect-[24/9] md:aspect-[3.6/4] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-gray-200/60">
-                <Image
-                  src={market?.icon || '/placeholder-image.jpg'}
-                  alt={marketQuestion || market?.question || 'Tournament Question'}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-                {/* Tournament Type Badge - Purple styling on top left */}
-                <div className="absolute top-3 left-3 md:top-4 md:left-4">
-                  <span className="inline-flex items-center px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium bg-purple-100 text-purple-700">
-                    <Trophy className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                    {tournamentType}
-                  </span>
-                </div>
+          {/* Simple Header */}
+          <div className="text-center mb-6">
+            
+            <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-4 leading-snug">
+  <span className="block bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">
+    Current Question
+  </span>
+  <span className="text-gray-800 font-normal">
+    {marketQuestion || market?.question || 'Loading...'}
+  </span>
+</h1>
 
-                {/* Topic Badge - Purple styling on top right */}
-                <div className="absolute top-3 right-3 md:top-4 md:right-4">
-                  <span className="inline-flex items-center px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium bg-green-100 text-green-700">
-                    {market?.potTopic || 'General'}
-                  </span>
-                </div>
 
-                {/* Gradient overlay for better text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+          </div>
+
+          {/* Compact Info Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+            <div className="bg-white rounded-lg p-3 border border-gray-200 text-center">
+              <div className="text-lg font-bold text-gray-900">{current}</div>
+              <div className="text-xs text-gray-600">Players</div>
+            </div>
+
+            <div className="bg-white rounded-lg p-3 border border-gray-200 text-center">
+              <div className="text-lg font-bold text-gray-900">
+                ${entryFee?.toFixed(2) || '0.00'}
+              </div>
+              <div className="text-xs text-gray-600">Entry Fee</div>
+            </div>
+
+            <div className="bg-white rounded-lg p-3 border border-gray-200 text-center">
+              <div className="text-lg font-bold text-gray-900">
+                {nextQuestionInfo ? currentTimer : 'Waiting'}
+              </div>
+              <div className="text-xs text-gray-600">
+                {nextQuestionInfo ? 'Deadline' : 'Status'}
               </div>
             </div>
           </div>
 
-          {/* Right Side - Content (65% on desktop) - Aligned to top */}
-          <div className="w-full md:w-[65%] flex flex-col justify-start mt-4 md:mt-0">
+          {/* Tournament Journey Flow */}
+          <div className="bg-white rounded-lg border border-gray-100 p-4 mb-4">
+            <div className="text-xs text-gray-500 mb-3 text-center">Tournament Flow</div>
 
-            {/* Header Section - Ultra Compact */}
-            <div className="mb-4 md:mb-5 animate-fade-in-up opacity-0" style={{
-              animation: 'fadeInUp 0.6s ease-out 0.4s forwards'
-            }}>
-              {/* Market Question */}
-              <h1 className="text-lg md:text-2xl lg:text-3xl font-light text-gray-900 tracking-tight leading-tight mb-2 md:mb-3">
-                {marketQuestion || market?.question || 'Loading...'}
-              </h1>
-
-              {/* Market Description */}
-              <p className="text-xs md:text-sm text-gray-600 font-light leading-relaxed">
-                Join this {tournamentType.toLowerCase()} prediction tournament and compete with {playerCount} other players!
-              </p>
-            </div>
-
-            {/* Tournament Statistics Grid - Ultra Compact */}
-            <div className="grid grid-cols-2 gap-2 md:gap-3 mb-3 md:mb-4 animate-fade-in-up opacity-0" style={{
-              animation: 'fadeInUp 0.6s ease-out 0.8s forwards'
-            }}>
-              {/* Dynamic Player Information */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-lg md:rounded-xl p-2 md:p-3 border border-gray-200/60 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div className="flex items-center justify-center mb-1">
-                  <playerInfo.icon className={`w-3 h-3 md:w-4 md:h-4 ${
-                    potInfo.hasStarted
-                      ? 'text-green-600'
-                      : !hasEnoughPlayers
-                        ? 'text-purple-600'
-                        : 'text-blue-600'
-                  }`} />
+            <div className="relative flex items-center justify-between px-8 py-2">
+              {/* Step 1: Join */}
+              <div className="flex flex-col items-center relative z-10">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold mb-3 transition-all duration-300 shadow-sm ${
+                  !isParticipant
+                    ? 'bg-blue-600 text-white border-2 border-blue-600 animate-pulse-soft shadow-blue-200'
+                    : isParticipant
+                      ? 'bg-purple-500 text-white border-2 border-purple-500 shadow-purple-200'
+                      : 'bg-slate-200 text-slate-500 border-2 border-slate-200'
+                }`}>
+                  {!isParticipant ? '1' : '✓'}
                 </div>
-                <div className="text-center">
-                  <div className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wide mb-0.5">{playerInfo.label}</div>
-                  <div className="text-sm md:text-base font-bold text-gray-900">
-                    {playerInfo.count}
-                  </div>
+                <div className="text-xs font-medium text-slate-700">Join</div>
+              </div>
+
+              {/* Step 2: Predict */}
+              <div className="flex flex-col items-center relative z-10">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold mb-3 transition-all duration-300 shadow-sm ${
+                  isParticipant && !userEliminated && questionCount === null
+                    ? 'bg-blue-600 text-white border-2 border-blue-600 animate-pulse-soft shadow-blue-200'
+                    : isParticipant && questionCount !== null
+                      ? 'bg-purple-500 text-white border-2 border-purple-500 shadow-purple-200'
+                      : 'bg-slate-200 text-slate-500 border-2 border-slate-200'
+                }`}>
+                  {isParticipant && questionCount !== null ? '✓' : '2'}
+                </div>
+                <div className="text-xs font-medium text-slate-700">Predict</div>
+              </div>
+
+              {/* Step 3: Wait */}
+              <div className="flex flex-col items-center relative z-10">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold mb-3 transition-all duration-300 shadow-sm ${
+                  isParticipant && !userEliminated && questionCount !== null && !potInfo.isFinalDay
+                    ? 'bg-blue-600 text-white border-2 border-blue-600 animate-pulse-soft shadow-blue-200'
+                    : isParticipant && questionCount !== null && potInfo.isFinalDay
+                      ? 'bg-purple-500 text-white border-2 border-purple-500 shadow-purple-200'
+                      : 'bg-slate-200 text-slate-500 border-2 border-slate-200'
+                }`}>
+                  {isParticipant && questionCount !== null && potInfo.isFinalDay ? '✓' : '3'}
+                </div>
+                <div className="text-xs font-medium text-slate-700">Wait</div>
+              </div>
+
+              {/* Step 4: Last 5 */}
+              <div className="flex flex-col items-center relative z-10">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold mb-3 transition-all duration-300 shadow-sm ${
+                  isParticipant && !userEliminated && potInfo.isFinalDay
+                    ? 'bg-amber-500 text-white border-2 border-amber-500 animate-pulse-soft shadow-amber-200'
+                    : userEliminated
+                      ? 'bg-rose-500 text-white border-2 border-rose-500 animate-pulse-soft shadow-rose-200'
+                      : 'bg-slate-200 text-slate-500 border-2 border-slate-200'
+                }`}>
+                  {userEliminated ? '!' : '4'}
+                </div>
+                <div className="text-xs font-medium text-slate-700">
+                  {userEliminated ? 'Re-enter' : 'Last 5'}
                 </div>
               </div>
 
-              {/* Tournament Status */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-lg md:rounded-xl p-2 md:p-3 border border-gray-200/60 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div className="flex items-center justify-center mb-1">
-                  <Clock className="w-3 h-3 md:w-4 md:h-4 text-purple-600" />
+              {/* Step 5: Win */}
+              <div className="flex flex-col items-center relative z-10">
+                <div className="w-12 h-12 bg-slate-200 border-2 border-slate-200 rounded-full flex items-center justify-center text-sm font-semibold text-slate-500 mb-3 shadow-sm transition-all duration-300">
+                  5
                 </div>
-                <div className="text-center">
-                  <div className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wide mb-0.5">Status</div>
-                  <div className="text-xs md:text-sm font-bold text-gray-900">
-                    {getStatus()}
-                  </div>
+                <div className="text-xs font-medium text-slate-700">Win</div>
+              </div>
+
+              {/* Enhanced Connecting Lines with Gradients */}
+              <div className="absolute top-6 left-0 right-0 flex items-center justify-between px-14">
+                {/* Line 1->2 */}
+                <div className="flex-1 h-1 mx-3 bg-slate-200 rounded-full overflow-hidden">
+                  <div className={`h-full transition-all duration-700 ease-out rounded-full ${
+                    isParticipant ? 'bg-gradient-to-r from-purple-500 to-purple-500' : 'bg-slate-300'
+                  }`} style={{ width: isParticipant ? '100%' : '0%' }}></div>
+                </div>
+
+                {/* Line 2->3 */}
+                <div className="flex-1 h-1 mx-3 bg-slate-200 rounded-full overflow-hidden">
+                  <div className={`h-full transition-all duration-700 ease-out rounded-full ${
+                    isParticipant && questionCount !== null ? 'bg-gradient-to-r from-purple-500 to-purple-500' : 'bg-slate-300'
+                  }`} style={{ width: isParticipant && questionCount !== null ? '100%' : '0%' }}></div>
+                </div>
+
+                {/* Line 3->4 */}
+                <div className="flex-1 h-1 mx-3 bg-slate-200 rounded-full overflow-hidden">
+                  <div className={`h-full transition-all duration-700 ease-out rounded-full ${
+                    potInfo.isFinalDay ? 'bg-gradient-to-r from-purple-500 to-amber-500' : 'bg-slate-300'
+                  }`} style={{ width: potInfo.isFinalDay ? '100%' : '0%' }}></div>
+                </div>
+
+                {/* Line 4->5 */}
+                <div className="flex-1 h-1 mx-3 bg-slate-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-slate-300 rounded-full" style={{ width: '0%' }}></div>
                 </div>
               </div>
             </div>
 
-            {/* Prediction Distribution - Ultra Compact */}
-            {predictionPercentages && !isLoading && (
-              <div className="bg-white/80 backdrop-blur-sm rounded-lg md:rounded-xl p-3 md:p-4 border border-gray-200/60 shadow-lg mb-3 md:mb-4 animate-fade-in-up opacity-0" style={{
-                animation: 'fadeInUp 0.6s ease-out 1.0s forwards'
-              }}>
-                <div className="flex items-center justify-center mb-2 md:mb-3">
-                  <TrendingUp className="w-3 h-3 md:w-4 md:h-4 text-purple-600 mr-1.5" />
-                  <h3 className="text-sm md:text-base font-semibold text-gray-900">Current Predictions</h3>
+            
+
+            {/* Critical Return Message */}
+            {isParticipant && !userEliminated && (
+              <div className="mt-3 text-center">
+                <div className="text-sm font-bold text-purple-600">
+                  {/* ⚠️ You must return {isPenaltyExempt ? 'for each race' : 'daily'} to answer the next question */}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Collapsible Tournament Details */}
+          <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden">
+            <div
+              onClick={() => setIsTournamentInfoCollapsed(!isTournamentInfoCollapsed)}
+              className="cursor-pointer hover:bg-gray-50 transition-all duration-200 p-4 border-b border-gray-100"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                    <Info className="w-4 h-4 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900">Tournament Details</h3>
+                    <p className="text-xs text-gray-600">Learn about this {tournamentType.toLowerCase()} tournament</p>
+                  </div>
+                </div>
+                <div className={`transform transition-transform duration-200 ${isTournamentInfoCollapsed ? 'rotate-0' : 'rotate-180'}`}>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                </div>
+              </div>
+            </div>
+
+            {!isTournamentInfoCollapsed && (
+              <div className="p-4 space-y-4">
+                {/* Tournament Type Info */}
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Trophy className="w-3 h-3 text-purple-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">{tournamentType} Tournament</h4>
+                    <p className="text-xs text-gray-600 mt-1">
+                      {isPenaltyExempt
+                        ? 'Event-based tournament with forgiving rules - wrong answers don\'t eliminate you.'
+                        : 'Daily prediction tournament where wrong answers will result in elimination.'
+                      }
+                    </p>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  {/* YES Predictions */}
-                  <div className="text-center">
-                    <div className="bg-green-100 rounded-lg md:rounded-xl p-2 md:p-3 mb-1.5">
-                      <div className="text-base md:text-lg font-bold text-green-700 mb-0.5">
-                        {predictionPercentages.positivePercentage}%
-                      </div>
-                      <div className="text-green-600 font-medium text-xs">YES</div>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-1 md:h-1.5">
-                      <div
-                        className="bg-green-500 h-1 md:h-1.5 rounded-full transition-all duration-1000"
-                        style={{ width: `${predictionPercentages.positivePercentage}%` }}
-                      ></div>
-                    </div>
+                {/* Topic Info */}
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Target className="w-3 h-3 text-green-600" />
                   </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">Topic: {market?.potTopic || 'General'}</h4>
+                    <p className="text-xs text-gray-600 mt-1">
+                      All questions in this tournament will be related to this topic.
+                    </p>
+                  </div>
+                </div>
 
-                  {/* NO Predictions */}
-                  <div className="text-center">
-                    <div className="bg-red-100 rounded-lg md:rounded-xl p-2 md:p-3 mb-1.5">
-                      <div className="text-base md:text-lg font-bold text-red-700 mb-0.5">
-                        {predictionPercentages.negativePercentage}%
-                      </div>
-                      <div className="text-red-600 font-medium text-xs">NO</div>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-1 md:h-1.5">
-                      <div
-                        className="bg-red-500 h-1 md:h-1.5 rounded-full transition-all duration-1000"
-                        style={{ width: `${predictionPercentages.negativePercentage}%` }}
-                      ></div>
-                    </div>
+                {/* Entry Fee Info */}
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <DollarSign className="w-3 h-3 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">Entry Fee: ${entryFee?.toFixed(2) || '0.00'}</h4>
+                    <p className="text-xs text-gray-600 mt-1">
+                      {isPenaltyExempt
+                        ? 'Fixed entry fee for all participants - no daily increases.'
+                        : 'Increases daily. A higher fee can mean a higher chance of winning due to less players remaining.'
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                {/* How to Win */}
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Crown className="w-3 h-3 text-yellow-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">How to Win</h4>
+                    <p className="text-xs text-gray-600 mt-1">
+                      {isPenaltyExempt
+                        ? 'Player with the highest accuracy across all race predictions wins the prize pool.'
+                        : 'Be the last player standing by making correct predictions and avoiding elimination.'
+                      }
+                    </p>
                   </div>
                 </div>
               </div>
             )}
-
-            {/* User Status & Action Section - Ultra Compact */}
-            <div className="flex flex-col items-center animate-fade-in-up opacity-0" style={{
-              animation: 'fadeInUp 0.6s ease-out 1.2s forwards'
-            }}>
-              {/* User Status Messages - Ultra Compact */}
-              {isConnected && (
-                <div className="mb-2 md:mb-3">
-                  {isParticipant && !userEliminated && (
-                    <div className="inline-flex items-center px-2.5 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium mb-2">
-                      <Target className="w-3 h-3 mr-1" />
-                      You're already in this tournament!
-                    </div>
-                  )}
-                  {isParticipant && userEliminated && (
-                    <div className="inline-flex items-center px-2.5 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium mb-2">
-                      <X className="w-3 h-3 mr-1" />
-                      You were eliminated from this tournament
-                    </div>
-                  )}
-                  {!isParticipant && !isLoading && (
-                    <div className="inline-flex items-center px-2.5 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium mb-2">
-                      <Zap className="w-3 h-3 mr-1" />
-                      Ready to join and compete?
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Ready Button - Ultra Compact */}
-              <button
-                onClick={handleReady}
-                disabled={!isConnected || (isParticipant && userEliminated)}
-                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700
-                           disabled:bg-gray-400 disabled:from-gray-400 disabled:to-gray-400
-                           text-white font-medium py-2.5 md:py-3 px-5 md:px-6 rounded-lg md:rounded-xl
-                           transition-all duration-300 text-sm md:text-base disabled:cursor-not-allowed transform hover:scale-[1.02]
-                           active:scale-[0.98] tracking-wide shadow-xl hover:shadow-2xl
-                           disabled:opacity-50 min-w-[140px] md:min-w-[160px]"
-              >
-                {!isConnected ? t.connectWallet :
-                 isParticipant && userEliminated ? "Eliminated" :
-                 isParticipant ? "View Tournament" :
-                 "Join Tournament 🚀"}
-              </button>
-
-              {/* Connection Status */}
-              {!isConnected && (
-                <p className="text-xs text-gray-500 text-center max-w-md mx-auto leading-relaxed mt-2">
-                  Connect your wallet to participate in this prediction tournament
-                </p>
-              )}
-            </div>
           </div>
+
+          {/* Simple Action Section */}
+          <div className="text-center">
+            {/* User Status
+            {isConnected && (
+              <div className="mb-3">
+                {isParticipant && !userEliminated && (
+                  <div className="text-green-700 text-sm font-medium">✅ You're in this tournament</div>
+                )}
+                {isParticipant && userEliminated && (
+                  <div className="text-red-700 text-sm font-medium">❌ You were eliminated</div>
+                )}
+                {!isParticipant && (
+                  <div className="text-blue-700 text-sm font-medium">🎯 Ready to join?</div>
+                )}
+              </div>
+            )} */}
+
+            {/* Simple Button */}
+            <button
+              onClick={handleReady}
+              disabled={!isConnected || (isParticipant && userEliminated)}
+              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed"
+            >
+              {!isConnected ? t.connectWallet :
+               isParticipant && userEliminated ? "Eliminated" :
+               isParticipant ? "View Tournament" :
+               "Join Tournament"}
+            </button>
+
+            {!isConnected && (
+              <p className="text-xs text-gray-500 mt-2">Connect wallet to join</p>
+            )}
+          </div>
+
         </div>
       </div>
 
@@ -541,6 +821,22 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             transform: translateY(0) scale(1);
           }
         }
+
+        @keyframes pulse-soft {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 currentColor;
+          }
+          50% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+          }
+        }
+
+        .animate-pulse-soft {
+          animation: pulse-soft 2s ease-in-out infinite;
+        }
+
       `}</style>
     </div>
   );
