@@ -1892,13 +1892,30 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               return !market.useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
                             })()}`}>
                               <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
-                                {market.potTopic || 'N/A'}
-                                <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
-                                <RefreshCw className="w-3 h-3" />
                                 {(() => {
                                   const contractAddress = getContractAddress(market.id);
-                                  const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
-                                  return isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily');
+                                  const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
+                                  const potInfo = contractAddress ? potInformation[contractAddress] : null;
+
+                                  if (userIsParticipant && potInfo?.hasStarted) {
+                                    // Show timer on left side if pot has started
+                                    return (
+                                      <div className="px-2 py-1 bg-gray-100 rounded-lg text-xs font-bold text-purple-700" style={{ opacity: 1 }}>
+                                        {contractAddress ? contractTimers[contractAddress] || '' : ''}
+                                      </div>
+                                    );
+                                  } else {
+                                    // Show potTopic and daily/weekly info if pot hasn't started or user not participant
+                                    const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
+                                    return (
+                                      <>
+                                        {market.potTopic || 'N/A'}
+                                        <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
+                                        <RefreshCw className="w-3 h-3" />
+                                        {isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily')}
+                                      </>
+                                    );
+                                  }
                                 })()}
                               </div>
 
@@ -1908,39 +1925,22 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 // NOTE: participant counts are checked but not displayed to users
                                 const contractAddress = getContractAddress(market.id);
                                 const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
-                                const enoughParticipants = contractAddress ? hasEnoughParticipants(contractAddress) : false; // Used for internal logic, not displayed
-                                const potInfo = contractAddress ? potInformation[contractAddress] : null;
+                                
 
                                 if (userIsParticipant) {
-                                  // USER IS PARTICIPANT: Show status badges based on pot state
-                                  // Check if user is eliminated for this specific market
-                                  const isEliminated = contractAddress && eliminationStatus[contractAddress];
-
-                                  // Priority: Timer > "Begins soon" > "Entered"
-                                  if (potInfo?.hasStarted) {
-                                    // Case 3: Show countdown timer when pot has started
-                                    return (
-                                      <div className={`px-2 py-1 bg-gray-100 rounded-lg text-xs font-medium flex items-center gap-1 ${
-                                        isEliminated ? 'text-gray-500' : 'text-purple-700'
-                                      }`}>
-                                        {contractAddress ? contractTimers[contractAddress] || '' : ''}
-                                      </div>
-                                    );
-                                  } else if (potInfo?.announcementSent) {
-                                    // Case 2: Show "Begins soon" when announcement sent but not started
-                                    return (
-                                      <div className="px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-medium flex items-center gap-1">
-                                        {t.beginsSoon || "Begins soon"}
-                                      </div>
-                                    );
-                                  } else {
-                                    // Case 1: Show "Waiting" when participant but pot not ready
-                                    return (
-                                      <div className="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium flex items-center gap-1">
-                                        {t.entered || "Waiting"}
-                                      </div>
-                                    );
-                                  }
+                                  // USER IS PARTICIPANT: Always show "My progress" button
+                                  return (
+                                    <button
+                                      onClick={() => {
+                                        handleMarketClick(market.id);
+                                        setActiveSection('potInfo');
+                                      }}
+                                      className="px-2 py-1 bg-purple-700 text-white rounded text-xs font-semibold flex items-center gap-1 hover:bg-gray-800 transition-colors"
+                                    >
+                                      My Progress
+                                      <ArrowRight className="w-3 h-3 text-white opacity-100" />
+                                    </button>
+                                  );
                                 } else {
                                   // USER IS NOT PARTICIPANT: Show bookmark button
                                   return (
@@ -2465,13 +2465,30 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             return !market.useTraditionalLayout ? '' : '';
                           })()}`}>
                             <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
-                              {market.potTopic || 'N/A'}
-                              <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
-                              <RefreshCw className="w-3 h-3" />
                               {(() => {
                                 const contractAddress = getContractAddress(market.id);
-                                const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
-                                return isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily');
+                                const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
+                                const potInfo = contractAddress ? potInformation[contractAddress] : null;
+
+                                if (userIsParticipant && potInfo?.hasStarted) {
+                                  // Show timer on left side if pot has started
+                                  return (
+                                    <div className="px-2 py-1 bg-gray-100 rounded-lg text-xs font-bold text-purple-700" style={{ opacity: 1 }}>
+                                      {contractAddress ? contractTimers[contractAddress] || '' : ''}
+                                    </div>
+                                  );
+                                } else {
+                                  // Show potTopic and daily/weekly info if pot hasn't started or user not participant
+                                  const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
+                                  return (
+                                    <>
+                                      {market.potTopic || 'N/A'}
+                                      <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
+                                      <RefreshCw className="w-3 h-3" />
+                                      {isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily')}
+                                    </>
+                                  );
+                                }
                               })()}
                             </div>
 
@@ -2481,39 +2498,22 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               // NOTE: participant counts are checked but not displayed to users
                               const contractAddress = getContractAddress(market.id);
                               const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
-                              const enoughParticipants = contractAddress ? hasEnoughParticipants(contractAddress) : false; // Used for internal logic, not displayed
-                              const potInfo = contractAddress ? potInformation[contractAddress] : null;
+                              
 
                               if (userIsParticipant) {
-                                // USER IS PARTICIPANT: Show status badges based on pot state
-                                // Check if user is eliminated for this specific market
-                                const isEliminated = contractAddress && eliminationStatus[contractAddress];
-
-                                // Priority: Timer > "Begins soon" > "Entered"
-                                if (potInfo?.hasStarted) {
-                                  // Case 3: Show countdown timer when pot has started
-                                  return (
-                                    <div className={`px-2 py-1 bg-gray-100 rounded-lg text-xs font-medium flex items-center gap-1 ${
-                                      isEliminated ? 'text-gray-500' : 'text-purple-700'
-                                    }`}>
-                                      {contractAddress ? contractTimers[contractAddress] || '' : ''}
-                                    </div>
-                                  );
-                                } else if (potInfo?.announcementSent) {
-                                  // Case 2: Show "Begins soon" when announcement sent but not started
-                                  return (
-                                    <div className="px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-medium flex items-center gap-1">
-                                      {t.beginsSoon || "Begins soon"}
-                                    </div>
-                                  );
-                                } else {
-                                  // Case 1: Show "Waiting" when participant but pot not ready
-                                  return (
-                                    <div className="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium flex items-center gap-1">
-                                      {t.entered || "Waiting"}
-                                    </div>
-                                  );
-                                }
+                                // USER IS PARTICIPANT: Always show "My progress" button
+                                return (
+                                  <button
+                                    onClick={() => {
+                                      handleMarketClick(market.id);
+                                      setActiveSection('potInfo');
+                                    }}
+                                    className="px-2 py-1 bg-purple-700 text-white rounded text-xs font-semibold flex items-center gap-1 hover:bg-gray-800 transition-colors"
+                                  >
+                                    My Progress
+                                    <ArrowRight className="w-3 h-3 text-white opacity-100" />
+                                  </button>
+                                );
                               } else {
                                 // USER IS NOT PARTICIPANT: Show bookmark button
                                 return (

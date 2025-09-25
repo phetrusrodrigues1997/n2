@@ -13,7 +13,8 @@ import {
   calculateEntryFee,
   PENALTY_EXEMPT_ENTRY_FEE,
   getTimerDataForContract,
-  formatTimerDisplay
+  formatTimerDisplay,
+  CONTRACT_TO_TABLE_MAPPING
 } from '../Database/config';
 import { getEventDate } from '../Database/eventDates';
 import { useContractData } from '../hooks/useContractData';
@@ -284,7 +285,9 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
         // Check if user is eliminated
         console.log('🔍 PotInfoPage - Checking if user is eliminated...');
-        const eliminated = await isEliminated(address, contractAddress);
+        // Convert contract address to table type
+        const tableType = CONTRACT_TO_TABLE_MAPPING[contractAddress as keyof typeof CONTRACT_TO_TABLE_MAPPING];
+        const eliminated = await isEliminated(address, tableType);
         console.log('🔍 PotInfoPage - User elimination status:', eliminated);
         setUserEliminated(eliminated ? true : false);
 
