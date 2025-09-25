@@ -123,31 +123,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   // Vote change loading states
   const [voteChangeLoading, setVoteChangeLoading] = useState<Record<string, boolean>>({});
 
-  // Contract-specific timer mapping using the centralized logic
-  const [contractTimers, setContractTimers] = useState<Record<string, string>>({});
 
   // Tips carousel state
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
 
-  useEffect(() => {
-    const updateAllTimers = async () => {
-      if (contractAddresses.length === 0) return;
-
-      const { getFormattedTimerForContract } = await import('../Database/config');
-      const newTimers: Record<string, string> = {};
-
-      for (const contractAddress of contractAddresses) {
-        newTimers[contractAddress] = getFormattedTimerForContract(contractAddress);
-      }
-
-      setContractTimers(newTimers);
-    };
-
-    updateAllTimers();
-
-    const interval = setInterval(updateAllTimers, 1000);
-    return () => clearInterval(interval);
-  }, [contractAddresses]);
 
   // Tips carousel auto-rotation
   useEffect(() => {
@@ -1887,63 +1866,53 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             })()}
 
                             {/* Stats Footer */}
-                            <div className={`flex justify-between items-center pt-2 ${(() => {
-                              // Mobile: Check if this market uses traditional layout for translate-y
-                              return !market.useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
-                            })()}`}>
-                              <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
-                                {(() => {
-                                  const contractAddress = getContractAddress(market.id);
-                                  const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
-                                  const potInfo = contractAddress ? potInformation[contractAddress] : null;
+                            {(() => {
+                              const contractAddress = getContractAddress(market.id);
+                              const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
 
-                                  if (userIsParticipant && potInfo?.hasStarted) {
-                                    // Show timer on left side if pot has started
-                                    return (
-                                      <div className="px-2 py-1 bg-gray-100 rounded-lg text-xs font-bold text-purple-700" style={{ opacity: 1 }}>
-                                        {contractAddress ? contractTimers[contractAddress] || '' : ''}
-                                      </div>
-                                    );
-                                  } else {
-                                    // Show potTopic and daily/weekly info if pot hasn't started or user not participant
-                                    const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
-                                    return (
-                                      <>
-                                        {market.potTopic || 'N/A'}
-                                        <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
-                                        <RefreshCw className="w-3 h-3" />
-                                        {isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily')}
-                                      </>
-                                    );
-                                  }
-                                })()}
-                              </div>
-
-                              {(() => {
-                                // MOBILE STATS FOOTER - RIGHT SIDE DISPLAY LOGIC
-                                // Shows user participation status OR bookmark button
-                                // NOTE: participant counts are checked but not displayed to users
-                                const contractAddress = getContractAddress(market.id);
-                                const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
-                                
-
-                                if (userIsParticipant) {
-                                  // USER IS PARTICIPANT: Always show "My progress" button
-                                  return (
+                              if (userIsParticipant) {
+                                // USER IS PARTICIPANT: Show ONLY full-width "More Info" button
+                                return (
+                                  <div className="absolute bottom-2 left-2 right-2 z-20">
                                     <button
                                       onClick={() => {
                                         handleMarketClick(market.id);
                                         setActiveSection('potInfo');
                                       }}
-                                      className="px-2 py-1 bg-purple-700 text-white rounded text-xs font-semibold flex items-center gap-1 hover:bg-gray-800 transition-colors"
+                                      className="w-full group relative overflow-hidden bg-black hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                                     >
-                                      My Progress
-                                      <ArrowRight className="w-3 h-3 text-white opacity-100" />
+                                      <span className="relative z-10 flex items-center justify-center gap-2">
+                                        More Info
+                                        <ArrowRight className="w-4 h-4 text-white" />
+                                      </span>
                                     </button>
-                                  );
-                                } else {
-                                  // USER IS NOT PARTICIPANT: Show bookmark button
+                                  </div>
+                                );
+                              } else {
+                                // USER IS NOT PARTICIPANT: Show two-column layout
+                                return (
+                                  <div className={`flex justify-between items-center pt-2 ${(() => {
+                                    return !market.useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
+                                  })()}`}>
+                              <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
+                                {(() => {
+                                  const contractAddress = getContractAddress(market.id);
+                                  // Always show potTopic and daily/weekly info - no more timers in LandingPage
+                                  const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
                                   return (
+                                    <>
+                                      {market.potTopic || 'N/A'}
+                                      <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
+                                      <RefreshCw className="w-3 h-3" />
+                                      {isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily')}
+                                    </>
+                                  );
+                                })()}
+                              </div>
+
+                                    {/* Non-participant: Show bookmark button */}
+                                
+
                                     <button
                                       onClick={(e) => handleBookmarkToggle(market, e)}
                                       disabled={bookmarkLoading === market.id}
@@ -1963,10 +1932,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         </svg>
                                       )}
                                     </button>
-                                  );
-                                }
-                              })()}
-                            </div>
+                                  </div>
+                                );
+                              }
+                            })()}
 
                             {/* Carousel indicators for first market only */}
                             {market.marketIndex === 0 && (
@@ -2460,86 +2429,73 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           </div>
 
                           {/* Stats Footer - Compact */}
-                          <div className={`flex justify-between items-center pt-2 ${(() => {
-                            // Desktop: Check if this market uses traditional layout for translate-y
-                            return !market.useTraditionalLayout ? '' : '';
-                          })()}`}>
-                            <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
-                              {(() => {
-                                const contractAddress = getContractAddress(market.id);
-                                const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
-                                const potInfo = contractAddress ? potInformation[contractAddress] : null;
+                          {(() => {
+                            const contractAddress = getContractAddress(market.id);
+                            const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
 
-                                if (userIsParticipant && potInfo?.hasStarted) {
-                                  // Show timer on left side if pot has started
-                                  return (
-                                    <div className="px-2 py-1 bg-gray-100 rounded-lg text-xs font-bold text-purple-700" style={{ opacity: 1 }}>
-                                      {contractAddress ? contractTimers[contractAddress] || '' : ''}
-                                    </div>
-                                  );
-                                } else {
-                                  // Show potTopic and daily/weekly info if pot hasn't started or user not participant
-                                  const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
-                                  return (
-                                    <>
-                                      {market.potTopic || 'N/A'}
-                                      <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
-                                      <RefreshCw className="w-3 h-3" />
-                                      {isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily')}
-                                    </>
-                                  );
-                                }
-                              })()}
-                            </div>
-
-                            {(() => {
-                              // DESKTOP STATS FOOTER - RIGHT SIDE DISPLAY LOGIC
-                              // Shows user participation status OR bookmark button
-                              // NOTE: participant counts are checked but not displayed to users
-                              const contractAddress = getContractAddress(market.id);
-                              const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
-                              
-
-                              if (userIsParticipant) {
-                                // USER IS PARTICIPANT: Always show "My progress" button
-                                return (
+                            if (userIsParticipant) {
+                              // USER IS PARTICIPANT: Show ONLY full-width "More Info" button
+                              return (
+                                <div className="pt-2">
                                   <button
                                     onClick={() => {
                                       handleMarketClick(market.id);
                                       setActiveSection('potInfo');
                                     }}
-                                    className="px-2 py-1 bg-purple-700 text-white rounded text-xs font-semibold flex items-center gap-1 hover:bg-gray-800 transition-colors"
+                                    className="w-full group relative overflow-hidden bg-black hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                                   >
-                                    My Progress
-                                    <ArrowRight className="w-3 h-3 text-white opacity-100" />
+                                    <span className="relative z-10 flex items-center justify-center gap-2">
+                                      More Info
+                                      <ArrowRight className="w-4 h-4 text-white" />
+                                    </span>
                                   </button>
-                                );
-                              } else {
-                                // USER IS NOT PARTICIPANT: Show bookmark button
+                                </div>
+                              );
+                            } else {
+                              // USER IS NOT PARTICIPANT: Show two-column layout
+                              return (
+                                <div className={`flex justify-between items-center pt-2 ${(() => {
+                                  return !market.useTraditionalLayout ? '' : '';
+                                })()}`}>
+                            <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
+                              {(() => {
+                                const contractAddress = getContractAddress(market.id);
+                                // Always show potTopic and daily/weekly info - no more timers in LandingPage
+                                const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
                                 return (
-                                  <button
-                                    onClick={(e) => handleBookmarkToggle(market, e)}
-                                    disabled={bookmarkLoading === market.id}
-                                    className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
-                                    style={{ opacity: 0.7 }}
-                                  >
-                                    {bookmarkLoading === market.id ? (
-                                      <div className="w-4 h-4 animate-spin rounded-full border-2 border-purple-700 border-t-transparent"></div>
-                                    ) : bookmarkedMarkets.has(market.id) ? (
-                                      <Bookmark
-                                        className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700"
-                                      />
-                                    ) : (
-                                      <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
-                                        <path d="M12 7v10M7 12h10" strokeWidth={2} strokeLinecap="round" />
-                                      </svg>
-                                    )}
-                                  </button>
+                                  <>
+                                    {market.potTopic || 'N/A'}
+                                    <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
+                                    <RefreshCw className="w-3 h-3" />
+                                    {isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily')}
+                                  </>
                                 );
-                              }
-                            })()}
-                          </div>
+                              })()}
+                            </div>
+
+                            <button
+                              onClick={(e) => handleBookmarkToggle(market, e)}
+                              disabled={bookmarkLoading === market.id}
+                              className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                              style={{ opacity: 0.7 }}
+                            >
+                              {bookmarkLoading === market.id ? (
+                                <div className="w-4 h-4 animate-spin rounded-full border-2 border-purple-700 border-t-transparent"></div>
+                              ) : bookmarkedMarkets.has(market.id) ? (
+                                <Bookmark
+                                  className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700"
+                                />
+                              ) : (
+                                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
+                                  <path d="M12 7v10M7 12h10" strokeWidth={2} strokeLinecap="round" />
+                                </svg>
+                              )}
+                            </button>
+                                </div>
+                              );
+                            }
+                          })()}
                         </div>
                       </div>
                     </div>
