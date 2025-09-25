@@ -1512,7 +1512,17 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             '--swap-distance': swapDistance
                           } as React.CSSProperties}
                         >
-                          <div className={`h-full ${market.marketIndex === 0 ? 'min-h-[325px] bg-[#fefefe]' : 'min-h-[260px] bg-white'} flex flex-col justify-between transition-all duration-300 ${(() => {
+                          <div className={`h-full ${(() => {
+                            const contractAddress = getContractAddress(market.id);
+                            const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
+
+                            if (market.marketIndex === 0) {
+                              // First market: extra height for participants to accommodate More Info button
+                              return userIsParticipant ? 'min-h-[360px] bg-[#fefefe]' : 'min-h-[325px] bg-[#fefefe]';
+                            } else {
+                              return 'min-h-[260px] bg-white';
+                            }
+                          })()} flex flex-col justify-between transition-all duration-300 ${(() => {
                             const contractAddress = getContractAddress(market.id);
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
@@ -1833,9 +1843,16 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                             {/* Entry Fee -> Pot Balance Display */}
                             <div className={`flex justify-center items-center ${(() => {
+                              const contractAddress = getContractAddress(market.id);
+                              const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
+
                               // For first market on mobile, add additional -translate-y
                               if (market.marketIndex === 0) {
-                                return '-translate-y-1';
+                                return userIsParticipant ? '-translate-y-24' : '-translate-y-1';
+                              }
+                              // For all other markets when user is participant
+                              if (userIsParticipant) {
+                                return !market.useTraditionalLayout ? '-translate-y-14' : '-translate-y-6';
                               }
                               return !market.useTraditionalLayout ? '-translate-y-8' : '';
                             })()}`}>
@@ -1851,7 +1868,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             {/* Tip sentence for first market only */}
                             {(() => {
                               return market.marketIndex === 0 ? (
-                                <div className="flex justify-start mb-2">
+                                <div className={`flex justify-start ${(() => {
+                                  const contractAddress = getContractAddress(market.id);
+                                  const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
+                                  return userIsParticipant ? 'mb-1 -mt-16 -translate-y-6' : 'mb-2';
+                                })()}`}>
                                   <div className="text-base text-gray-500 text-left h-12 flex flex-col">
                                     <div className="flex-1 flex items-center justify-start">
                                       <p className="transition-opacity duration-300 leading-tight">
