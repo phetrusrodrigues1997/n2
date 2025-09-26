@@ -1723,7 +1723,14 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               if (market.useTraditionalLayout) {
                                 // Traditional buttons (even index markets)
                                 return (
-                                  <div className={`flex justify-center gap-2 mb-3 ${market.marketIndex === 0 ? '-translate-y-1' : 'translate-y-3'}`}>
+                                  <div className={`flex justify-center gap-2 mb-3 ${(() => {
+                                    if (market.marketIndex === 0) {
+                                      const contractAddress = getContractAddress(market.id);
+                                      const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
+                                      return userIsParticipant ? 'translate-y-2' : '-translate-y-1';
+                                    }
+                                    return 'translate-y-3';
+                                  })()}`}>
                                     <button
                                       onClick={handleButtonClick(market.id, 'positive', (e) => {
                                         e.stopPropagation();
@@ -1781,7 +1788,14 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 }
 
                                 return (
-                                  <div className={`flex items-center justify-between ${market.marketIndex === 0 ? 'mb-3 -translate-y-3' : 'mb-6'}`}>
+                                  <div className={`flex items-center justify-between ${(() => {
+                                    if (market.marketIndex === 0) {
+                                      const contractAddress = getContractAddress(market.id);
+                                      const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
+                                      return userIsParticipant ? 'mb-3 translate-y-1' : 'mb-3 -translate-y-3';
+                                    }
+                                    return 'mb-6';
+                                  })()}`}>
                                     {/* Left side: Yes/No labels stacked */}
                                     <div className="flex flex-col gap-2">
                                       <div className="text-base font-normal text-black">{t.higher}</div>
@@ -1892,7 +1906,50 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
 
                               if (userIsParticipant) {
-                                // USER IS PARTICIPANT: Show ONLY full-width "More Info" button
+                                // Check if user is eliminated
+                                const isEliminated = contractAddress && eliminationStatus[contractAddress];
+
+                                if (isEliminated) {
+                                  // USER IS ELIMINATED: Show normal stats footer, no More Info button
+                                  return (
+                                    <div className={`flex justify-between items-center pt-2 ${(() => {
+                                      return !market.useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
+                                    })()}`}>
+                                      <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
+                                        {(() => {
+                                          const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
+                                          return (
+                                            <>
+                                              {market.potTopic || 'N/A'}
+                                              <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
+                                              <RefreshCw className="w-3 h-3" />
+                                              {isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily')}
+                                            </>
+                                          );
+                                        })()}
+                                      </div>
+                                      <button
+                                        onClick={(e) => handleBookmarkToggle(market, e)}
+                                        disabled={bookmarkLoading === market.id}
+                                        className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                                        style={{ opacity: 0.7 }}
+                                      >
+                                        {bookmarkLoading === market.id ? (
+                                          <div className="w-4 h-4 animate-spin rounded-full border-2 border-purple-700 border-t-transparent"></div>
+                                        ) : bookmarkedMarkets.has(market.id) ? (
+                                          <Bookmark className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700" />
+                                        ) : (
+                                          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
+                                            <path d="M12 7v10M7 12h10" strokeWidth={2} strokeLinecap="round" />
+                                          </svg>
+                                        )}
+                                      </button>
+                                    </div>
+                                  );
+                                }
+
+                                // USER IS PARTICIPANT (NOT ELIMINATED): Show ONLY full-width "More Info" button
                                 return (
                                   <div className="absolute bottom-2 left-2 right-2 z-20">
                                     <button
@@ -2455,7 +2512,50 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
 
                             if (userIsParticipant) {
-                              // USER IS PARTICIPANT: Show ONLY full-width "More Info" button
+                              // Check if user is eliminated
+                              const isEliminated = contractAddress && eliminationStatus[contractAddress];
+
+                              if (isEliminated) {
+                                // USER IS ELIMINATED: Show normal stats footer, no More Info button
+                                return (
+                                  <div className={`flex justify-between items-center pt-2 ${(() => {
+                                    return !market.useTraditionalLayout ? '' : '';
+                                  })()}`}>
+                                    <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
+                                      {(() => {
+                                        const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
+                                        return (
+                                          <>
+                                            {market.potTopic || 'N/A'}
+                                            <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
+                                            <RefreshCw className="w-3 h-3" />
+                                            {isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily')}
+                                          </>
+                                        );
+                                      })()}
+                                    </div>
+                                    <button
+                                      onClick={(e) => handleBookmarkToggle(market, e)}
+                                      disabled={bookmarkLoading === market.id}
+                                      className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                                      style={{ opacity: 0.7 }}
+                                    >
+                                      {bookmarkLoading === market.id ? (
+                                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-purple-700 border-t-transparent"></div>
+                                      ) : bookmarkedMarkets.has(market.id) ? (
+                                        <Bookmark className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700" />
+                                      ) : (
+                                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
+                                          <path d="M12 7v10M7 12h10" strokeWidth={2} strokeLinecap="round" />
+                                        </svg>
+                                      )}
+                                    </button>
+                                  </div>
+                                );
+                              }
+
+                              // USER IS PARTICIPANT (NOT ELIMINATED): Show ONLY full-width "More Info" button
                               return (
                                 <div className="pt-2">
                                   <button

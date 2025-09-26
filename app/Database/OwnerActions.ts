@@ -410,21 +410,38 @@ async function executeSequentialElimination(
       ));
 
     if (allWrongBets.length > 0) {
-      const wrongAddresses = allWrongBets.map(bet => ({
-        walletAddress: bet.walletAddress.toLowerCase(),
-        wrongPredictionDate: finalTargetDate,
-      }));
+      // Check which wrong predictors are NOT already eliminated
+      const wrongAddressesToCheck = allWrongBets.map(bet => bet.walletAddress.toLowerCase());
+      const alreadyEliminated = await db
+        .select({ walletAddress: wrongPredictionTable.walletAddress })
+        .from(wrongPredictionTable)
+        .where(inArray(wrongPredictionTable.walletAddress, wrongAddressesToCheck));
 
-      await db
-        .insert(wrongPredictionTable)
-        .values(wrongAddresses)
-        .onConflictDoNothing();
+      const alreadyEliminatedSet = new Set(alreadyEliminated.map(e => e.walletAddress.toLowerCase()));
+      const newWrongPredictors = allWrongBets.filter(bet =>
+        !alreadyEliminatedSet.has(bet.walletAddress.toLowerCase())
+      );
 
-      await db
-        .delete(betsTable)
-        .where(
-          inArray(betsTable.walletAddress, wrongAddresses.map(w => w.walletAddress))
-        );
+      if (newWrongPredictors.length > 0) {
+        console.log(`📊 [FALLBACK-2] Found ${newWrongPredictors.length} new wrong predictors (${alreadyEliminated.length} already eliminated)`);
+
+        const wrongAddresses = newWrongPredictors.map(bet => ({
+          walletAddress: bet.walletAddress.toLowerCase(),
+          wrongPredictionDate: finalTargetDate,
+        }));
+
+        await db
+          .insert(wrongPredictionTable)
+          .values(wrongAddresses);
+
+        await db
+          .delete(betsTable)
+          .where(
+            inArray(betsTable.walletAddress, wrongAddresses.map(w => w.walletAddress))
+          );
+      } else {
+        console.log(`ℹ️ [FALLBACK-2] All wrong predictors were already eliminated, skipping processing`);
+      }
     }
     wrongPredictorsProcessed = true;
     console.log(`✅ [FALLBACK-2] Wrong predictions processed successfully`);
@@ -490,17 +507,43 @@ async function executeSequentialElimination(
         }
 
         if (nonPredictorsToEliminate.length > 0) {
-          const nonPredictorRecords = nonPredictorsToEliminate.map(address => ({
-            walletAddress: address.toLowerCase(),
-            wrongPredictionDate: finalTargetDate,
-          }));
+          // Check which non-predictors are NOT already eliminated
+          const alreadyEliminatedNonPredictors = await db
+            .select({ walletAddress: wrongPredictionTable.walletAddress })
+            .from(wrongPredictionTable)
+            .where(inArray(wrongPredictionTable.walletAddress, nonPredictorsToEliminate.map(addr => addr.toLowerCase())));
 
-          await db
-            .insert(wrongPredictionTable)
-            .values(nonPredictorRecords)
-            .onConflictDoNothing();
+          const alreadyEliminatedSet = new Set(alreadyEliminatedNonPredictors.map(e => e.walletAddress.toLowerCase()));
+          const newNonPredictors = nonPredictorsToEliminate.filter(address =>
+            !alreadyEliminatedSet.has(address.toLowerCase())
+          );
 
-          nonPredictorsEliminated = nonPredictorsToEliminate.length;
+          if (newNonPredictors.length > 0) {
+            console.log(`📊 [FALLBACK-3] Found ${newNonPredictors.length} new non-predictors to eliminate (${alreadyEliminatedNonPredictors.length} already eliminated)`);
+
+            const nonPredictorRecords = newNonPredictors.map(address => ({
+              walletAddress: address.toLowerCase(),
+              wrongPredictionDate: finalTargetDate,
+            }));
+
+            await db
+              .insert(wrongPredictionTable)
+              .values(nonPredictorRecords);
+
+            // CRITICAL: Remove ALL predictions (including future ones) from eliminated non-predictors
+            console.log(`🗑️ [FALLBACK-3b] Removing all predictions from ${newNonPredictors.length} eliminated non-predictors...`);
+            await db
+              .delete(betsTable)
+              .where(
+                inArray(betsTable.walletAddress, newNonPredictors.map(addr => addr.toLowerCase()))
+              );
+            console.log(`✅ [FALLBACK-3b] Removed all predictions from eliminated non-predictors`);
+
+            nonPredictorsEliminated = newNonPredictors.length;
+          } else {
+            console.log(`ℹ️ [FALLBACK-3] All non-predictors were already eliminated, skipping processing`);
+            nonPredictorsEliminated = 0;
+          }
         }
       }
     }
