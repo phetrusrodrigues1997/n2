@@ -570,9 +570,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             <button
               onClick={handleReady}
               disabled={!isConnected || (isParticipant && userEliminated)}
-              className={`bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 ${
-                isParticipant && !userEliminated ? 'py-2 px-4 text-sm' : 'py-3 px-6 text-sm'
-              }`}
+              className="bg-black hover:bg-purple-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 py-3 px-6 text-sm"
             >
               {!isConnected ? (
                 <>
@@ -724,13 +722,11 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           </div>
 
           {/* Action Button - Mobile only, centered between progress and details */}
-          <div className="flex sm:hidden justify-center mb-4">
+          <div className="flex sm:hidden mb-4">
             <button
               onClick={handleReady}
               disabled={!isConnected || (isParticipant && userEliminated)}
-              className={`bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 ${
-                isParticipant && !userEliminated ? 'py-3 px-6 text-sm' : 'py-4 px-8 text-base font-semibold'
-              }`}
+              className="bg-black hover:bg-purple-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 py-4 px-8 text-base font-semibold w-full"
             >
               {!isConnected ? (
                 <>
