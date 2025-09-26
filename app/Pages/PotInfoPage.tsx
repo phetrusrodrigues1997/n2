@@ -549,7 +549,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
         <div className="max-w-4xl w-full mx-auto space-y-4 md:space-y-0">
 
           {/* Modern Premium Header */}
-          <div className="text-center mb-6 -translate-y-4 md:mb-8 md:translate-y-0">
+          <div className="text-center mb-6 -translate-y-6 md:mb-8 md:translate-y-0">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100 rounded-full px-3 md:px-4 py-1.5 md:py-2 mb-4 md:mb-6">
               <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full animate-pulse"></div>
               <span className="text-xs md:text-sm font-medium text-purple-700">Today's Question</span>
@@ -570,7 +570,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             <button
               onClick={handleReady}
               disabled={!isConnected || (isParticipant && userEliminated)}
-              className="bg-black hover:bg-purple-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 py-3 px-6 text-sm"
+              className="bg-black hover:bg-purple-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 py-3 px-6 text-sm -translate-y-1"
             >
               {!isConnected ? (
                 <>
@@ -597,7 +597,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           </div>
 
           {/* Player status message - Mobile only */}
-          <div className="flex sm:hidden justify-center mb-4">
+          <div className="flex sm:hidden justify-start mb-4">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200 rounded-full px-3 py-2 animate-pulse-status">
               <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse-soft"></div>
               <span className="text-sm font-bold text-purple-800 tracking-wide">{getPlayerMessage()}</span>
@@ -707,18 +707,20 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               </div>
             </div>
 
-            {/* Next Question Timer */}
-            <div className="mt-4 md:mt-6 flex justify-center">
-              <div className="flex items-center gap-2 bg-gray-50 rounded-full px-3 py-2">
-                <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
-                  <Clock className="w-1.5 h-1.5 md:w-2 md:h-2 text-white" />
+            {/* Next Question Timer - Only show if pot has started */}
+            {potInfo.hasStarted && (
+              <div className="mt-4 md:mt-6 flex justify-center">
+                <div className="flex items-center gap-2 bg-gray-50 rounded-full px-3 py-2">
+                  <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
+                    <Clock className="w-1.5 h-1.5 md:w-2 md:h-2 text-white" />
+                  </div>
+                  <span className="text-xs text-gray-500 font-medium">Next question:</span>
+                  <span className="font-black text-gray-900 text-xs md:text-sm tracking-wider">
+                    {currentTimer}
+                  </span>
                 </div>
-                <span className="text-xs text-gray-500 font-medium">Next question:</span>
-                <span className="font-black text-gray-900 text-xs md:text-sm tracking-wider">
-                  {currentTimer}
-                </span>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Action Button - Mobile only, centered between progress and details */}
@@ -753,7 +755,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           </div>
 
           {/* Collapsible Tournament Details */}
-          <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden translate-y-4 md:translate-y-0">
+          <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden translate-y-4 md:translate-y-6">
             <div
               onClick={() => setIsTournamentInfoCollapsed(!isTournamentInfoCollapsed)}
               className="cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-all duration-200 p-3 md:p-4 border-b border-gray-100"
