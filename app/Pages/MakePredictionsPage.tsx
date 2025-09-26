@@ -115,6 +115,11 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   const [eventDate, setEventDate] = useState<string | null>(null);
   const [formattedEventDate, setFormattedEventDate] = useState<string>('');
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Effect to detect penalty-exempt contracts and set event dates
   useEffect(() => {
     if (contractAddress) {

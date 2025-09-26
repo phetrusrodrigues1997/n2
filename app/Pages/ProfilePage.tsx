@@ -70,6 +70,11 @@ const ProfilePage = ({ setActiveSection, currentLanguage = 'en' }: ProfilePagePr
   // State for ETH price
   const [ethPrice, setEthPrice] = useState<number>(0);
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Fetch ETH price on mount
   useEffect(() => {
     const fetchEthPrice = async () => {

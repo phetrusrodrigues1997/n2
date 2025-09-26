@@ -84,6 +84,11 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
     startedOnDate: null
   });
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Penalty-exempt contract detection
   useEffect(() => {
     const savedContract = Cookies.get('selectedMarket');

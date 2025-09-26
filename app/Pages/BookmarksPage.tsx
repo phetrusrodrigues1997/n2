@@ -85,6 +85,11 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
     return null;
   };
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Update userPots when participant data changes
   useEffect(() => {
     if (!isConnected || !address) {

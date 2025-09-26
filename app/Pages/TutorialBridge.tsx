@@ -29,6 +29,11 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
   // Get translations
   const t = getTranslation(currentLanguage);
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Handle routing - redirect to home if not managing email
   useEffect(() => {
     // If not doing email management and connected, redirect to home

@@ -83,6 +83,11 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const [marketQuestion, setMarketQuestion] = useState<string>('');
   const [marketIcon, setMarketIcon] = useState<string>('');
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Load cookies on mount with retry mechanism and timeout
   useEffect(() => {
     let retryCount = 0;

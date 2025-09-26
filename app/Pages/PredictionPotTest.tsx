@@ -134,7 +134,12 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
     }
   }, [winnerAddresses]);
   const [lastAction, setLastAction] = useState<string>('none');
-  
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Debug: Track lastAction changes (only log actual changes, not initial state)
   useEffect(() => {
     if (lastAction !== 'none') {

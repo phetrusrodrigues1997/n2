@@ -70,7 +70,11 @@ const AdminEvidenceReviewPage: React.FC<AdminEvidenceReviewPageProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [expandedEvidence, setExpandedEvidence] = useState<Set<number>>(new Set());
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
-  
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Load market outcome for selected market
   const loadMarketOutcome = async (contractAddress: string) => {

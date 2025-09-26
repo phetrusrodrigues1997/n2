@@ -19,6 +19,11 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
 
   const t = getTranslation(currentLanguage);
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Refresh balance when component mounts
   useEffect(() => {
     if (isConnected && address) {

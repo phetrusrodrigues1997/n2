@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Gamepad2, Grid3X3 } from 'lucide-react';
 import Wordle from './wordlePage';
 
@@ -11,6 +11,11 @@ interface AIPageProps {
 
 const GamesHub = ({ activeSection, setActiveSection }: AIPageProps) => {
   const [selectedGame, setSelectedGame] = useState<'hub' | 'wordle'>('hub');
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Game Hub View
   if (selectedGame === 'hub') {

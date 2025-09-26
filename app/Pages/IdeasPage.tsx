@@ -88,6 +88,11 @@ const IdeasPage = ({ activeSection, setActiveSection }: IdeasPageProps) => {
     );
   };
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Load recent ideas and user profiles on component mount
   useEffect(() => {
     const loadRecentIdeas = async () => {
