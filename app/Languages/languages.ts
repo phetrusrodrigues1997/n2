@@ -415,7 +415,6 @@ export interface Translations {
   autoSubmittingChoice: string;
   
   // BookmarksPage - Active Pots section
-  yourActivePots: string;
   currentlyParticipatingIn: string;
   pot: string;
   pots: string;
@@ -983,7 +982,6 @@ export const translations: Record<Language, Translations> = {
     autoSubmittingChoice: 'Auto-Submitting Your Choice',
     
     // BookmarksPage - Active Pots section
-    yourActivePots: 'Your Active Pots',
     currentlyParticipatingIn: 'You\'re currently participating in',
     pot: 'pot',
     pots: 'pots',
@@ -1498,7 +1496,6 @@ export const translations: Record<Language, Translations> = {
     autoSubmittingChoice: 'Enviando Sua Escolha Automaticamente',
     
     // BookmarksPage - Active Pots section
-    yourActivePots: 'Seus Potes Ativos',
     currentlyParticipatingIn: 'Você está participando atualmente de',
     pot: 'pote',
     pots: 'potes',

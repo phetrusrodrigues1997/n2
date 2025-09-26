@@ -134,12 +134,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
     return () => clearInterval(interval);
   }, [contractAddresses]);
 
-  // Helper function to get pot number from contract address
-  const getPotNumber = (contractAddress: string): number => {
-    const markets = getMarkets(t, 'options');
-    const market = markets.find(m => m.contractAddress === contractAddress);
-    return market?.potNumber || 0;
-  };
+  
 
   // Helper function to check if there are enough participants for a contract
   const hasEnoughParticipants = (contractAddress: string): boolean => {
@@ -418,9 +413,6 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                         {(() => {
                           if (!bookmark.contractAddress) return bookmark.marketId;
 
-                          const potNumber = getPotNumber(bookmark.contractAddress);
-                          if (potNumber === 1) return 'Pot #1';
-
                           const liveData = getCurrentMarketData(bookmark.marketId, bookmark.marketCategory);
                           if (liveData?.name) {
                             return getMarketDisplayName(liveData.name, currentLanguage);
@@ -519,8 +511,9 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                         </div>
                         <div>
                           <h3 className="font-bold text-gray-900 group-hover:text-gray-700 transition-colors">
-                            {getPotNumber(contractAddress) === 1 ? 'Pot #1' : marketName}
-                          </h3>
+  {marketName === "Trending" ? "All in One" : marketName}
+</h3>
+
                           <div className="flex items-center gap-2">
                             {hasEnoughParticipants(contractAddress) && (
                               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
@@ -552,18 +545,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                 })}
               </div>
               
-              <div className="mt-8 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <Trophy className="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">{t.yourActivePots}</h4>
-                    <p className="text-gray-700 text-sm">
-                      {t.currentlyParticipatingIn} {userPots.length} {userPots.length !== 1 ? t.pots : t.pot}. 
-                      {t.clickAnyPotAbove}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              
             </div>
           )
         )}
