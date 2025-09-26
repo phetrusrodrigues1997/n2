@@ -370,18 +370,18 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   if (showLoadingScreen) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50/30 flex items-center justify-center relative">
-        {/* Back button - always visible */}
-        <div className="absolute top-6 left-6 z-10">
+        {/* Back button - always visible - Mobile optimized */}
+        <div className="absolute top-4 left-4 md:top-6 md:left-6 z-10">
           <button
             onClick={() => setActiveSection && setActiveSection('home')}
-            className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white/80 hover:bg-white px-4 py-2 rounded-full border border-gray-200/60 hover:border-purple-300 backdrop-blur-sm"
+            className="flex items-center gap-1.5 md:gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white/90 hover:bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-gray-200/60 hover:border-purple-300 backdrop-blur-sm shadow-sm"
           >
-            <span>←</span>
-            <span>Back</span>
+            <span className="text-base md:text-sm">←</span>
+            <span className="hidden sm:inline">Back</span>
           </button>
         </div>
 
-        <div className="text-center max-w-md mx-auto px-6">
+        <div className="text-center max-w-sm md:max-w-md mx-auto px-4 md:px-6">
           {/* Enhanced loading animation */}
           <div className="relative mb-8">
             <div className="animate-spin rounded-full h-20 w-20 border-4 border-purple-200 border-t-purple-600 mx-auto"></div>
@@ -533,40 +533,45 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50/30">
-      {/* Header with back button */}
-      <div className="absolute top-6 left-6 z-10">
+      {/* Header with back button - Mobile optimized */}
+      <div className="absolute top-4 left-4 md:top-6 md:left-6 z-10">
         <button
           onClick={handleBack}
-          className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white/80 hover:bg-white px-4 py-2 rounded-full border border-gray-200/60 hover:border-purple-300 backdrop-blur-sm"
+          className="flex items-center gap-1.5 md:gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white/90 hover:bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-gray-200/60 hover:border-purple-300 backdrop-blur-sm shadow-sm"
         >
-          <span>←</span>
-          <span>{t.back}</span>
+          <span className="text-base md:text-sm">←</span>
+          <span className="hidden sm:inline">{t.back}</span>
         </button>
       </div>
 
-      {/* Main Content - Full Width Information Layout */}
-      <div className="min-h-screen px-4 py-4 md:py-8">
-        <div className="max-w-4xl w-full mx-auto">
+      {/* Main Content - Mobile optimized spacing */}
+      <div className="min-h-screen px-3 py-16 md:px-4 md:py-8">
+        <div className="max-w-4xl w-full mx-auto space-y-4 md:space-y-0">
 
           {/* Modern Premium Header */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100 rounded-full px-4 py-2 mb-6">
-              <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-purple-700">Today's Question</span>
+          <div className="text-center mb-6 -translate-y-4 md:mb-8 md:translate-y-0">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100 rounded-full px-3 md:px-4 py-1.5 md:py-2 mb-4 md:mb-6">
+              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full animate-pulse"></div>
+              <span className="text-xs md:text-sm font-medium text-purple-700">Today's Question</span>
             </div>
-            <h1 className="text-2xl md:text-3xl font-light text-gray-900 leading-relaxed max-w-3xl mx-auto">
+            <h1 className="text-lg md:text-2xl lg:text-3xl font-light text-gray-900 leading-tight md:leading-relaxed max-w-3xl mx-auto px-2">
               {marketQuestion || market?.question || 'Loading...'}
             </h1>
           </div>
 
-          {/* Small info text above tournament flow */}
-          <div className="flex justify-between items-center mb-3">
-            <div className="text-sm font-black text-purple-700 tracking-wider">{getPlayerMessage()}</div>
+          {/* Player status and action button - Desktop layout */}
+          <div className="hidden sm:flex justify-between items-center gap-3 mb-4">
+            <div className="flex items-center">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200 rounded-full px-3 py-2 animate-pulse-status">
+                <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse-soft"></div>
+                <span className="text-sm font-bold text-purple-800 tracking-wide">{getPlayerMessage()}</span>
+              </div>
+            </div>
             <button
               onClick={handleReady}
               disabled={!isConnected || (isParticipant && userEliminated)}
-              className={`bg-purple-600 hover:bg-purple-700 text-white font-medium rounded transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center gap-2 ${
-                isParticipant && !userEliminated ? 'py-1.5 px-3 text-sm' : 'py-2 px-4 text-sm'
+              className={`bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 ${
+                isParticipant && !userEliminated ? 'py-2 px-4 text-sm' : 'py-3 px-6 text-sm'
               }`}
             >
               {!isConnected ? (
@@ -587,35 +592,45 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               ) : (
                 <>
                   <Trophy className="w-4 h-4" />
-                  Join
+                  Join Tournament
                 </>
               )}
             </button>
           </div>
 
-          {/* Tournament Journey Flow */}
-          <div className="bg-white rounded-lg border border-gray-100 p-4 mb-4">
-            <div className="text-xs text-gray-500 mb-3 text-center">Your progress</div>
+          {/* Player status message - Mobile only */}
+          <div className="flex sm:hidden justify-center mb-4">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200 rounded-full px-3 py-2 animate-pulse-status">
+              <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse-soft"></div>
+              <span className="text-sm font-bold text-purple-800 tracking-wide">{getPlayerMessage()}</span>
+            </div>
+          </div>
 
-            <div className="relative flex items-center justify-between px-8 py-2">
+          {/* Tournament Journey Flow */}
+          <div className="bg-white rounded-lg border border-gray-100 p-3 md:p-4 mb-4">
+            <div className="text-xs text-gray-500 mb-4 text-center">Your progress</div>
+
+            <div className="relative flex items-center justify-between px-4 md:px-8 py-2">
               {/* Step 1: Join */}
               <div className="flex flex-col items-center relative z-10">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold mb-3 transition-all duration-300 shadow-sm ${
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold mb-2 md:mb-3 transition-all duration-300 shadow-sm ${
                   !isParticipant
                     ? 'bg-blue-600 text-white border-2 border-blue-600 animate-pulse-soft shadow-blue-200'
+                    : isParticipant && !potInfo.hasStarted
+                      ? 'bg-blue-600 text-white border-2 border-blue-600 animate-pulse-soft shadow-blue-200'
                     : isParticipant
                       ? 'bg-purple-500 text-white border-2 border-purple-500 shadow-purple-200'
                       : 'bg-slate-200 text-slate-500 border-2 border-slate-200'
                 }`}>
-                  {!isParticipant ? '1' : '✓'}
+                  {!isParticipant ? '1' : isParticipant && !potInfo.hasStarted ? '✓' : '✓'}
                 </div>
-                <div className="text-xs font-medium text-slate-700">Join</div>
+                <div className="text-xs font-medium text-slate-700 text-center">Join</div>
               </div>
 
               {/* Step 2: Predict */}
               <div className="flex flex-col items-center relative z-10">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold mb-3 transition-all duration-300 shadow-sm ${
-                  isParticipant && !userEliminated && questionCount === null
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold mb-2 md:mb-3 transition-all duration-300 shadow-sm ${
+                  isParticipant && !userEliminated && potInfo.hasStarted && questionCount === null
                     ? 'bg-blue-600 text-white border-2 border-blue-600 animate-pulse-soft shadow-blue-200'
                     : isParticipant && questionCount !== null
                       ? 'bg-purple-500 text-white border-2 border-purple-500 shadow-purple-200'
@@ -623,12 +638,12 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 }`}>
                   {isParticipant && questionCount !== null ? '✓' : '2'}
                 </div>
-                <div className="text-xs font-medium text-slate-700">Predict</div>
+                <div className="text-xs font-medium text-slate-700 text-center">Predict</div>
               </div>
 
               {/* Step 3: Wait */}
               <div className="flex flex-col items-center relative z-10">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold mb-3 transition-all duration-300 shadow-sm ${
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold mb-2 md:mb-3 transition-all duration-300 shadow-sm ${
                   isParticipant && !userEliminated && questionCount !== null && !potInfo.isFinalDay
                     ? 'bg-blue-600 text-white border-2 border-blue-600 animate-pulse-soft shadow-blue-200'
                     : isParticipant && questionCount !== null && potInfo.isFinalDay
@@ -637,12 +652,12 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 }`}>
                   {isParticipant && questionCount !== null && potInfo.isFinalDay ? '✓' : '3'}
                 </div>
-                <div className="text-xs font-medium text-slate-700">Wait</div>
+                <div className="text-xs font-medium text-slate-700 text-center">Wait</div>
               </div>
 
               {/* Step 4: Last 5 */}
               <div className="flex flex-col items-center relative z-10">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold mb-3 transition-all duration-300 shadow-sm ${
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold mb-2 md:mb-3 transition-all duration-300 shadow-sm ${
                   isParticipant && !userEliminated && potInfo.isFinalDay
                     ? 'bg-amber-500 text-white border-2 border-amber-500 animate-pulse-soft shadow-amber-200'
                     : userEliminated
@@ -651,97 +666,128 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 }`}>
                   {userEliminated ? '!' : '4'}
                 </div>
-                <div className="text-xs font-medium text-slate-700">
+                <div className="text-xs font-medium text-slate-700 text-center leading-tight">
                   {userEliminated ? 'Re-enter' : 'Last 5'}
                 </div>
               </div>
 
               {/* Step 5: Win */}
               <div className="flex flex-col items-center relative z-10">
-                <div className="w-12 h-12 bg-slate-200 border-2 border-slate-200 rounded-full flex items-center justify-center text-sm font-semibold text-slate-500 mb-3 shadow-sm transition-all duration-300">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-200 border-2 border-slate-200 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold text-slate-500 mb-2 md:mb-3 shadow-sm transition-all duration-300">
                   5
                 </div>
-                <div className="text-xs font-medium text-slate-700">Win</div>
+                <div className="text-xs font-medium text-slate-700 text-center">Win</div>
               </div>
 
-              {/* Enhanced Connecting Lines with Gradients */}
-              <div className="absolute top-6 left-0 right-0 flex items-center justify-between px-14">
+              {/* Enhanced Connecting Lines with Gradients - Responsive */}
+              <div className="absolute top-5 md:top-6 left-0 right-0 flex items-center justify-between px-8 md:px-14">
                 {/* Line 1->2 */}
-                <div className="flex-1 h-1 mx-3 bg-slate-200 rounded-full overflow-hidden">
+                <div className="flex-1 h-0.5 md:h-1 mx-2 md:mx-3 bg-slate-200 rounded-full overflow-hidden">
                   <div className={`h-full transition-all duration-700 ease-out rounded-full ${
                     isParticipant ? 'bg-gradient-to-r from-purple-500 to-purple-500' : 'bg-slate-300'
                   }`} style={{ width: isParticipant ? '100%' : '0%' }}></div>
                 </div>
 
                 {/* Line 2->3 */}
-                <div className="flex-1 h-1 mx-3 bg-slate-200 rounded-full overflow-hidden">
+                <div className="flex-1 h-0.5 md:h-1 mx-2 md:mx-3 bg-slate-200 rounded-full overflow-hidden">
                   <div className={`h-full transition-all duration-700 ease-out rounded-full ${
                     isParticipant && questionCount !== null ? 'bg-gradient-to-r from-purple-500 to-purple-500' : 'bg-slate-300'
                   }`} style={{ width: isParticipant && questionCount !== null ? '100%' : '0%' }}></div>
                 </div>
 
                 {/* Line 3->4 */}
-                <div className="flex-1 h-1 mx-3 bg-slate-200 rounded-full overflow-hidden">
+                <div className="flex-1 h-0.5 md:h-1 mx-2 md:mx-3 bg-slate-200 rounded-full overflow-hidden">
                   <div className={`h-full transition-all duration-700 ease-out rounded-full ${
                     potInfo.isFinalDay ? 'bg-gradient-to-r from-purple-500 to-amber-500' : 'bg-slate-300'
                   }`} style={{ width: potInfo.isFinalDay ? '100%' : '0%' }}></div>
                 </div>
 
                 {/* Line 4->5 */}
-                <div className="flex-1 h-1 mx-3 bg-slate-200 rounded-full overflow-hidden">
+                <div className="flex-1 h-0.5 md:h-1 mx-2 md:mx-3 bg-slate-200 rounded-full overflow-hidden">
                   <div className="h-full bg-slate-300 rounded-full" style={{ width: '0%' }}></div>
                 </div>
               </div>
             </div>
 
-            
-
             {/* Next Question Timer */}
-            <div className="mt-6 flex justify-center">
-              <div className="flex items-center gap-2">
+            <div className="mt-4 md:mt-6 flex justify-center">
+              <div className="flex items-center gap-2 bg-gray-50 rounded-full px-3 py-2">
                 <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
-                  <Clock className="w-2 h-2 text-white" />
+                  <Clock className="w-1.5 h-1.5 md:w-2 md:h-2 text-white" />
                 </div>
                 <span className="text-xs text-gray-500 font-medium">Next question:</span>
-                <span className="font-black text-gray-900 text-xs tracking-wider">
+                <span className="font-black text-gray-900 text-xs md:text-sm tracking-wider">
                   {currentTimer}
                 </span>
               </div>
             </div>
           </div>
 
+          {/* Action Button - Mobile only, centered between progress and details */}
+          <div className="flex sm:hidden justify-center mb-4">
+            <button
+              onClick={handleReady}
+              disabled={!isConnected || (isParticipant && userEliminated)}
+              className={`bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 ${
+                isParticipant && !userEliminated ? 'py-3 px-6 text-sm' : 'py-4 px-8 text-base font-semibold'
+              }`}
+            >
+              {!isConnected ? (
+                <>
+                  <Wallet className="w-5 h-5" />
+                  Connect Wallet
+                </>
+              ) : isParticipant && userEliminated ? (
+                <>
+                  <X className="w-5 h-5" />
+                  Eliminated
+                </>
+              ) : isParticipant ? (
+                <>
+                  <Eye className="w-5 h-5" />
+                  My Predictions
+                </>
+              ) : (
+                <>
+                  <Trophy className="w-5 h-5" />
+                  Join Tournament
+                </>
+              )}
+            </button>
+          </div>
+
           {/* Collapsible Tournament Details */}
-          <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden">
+          <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden translate-y-4 md:translate-y-0">
             <div
               onClick={() => setIsTournamentInfoCollapsed(!isTournamentInfoCollapsed)}
-              className="cursor-pointer hover:bg-gray-50 transition-all duration-200 p-4 border-b border-gray-100"
+              className="cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-all duration-200 p-3 md:p-4 border-b border-gray-100"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                    <Info className="w-4 h-4 text-purple-600" />
+                  <div className="w-7 h-7 md:w-8 md:h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Info className="w-3.5 h-3.5 md:w-4 md:h-4 text-purple-600" />
                   </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-900">Tournament Details</h3>
-                    <p className="text-xs text-gray-600">Learn about this {tournamentType.toLowerCase()} tournament</p>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-sm font-semibold text-gray-900 leading-tight">Tournament Details</h3>
+                    <p className="text-xs text-gray-600 leading-tight mt-0.5">Learn about this {tournamentType.toLowerCase()} tournament</p>
                   </div>
                 </div>
-                <div className={`transform transition-transform duration-200 ${isTournamentInfoCollapsed ? 'rotate-0' : 'rotate-180'}`}>
+                <div className={`transform transition-transform duration-200 flex-shrink-0 ${isTournamentInfoCollapsed ? 'rotate-0' : 'rotate-180'}`}>
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
             </div>
 
             {!isTournamentInfoCollapsed && (
-              <div className="p-4 space-y-4">
+              <div className="p-3 md:p-4 space-y-4">
                 {/* Entry Fee Info */}
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <DollarSign className="w-3 h-3 text-blue-600" />
+                  <div className="w-5 h-5 md:w-6 md:h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <DollarSign className="w-2.5 h-2.5 md:w-3 md:h-3 text-blue-600" />
                   </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900">{isParticipant ? 'Re-entry Fee' : 'Entry Fee'}: ${entryFee?.toFixed(2) || '0.00'}</h4>
-                    <p className="text-xs text-gray-600 mt-1">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-sm font-medium text-gray-900 leading-tight">{isParticipant ? 'Re-entry Fee' : 'Entry Fee'}: ${entryFee?.toFixed(2) || '0.00'}</h4>
+                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">
                       {isPenaltyExempt
                         ? `Fixed ${isParticipant ? 're-entry' : 'entry'} fee for all participants - no daily increases.`
                         : `${isParticipant ? 'Re-entry fee' : 'Entry fee'} increases daily. A higher fee can mean a higher chance of winning due to less players remaining.`
@@ -749,14 +795,15 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                     </p>
                   </div>
                 </div>
+
                 {/* Tournament Type Info */}
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Trophy className="w-3 h-3 text-purple-600" />
+                  <div className="w-5 h-5 md:w-6 md:h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Trophy className="w-2.5 h-2.5 md:w-3 md:h-3 text-purple-600" />
                   </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900">{tournamentType} Tournament</h4>
-                    <p className="text-xs text-gray-600 mt-1">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-sm font-medium text-gray-900 leading-tight">{tournamentType} Tournament</h4>
+                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">
                       {isPenaltyExempt
                         ? 'Event-based tournament with forgiving rules - wrong answers don\'t eliminate you.'
                         : 'Daily prediction tournament where wrong answers will result in elimination.'
@@ -767,27 +814,25 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
                 {/* Topic Info */}
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Target className="w-3 h-3 text-green-600" />
+                  <div className="w-5 h-5 md:w-6 md:h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Target className="w-2.5 h-2.5 md:w-3 md:h-3 text-green-600" />
                   </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900">Topic: {market?.potTopic || 'General'}</h4>
-                    <p className="text-xs text-gray-600 mt-1">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-sm font-medium text-gray-900 leading-tight">Topic: {market?.potTopic || 'General'}</h4>
+                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">
                       All questions in this tournament will be related to this topic.
                     </p>
                   </div>
                 </div>
 
-                
-
                 {/* How to Win */}
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Crown className="w-3 h-3 text-yellow-600" />
+                  <div className="w-5 h-5 md:w-6 md:h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Crown className="w-2.5 h-2.5 md:w-3 md:h-3 text-yellow-600" />
                   </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900">How to Win</h4>
-                    <p className="text-xs text-gray-600 mt-1">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-sm font-medium text-gray-900 leading-tight">How to Win</h4>
+                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">
                       {isPenaltyExempt
                         ? 'Player with the highest accuracy across all race predictions wins the prize pool.'
                         : 'Be the last player standing by making correct predictions and avoiding elimination.'
@@ -827,8 +872,23 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           }
         }
 
+        @keyframes pulse-status {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 2px 4px rgba(147, 51, 234, 0.1);
+          }
+          50% {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2);
+          }
+        }
+
         .animate-pulse-soft {
           animation: pulse-soft 2s ease-in-out infinite;
+        }
+
+        .animate-pulse-status {
+          animation: pulse-status 2.5s ease-in-out infinite;
         }
 
       `}</style>
