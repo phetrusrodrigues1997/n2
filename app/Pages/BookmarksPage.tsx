@@ -325,7 +325,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Bookmark className="w-8 h-8 text-purple-700" />
+            <Bookmark className="w-8 h-8 text-gray-700" />
             <h1 className="text-3xl font-bold text-gray-900">{t.yourPots}</h1>
           </div>
           <p className="text-gray-600">{t.potsBookmarkedEntered}</p>
@@ -337,7 +337,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
             onClick={() => setActiveTab('entered')}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md font-medium transition-colors ${
               activeTab === 'entered'
-                ? 'bg-white text-purple-600 shadow-sm'
+                ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -345,7 +345,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
             {t.enteredPots}
             {userPots.length > 0 && (
               <span className={`text-xs px-2 py-1 rounded-full ${
-                activeTab === 'entered' ? 'bg-purple-100' : 'bg-gray-200'
+                activeTab === 'entered' ? 'bg-gray-100' : 'bg-gray-200'
               }`}>
                 {userPots.length}
               </span>
@@ -355,7 +355,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
             onClick={() => setActiveTab('bookmarks')}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md font-medium transition-colors ${
               activeTab === 'bookmarks'
-                ? 'bg-white text-purple-700 shadow-sm'
+                ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -363,7 +363,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
             {t.bookmarked}
             {bookmarks.length > 0 && (
               <span className={`text-xs px-2 py-1 rounded-full ${
-                activeTab === 'bookmarks' ? 'bg-purple-100' : 'bg-gray-200'
+                activeTab === 'bookmarks' ? 'bg-gray-100' : 'bg-gray-200'
               }`}>
                 {bookmarks.length}
               </span>
@@ -381,7 +381,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
               <p className="text-gray-600 mb-6">{t.startBookmarking}</p>
               <button
                 onClick={() => setActiveSection('home')}
-                className="bg-purple-700 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                className="bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
                 {t.explore}
               </button>
@@ -434,11 +434,11 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                     <button
                       onClick={() => handleRemoveBookmark(bookmark.marketId)}
                       disabled={removing === bookmark.marketId}
-                      className="ml-4 p-2 text-gray-400 hover:text-purple-700 hover:bg-purple-100 rounded-lg transition-colors disabled:opacity-50"
+                      className="ml-4 p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
                       title={t.removeBookmark}
                     >
                       {removing === bookmark.marketId ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-700"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700"></div>
                       ) : (
                         <X className="w-4 h-4" />
                       )}
@@ -449,7 +449,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                   <div className="mt-4 flex gap-2">
                     <button
                       onClick={() => handleViewMarket(bookmark)}
-                      className="bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                      className="bg-gray-50 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                     >
                       {bookmark.contractAddress ? t.viewPot : t.goToCategory}
                     </button>
@@ -459,7 +459,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                         
                         {/* Show balance if available, otherwise show loading */}
                         {potBalances[bookmark.contractAddress] !== undefined ? (
-                          <span className="text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full self-center">
+                          <span className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded-full self-center">
                             {potBalances[bookmark.contractAddress]} {t.inPot}
                           </span>
                         ) : (
@@ -483,7 +483,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
               <p className="text-gray-600 mb-6">{t.enterPredictionPots}</p>
               <button
                 onClick={() => setActiveSection('home')}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                className="bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
                 {t.findPotsToEnter}
               </button>
@@ -491,7 +491,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
           ) : (
             <div>
               <div className="flex items-center gap-2 mb-6">
-                <Users className="w-6 h-6 text-purple-600" />
+                <Users className="w-6 h-6 text-gray-600" />
                 <h2 className="text-xl font-bold text-gray-900">{t.potsYouEntered}</h2>
                 {/* <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm font-medium">
                   {userPots.length} Active
@@ -511,14 +511,14 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                     <button 
                       key={contractAddress}
                       onClick={() => handleMarketClick(contractAddress)}
-                      className="text-left p-6 bg-white border-2 border-gray-200 rounded-xl hover:border-purple-300 hover:shadow-lg transition-all duration-200 group"
+                      className="text-left p-6 bg-white border-2 border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-lg transition-all duration-200 group"
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                          <TrendingUp className="w-5 h-5 text-purple-600" />
+                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                          <TrendingUp className="w-5 h-5 text-gray-600" />
                         </div>
                         <div>
-                          <h3 className="font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
+                          <h3 className="font-bold text-gray-900 group-hover:text-gray-700 transition-colors">
                             {getPotNumber(contractAddress) === 1 ? 'Pot #1' : marketName}
                           </h3>
                           <div className="flex items-center gap-2">
@@ -541,7 +541,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
       {potBalances[contractAddress]} {t.inPot}
     </div>
   )}
-  <div className="ml-auto px-4 py-2 bg-purple-700 text-white text-sm font-semibold rounded-lg hover:bg-purple-200 transition-colors cursor-pointer shadow-sm">
+  <div className="ml-auto px-4 py-2 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 transition-colors cursor-pointer shadow-sm">
   {t.view}
 </div>
 
@@ -552,12 +552,12 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                 })}
               </div>
               
-              <div className="mt-8 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+              <div className="mt-8 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                 <div className="flex items-start gap-3">
-                  <Trophy className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                  <Trophy className="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-semibold text-purple-900 mb-1">{t.yourActivePots}</h4>
-                    <p className="text-purple-700 text-sm">
+                    <h4 className="font-semibold text-gray-900 mb-1">{t.yourActivePots}</h4>
+                    <p className="text-gray-700 text-sm">
                       {t.currentlyParticipatingIn} {userPots.length} {userPots.length !== 1 ? t.pots : t.pot}. 
                       {t.clickAnyPotAbove}
                     </p>

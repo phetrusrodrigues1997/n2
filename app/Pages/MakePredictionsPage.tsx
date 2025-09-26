@@ -4,7 +4,7 @@ import { formatUnits, parseEther } from 'viem';
 import { placeBitcoinBet, getTomorrowsBet, getTodaysBet, isEliminated, submitEvidence, getUserEvidenceSubmission, getAllEvidenceSubmissions, processReEntry, notifyMinimumPlayersReached } from '../Database/actions';
 import { getUserPredictionsByContract, getUserPredictionsWithResults } from '../Database/actions3';
 import { getProvisionalOutcome, } from '../Database/OwnerActions';
-import { TrendingUp, TrendingDown, Shield, Zap, AlertTriangle, Clock, FileText, Upload, ChevronDown, ChevronUp, Eye, Trophy, Users } from 'lucide-react';
+import { TrendingUp, TrendingDown, Shield, Zap, AlertTriangle, Clock, FileText, Upload, ChevronUp, ChevronDown, Eye, Trophy, Users } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { getMarkets } from '../Constants/markets';
 import { getTranslation, Language, translateMarketQuestion } from '../Languages/languages';
@@ -283,7 +283,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   const [hasAutoSubmitted, setHasAutoSubmitted] = useState<boolean>(false);
   
   // New state for collapsible sections and prediction history
-  const [isMainSectionCollapsed, setIsMainSectionCollapsed] = useState<boolean>(true); // Start closed by default
+  const [isMainSectionCollapsed, setIsMainSectionCollapsed] = useState<boolean>(false); // Start closed by default
   const [showFinalDayPopup, setShowFinalDayPopup] = useState<boolean>(false);
   const [isPredictionHistoryCollapsed, setIsPredictionHistoryCollapsed] = useState<boolean>(true); // Start closed by default
   const [predictionHistory, setPredictionHistory] = useState<Array<{
@@ -1141,8 +1141,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
             <p className="text-gray-600 text-lg">{t.connectToStartPredicting || "Connect to start predicting"}</p>
             
             {/* Subtle pulse indicator */}
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-blue-500 rounded-full animate-ping"></div>
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-blue-600 rounded-full"></div>
+            <div className="absolute -top-2 -right-2 w-4 h-4 bg-gray-500 rounded-full animate-ping"></div>
+            <div className="absolute -top-2 -right-2 w-4 h-4 bg-gray-600 rounded-full"></div>
           </div>
         </div>
       </div>
@@ -1217,7 +1217,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4 flex items-center justify-center relative overflow-hidden">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-1/3 left-1/3 w-72 h-72 bg-purple-900 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/3 left-1/3 w-72 h-72 bg-gray-900 rounded-full blur-3xl"></div>
         </div>
         
         <div className="max-w-md mx-auto text-center relative z-10">
@@ -1254,7 +1254,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
             </div>
             
             {/* Header */}
-            <h2 className="text-3xl font-black text-purple-700 mb-4">{t.finalPredictions || "Final Predictions"}</h2>
+            <h2 className="text-3xl font-black text-gray-700 mb-4">{t.finalPredictions || "Final Predictions"}</h2>
             
             {/* Subheading */}
             <p className="text-gray-600 text-lg mb-8 leading-relaxed">
@@ -1264,7 +1264,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
             {/* Close Button */}
             <button
               onClick={() => setShowFinalDayPopup(false)}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-xl font-medium transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+              className="bg-gray-600 hover:bg-gray-700 text-white px-8 py-3 rounded-xl font-medium transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
             >
               {t.gotIt || "Got it! 🎯"}
             </button>
@@ -1277,7 +1277,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
         <div className="mb-6 relative z-10">
           <button
             onClick={() => setActiveSection('home')}
-            className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-purple-300"
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-700 transition-colors duration-200 font-medium text-sm tracking-wide bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-gray-300"
           >
             <span>←</span>
             <span>{t.backToMarkets || 'Back to Markets'}</span>
@@ -1297,21 +1297,21 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       isMainSectionCollapsed ? "" : "-translate-y-10 md:-translate-y-0"
     }`}>
           {/* Mobile Version - Match Next Question Timer Style */}
-          <div className="md:hidden bg-white border border-gray-300 rounded-lg px-3 py-2">
+          <div className="md:hidden bg-white border border-gray-300 rounded-lg px-3 py-2 translate-y-16">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
+              <div className="w-3 h-3 bg-gray-600 rounded-full flex items-center justify-center">
                 <Users className="w-1.5 h-1.5 text-white" />
               </div>
-              <span className={'font-black text-purple-700 text-xs tracking-wider'}>
-                {participantStats.eligibleParticipants} <span className='text-purple-900'>{t.playersRemaining} / </span>{participantStats.uniqueAddresses} total
+              <span className={'font-black text-gray-700 text-xs tracking-wider'}>
+                {participantStats.eligibleParticipants} <span className='text-gray-900'>{t.playersRemaining} / </span>{participantStats.uniqueAddresses} total
               </span>
             </div>
           </div>
           
           {/* Desktop Version - Original Design */}
           <div className="hidden md:inline-flex items-center gap-2 md:gap-3 px-3 py-2 md:px-6 md:py-3 bg-gray-50 rounded-xl md:rounded-2xl border border-gray-200 shadow-lg">
-            <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-purple-100 to-purple-50 rounded-full flex items-center justify-center">
-              <Users className="w-3 h-3 md:w-4 md:h-4 text-purple-600" />
+            <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-gray-100 to-gray-50 rounded-full flex items-center justify-center">
+              <Users className="w-3 h-3 md:w-4 md:h-4 text-gray-600" />
             </div>
             <div className="flex items-center gap-1 md:gap-2">
               <span className="text-lg md:text-2xl font-semibold text-gray-900">{participantStats.eligibleParticipants}</span>
@@ -1326,15 +1326,15 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       
       <div className="max-w-lg mx-auto pt-12 relative z-10">
         {(isBetLoading || !isDataLoaded) ? (
-           <div className="relative bg-white/80 backdrop-blur-xl border border-purple-200/40 rounded-3xl p-10 mb-8
-  shadow-2xl shadow-purple-900/20 text-center overflow-hidden">
+           <div className="relative bg-white/80 backdrop-blur-xl border border-gray-200/40 rounded-3xl p-10 mb-8
+  shadow-2xl shadow-gray-900/20 text-center overflow-hidden">
 
   {/* Subtle gradient glow border */}
-  <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/20 via-purple-300/10 to-purple-500/20 blur-2xl"></div>
+  <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-gray-500/20 via-gray-300/10 to-gray-500/20 blur-2xl"></div>
 
-  <div className="relative inline-flex items-center gap-3 text-purple-700">
+  <div className="relative inline-flex items-center gap-3 text-gray-700">
     {/* Loader: dual ring spinner */}
-    <div className="w-6 h-6 border-2 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+    <div className="w-6 h-6 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin"></div>
     
     {/* Animated text */}
     <span className="font-semibold tracking-wide text-sm animate-pulse">
@@ -1381,15 +1381,15 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
               <div className="space-y-6">
                 {/* Market Outcome Display - Compressed */}
                 <div className={`bg-gradient-to-br backdrop-blur-xl border-2 rounded-2xl p-6 mb-6 mt-16 shadow-xl relative overflow-hidden ${
-                  marketOutcome?.outcome === 'positive' 
-                    ? 'from-green-50 via-white to-green-50 border-green-200 shadow-green-900/10' 
-                    : 'from-purple-100 via-white to-purple-100 border-purple-200 shadow-purple-900/10'
+                  marketOutcome?.outcome === 'positive'
+                    ? 'from-green-50 via-white to-green-50 border-green-200 shadow-green-900/10'
+                    : 'from-gray-100 via-white to-gray-100 border-gray-200 shadow-gray-900/10'
                 }`}>
                   <div className="flex items-center justify-center gap-6">
                     <div className={`w-16 h-16 bg-gradient-to-br rounded-xl flex items-center justify-center shadow-lg ${
                       marketOutcome?.outcome === 'positive' 
                         ? 'from-green-500 to-green-600' 
-                        : 'from-purple-1000 to-purple-700'
+                        : 'from-gray-600 to-gray-700'
                     }`}>
                       {marketOutcome?.outcome === 'positive' ? (
                         <TrendingUp className="w-8 h-8 text-white" />
@@ -1402,10 +1402,10 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                       <div className={`inline-flex items-center px-6 py-2 rounded-xl bg-gradient-to-br backdrop-blur-sm border shadow-md ${
                         marketOutcome?.outcome === 'positive' 
                           ? 'from-green-50/80 to-white/80 border-green-200/30' 
-                          : 'from-purple-100/80 to-white/80 border-purple-200/30'
+                          : 'from-gray-100/80 to-white/80 border-gray-200/30'
                       }`}>
                         <div className={`text-2xl font-black tracking-tight ${
-                          marketOutcome?.outcome === 'positive' ? 'text-green-700' : 'text-purple-700'
+                          marketOutcome?.outcome === 'positive' ? 'text-green-700' : 'text-gray-700'
                         }`}>
                           {marketOutcome?.outcome === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
                         </div>
@@ -1426,34 +1426,34 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
                 {/* Evidence Submission Interface - Collapsible */}
                 {isEvidenceWindowActive() && !hasUserSubmittedEvidence() && (
-                  <div className="bg-gradient-to-br from-purple-50 via-white to-purple-50 backdrop-blur-xl border-2 border-purple-300 rounded-3xl p-8 mb-8 shadow-2xl shadow-purple-900/20 relative overflow-hidden">
+                  <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 backdrop-blur-xl border-2 border-gray-300 rounded-3xl p-8 mb-8 shadow-2xl shadow-gray-900/20 relative overflow-hidden">
                     {/* Collapsible Header */}
                     <div 
-                      className="cursor-pointer hover:bg-purple-50/50 rounded-2xl p-2 -m-2 transition-colors duration-200"
+                      className="cursor-pointer hover:bg-gray-50/50 rounded-2xl p-2 -m-2 transition-colors duration-200"
                       onClick={() => setIsEvidenceSectionExpanded(!isEvidenceSectionExpanded)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg">
+                          <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center shadow-lg">
                             <AlertTriangle className="w-8 h-8 text-white" />
                           </div>
                           <div className="text-left">
                             <h3 className="text-xl font-black text-gray-900 mb-1 tracking-tight">{t.disputeOutcome || "Dispute the Outcome?"}</h3>
                             <div className="flex items-center gap-2">
-                              <Clock className="w-4 h-4 text-purple-600" />
-                              <p className="text-purple-800 font-bold text-sm">
+                              <Clock className="w-4 h-4 text-gray-600" />
+                              <p className="text-gray-800 font-bold text-sm">
                                 {formatTimeRemaining(timeUntilEvidenceExpires)} remaining
                               </p>
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 text-purple-600">
+                        <div className="flex items-center gap-2 text-gray-600">
                           <span className="text-sm font-medium">
                             {isEvidenceSectionExpanded ? 'Collapse' : 'Expand'}
                           </span>
-                          {isEvidenceSectionExpanded ? 
-                            <ChevronUp className="w-5 h-5" /> : 
-                            <ChevronDown className="w-5 h-5" />
+                          {isEvidenceSectionExpanded ?
+                            <ChevronDown className="w-5 h-5" /> :
+                            <ChevronUp className="w-5 h-5" />
                           }
                         </div>
                       </div>
@@ -1462,8 +1462,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                     {/* Collapsible Content */}
                     {isEvidenceSectionExpanded && (
                       <div className="mt-8 space-y-6">
-                        <div className="bg-purple-100 rounded-2xl p-4 border border-purple-200">
-                          <p className="text-purple-800 text-sm text-center font-medium">
+                        <div className="bg-gray-100 rounded-2xl p-4 border border-gray-200">
+                          <p className="text-gray-800 text-sm text-center font-medium">
                             Submit evidence against this outcome within the time limit
                           </p>
                         </div>
@@ -1476,16 +1476,16 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                             value={evidenceText}
                             onChange={(e) => setEvidenceText(e.target.value)}
                             placeholder={t.evidencePlaceholder || "Provide detailed evidence why this outcome is incorrect. Include links, sources, or explanations..."}
-                            className="w-full text-black h-32 p-4 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none transition-all duration-200"
+                            className="w-full text-black h-32 p-4 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 resize-none transition-all duration-200"
                             disabled={isSubmittingEvidence}
                           />
                         </div>
 
                         <div className="bg-gradient-to-r from-black to-gray-900 border border-gray-700 rounded-2xl p-6">
                           <div className="flex items-start gap-3">
-                            <AlertTriangle className="w-6 h-6 text-purple-400 flex-shrink-0 mt-1" />
+                            <AlertTriangle className="w-6 h-6 text-gray-400 flex-shrink-0 mt-1" />
                             <div className="text-white">
-                              <p className="font-bold mb-2 text-purple-300">{t.evidenceSubmissionTerms || "Evidence Submission Terms:"}</p>
+                              <p className="font-bold mb-2 text-gray-300">{t.evidenceSubmissionTerms || "Evidence Submission Terms:"}</p>
                               <ul className="text-sm space-y-1 text-gray-300">
                                 <li>• Submit detailed evidence to dispute the outcome</li>
                                 <li>• Include sources, links, or clear explanations</li>
@@ -1499,7 +1499,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                         <button
                           onClick={handleEvidenceSubmission}
                           disabled={!evidenceText.trim() || isSubmittingEvidence}
-                          className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center gap-3"
+                          className="w-full bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center gap-3"
                         >
                           {isSubmittingEvidence ? (
                             <>
@@ -1520,15 +1520,15 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
                 {/* Evidence Submitted Status */}
                 {hasUserSubmittedEvidence() && (
-                  <div className="bg-gradient-to-br from-blue-50 via-white to-blue-50 backdrop-blur-xl border-2 border-blue-200 rounded-3xl p-10 mb-8 shadow-2xl shadow-blue-900/10">
+                  <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 backdrop-blur-xl border-2 border-gray-200 rounded-3xl p-10 mb-8 shadow-2xl shadow-gray-900/10">
                     <div className="text-center">
-                      <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
+                      <div className="w-24 h-24 bg-gradient-to-br from-gray-500 to-gray-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
                         <FileText className="w-12 h-12 text-white" />
                       </div>
                       <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">{t.evidenceSubmitted || "Evidence Submitted"}</h3>
-                      <div className="bg-blue-100 rounded-2xl p-6 border border-blue-200 mb-6">
-                        <p className="text-blue-800 font-bold mb-2">{t.status || "Status:"} {userEvidenceSubmission?.status === 'pending' ? (t.underReview || 'Under Review') : userEvidenceSubmission?.status}</p>
-                        <p className="text-blue-700 text-sm">
+                      <div className="bg-gray-100 rounded-2xl p-6 border border-gray-200 mb-6">
+                        <p className="text-gray-800 font-bold mb-2">{t.status || "Status:"} {userEvidenceSubmission?.status === 'pending' ? (t.underReview || 'Under Review') : userEvidenceSubmission?.status}</p>
+                        <p className="text-gray-700 text-sm">
                           Admin will review your evidence within 24 hours
                         </p>
                       </div>
@@ -1566,7 +1566,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                 <div className="bg-black text-white px-6 py-4 text-center">
                   <h2 className="text-2xl font-bold tracking-tight">{t.youChose || "You Chose"}</h2>
                   {/* <p className="text-gray-300 text-sm mt-1">
-                    {t.for || "For:"} <span className="text-purple-700">{t.tomorrow || "tomorrow"}</span>
+                    {t.for || "For:"} <span className="text-gray-700">{t.tomorrow || "tomorrow"}</span>
                   </p> */}
                 </div>
 
@@ -1576,7 +1576,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                     <div className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg ${
                       (tomorrowsBet as TodaysBet).prediction === 'positive' 
                         ? 'bg-black' 
-                        : 'bg-purple-700'
+                        : 'bg-gray-700'
                     }`}>
                       {(tomorrowsBet as TodaysBet).prediction === 'positive' ? (
                         <TrendingUp className="w-10 h-10 text-white" />
@@ -1612,7 +1612,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                   <div className="flex justify-center mb-4">
                     <div className="bg-white border border-gray-300 rounded-lg px-3 py-2">
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
+                        <div className="w-3 h-3 bg-gray-600 rounded-full flex items-center justify-center">
                           <Clock className="w-1.5 h-1.5 text-white" />
                         </div>
                         <span className="text-gray-700 font-medium text-xs">
@@ -1629,23 +1629,23 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
               </div>
             ) : isResultsDay() ? (
               // Saturday - Results Day message (when no outcome set yet)
-              <div className="bg-gradient-to-br from-blue-50 via-white to-blue-50 backdrop-blur-xl border-2 border-blue-200 rounded-3xl p-10 mb-8 shadow-2xl shadow-blue-900/10 relative overflow-hidden">
+              <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 backdrop-blur-xl border-2 border-gray-200 rounded-3xl p-10 mb-8 shadow-2xl shadow-gray-900/10 relative overflow-hidden">
                 <div className="text-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
+                  <div className="w-24 h-24 bg-gradient-to-br from-gray-500 to-gray-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
                     <Zap className="w-12 h-12 text-white animate-pulse" />
                   </div>
                   <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">{t.resultsDay || "Results Day! 🎉"}</h2>
                   
-                  <div className="bg-gradient-to-r from-blue-100 to-blue-50 rounded-2xl p-6 border border-blue-200 mb-6">
+                  <div className="bg-gradient-to-r from-gray-100 to-gray-50 rounded-2xl p-6 border border-gray-200 mb-6">
                     <div className="flex items-center justify-center gap-3 mb-3">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
-                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce delay-100"></div>
-                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce delay-200"></div>
+                      <div className="w-3 h-3 bg-gray-500 rounded-full animate-bounce"></div>
+                      <div className="w-3 h-3 bg-gray-500 rounded-full animate-bounce delay-100"></div>
+                      <div className="w-3 h-3 bg-gray-500 rounded-full animate-bounce delay-200"></div>
                     </div>
-                    <p className="text-blue-800 font-bold text-lg">
+                    <p className="text-gray-800 font-bold text-lg">
                       Outcome will be set soon!
                     </p>
-                    <p className="text-blue-600 text-sm mt-2">
+                    <p className="text-gray-600 text-sm mt-2">
                       You&apos;ll have 1 hour to submit evidence if you disagree
                     </p>
                   </div>
@@ -1655,10 +1655,10 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                   </div>
                   
                   {/* Refresh button to check for new outcomes */}
-                  <div className="mt-8 pt-6 border-t border-blue-200 text-center">
+                  <div className="mt-8 pt-6 border-t border-gray-200 text-center">
                     <button
                       onClick={refreshMarketData}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                     >
                       🔄 Check for Outcome Updates
                     </button>
@@ -1686,7 +1686,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Saturday:</span>
-                        <span className="text-purple-700 font-bold">✗ Results Day</span>
+                        <span className="text-gray-700 font-bold">✗ Results Day</span>
                       </div>
                     </div>
                   </div>
@@ -1699,24 +1699,24 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                 <div className={`flex justify-end mb-2 ${isMainSectionCollapsed ? 'block' : 'hidden'}`}>
                   <div className="bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
+                      <div className="w-3 h-3 bg-gray-600 rounded-full flex items-center justify-center">
                         <Clock className="w-1.5 h-1.5 text-white" />
                       </div>
-                      <span className="text-purple-700 font-medium text-xs">
+                      <span className="text-gray-700 font-medium text-xs">
                         {isPenaltyExempt ? "Race Day" : (t.nextQuestion || "Next Question")}
                       </span>
-                      <span className="font-black text-purple-900 text-xs tracking-wider">
+                      <span className="font-black text-gray-900 text-xs tracking-wider">
                         {formatTimerDisplay(timerData)}
                       </span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-white via-purple-50/30 to-white border border-gray-200/50 rounded-3xl mb-8 shadow-2xl shadow-gray-900/5 relative overflow-hidden">
+                <div className="bg-gradient-to-br from-white via-gray-50/30 to-white border border-gray-200/50 rounded-3xl mb-8 shadow-2xl shadow-gray-900/5 relative overflow-hidden">
                 {/* Header with collapse toggle - Improved mobile layout */}
                 <div 
                   onClick={() => setIsMainSectionCollapsed(!isMainSectionCollapsed)}
-                  className="cursor-pointer hover:bg-purple-50/20 transition-all duration-200 border-b border-gray-100/50"
+                  className="cursor-pointer hover:bg-gray-50/20 transition-all duration-200 border-b border-gray-100/50"
                 >
                   {/* Top section with question */}
                   <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2">
@@ -1728,17 +1728,17 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                         <p className="text-gray-500 text-xs sm:text-sm font-medium">
                           {tomorrowsBet
                             ? (t.managePrediction || "Manage your current prediction")
-                            : <>{t.for || "For"} <span className="text-purple-700">{isPenaltyExempt && formattedEventDate ? formattedEventDate : (t.tomorrow || "tomorrow")}</span></>
+                            : <><span className="text-gray-700"></span></>
                           }
                         </p>
                       </div>
                       <div className={`p-2 rounded-lg transition-colors duration-200 flex-shrink-0 ${
-                        isMainSectionCollapsed ? 'bg-gray-100 hover:bg-gray-200' : 'bg-purple-100 hover:bg-purple-200'
+                        isMainSectionCollapsed ? 'bg-gray-100 hover:bg-gray-200' : 'bg-gray-100 hover:bg-gray-200'
                       }`}>
                         {isMainSectionCollapsed ? (
-                          <ChevronDown className="w-4 h-4 text-gray-700" />
+                          <ChevronUp className="w-4 h-4 text-gray-700" />
                         ) : (
-                          <ChevronUp className="w-4 h-4 text-purple-700" />
+                          <ChevronDown className="w-4 h-4 text-gray-700" />
                         )}
                       </div>
                     </div>
@@ -1751,7 +1751,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                         {tomorrowsBet ? (
                           <div className={`px-4 py-2 rounded-full text-sm font-black shadow-sm ${
                             (tomorrowsBet as TodaysBet).prediction === 'positive' 
-                              ? 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border border-purple-200' 
+                              ? 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-200' 
                               : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-200'
                           }`}>
                             {(tomorrowsBet as TodaysBet).prediction === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
@@ -1763,7 +1763,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                               <button
                                 onClick={() => handlePlaceBet('positive')}
                                 disabled={isLoading}
-                                className="bg-[#00bb00] hover:bg-[#009900] disabled:opacity-50 text-white px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                className="bg-[#000000] hover:bg-[#009900] disabled:opacity-50 text-white px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                               >
                                 {t.yesButton || "YES"}
                               </button>
@@ -1787,11 +1787,11 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                   <div className="px-4 sm:px-6 pb-6">
                     
                     {/* Prediction Date Information */}
-                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200/50 rounded-2xl p-4 mb-6 text-center">
+                    <div className="bg-gradient-to-r from-gray-50 to-gray-50 border border-gray-200/50 rounded-2xl p-4 mb-6 text-center">
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <h4 className="text-sm font-black text-gray-900">{t.predictingForTomorrow || "Predicting for Tomorrow"}</h4>
                       </div>
-                      <p className="text-blue-700 font-semibold text-base sm:text-lg">
+                      <p className="text-gray-700 font-semibold text-base sm:text-lg">
                         {(() => {
                           const tomorrow = new Date();
                           tomorrow.setDate(tomorrow.getDate() + 1);
@@ -1811,12 +1811,12 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                     {/* Auto-submission status */}
                     {votingPreference && !tomorrowsBet && (
                       <div className="mb-6 text-center">
-                        <h3 className="text-xl font-black text-purple-700 mb-3 tracking-tight">
+                        <h3 className="text-xl font-black text-gray-700 mb-3 tracking-tight">
                           {t.autoSubmittingChoice || "Auto-Submitting Your Choice"}
                         </h3>
-                        <div className="bg-gradient-to-r from-purple-50/80 to-white border border-purple-200/50 rounded-2xl p-4 max-w-sm mx-auto">
+                        <div className="bg-gradient-to-r from-gray-50/80 to-white border border-gray-200/50 rounded-2xl p-4 max-w-sm mx-auto">
                           <p className="text-gray-700 text-sm font-medium">
-                            Submitting: <span className="font-black text-purple-700">
+                            Submitting: <span className="font-black text-gray-700">
                               {votingPreference === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
                             </span>
                           </p>
@@ -1831,7 +1831,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                         <button
                           onClick={() => handlePlaceBet('positive')}
                           disabled={isLoading || !isBettingAllowed()}
-                          className="group relative bg-gradient-to-br from-gray-900 to-black hover:from-purple-900 hover:to-black disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 sm:p-5 rounded-2xl font-black text-lg transition-all duration-200 hover:scale-[1.02] shadow-lg hover:shadow-xl border border-gray-800 hover:border-purple-700"
+                          className="group relative bg-gradient-to-br from-gray-900 to-black hover:from-gray-800 hover:to-black disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 sm:p-5 rounded-2xl font-black text-lg transition-all duration-200 hover:scale-[1.02] shadow-lg hover:shadow-xl border border-gray-800 hover:border-gray-700"
                         >
                           <div className="flex flex-col items-center justify-center">
                             <div className="p-2 bg-white/10 rounded-lg mb-2 flex items-center justify-center">
@@ -1845,10 +1845,10 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                         <button
                           onClick={() => handlePlaceBet('negative')}
                           disabled={isLoading || !isBettingAllowed()}
-                          className="group relative bg-white hover:bg-purple-50 border-2 border-gray-900 hover:border-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 hover:text-purple-700 p-4 sm:p-5 rounded-2xl font-black text-lg transition-all duration-200 hover:scale-[1.02] shadow-lg hover:shadow-xl"
+                          className="group relative bg-white hover:bg-gray-50 border-2 border-gray-900 hover:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 hover:text-gray-700 p-4 sm:p-5 rounded-2xl font-black text-lg transition-all duration-200 hover:scale-[1.02] shadow-lg hover:shadow-xl"
                         >
                           <div className="flex flex-col items-center justify-center">
-                            <div className="p-2 bg-gray-900/10 group-hover:bg-purple-700/10 rounded-lg mb-2 flex items-center justify-center transition-colors duration-200">
+                            <div className="p-2 bg-gray-900/10 group-hover:bg-gray-700/10 rounded-lg mb-2 flex items-center justify-center transition-colors duration-200">
                               <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6" />
                             </div>
                             <div className="tracking-wide">{t.noButton || "NO"}</div>
@@ -1858,11 +1858,11 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
                       {isLoading && (
                         <div className="text-center mt-6">
-                          <div className="inline-flex items-center gap-3 text-purple-700 bg-purple-50 border border-purple-200 px-6 py-3 rounded-2xl shadow-lg">
+                          <div className="inline-flex items-center gap-3 text-gray-700 bg-gray-50 border border-gray-200 px-6 py-3 rounded-2xl shadow-lg">
                             <div className="relative">
-                              <Zap className="w-5 h-5 text-purple-700" />
+                              <Zap className="w-5 h-5 text-gray-700" />
                               <div className="absolute inset-0 animate-ping">
-                                <Zap className="w-5 h-5 text-purple-700 opacity-30" />
+                                <Zap className="w-5 h-5 text-gray-700 opacity-30" />
                               </div>
                             </div>
                             <span className="font-bold text-sm">Placing prediction...</span>
@@ -1883,7 +1883,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                             {isPenaltyExempt ? "Race Day" : (t.nextQuestion || "Next Question")}
                           </div>
                           <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
+                            <div className="w-6 h-6 bg-gray-600 rounded-full flex items-center justify-center">
                               <Clock className="w-3 h-3 text-white" />
                             </div>
                             <span className="font-black text-gray-900 text-lg tracking-wider">
@@ -1899,7 +1899,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                           <div className="flex items-center justify-between">
                             <div className="text-gray-700 font-semibold text-sm">{t.resultsReveal || "Results Reveal"}</div>
                             <div className="flex items-center gap-3">
-                             <span className='text-purple-700 font-semibold'>{t.tomorrowAtMidnight || "Tomorrow at Midnight"}</span>
+                             <span className='text-gray-700 font-semibold'>{t.tomorrowAtMidnight || "Tomorrow at Midnight"}</span>
                             </div>
                           </div>
                         </div>
@@ -1918,8 +1918,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
         {message && (
           <div className={`p-6 rounded-2xl mb-8 text-center border shadow-lg transform animate-in fade-in duration-500 ${
             message.includes('Failed') || message.includes('Error') 
-              ? 'bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 text-purple-800' 
-              : 'bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 text-purple-800'
+              ? 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200 text-gray-800' 
+              : 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200 text-gray-800'
           }`}>
             <p className="font-black text-base">{message}</p>
           </div>
@@ -1927,10 +1927,10 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
         {/* Prediction History Dashboard - Collapsible */}
         {predictionHistory && predictionHistory.length > 0 && (
-          <div className="bg-gradient-to-br from-white via-purple-50/20 to-white border border-gray-200/50 rounded-3xl mb-8 shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-br from-white via-gray-50/20 to-white border border-gray-200/50 rounded-3xl mb-8 shadow-lg overflow-hidden">
             {/* Collapsible Header */}
             <div 
-              className="cursor-pointer hover:bg-purple-50/50 p-6 transition-colors duration-200"
+              className="cursor-pointer hover:bg-gray-50/50 p-6 transition-colors duration-200"
               onClick={() => setIsPredictionHistoryCollapsed(!isPredictionHistoryCollapsed)}
             >
               <div className="flex items-center justify-between">
@@ -1939,11 +1939,10 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                   {/* <span className="text-sm text-gray-500 font-medium">
                     {predictionHistory.length} {predictionHistory.length === 1 ? (currentLanguage === 'pt-BR' ? 'previsão' : 'prediction') : (t.predictions || 'predictions')}
                   </span> */}
-                  <ChevronDown 
-                    className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
-                      isPredictionHistoryCollapsed ? 'transform rotate-0' : 'transform rotate-180'
-                    }`} 
-                  />
+                  {isPredictionHistoryCollapsed ?
+                    <ChevronUp className="w-5 h-5 text-gray-400" /> :
+                    <ChevronDown className="w-5 h-5 text-gray-400" />
+                  }
                 </div>
               </div>
             </div>
@@ -1955,13 +1954,13 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                   {predictionHistory.slice(0, 5).map((prediction, index) => (
                     <div 
                       key={index}
-                      className="bg-white border border-gray-100 rounded-2xl p-4 hover:border-purple-200 hover:shadow-md transition-all duration-200"
+                      className="bg-white border border-gray-100 rounded-2xl p-4 hover:border-gray-200 hover:shadow-md transition-all duration-200"
                     >
                       <div className="flex items-center gap-4">
                         {/* Prediction Icon */}
                         <div className={`p-2 rounded-xl ${
                           prediction.prediction === 'positive' 
-                            ? 'bg-gradient-to-br from-purple-600 to-purple-700' 
+                            ? 'bg-gradient-to-br from-gray-600 to-gray-700' 
                             : 'bg-gradient-to-br from-gray-600 to-gray-700'
                         }`}>
                           {prediction.prediction === 'positive' ? (
@@ -1975,7 +1974,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-3 mb-1">
                             <span className={`font-black text-base ${
-                              prediction.prediction === 'positive' ? 'text-purple-700' : 'text-gray-700'
+                              prediction.prediction === 'positive' ? 'text-gray-700' : 'text-gray-700'
                             }`}>
                               {prediction.prediction === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
                             </span>
@@ -2001,7 +2000,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                         {/* Result Status */}
                         <div className="flex-shrink-0">
                           {prediction.status === 'correct' && (
-                            <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                            <div className="bg-black-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                               <span>✓</span> Correct
                               {prediction.isProvisional && (
                                 <span className="text-green-600 ml-1">*</span>
@@ -2069,30 +2068,30 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
         {/* Admin Evidence Review Panel - Removed - Now available on dedicated admin page */}
         {false && isAdmin() && hasOutcomeBeenSet() && marketOutcome && (
-          <div className="bg-gradient-to-br from-blue-50 via-white to-blue-50 backdrop-blur-xl border-2 border-blue-200 rounded-3xl p-8 mt-8 shadow-2xl shadow-blue-900/10 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 backdrop-blur-xl border-2 border-gray-200 rounded-3xl p-8 mt-8 shadow-2xl shadow-gray-900/10 relative overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-500 to-gray-600 rounded-2xl flex items-center justify-center shadow-lg">
                   <FileText className="w-8 h-8 text-white" />
                 </div>
                 <div>
                   <h3 className="text-2xl font-black text-gray-900 tracking-tight">Admin Panel</h3>
-                  <p className="text-blue-700 font-medium">Review Evidence Submissions</p>
+                  <p className="text-gray-700 font-medium">Review Evidence Submissions</p>
                 </div>
               </div>
               <button
                 onClick={toggleAdminPanel}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 {showAdminPanel ? (
                   <>
-                    <ChevronUp className="w-4 h-4" />
+                    <ChevronDown className="w-4 h-4" />
                     Hide
                   </>
                 ) : (
                   <>
-                    <ChevronDown className="w-4 h-4" />
+                    <ChevronUp className="w-4 h-4" />
                     Show Evidence ({allEvidenceSubmissions.length})
                   </>
                 )}
@@ -2104,8 +2103,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
               <div className="space-y-4">
                 {isLoadingEvidence ? (
                   <div className="text-center py-8">
-                    <div className="inline-flex items-center gap-3 text-blue-600">
-                      <div className="w-6 h-6 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
+                    <div className="inline-flex items-center gap-3 text-gray-600">
+                      <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
                       <span className="font-medium">Loading evidence submissions...</span>
                     </div>
                   </div>
@@ -2119,12 +2118,12 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                   </div>
                 ) : (
                   <>
-                    <div className="bg-blue-100 rounded-xl p-4 mb-4">
-                      <h4 className="font-bold text-blue-900 mb-2">📋 Evidence Summary</h4>
+                    <div className="bg-gray-100 rounded-xl p-4 mb-4">
+                      <h4 className="font-bold text-gray-900 mb-2">📋 Evidence Summary</h4>
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div className="text-center">
-                          <div className="font-bold text-blue-800">{allEvidenceSubmissions.length}</div>
-                          <div className="text-blue-600">Total</div>
+                          <div className="font-bold text-gray-800">{allEvidenceSubmissions.length}</div>
+                          <div className="text-gray-600">Total</div>
                         </div>
                         <div className="text-center">
                           <div className="font-bold text-orange-800">{allEvidenceSubmissions.filter(e => e.status === 'pending').length}</div>
@@ -2154,8 +2153,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                               submission.status === 'pending' 
                                 ? 'bg-orange-100 text-orange-800'
                                 : submission.status === 'approved'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-purple-100 text-purple-800'
+                                ? 'bg-black-100 text-green-800'
+                                : 'bg-gray-100 text-gray-800'
                             }`}>
                               {submission.status.toUpperCase()}
                             </span>
@@ -2169,11 +2168,11 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                           </div>
 
                           {submission.reviewNotes && (
-                            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
-                              <h6 className="font-semibold text-blue-700 mb-1">Admin Review:</h6>
-                              <p className="text-blue-800 text-sm">{submission.reviewNotes}</p>
+                            <div className="mt-4 bg-gray-50 border border-gray-200 rounded-lg p-3">
+                              <h6 className="font-semibold text-gray-700 mb-1">Admin Review:</h6>
+                              <p className="text-gray-800 text-sm">{submission.reviewNotes}</p>
                               {submission.reviewedAt && (
-                                <p className="text-blue-600 text-xs mt-1">
+                                <p className="text-gray-600 text-xs mt-1">
                                   Reviewed: {new Date(submission.reviewedAt).toLocaleString()}
                                 </p>
                               )}
