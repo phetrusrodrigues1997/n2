@@ -1297,7 +1297,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       isMainSectionCollapsed ? "" : "-translate-y-10 md:-translate-y-0"
     }`}>
           {/* Mobile Version - Match Next Question Timer Style */}
-          <div className="md:hidden bg-white border border-gray-300 rounded-lg px-3 py-2 translate-y-8">
+          <div className="md:hidden bg-white border border-gray-300 rounded-lg px-3 py-2 translate-y-12">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-gray-600 rounded-full flex items-center justify-center">
                 <Users className="w-1.5 h-1.5 text-white" />
