@@ -75,22 +75,21 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-md mx-auto px-4 py-8">
-        {/* Purchase Crypto Button */}
+        {/* How to Buy Crypto Link */}
         <div className="mb-6 flex justify-end">
           <button
             onClick={() => window.open('https://keys.coinbase.com', '_blank', 'noopener,noreferrer')}
-            className="flex items-center gap-2 text-purple-600 hover:text-purple-700 transition-colors duration-200 font-medium text-sm tracking-wide"
+            className="text-gray-700 hover:text-black transition-all duration-200 font-medium text-sm tracking-wide border-b border-gray-300 hover:border-black pb-0.5"
           >
-            <span>{t.purchaseCrypto}</span>
-            <span>→</span>
+            How do I buy crypto?
           </button>
         </div>
 
         {!isConnected || !address ? (
           /* Not Connected State */
           <div className="bg-white rounded-3xl border border-gray-200 p-8 text-center shadow-xl">
-            <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Wallet className="w-10 h-10 text-purple-600" />
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Wallet className="w-10 h-10 text-gray-600" />
             </div>
             <h2 className="text-2xl font-bold text-black mb-3">{t.connectYourWalletReceive}</h2>
             <p className="text-gray-600">
@@ -103,9 +102,9 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
             {/* Combined QR Code & Address Section */}
             <div className="bg-white rounded-3xl border border-gray-200 p-5 shadow-xl">
               <div className="text-center mb-4">
-                <div className="inline-flex items-center gap-2 bg-purple-100 px-3 py-1.5 rounded-full mb-3">
-                  <QrCode className="w-4 h-4 text-purple-600" />
-                  <span className="text-sm font-semibold text-purple-600">{t.receiveETH}</span>
+                <div className="inline-flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full mb-3">
+                  <QrCode className="w-4 h-4 text-gray-600" />
+                  <span className="text-sm font-semibold text-gray-600">{t.receiveETH}</span>
                 </div>
               </div>
 
@@ -124,7 +123,7 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
               {/* Copy Button */}
               <button
                 onClick={copyAddressToClipboard}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 mb-3"
+                className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 mb-3"
               >
                 {copied ? (
                   <>
@@ -141,9 +140,9 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
 
               {/* Network Badge */}
               <div className="flex justify-center">
-                <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-full">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span className="text-blue-700 text-xs font-semibold">{t.baseNetworkOnly}</span>
+                <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-full">
+                  <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                  <span className="text-gray-700 text-xs font-semibold">{t.baseNetworkOnly}</span>
                 </div>
               </div>
             </div>

@@ -385,7 +385,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
                       <button
                         onClick={handleEmailSubmit}
                         disabled={emailSubmitting || !email.trim()}
-                        className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 disabled:from-purple-300 disabled:to-purple-400 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 disabled:cursor-not-allowed"
+                        className="w-full bg-black hover:from-purple-700 hover:to-purple-800 disabled:from-purple-300 disabled:to-purple-400 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 disabled:cursor-not-allowed"
                       >
                         {emailSubmitting ? (t.saving || 'Saving...') : (t.notifyMe || 'Notify Me')}
                       </button>
@@ -523,7 +523,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
                     
                     <button
                       onClick={() => setShowEmailCollection(true)}
-                    className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-3 rounded-2xl font-medium transition-colors duration-200 flex items-center gap-2 justify-center -translate-y-2"
+                    className="bg-black hover:to-purple-800 text-white px-6 py-3 rounded-2xl font-medium transition-colors duration-200 flex items-center gap-2 justify-center -translate-y-2"
                   >
                     <Mail className="w-4 h-4" />
                     {t.getNotified || 'Get Notified'}

@@ -21,25 +21,19 @@ import { useContractData } from '../hooks/useContractData';
 import { getPredictionPercentages, isEliminated } from '../Database/actions';
 import {
   Clock,
-  Users,
   Target,
-  TrendingUp,
-  Activity,
-  Zap,
+ 
   X,
   Trophy,
-  Calendar,
   DollarSign,
-  Hash,
-  Timer,
+ 
   Info,
-  Play,
-  AlertCircle,
-  CheckCircle2,
+ 
   ChevronDown,
   Crown,
   Wallet,
-  Eye
+  Eye,
+  ArrowRight
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
@@ -63,7 +57,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [questionCount, setQuestionCount] = useState<number | null>(null);
   const [currentTimer, setCurrentTimer] = useState<string>('');
-  const [isTournamentInfoCollapsed, setIsTournamentInfoCollapsed] = useState<boolean>(true);
+  const [isTournamentInfoCollapsed, setIsTournamentInfoCollapsed] = useState<boolean>(window.innerWidth >= 640);
   const [cookiesLoaded, setCookiesLoaded] = useState(false);
   const [dataLoadingComplete, setDataLoadingComplete] = useState(false);
 
@@ -238,7 +232,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
     if (potInfo.hasStarted) {
       // Tournament has started - show active players
-      return `${current} players left`;
+      return `${current} ${current > 1 ? 'players' : 'player'} remaining`;
     } else if (!hasEnoughPlayers) {
       // Not enough players - show waiting count
       const needed = required - current;
@@ -472,7 +466,6 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
     }
   };
 
-  const nextQuestionInfo = getNextQuestionInfo();
 
   // Get days since tournament started
   const getDaysSinceStart = () => {
@@ -484,7 +477,6 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
     return daysDiff + 1; // +1 because start day is day 1
   };
 
-  const daysSinceStart = getDaysSinceStart();
 
 
   // Status determination (simplified since we don't have potInfo)
@@ -537,7 +529,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50/30">
+    <div className="min-h-screen bg-white">
       {/* Header with back button - Mobile optimized */}
       <div className="absolute top-4 left-4 md:top-6 md:left-6 z-10">
         <button
@@ -555,28 +547,31 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
           {/* Modern Premium Header */}
           <div className="text-center mb-6 -translate-y-6 md:mb-8 md:translate-y-0">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100 rounded-full px-3 md:px-4 py-1.5 md:py-2 mb-4 md:mb-6">
-              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full animate-pulse"></div>
-              <span className="text-xs md:text-sm font-medium text-purple-700">Today's Question</span>
+            <div className="inline-flex items-center gap-3 px-6 md:px-8 mb-2 md:mb-4">
+              <span className="text-2xl lg:text-3xl font-semibold text-gray-800">Question of The Day</span>
             </div>
-            <h1 className="text-lg md:text-2xl lg:text-3xl font-light text-gray-900 leading-tight md:leading-relaxed max-w-3xl mx-auto px-2">
-              {marketQuestion || market?.question || 'Loading...'}
-            </h1>
+            <div className="flex items-center justify-center gap-2 max-w-3xl mx-auto px-2">
+              <h2 className="text-xs md:text-sm lg:text-base font-normal text-gray-600 leading-relaxed">
+                {marketQuestion || market?.question || 'Loading...'}
+              </h2>
+              <div className="w-5 h-5 md:w-6 md:h-6 bg-white rounded-full border border-gray-300 flex items-center justify-center flex-shrink-0">
+                <span className="text-xs md:text-sm font-semibold text-gray-600">?</span>
+              </div>
+            </div>
           </div>
 
           {/* Player status and action button - Desktop layout */}
           <div className="hidden sm:flex justify-between items-center gap-3 mb-4">
             <div className="flex items-center">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200 rounded-full px-3 py-2 animate-pulse-status">
-                <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse-soft"></div>
-                <span className="text-sm font-bold text-purple-800 tracking-wide">{getPlayerMessage()}</span>
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-100 to-gray-200 border border-gray-300 rounded-full px-3 py-2 animate-pulse-status">
+                <div className="w-2 h-2 bg-gray-700 rounded-full animate-pulse-soft"></div>
+                <span className="text-sm font-bold text-gray-800 tracking-wide">{getPlayerMessage()}</span>
               </div>
             </div>
             <button
               onClick={handleReady}
               disabled={!isConnected || (isParticipant && userEliminated)}
-              className="bg-black hover:bg-purple-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 py-3 px-6 text-sm -translate-y-1"
-            >
+              className=" bg-black text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 py-3 px-6 text-sm -translate-y-1">
               {!isConnected ? (
                 <>
                   <Wallet className="w-4 h-4" />
@@ -586,6 +581,12 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 <>
                   <X className="w-4 h-4" />
                   Eliminated
+                </>
+              ) : isParticipant && potInfo.hasStarted && questionCount === null ? (
+                <>
+                  
+                  Make Prediction
+                  <ArrowRight className="w-4 h-4 text-white" />
                 </>
               ) : isParticipant ? (
                 <>
@@ -603,9 +604,9 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
           {/* Player status message - Mobile only */}
           <div className="flex sm:hidden justify-start mb-4">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200 rounded-full px-3 py-2 animate-pulse-status">
-              <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse-soft"></div>
-              <span className="text-sm font-bold text-purple-800 tracking-wide">{getPlayerMessage()}</span>
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-100 to-gray-200 border border-gray-300 rounded-full px-3 py-2 animate-pulse-status">
+              <div className="w-2 h-2 bg-gray-700 rounded-full animate-pulse-soft"></div>
+              <span className="text-sm font-bold text-gray-800 tracking-wide">{getPlayerMessage()}</span>
             </div>
           </div>
 
@@ -618,11 +619,11 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               <div className="flex flex-col items-center relative z-10">
                 <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold mb-2 md:mb-3 transition-all duration-300 shadow-sm ${
                   !isParticipant
-                    ? 'bg-blue-600 text-white border-2 border-blue-600 animate-pulse-soft shadow-blue-200'
+                    ? 'bg-purple-600 text-white border-2 border-purple-600 animate-pulse-soft shadow-purple-200'
                     : isParticipant && !potInfo.hasStarted
-                      ? 'bg-blue-600 text-white border-2 border-blue-600 animate-pulse-soft shadow-blue-200'
+                      ? 'bg-purple-600 text-white border-2 border-purple-600 animate-pulse-soft shadow-purple-200'
                     : isParticipant
-                      ? 'bg-purple-500 text-white border-2 border-purple-500 shadow-purple-200'
+                      ? 'bg-gray-800 text-white border-2 border-gray-800 shadow-gray-200'
                       : 'bg-slate-200 text-slate-500 border-2 border-slate-200'
                 }`}>
                   {!isParticipant ? '1' : isParticipant && !potInfo.hasStarted ? '✓' : '✓'}
@@ -634,9 +635,9 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               <div className="flex flex-col items-center relative z-10">
                 <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold mb-2 md:mb-3 transition-all duration-300 shadow-sm ${
                   isParticipant && !userEliminated && potInfo.hasStarted && questionCount === null
-                    ? 'bg-blue-600 text-white border-2 border-blue-600 animate-pulse-soft shadow-blue-200'
+                    ? 'bg-purple-600 text-white border-2 border-purple-600 animate-pulse-soft shadow-purple-200'
                     : isParticipant && questionCount !== null
-                      ? 'bg-purple-500 text-white border-2 border-purple-500 shadow-purple-200'
+                      ? 'bg-gray-800 text-white border-2 border-gray-800 shadow-gray-200'
                       : 'bg-slate-200 text-slate-500 border-2 border-slate-200'
                 }`}>
                   {isParticipant && questionCount !== null ? '✓' : '2'}
@@ -648,9 +649,9 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               <div className="flex flex-col items-center relative z-10">
                 <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold mb-2 md:mb-3 transition-all duration-300 shadow-sm ${
                   isParticipant && !userEliminated && questionCount !== null && !potInfo.isFinalDay
-                    ? 'bg-blue-600 text-white border-2 border-blue-600 animate-pulse-soft shadow-blue-200'
+                    ? 'bg-purple-600 text-white border-2 border-purple-600 animate-pulse-soft shadow-purple-200'
                     : isParticipant && questionCount !== null && potInfo.isFinalDay
-                      ? 'bg-purple-500 text-white border-2 border-purple-500 shadow-purple-200'
+                      ? 'bg-gray-800 text-white border-2 border-gray-800 shadow-gray-200'
                       : 'bg-slate-200 text-slate-500 border-2 border-slate-200'
                 }`}>
                   {isParticipant && questionCount !== null && potInfo.isFinalDay ? '✓' : '3'}
@@ -687,21 +688,21 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 {/* Line 1->2 */}
                 <div className="flex-1 h-0.5 md:h-1 mx-2 md:mx-3 bg-slate-200 rounded-full overflow-hidden">
                   <div className={`h-full transition-all duration-700 ease-out rounded-full ${
-                    isParticipant ? 'bg-gradient-to-r from-purple-500 to-purple-500' : 'bg-slate-300'
+                    isParticipant ? 'bg-gradient-to-r from-purple-600 to-purple-600' : 'bg-slate-300'
                   }`} style={{ width: isParticipant ? '100%' : '0%' }}></div>
                 </div>
 
                 {/* Line 2->3 */}
                 <div className="flex-1 h-0.5 md:h-1 mx-2 md:mx-3 bg-slate-200 rounded-full overflow-hidden">
                   <div className={`h-full transition-all duration-700 ease-out rounded-full ${
-                    isParticipant && questionCount !== null ? 'bg-gradient-to-r from-purple-500 to-purple-500' : 'bg-slate-300'
+                    isParticipant && questionCount !== null ? 'bg-gradient-to-r from-purple-600 to-purple-600' : 'bg-slate-300'
                   }`} style={{ width: isParticipant && questionCount !== null ? '100%' : '0%' }}></div>
                 </div>
 
                 {/* Line 3->4 */}
                 <div className="flex-1 h-0.5 md:h-1 mx-2 md:mx-3 bg-slate-200 rounded-full overflow-hidden">
                   <div className={`h-full transition-all duration-700 ease-out rounded-full ${
-                    potInfo.isFinalDay ? 'bg-gradient-to-r from-purple-500 to-amber-500' : 'bg-slate-300'
+                    potInfo.isFinalDay ? 'bg-gradient-to-r from-purple-600 to-purple-600' : 'bg-slate-300'
                   }`} style={{ width: potInfo.isFinalDay ? '100%' : '0%' }}></div>
                 </div>
 
@@ -716,7 +717,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             {potInfo.hasStarted && (
               <div className="mt-4 md:mt-6 flex justify-center">
                 <div className="flex items-center gap-2 bg-gray-50 rounded-full px-3 py-2">
-                  <div className="w-3 h-3 bg-purple-600 rounded-full flex items-center justify-center">
+                  <div className="w-3 h-3 bg-gray-700 rounded-full flex items-center justify-center">
                     <Clock className="w-1.5 h-1.5 md:w-2 md:h-2 text-white" />
                   </div>
                   <span className="text-xs text-gray-500 font-medium">Next question:</span>
@@ -733,8 +734,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             <button
               onClick={handleReady}
               disabled={!isConnected || (isParticipant && userEliminated)}
-              className="bg-black hover:bg-purple-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 py-4 px-8 text-base font-semibold w-full"
-            >
+              className=" bg-black text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 py-4 px-8 text-base font-semibold w-full">
               {!isConnected ? (
                 <>
                   <Wallet className="w-5 h-5" />
@@ -744,6 +744,11 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 <>
                   <X className="w-5 h-5" />
                   Eliminated
+                </>
+              ) : isParticipant && potInfo.hasStarted && questionCount === null ? (
+                <>
+                  Make Prediction
+                  <ArrowRight className="w-5 h-5 text-white" />
                 </>
               ) : isParticipant ? (
                 <>
@@ -760,7 +765,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           </div>
 
           {/* Collapsible Tournament Details */}
-          <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden translate-y-4 md:translate-y-6">
+          <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden translate-y-1 md:translate-y-6">
             <div
               onClick={() => setIsTournamentInfoCollapsed(!isTournamentInfoCollapsed)}
               className="cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-all duration-200 p-3 md:p-4 border-b border-gray-100"
