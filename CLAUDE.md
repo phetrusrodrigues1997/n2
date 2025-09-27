@@ -37,13 +37,25 @@ npm run lint         # Run linter
 ## Tournament Types
 
 ### Daily Tournaments
+- **Timing**: New question every 24 hours
 - **Pricing**: Days 1-4 fixed ($0.02-0.05), then doubling from $0.10
-- **Behavior**: Dynamic penalty system, re-entry allowed
+- **Elimination**: Wrong predictions eliminate players immediately
+- **Winning**: Survive daily questions until last 5 players remain → Final day prediction → Winner(s) split prize pool
 
 ### Weekly Tournaments (F1)
 - **Contract**: `0x7357650abC8B1f980806E80a6c3FB56Aae23c45e`
-- **Pricing**: Fixed $1.00 entry fee
-- **Behavior**: Penalty-exempt, event-based timing
+- **Timing**: One prediction per week-long event, up to 7 days to predict
+- **Pricing**: Fixed $1.00 entry fee throughout the week
+- **Elimination**: Wrong predictions eliminate players (same as daily)
+- **Winning**: Survive to last 5 players → Final day prediction → Winner(s) split prize pool
+
+### Tournament Flow (Both Types)
+1. **Join**: Players enter tournament with entry fee
+2. **Predict**: Make predictions (daily vs weekly timing)
+3. **Wait**: Results determined, wrong predictions eliminate players
+4. **Last 5**: When 5 players remain, tournament enters final day
+5. **Final Day**: All 5 remaining players make one final prediction
+6. **Win**: Player(s) who predict correctly on final day split the entire prize pool
 
 **Key Config Files:**
 - `Database/config.ts` - `PENALTY_EXEMPT_CONTRACTS`

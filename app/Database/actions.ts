@@ -307,6 +307,25 @@ export async function isEliminated(walletAddress: string, typeTable: string): Pr
 
 
 /**
+ * Gets the count of eliminated players for a specific table type
+ * @param tableType - Table type ('featured', 'crypto', etc.)
+ * @returns Promise<number> - Count of eliminated players
+ */
+export async function getEliminatedPlayersCount(tableType: string): Promise<number> {
+  try {
+    const wrongPredictionTable = getWrongPredictionsTableFromType(tableType);
+    const eliminatedPlayers = await db
+      .select({ walletAddress: wrongPredictionTable.walletAddress })
+      .from(wrongPredictionTable);
+
+    return eliminatedPlayers.length;
+  } catch (error) {
+    console.error("Error getting eliminated players count:", error);
+    return 0;
+  }
+}
+
+/**
  * Check if a wallet address has wrong predictions for a specific market type
  * @param walletAddress - User's wallet address
  * @param tableType - Market type: "featured" or "crypto"

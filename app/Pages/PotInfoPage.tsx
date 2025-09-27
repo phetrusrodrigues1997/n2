@@ -18,7 +18,7 @@ import {
 } from '../Database/config';
 import { getEventDate } from '../Database/eventDates';
 import { useContractData } from '../hooks/useContractData';
-import { getPredictionPercentages, isEliminated } from '../Database/actions';
+import { getPredictionPercentages, isEliminated, getEliminatedPlayersCount } from '../Database/actions';
 import {
   Clock,
   Target,
@@ -56,6 +56,8 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const [userEliminated, setUserEliminated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [questionCount, setQuestionCount] = useState<number | null>(null);
+  const [questionCountLoading, setQuestionCountLoading] = useState(true);
+  const [eliminatedCount, setEliminatedCount] = useState(0);
   const [currentTimer, setCurrentTimer] = useState<string>('');
   const [isTournamentInfoCollapsed, setIsTournamentInfoCollapsed] = useState<boolean>(window.innerWidth >= 640);
   const [cookiesLoaded, setCookiesLoaded] = useState(false);
@@ -161,8 +163,9 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   // Find the index of our contract address in the contractAddresses array
   const contractIndex = contractAddresses.findIndex(addr => addr === contractAddress);
   const participants = contractIndex !== -1 ? participantsData[contractIndex] : undefined;
-  // Use unique participants count like PredictionPotTest does
-  const playerCount = participants ? Array.from(new Set(participants)).length : 0;
+  // Calculate remaining players: unique participants - eliminated players
+  const uniqueParticipants = participants ? Array.from(new Set(participants)).length : 0;
+  const playerCount = Math.max(0, uniqueParticipants - eliminatedCount);
   const isParticipant = participants && address ? participants.includes(address as `0x${string}`) : false;
 
   // Check for special admin addresses (same as TutorialBridge)
@@ -204,12 +207,17 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
     }
 
     const participants = participantsData[contractIndex];
-    const currentCount = participants && Array.isArray(participants) ? Array.from(new Set(participants)).length : 0;
+    const uniqueParticipants = participants && Array.isArray(participants) ? Array.from(new Set(participants)).length : 0;
     const requiredCount = contractIndex === 0 ? MIN_PLAYERS : MIN_PLAYERS2;
+
+    // Calculate remaining players: unique participants - eliminated players
+    const currentCount = Math.max(0, uniqueParticipants - eliminatedCount);
 
     console.log('📊 getParticipantCounts Result:', {
       contractIndex,
       participants: participants ? participants.length : 'null/undefined',
+      uniqueParticipants,
+      eliminatedCount,
       currentCount,
       requiredCount
     });
@@ -230,15 +238,28 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const getPlayerMessage = () => {
     if (isLoading) return 'Loading...';
 
+    if (userEliminated) return 'You have been eliminated';
+
+    if (!isConnected) return 'Connect wallet to participate';
+
+    if (!isParticipant) {
+      if (!hasEnoughPlayers) {
+        return 'Waiting for more players';
+      } else if (potInfo.hasStarted) {
+        return 'Tournament starts soon';
+      } else {
+        return 'Tournament started';
+      }
+    }
+
     if (potInfo.hasStarted) {
-      // Tournament has started - show active players
-      return `${current} ${current > 1 ? 'players' : 'player'} remaining`;
-    } else if (!hasEnoughPlayers) {
-      // Not enough players - show waiting count
-      const needed = required - current;
-      return `Waiting for ${needed} more ${needed > 1 ? 'players' : 'player'}`;
+      if (questionCountLoading) {
+        return 'Loading prediction status...';
+      }
+      return questionCount === null
+        ? 'Ready to make prediction'
+        : `${current} ${current > 1 ? 'players' : 'player'} remaining`;
     } else {
-      // Has enough players but hasn't started yet
       return `${current} players ready`;
     }
   };
@@ -280,7 +301,10 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
         // Get question count (total predictions = current question number)
         if (percentages && percentages.totalPredictions > 0) {
           setQuestionCount(percentages.totalPredictions);
+        } else {
+          setQuestionCount(null);
         }
+        setQuestionCountLoading(false);
 
         // Check if user is eliminated
         console.log('🔍 PotInfoPage - Checking if user is eliminated...');
@@ -290,9 +314,16 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
         console.log('🔍 PotInfoPage - User elimination status:', eliminated);
         setUserEliminated(eliminated ? true : false);
 
+        // Get eliminated players count
+        console.log('🔍 PotInfoPage - Getting eliminated players count...');
+        const eliminatedPlayersCount = await getEliminatedPlayersCount(tableType);
+        console.log('🔍 PotInfoPage - Eliminated players count:', eliminatedPlayersCount);
+        setEliminatedCount(eliminatedPlayersCount);
+
         console.log('✅ PotInfoPage - All tournament data loaded successfully');
       } catch (error) {
         console.error('❌ PotInfoPage - Error loading tournament data:', error);
+        setQuestionCountLoading(false);
       } finally {
         console.log('🏁 PotInfoPage - Setting data loading complete');
         setDataLoadingComplete(true);
@@ -582,9 +613,9 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   <X className="w-4 h-4" />
                   Eliminated
                 </>
-              ) : isParticipant && potInfo.hasStarted && questionCount === null ? (
+              ) : isParticipant && potInfo.hasStarted && !questionCountLoading && questionCount === null ? (
                 <>
-                  
+
                   Make Prediction
                   <ArrowRight className="w-4 h-4 text-white" />
                 </>
@@ -634,13 +665,13 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               {/* Step 2: Predict */}
               <div className="flex flex-col items-center relative z-10">
                 <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold mb-2 md:mb-3 transition-all duration-300 shadow-sm ${
-                  isParticipant && !userEliminated && potInfo.hasStarted && questionCount === null
+                  isParticipant && !userEliminated && potInfo.hasStarted && !questionCountLoading && questionCount === null
                     ? 'bg-purple-600 text-white border-2 border-purple-600 animate-pulse-soft shadow-purple-200'
-                    : isParticipant && questionCount !== null
+                    : isParticipant && !questionCountLoading && questionCount !== null
                       ? 'bg-gray-800 text-white border-2 border-gray-800 shadow-gray-200'
                       : 'bg-slate-200 text-slate-500 border-2 border-slate-200'
                 }`}>
-                  {isParticipant && questionCount !== null ? '✓' : '2'}
+                  {isParticipant && !questionCountLoading && questionCount !== null ? '✓' : '2'}
                 </div>
                 <div className="text-xs font-medium text-slate-700 text-center">Predict</div>
               </div>
@@ -648,13 +679,13 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               {/* Step 3: Wait */}
               <div className="flex flex-col items-center relative z-10">
                 <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold mb-2 md:mb-3 transition-all duration-300 shadow-sm ${
-                  isParticipant && !userEliminated && questionCount !== null && !potInfo.isFinalDay
+                  isParticipant && !userEliminated && !questionCountLoading && questionCount !== null && !potInfo.isFinalDay
                     ? 'bg-purple-600 text-white border-2 border-purple-600 animate-pulse-soft shadow-purple-200'
-                    : isParticipant && questionCount !== null && potInfo.isFinalDay
+                    : isParticipant && !questionCountLoading && questionCount !== null && potInfo.isFinalDay
                       ? 'bg-gray-800 text-white border-2 border-gray-800 shadow-gray-200'
                       : 'bg-slate-200 text-slate-500 border-2 border-slate-200'
                 }`}>
-                  {isParticipant && questionCount !== null && potInfo.isFinalDay ? '✓' : '3'}
+                  {isParticipant && !questionCountLoading && questionCount !== null && potInfo.isFinalDay ? '✓' : '3'}
                 </div>
                 <div className="text-xs font-medium text-slate-700 text-center">Wait</div>
               </div>
@@ -695,8 +726,8 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 {/* Line 2->3 */}
                 <div className="flex-1 h-0.5 md:h-1 mx-2 md:mx-3 bg-slate-200 rounded-full overflow-hidden">
                   <div className={`h-full transition-all duration-700 ease-out rounded-full ${
-                    isParticipant && questionCount !== null ? 'bg-gradient-to-r from-purple-600 to-purple-600' : 'bg-slate-300'
-                  }`} style={{ width: isParticipant && questionCount !== null ? '100%' : '0%' }}></div>
+                    isParticipant && !questionCountLoading && questionCount !== null ? 'bg-gradient-to-r from-purple-600 to-purple-600' : 'bg-slate-300'
+                  }`} style={{ width: isParticipant && !questionCountLoading && questionCount !== null ? '100%' : '0%' }}></div>
                 </div>
 
                 {/* Line 3->4 */}
@@ -745,7 +776,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   <X className="w-5 h-5" />
                   Eliminated
                 </>
-              ) : isParticipant && potInfo.hasStarted && questionCount === null ? (
+              ) : isParticipant && potInfo.hasStarted && !questionCountLoading && questionCount === null ? (
                 <>
                   Make Prediction
                   <ArrowRight className="w-5 h-5 text-white" />
@@ -797,8 +828,8 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                     <h4 className="text-sm font-medium text-gray-900 leading-tight">{isParticipant ? 'Re-entry Fee' : 'Entry Fee'}: ${entryFee?.toFixed(2) || '0.00'}</h4>
                     <p className="text-xs text-gray-600 mt-1 leading-relaxed">
                       {isPenaltyExempt
-                        ? `Fixed ${isParticipant ? 're-entry' : 'entry'} fee for all participants - no daily increases.`
-                        : `${isParticipant ? 'Re-entry fee' : 'Entry fee'} increases daily. A higher fee can mean a higher chance of winning due to less players remaining.`
+                        ? `Fixed ${isParticipant ? 're-entry' : 'entry'} fee for all participants throughout the week-long prediction window.`
+                        : `${isParticipant ? 'Re-entry fee' : 'Entry fee'} doubles daily starting from Day 5. Join early for the lowest price, or pay more later for fewer remaining players and better odds.`
                       }
                     </p>
                   </div>
@@ -813,8 +844,8 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                     <h4 className="text-sm font-medium text-gray-900 leading-tight">{tournamentType} Tournament</h4>
                     <p className="text-xs text-gray-600 mt-1 leading-relaxed">
                       {isPenaltyExempt
-                        ? 'Event-based tournament with forgiving rules - wrong answers don\'t eliminate you.'
-                        : 'Daily prediction tournament where wrong answers will result in elimination.'
+                        ? 'Weekly tournament focused on a single event. Survive to the last 5 players, then all 5 compete in a final day prediction to determine the winner(s).'
+                        : 'Daily elimination tournament. Survive daily questions until only 5 players remain, then all 5 compete in a final day prediction to determine the winner(s).'
                       }
                     </p>
                   </div>
@@ -833,6 +864,22 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   </div>
                 </div>
 
+                {/* Tournament Rules */}
+                <div className="flex items-start gap-3">
+                  <div className="w-5 h-5 md:w-6 md:h-6 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Target className="w-2.5 h-2.5 md:w-3 md:h-3 text-orange-600" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-sm font-medium text-gray-900 leading-tight">Key Rules</h4>
+                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                      {isPenaltyExempt
+                        ? 'You have up to 7 days to research and make your prediction for the weekly event. Wrong predictions eliminate you, but if you reach the last 5, you get another chance on final day.'
+                        : 'You have 24 hours to make each daily prediction. Wrong predictions eliminate you, but if you reach the last 5, you get to compete on final day.'
+                      }
+                    </p>
+                  </div>
+                </div>
+
                 {/* How to Win */}
                 <div className="flex items-start gap-3">
                   <div className="w-5 h-5 md:w-6 md:h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -842,8 +889,8 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                     <h4 className="text-sm font-medium text-gray-900 leading-tight">How to Win</h4>
                     <p className="text-xs text-gray-600 mt-1 leading-relaxed">
                       {isPenaltyExempt
-                        ? 'Player with the highest accuracy across all race predictions wins the prize pool.'
-                        : 'Be the last player standing by making correct predictions and avoiding elimination.'
+                        ? 'Make your prediction for the weekly event and wait for results. Survive to be one of the last 5 players, then compete in the final day prediction. The winner(s) of the final day split the prize pool.'
+                        : 'Survive daily questions to reach the last 5 players. On the final day, these 5 players make one final prediction. The winner(s) of the final day prediction split the entire prize pool.'
                       }
                     </p>
                   </div>

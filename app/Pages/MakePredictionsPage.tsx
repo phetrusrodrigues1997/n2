@@ -1291,38 +1291,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
         <div className="absolute top-2/3 left-1/2 w-32 h-32 bg-gray-600 rounded-full blur-2xl animate-pulse delay-1000"></div>
       </div>
 
-      {/* Eligible Participants Display - Mobile: Top Left, Desktop: Top Right - Hidden while loading */}
-      {!(isBetLoading || !isDataLoaded) && (
-        <div className={`absolute top-16 left-4 md:top-4 md:left-auto md:right-4 z-20 ${
-      isMainSectionCollapsed ? "" : "-translate-y-10 md:-translate-y-0"
-    }`}>
-          {/* Mobile Version - Match Next Question Timer Style */}
-          <div className="md:hidden bg-white border border-gray-300 rounded-lg px-3 py-2 translate-y-12">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-gray-600 rounded-full flex items-center justify-center">
-                <Users className="w-1.5 h-1.5 text-white" />
-              </div>
-              <span className={'font-black text-gray-700 text-xs tracking-wider'}>
-                {participantStats.eligibleParticipants} <span className='text-gray-900'>{t.playersRemaining} / </span>{participantStats.uniqueAddresses} total
-              </span>
-            </div>
-          </div>
-          
-          {/* Desktop Version - Original Design */}
-          <div className="hidden md:inline-flex items-center gap-2 md:gap-3 px-3 py-2 md:px-6 md:py-3 bg-gray-50 rounded-xl md:rounded-2xl border border-gray-200 shadow-lg">
-            <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-gray-100 to-gray-50 rounded-full flex items-center justify-center">
-              <Users className="w-3 h-3 md:w-4 md:h-4 text-gray-600" />
-            </div>
-            <div className="flex items-center gap-1 md:gap-2">
-              <span className="text-lg md:text-2xl font-semibold text-gray-900">{participantStats.eligibleParticipants}</span>
-              <span className="text-xs text-gray-500">{t.playersRemaining}</span>
-              <span className="text-gray-400 text-sm md:text-lg font-light">/</span>
-              <span className="text-md md:text-lg font-medium text-gray-600">{participantStats.uniqueAddresses}</span>
-              <span className="text-xs text-gray-500">total</span>
-            </div>
-          </div>
-        </div>
-      )}
+     
       
       <div className="max-w-lg mx-auto pt-12 relative z-10">
         {(isBetLoading || !isDataLoaded) ? (
