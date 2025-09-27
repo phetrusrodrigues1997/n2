@@ -547,36 +547,36 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   return (
     <div className="min-h-screen bg-white">
       {/* Minimal Header */}
-      <div className="flex items-center p-4">
+      {/* <div className="flex items-center p-4">
         <button
           onClick={handleBack}
           className="text-gray-900 hover:text-gray-600 transition-colors"
         >
           <span className="text-xl">←</span>
         </button>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <div className="flex flex-col">
-        <div className="px-6">
+        <div className="px-6 pt-6">
           {/* Clean Question Display */}
-          <div className="mb-8">
-            <div className="text-sm font-medium text-gray-500 mb-3 tracking-wide uppercase">
+          <div className="mb-6">
+            <div className="text-xs font-medium text-gray-500 mb-2 tracking-wide uppercase">
               {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
                 ? 'Question of the Week'
                 : 'Question of the Day'
               }
             </div>
-            <h1 className="text-2xl md:text-3xl font-normal text-gray-900 leading-[1.3] tracking-tight">
+            <h1 className="text-xl md:text-2xl font-normal text-gray-900 leading-[1.3] tracking-tight">
               {marketQuestion || market?.question || 'Loading...'}
             </h1>
           </div>
 
           {/* Tournament Journey Flow */}
-          <div className="bg-gray-50 rounded-xl border-0 p-6 mb-6">
-            <div className="text-sm font-medium text-gray-600 mb-6 tracking-wide">Tournament Progress</div>
+          <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+            <div className="text-sm font-medium text-gray-600 mb-4 tracking-wide">Tournament Progress</div>
 
-            <div className="relative flex items-center justify-between px-2 md:px-4 py-4">
+            <div className="relative flex items-center justify-between px-2 md:px-4 py-2">
               {/* Step 1: Join */}
               <div className="flex flex-col items-center relative z-10">
                 <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs font-medium mb-3 transition-all duration-200 ${
@@ -646,7 +646,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               </div>
 
               {/* Clean Connecting Lines */}
-              <div className="absolute top-8 md:top-9 left-0 right-0 flex items-center justify-between px-6 md:px-8">
+              <div className="absolute top-6 md:top-7 left-0 right-0 flex items-center justify-between px-6 md:px-8">
                 {/* Line 1->2 */}
                 <div className="flex-1 h-px mx-2 bg-gray-200">
                   <div className={`h-full transition-all duration-300 ${
@@ -677,11 +677,11 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
             {/* Next Question Timer - Only show if pot has started */}
             {potInfo.hasStarted && (
-              <div className="mt-6 flex justify-center">
-                <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg px-4 py-3">
-                  <Clock className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">Next question in</span>
-                  <span className="font-medium text-gray-900 text-sm">
+              <div className="mt-3 flex justify-center">
+                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
+                  <Clock className="w-3 h-3 text-gray-500" />
+                  <span className="text-xs text-gray-600">Next question in</span>
+                  <span className="font-medium text-gray-900 text-xs">
                     {currentTimer}
                   </span>
                 </div>

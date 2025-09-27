@@ -1340,20 +1340,29 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       
       <div className="min-h-screen bg-white">
         {/* Minimal Header */}
-        <div className="flex items-center p-4">
+        {/* <div className="flex items-center p-4">
           <button
             onClick={() => setActiveSection('home')}
             className="text-gray-900 hover:text-gray-600 transition-colors"
           >
             <span className="text-xl">←</span>
           </button>
-        </div>
+        </div> */}
 
      
       
         {/* Main Content */}
-        <div className="flex flex-col min-h-[calc(100vh-64px)]">
+        <div className="flex flex-col py-12">
           <div className="flex-1 px-4">
+            {/* Page Header */}
+            <div className="mb-8 text-center">
+              <h1 className="text-3xl md:text-4xl font-normal text-gray-900 tracking-tight mb-2">
+                Predictions Hub
+              </h1>
+              <p className="text-gray-600 text-sm">
+                Make your predictions and track your tournament progress
+              </p>
+            </div>
             
             {(isBetLoading || !isDataLoaded) ? (
               <div className="text-center py-8">
@@ -1385,7 +1394,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
               <>
                 {/* Question and Context - Always Visible */}
                 <div className="border border-gray-200 rounded-lg p-4 mb-6">
-                  <div className="text-sm text-gray-500 mb-2">
+                  <div className="text-xs md:text-sm text-gray-500 mb-2">
                     {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
                       ? "This week's question"
                       : "Today's question"
@@ -1425,7 +1434,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                       tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive'
                         ? 'bg-purple-100 border-purple-300 text-purple-700 shadow-lg'
                         : tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative'
-                        ? 'bg-white hover:border-purple-300 border-gray-200 text-black hover:text-purple-700'
+                        ? 'bg-white border-purple-300 text-purple-700 hover:bg-purple-50'
                         : 'bg-purple-50 border-purple-200 text-purple-700 hover:border-purple-300 hover:bg-purple-100'
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
@@ -1447,7 +1456,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                       tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative'
                         ? 'bg-blue-100 border-blue-300 text-blue-700 shadow-lg'
                         : tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive'
-                        ? 'bg-white border-gray-200 hover:border-blue-300 text-black hover:text-blue-700'
+                        ? 'bg-white border-blue-300 text-blue-700 hover:bg-blue-50'
                         : 'bg-blue-50 border-blue-200 text-blue-700 hover:border-blue-300 hover:bg-blue-100'
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
