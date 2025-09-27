@@ -1142,7 +1142,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   // If wallet is not connected
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4 flex items-center justify-center relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4 flex items-center justify-center relative overflow-hidden translate-y-8">
         {/* Subtle animated background elements */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gray-900 rounded-full blur-3xl animate-pulse"></div>
@@ -1292,14 +1292,14 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       
       <div className="min-h-screen bg-white">
         {/* Minimal Header */}
-        <div className="flex items-center p-4">
+        {/* <div className="flex items-center p-4">
           <button
             onClick={() => setActiveSection('home')}
             className="text-gray-900 hover:text-gray-600 transition-colors"
           >
             <span className="text-xl">←</span>
           </button>
-        </div>
+        </div> */}
 
      
       
@@ -1365,9 +1365,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                         Made on {new Date((tomorrowsBet as TodaysBet).createdAt).toLocaleDateString()}
                       </div>
                     </div>
-                    <div className="text-sm text-gray-600">
-                      {displayQuestion || marketQuestion}
-                    </div>
+                    
                   </div>
                 ) : (
                   /* Prediction Interface */

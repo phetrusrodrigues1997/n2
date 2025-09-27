@@ -18,8 +18,7 @@ import {
 } from '../Database/config';
 import { getEventDate } from '../Database/eventDates';
 import { useContractData } from '../hooks/useContractData';
-import { getPredictionPercentages, isEliminated, getEliminatedPlayersCount } from '../Database/actions';
-import { getUserPrediction } from '../Database/actions2';
+import { getPredictionPercentages, isEliminated, getEliminatedPlayersCount, getTomorrowsBet } from '../Database/actions';
 import {
   Clock,
   Target,
@@ -317,17 +316,21 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
         console.log('🔍 PotInfoPage - Eliminated players count:', eliminatedPlayersCount);
         setEliminatedCount(eliminatedPlayersCount);
 
-        // Check if user has made a prediction for today
+        // Check if user has made a prediction for today using getTomorrowsBet
         console.log('🔍 PotInfoPage - Checking if user has predicted for today...');
         try {
-          // Get current UTC date for prediction check
-          const today = new Date();
-          const currentUTCDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+          // Convert contract address to table type for getTomorrowsBet
+          const tableType = CONTRACT_TO_TABLE_MAPPING[contractAddress as keyof typeof CONTRACT_TO_TABLE_MAPPING];
+          if (!tableType) {
+            console.error('❌ PotInfoPage - No table mapping found for contract:', contractAddress);
+            setHasUserPredictedToday(false);
+            return;
+          }
 
-          const userPrediction = await getUserPrediction(contractAddress, address, currentUTCDate);
+          const userPrediction = await getTomorrowsBet(address, tableType);
           const hasPredicted = userPrediction !== null;
           console.log('🔍 PotInfoPage - User prediction check:', {
-            currentUTCDate,
+            tableType,
             userPrediction,
             hasPredicted
           });
@@ -433,7 +436,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50/30 flex items-center justify-center relative">
         {/* Back button - always visible - Mobile optimized */}
-        <div className="absolute top-4 left-4 md:top-6 md:left-6 z-10">
+        {/* <div className="absolute top-4 left-4 md:top-6 md:left-6 z-10">
           <button
             onClick={() => setActiveSection && setActiveSection('home')}
             className="flex items-center gap-1.5 md:gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white/90 hover:bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-gray-200/60 hover:border-purple-300 backdrop-blur-sm shadow-sm"
@@ -441,7 +444,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             <span className="text-base md:text-sm">←</span>
             <span className="hidden sm:inline">Back</span>
           </button>
-        </div>
+        </div> */}
 
         <div className="text-center max-w-sm md:max-w-md mx-auto px-4 md:px-6">
           {/* Enhanced loading animation */}
@@ -780,11 +783,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
         </div>
 
         {/* Bottom Action Section - Polymarket Style */}
-        <div className="p-4 border-t border-gray-100">
-          {/* Status */}
-          <div className="text-center mb-3">
-            <span className="text-sm text-gray-500">{getPlayerMessage()}</span>
-          </div>
+        <div className="p-4 border-t border-gray-100 mb-4">
 
           {/* Action Button */}
           <button
@@ -803,7 +802,12 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             ) : (
               'Join Tournament'
             )}
+            <ArrowRight className="w-5 h-5 inline-block ml-2" />
           </button>
+          {/* Status */}
+          <div className="text-center tranlate-y-2">
+            <span className="text-sm text-gray-500">{getPlayerMessage()}</span>
+          </div>
         </div>
       </div>
 
