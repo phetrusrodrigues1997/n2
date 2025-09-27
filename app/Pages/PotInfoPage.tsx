@@ -607,8 +607,8 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col min-h-[calc(100vh-64px)]">
-        <div className="flex-1 px-4">
+      <div className="flex flex-col">
+        <div className="px-4">
           {/* Clean Question Display */}
           <div className="mb-6">
             <div className="text-sm text-gray-500 mb-2">
@@ -783,7 +783,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
         </div>
 
         {/* Bottom Action Section - Polymarket Style */}
-        <div className="p-4 border-t border-gray-100 mb-4">
+        <div className="p-4 md:-translate-y-4">
 
           {/* Action Button */}
           <button
@@ -805,7 +805,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             <ArrowRight className="w-5 h-5 inline-block ml-2" />
           </button>
           {/* Status */}
-          <div className="text-center tranlate-y-2">
+          <div className="text-center translate-y-2">
             <span className="text-sm text-gray-500">{getPlayerMessage()}</span>
           </div>
         </div>

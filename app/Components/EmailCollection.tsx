@@ -69,18 +69,18 @@ const EmailCollection: React.FC<EmailCollectionProps> = ({
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto px-4 py-6">
-      {/* Header Section */}
+    <div className="w-full max-w-md mx-auto px-6 py-8">
+      {/* Header Section - Polymarket Style */}
       <div className="text-center mb-8">
-        <h3 className="text-2xl md:text-3xl font-light text-gray-900 tracking-tight mb-4">
-          {t.readyToPlay}📩
+        <h3 className="text-2xl font-medium text-gray-900 mb-4">
+          {t.readyToPlay?.replace('📩', '') || 'Ready to Play?'}
         </h3>
-        <p className="text-gray-600 text-base leading-relaxed font-light">
+        <p className="text-gray-600 text-sm leading-relaxed">
           {t.emailNotificationMessage}
         </p>
       </div>
 
-      {/* Email Input Section */}
+      {/* Email Input Section - Clean Layout */}
       <div className="space-y-6">
         <EmailInput
           email={email}
@@ -90,35 +90,32 @@ const EmailCollection: React.FC<EmailCollectionProps> = ({
           disabled={emailSubmitting || success}
         />
 
-        {/* Message Area - Fixed height to prevent layout shift */}
-        <div className="min-h-[3rem] flex items-center justify-center">
+        {/* Message Area - Clean Alerts */}
+        <div className="min-h-[2rem] flex items-center justify-center">
           {error && (
-            <div className="w-full bg-red-50 border border-red-200 rounded-xl p-3 animate-fade-in">
+            <div className="w-full bg-red-50 border border-red-200 rounded-lg p-3 animate-fade-in">
               <p className="text-red-700 text-sm text-center">{error}</p>
             </div>
           )}
           {success && (
-            <div className="w-full bg-green-50 border border-green-200 rounded-xl p-3 animate-fade-in">
+            <div className="w-full bg-green-50 border border-green-200 rounded-lg p-3 animate-fade-in">
               <p className="text-green-700 text-sm text-center">✓ Email saved successfully!</p>
             </div>
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col items-center space-y-1 -translate-y-12">
+        {/* Action Buttons - Polymarket Style */}
+        <div className="space-y-3">
           <button
             onClick={handleEmailSubmit}
             disabled={emailSubmitting || !email.trim()}
-            className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800
-                       disabled:bg-black disabled:from-black disabled:to-black disabled:text-white
-                       text-white font-medium py-4 px-8 rounded-2xl
-                       transition-all duration-300 text-lg disabled:cursor-not-allowed transform hover:scale-[1.02]
-                       active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl
-                       disabled:opacity-100 disabled:shadow-lg"
+            className="w-full bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400
+                       text-white font-medium py-3 px-6 rounded-lg
+                       transition-colors duration-200 disabled:cursor-not-allowed"
           >
             {emailSubmitting ? (
-              <span className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
+              <span className="flex items-center justify-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                 {t.joining}
               </span>
             ) : (
@@ -128,7 +125,7 @@ const EmailCollection: React.FC<EmailCollectionProps> = ({
 
           <button
             onClick={handleSkipEmail}
-            className="w-full text-purple-600 hover:text-gray-700 font-light py-3 px-6 transition-all duration-200 text-base tracking-wide"
+            className="w-full text-gray-500 hover:text-gray-700 font-medium py-3 px-6 transition-colors duration-200 text-sm"
           >
             {t.skipForNow}
           </button>

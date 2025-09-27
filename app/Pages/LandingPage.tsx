@@ -1962,11 +1962,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                         setActiveSection('potInfo');
                                       }}
-                                      className="w-full group relative overflow-hidden bg-black hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
+                                      className="w-full group relative overflow-hidden hover:bg-[#f4f4f4] text-white hover:text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                                     >
                                       <span className="relative z-10 flex items-center justify-center gap-2">
                                         More Info
-                                        <ArrowRight className="w-4 h-4 text-white" />
+                                        <ArrowRight className="w-4 h-4 text-white hover:text-black" />
                                       </span>
                                     </button>
                                   </div>
@@ -2568,11 +2568,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       handleMarketClick(market.id);
                                       setActiveSection('potInfo');
                                     }}
-                                    className="w-full group relative overflow-hidden bg-black hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
+                                    className="w-full group relative overflow-hidden bg-black hover:bg-[#f4f4f4] text-white hover:text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                                   >
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                       More Info
-                                      <ArrowRight className="w-4 h-4 text-white" />
+                                      <ArrowRight className="w-4 h-4 text-white hover:text-black" />
                                     </span>
                                   </button>
                                 </div>
@@ -2742,35 +2742,32 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           autoClose={alertState.autoClose}
         />
 
-        {/* Tutorial Modal */}
+        {/* Tutorial Modal - Polymarket Style */}
         {showTutorial && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col">
-              {/* Modal Header */}
-              <div className="flex items-center justify-between px-5 md:px-6 py-6 border-b border-gray-200">
-                <div className="flex items-center gap-3">
-                  
-                  <div>
-                    <h2 className="text-sm md:text-lg font-semibold text-gray-900">
-                      {t.howItWorksTitle || "How It Works"}
-                    </h2>
-                    <p className="text-xs md:text-sm text-gray-500">
-                      Step {tutorialStep + 1} of {tutorialSteps.length}
-                    </p>
-                  </div>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full border border-gray-100">
+              {/* Modal Header - Clean */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <div>
+                  <h2 className="text-lg font-medium text-gray-900">
+                    {t.howItWorksTitle || "How It Works"}
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {tutorialStep + 1} of {tutorialSteps.length}
+                  </p>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  {/* Language dropdown in tutorial */}
-                  <div className="relative " data-tutorial-language-dropdown>
+                <div className="flex items-center gap-3">
+                  {/* Language dropdown in tutorial - Polymarket style */}
+                  <div className="relative" data-tutorial-language-dropdown>
                     <button
                       onClick={() => setIsTutorialLanguageDropdownOpen(!isTutorialLanguageDropdownOpen)}
-                      className="flex items-center gap-2 px-3 py-2 bg-purple-50 text-purple-700 font-semibold rounded-md hover:bg-purple-800 hover:text-white transition-colors border border-purple-200"
+                      className="flex items-center gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors border border-gray-200"
                     >
                       <img
                         src={supportedLanguages.find(lang => lang.code === currentLanguage)?.flag}
                         alt="Current language"
-                        className="object-cover rounded w-6 h-4"
+                        className="object-cover rounded w-5 h-4"
                       />
                       <span className="text-sm font-medium">
                         {supportedLanguages.find(lang => lang.code === currentLanguage)?.name}
@@ -2790,21 +2787,21 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                     {/* Language dropdown menu */}
                     {isTutorialLanguageDropdownOpen && (
-                      <div className="absolute right-0 mt-1 w-40 bg-white rounded-md shadow-lg border border-gray-200 z-[90]">
+                      <div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg border border-gray-200 z-[90] py-1">
                         {supportedLanguages.map((language) => (
                           <button
                             key={language.code}
                             onClick={() => handleTutorialLanguageChange(language.code)}
-                            className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors ${
-                              currentLanguage === language.code ? 'bg-purple-50 text-purple-700' : 'text-gray-700'
+                            className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors ${
+                              currentLanguage === language.code ? 'bg-gray-50' : ''
                             }`}
                           >
                             <img
                               src={language.flag}
                               alt={`${language.name} flag`}
-                              className="w-4 h-3 object-cover rounded"
+                              className="w-5 h-4 object-cover rounded"
                             />
-                            <span className="text-sm">{language.name}</span>
+                            <span className="text-sm text-gray-700">{language.name}</span>
                           </button>
                         ))}
                       </div>
@@ -2813,7 +2810,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                   <button
                     onClick={closeTutorial}
-                    className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="text-gray-400 hover:text-gray-600 p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
                     aria-label="Close tutorial"
                   >
                     <X className="w-5 h-5" />
@@ -2821,8 +2818,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 </div>
               </div>
 
-              {/* Modal Content */}
-              <div className="flex-1 p-6">
+              {/* Modal Content - Clean Layout */}
+              <div className="p-6">
                 {showTutorialEmailCollection ? (
                   /* Email Collection Step */
                   <EmailCollection
@@ -2831,24 +2828,24 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                     onSkip={handleEmailCollectionSkip}
                   />
                 ) : (
-                  /* Normal Tutorial Steps */
+                  /* Normal Tutorial Steps - Polymarket Style */
                   <>
-                    <div className="text-center">
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    <div className="text-center space-y-6">
+                      <h3 className="text-2xl font-medium text-gray-900">
                         {tutorialSteps[tutorialStep].title}
                       </h3>
-                      <p className="text-gray-600 leading-relaxed">
+                      <p className="text-gray-600 leading-relaxed text-base max-w-md mx-auto">
                         {tutorialSteps[tutorialStep].content}
                       </p>
                     </div>
 
-                    {/* Progress Dots */}
+                    {/* Progress Indicators - Clean Design */}
                     <div className="flex justify-center gap-2 mt-8">
                       {tutorialSteps.map((_, index) => (
                         <div
                           key={index}
-                          className={`w-2 h-2 rounded-full transition-colors ${
-                            index === tutorialStep ? 'bg-purple-600' : 'bg-gray-300'
+                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                            index === tutorialStep ? 'bg-gray-900 scale-125' : 'bg-gray-300'
                           }`}
                         />
                       ))}
@@ -2857,23 +2854,23 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 )}
               </div>
 
-              {/* Modal Footer - Only show navigation for tutorial steps, not email collection */}
+              {/* Modal Footer - Clean Navigation */}
               {!showTutorialEmailCollection && (
-                <div className="border-t border-gray-200 p-6">
+                <div className="border-t border-gray-100 p-6">
                   <div className="flex items-center justify-between">
                     <button
                       onClick={prevTutorialStep}
                       disabled={tutorialStep === 0}
-                      className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-lg hover:bg-gray-50"
                     >
                       <ChevronLeft className="w-4 h-4" />
-                      {t.previous || "Previous"}
+                      <span className="font-medium">{t.previous || "Previous"}</span>
                     </button>
 
                     {tutorialStep === tutorialSteps.length - 1 ? (
                       <button
                         onClick={closeTutorial}
-                        className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+                        className="bg-gray-900 text-white px-6 py-2.5 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 font-medium"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                         {t.startPlaying || "Get Started!"}
@@ -2881,7 +2878,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                     ) : (
                       <button
                         onClick={nextTutorialStep}
-                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+                        className="bg-gray-900 text-white px-6 py-2.5 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 font-medium"
                       >
                         {t.next || "Next"}
                         <ChevronRight className="w-4 h-4" />

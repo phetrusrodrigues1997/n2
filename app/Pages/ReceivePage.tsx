@@ -86,7 +86,7 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
           onClick={() => window.open('https://keys.coinbase.com', '_blank', 'noopener,noreferrer')}
           className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
         >
-          How to buy crypto?
+          Where can I buy crypto?
         </button>
       </div>
 

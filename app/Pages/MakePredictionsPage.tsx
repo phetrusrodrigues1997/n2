@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatUnits, parseEther } from 'viem';
-import { placeBitcoinBet, getTomorrowsBet, getTodaysBet, isEliminated, submitEvidence, getUserEvidenceSubmission, getAllEvidenceSubmissions, processReEntry, notifyMinimumPlayersReached } from '../Database/actions';
+import { placeBitcoinBet, getTomorrowsBet, getTodaysBet, isEliminated, submitEvidence, getUserEvidenceSubmission, getAllEvidenceSubmissions, processReEntry, notifyMinimumPlayersReached, getPredictionPercentages } from '../Database/actions';
 import { getUserPredictionsByContract, getUserPredictionsWithResults } from '../Database/actions3';
 import { getProvisionalOutcome, } from '../Database/OwnerActions';
 import { TrendingUp, TrendingDown, Shield, Zap, AlertTriangle, Clock, FileText, Upload, ChevronUp, ChevronDown, Eye, Trophy, Users } from 'lucide-react';
@@ -114,6 +114,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   const [isPenaltyExempt, setIsPenaltyExempt] = useState<boolean>(false);
   const [eventDate, setEventDate] = useState<string | null>(null);
   const [formattedEventDate, setFormattedEventDate] = useState<string>('');
+  const [predictionPercentages, setPredictionPercentages] = useState<{ positivePercentage: number; negativePercentage: number; totalPredictions: number } | null>(null);
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -885,7 +886,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   // Load prediction history for the current contract and user with results
   const loadPredictionHistory = useCallback(async () => {
     if (!address || !contractAddress) return;
-    
+
     try {
       const historyWithResults = await getUserPredictionsWithResults(address, contractAddress);
       setPredictionHistory(historyWithResults);
@@ -894,6 +895,35 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       console.error('Error loading prediction history:', error);
     }
   }, [address, contractAddress]);
+
+  // Load prediction percentages for the current contract
+  const loadPredictionPercentages = useCallback(async () => {
+    if (!contractAddress) return;
+
+    try {
+      const percentages = await getPredictionPercentages(contractAddress);
+      setPredictionPercentages(percentages);
+      console.log('📊 Loaded prediction percentages:', percentages);
+    } catch (error) {
+      console.error('Error loading prediction percentages:', error);
+      setPredictionPercentages(null);
+    }
+  }, [contractAddress]);
+
+  // Calculate Bayesian smoothed percentages (same formula as LandingPage.tsx)
+  const getBayesianPercentages = () => {
+    if (!predictionPercentages) return { yesPercentage: 50, noPercentage: 50 };
+
+    const totalVotes = predictionPercentages.totalPredictions ?? 0;
+    const positive = Math.round((predictionPercentages.positivePercentage ?? 0) / 100 * totalVotes);
+    const negative = totalVotes - positive;
+
+    // Bayesian smoothing: add 0.5 to positive and 1 to total
+    const yesPercentage = Math.round(((positive + 0.5) / (positive + negative + 1)) * 100);
+    const noPercentage = 100 - yesPercentage;
+
+    return { yesPercentage, noPercentage };
+  };
 
   // Load data on component mount and when key dependencies change
   useEffect(() => {
@@ -904,7 +934,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
           await Promise.all([
             loadBets(),
             loadMarketOutcome(), // This will also load evidence submission after outcome is loaded
-            loadPredictionHistory() // Load prediction history for the dashboard
+            loadPredictionHistory(), // Load prediction history for the dashboard
+            loadPredictionPercentages() // Load prediction percentages for button display
           ]);
         } finally {
           setIsDataLoaded(true);
@@ -915,7 +946,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     };
     
     loadAllData();
-  }, [address, isParticipant, selectedTableType, loadBets, loadMarketOutcome, loadPredictionHistory]);
+  }, [address, isParticipant, selectedTableType, loadBets, loadMarketOutcome, loadPredictionHistory, loadPredictionPercentages]);
 
   // Handle transaction confirmation
   useEffect(() => {
@@ -994,7 +1025,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
         return;
       }
 
-      // Check if this is a penalty-exempt contract and if we're 
+      // Check if this is a penalty-exempt contract and if we're
       if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
         const eventDate = getEventDate(contractAddress);
         const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
@@ -1006,16 +1037,28 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
         }
       }
 
+      // Immediately update the UI state for instant feedback
+      const newBet: TodaysBet = {
+        id: Date.now(), // Temporary ID
+        walletAddress: address,
+        prediction: prediction,
+        betDate: new Date().toISOString(),
+        createdAt: new Date()
+      };
+      setTomorrowsBet(newBet);
+
+      // Submit to database in background
       await placeBitcoinBet(address, prediction, selectedTableType, marketQuestion, contractAddress);
-      
-      
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const tomorrowFormatted = tomorrow.toLocaleDateString();
-      // showMessage(`Pre placed successfully for ${tomorrowFormatted}!`);
-      await loadBets(); // Reload to show the new bet
-      await loadPredictionHistory(); // Reload prediction history
-      
+
+      // Refresh data in background without blocking UI
+      Promise.all([
+        loadBets(),
+        loadPredictionHistory(),
+        loadPredictionPercentages()
+      ]).catch(error => {
+        console.error('Error refreshing data:', error);
+      });
+
       // Auto-collapse after successful prediction for cleaner UX
       setTimeout(() => {
         setIsMainSectionCollapsed(true);
@@ -1023,6 +1066,9 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     } catch (error: unknown) {
       console.error('Error placing bet:', error);
       showMessage(error instanceof Error ? error.message : 'Failed to place bet. Please try again.');
+
+      // Revert the optimistic update on error
+      setTomorrowsBet(null);
     } finally {
       setIsLoading(false);
     }
@@ -1292,36 +1338,25 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       
       <div className="min-h-screen bg-white">
         {/* Minimal Header */}
-        {/* <div className="flex items-center p-4">
+        <div className="flex items-center p-4">
           <button
             onClick={() => setActiveSection('home')}
             className="text-gray-900 hover:text-gray-600 transition-colors"
           >
             <span className="text-xl">←</span>
           </button>
-        </div> */}
+        </div>
 
      
       
         {/* Main Content */}
         <div className="flex flex-col min-h-[calc(100vh-64px)]">
           <div className="flex-1 px-4">
-            {/* Question Header */}
-            <div className="mb-8">
-              <div className="text-sm text-gray-500 mb-2">
-                {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
-                  ? 'Question of the Week'
-                  : 'Question of the Day'
-                }
-              </div>
-              <h1 className="text-xl md:text-2xl font-medium text-gray-900 leading-tight">
-                {displayQuestion || marketQuestion || 'Loading...'}
-              </h1>
-            </div>
+            
             {(isBetLoading || !isDataLoaded) ? (
               <div className="text-center py-8">
                 <div className="inline-flex items-center gap-3 text-gray-600">
-                  <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                  <div className="w-5 h-5 border border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
                   <span className="text-sm">{t.loadingYourBet || "Loading your prediction..."}</span>
                 </div>
               </div>
@@ -1346,82 +1381,90 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
               </div>
             ) : (
               <>
-                {/* Active Prediction Display */}
-                {tomorrowsBet ? (
-                  <div className="bg-gray-50 rounded-lg p-6 mb-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <div className="text-sm text-gray-500 mb-1">Your prediction</div>
-                        <div className={`text-2xl font-semibold flex items-center gap-2 ${
-                          (tomorrowsBet as TodaysBet).prediction === 'positive' ? 'text-purple-600' : 'text-blue-600'
-                        }`}>
-                          <span className="text-2xl">
-                            {(tomorrowsBet as TodaysBet).prediction === 'positive' ? '✓' : '✗'}
-                          </span>
-                          {(tomorrowsBet as TodaysBet).prediction === 'positive' ? 'YES' : 'NO'}
-                        </div>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        Made on {new Date((tomorrowsBet as TodaysBet).createdAt).toLocaleDateString()}
-                      </div>
-                    </div>
-                    
+                {/* Question and Context - Always Visible */}
+                <div className="border border-gray-200 rounded-lg p-4 mb-6">
+                  <div className="text-sm text-gray-500 mb-2">
+                    {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
+                      ? "This week's question"
+                      : "Today's question"
+                    }
                   </div>
-                ) : (
-                  /* Prediction Interface */
-                  <div className="space-y-6 mb-6">
-                    {/* Prediction Question Context */}
-                    <div className="border border-gray-200 rounded-lg p-4">
-                      <div className="text-sm text-gray-500 mb-2">
-                        {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
-                          ? "This week's question"
-                          : "Today's question"
-                        }
-                      </div>
-                      <div className="text-base text-gray-900 mb-3">
-                        {displayQuestion || marketQuestion || 'Loading question...'}
-                      </div>
+                  <div className="text-base text-gray-900 mb-3">
+                    {displayQuestion || marketQuestion || 'Loading question...'}
+                  </div>
 
-                      {/* Timer and Context */}
-                      {contractAddress && (
-                        <div className="flex items-center gap-4 text-xs text-gray-500">
-                          {currentTimer && (
-                            <span>⏰ {currentTimer}</span>
-                          )}
-                          <span>📊 {participantStats.eligibleParticipants} players remaining</span>
-                          <span>💰 ${ethToUsd(getEntryAmount()).toFixed(2)} Re-entry</span>
-                        </div>
+                  {/* Timer and Context - Always Visible */}
+                  {contractAddress && (
+                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                      {currentTimer && (
+                        <span>⏰ {currentTimer}</span>
+                      )}
+                      <span>📊 {participantStats.eligibleParticipants} players still in the tournament</span>
+                      <span>💰 ${ethToUsd(getEntryAmount()).toFixed(2)} Re-entry</span>
+                    </div>
+                  )}
+                </div>
+
+                
+
+                {/* Single Set of Prediction Buttons */}
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <button
+                    onClick={() => handlePlaceBet('positive')}
+                    disabled={isLoading || !isBettingAllowed()}
+                    className={`p-4 rounded-lg border transition-colors ${
+                      tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive'
+                        ? 'bg-purple-100 border-purple-300 text-purple-700 shadow-lg'
+                        : tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative'
+                        ? 'bg-white hover:border-purple-300 border-gray-200 text-black hover:text-purple-700'
+                        : 'bg-purple-50 border-purple-200 text-purple-700 hover:border-purple-300 hover:bg-purple-100'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <span>✓</span>
+                      <span className="font-medium">Tap for Yes</span>
+                      {predictionPercentages && (
+                        <span className="text-xs">
+                          {getBayesianPercentages().yesPercentage}%
+                        </span>
                       )}
                     </div>
+                  </button>
 
-                    {/* Prediction Buttons */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <button
-                        onClick={() => handlePlaceBet('positive')}
-                        disabled={isLoading || !isBettingAllowed()}
-                        className="bg-purple-600 text-white font-medium py-4 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg flex items-center justify-center gap-2"
-                      >
-                        <span className="text-xl">✓</span>
-                        YES
-                      </button>
-                      <button
-                        onClick={() => handlePlaceBet('negative')}
-                        disabled={isLoading || !isBettingAllowed()}
-                        className="bg-blue-600 text-white font-medium py-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg flex items-center justify-center gap-2"
-                      >
-                        <span className="text-xl">✗</span>
-                        NO
-                      </button>
+                  <button
+                    onClick={() => handlePlaceBet('negative')}
+                    disabled={isLoading || !isBettingAllowed()}
+                    className={`p-4 rounded-lg border transition-colors ${
+                      tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative'
+                        ? 'bg-blue-100 border-blue-300 text-blue-700 shadow-lg'
+                        : tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive'
+                        ? 'bg-white border-gray-200 hover:border-blue-300 text-black hover:text-blue-700'
+                        : 'bg-blue-50 border-blue-200 text-blue-700 hover:border-blue-300 hover:bg-blue-100'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <span>✗</span>
+                      <span className="font-medium">Tap for No</span>
+                      {predictionPercentages && (
+                        <span className="text-xs">
+                          {getBayesianPercentages().noPercentage}%
+                        </span>
+                      )}
                     </div>
+                  </button>
+                </div>
 
-                    {isLoading && (
-                      <div className="text-center py-4">
-                        <div className="inline-flex items-center gap-2 text-gray-600">
-                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
-                          <span className="text-sm">Placing prediction...</span>
-                        </div>
-                      </div>
-                    )}
+                
+
+                {/* Loading State */}
+                {isLoading && (
+                  <div className="text-center py-4">
+                    <div className="inline-flex items-center gap-2 text-gray-600">
+                      <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                      <span className="text-sm">
+                        {tomorrowsBet ? 'Updating prediction...' : 'Placing prediction...'}
+                      </span>
+                    </div>
                   </div>
                 )}
 
@@ -1435,7 +1478,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                       <div className="flex items-center justify-between">
                         <h3 className="font-medium text-gray-900">Prediction History</h3>
                         <span className="text-gray-400">
-                          {isPredictionHistoryCollapsed ? '↓' : '↑'}
+                          {isPredictionHistoryCollapsed ? <ChevronDown></ChevronDown>: <ChevronUp></ChevronUp>}
                         </span>
                       </div>
                     </div>
@@ -1446,8 +1489,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                           <div key={index} className="flex items-center justify-between text-sm">
                             <div>
                               <span className={`font-medium flex items-center gap-1 ${
-                                prediction.status === 'correct' ? 'text-green-600' :
-                                prediction.status === 'incorrect' ? 'text-red-600' :
+                                prediction.status === 'correct' ? 'text-purple-600' :
+                                prediction.status === 'incorrect' ? 'text-blue-600' :
                                 prediction.prediction === 'positive' ? 'text-purple-600' : 'text-blue-600'
                               }`}>
                                 <span className="text-sm">
@@ -1460,8 +1503,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                               </span>
                             </div>
                             <span className={`text-xs px-2 py-1 rounded-full ${
-                              prediction.status === 'correct' ? 'bg-green-100 text-green-700' :
-                              prediction.status === 'incorrect' ? 'bg-red-100 text-red-700' :
+                              prediction.status === 'correct' ? 'bg-purple-100 text-purple-700' :
+                              prediction.status === 'incorrect' ? 'bg-blue-100 text-blue-700' :
                               'bg-gray-100 text-gray-700'
                             }`}>
                               {prediction.status === 'pending' ? 'Pending' :
