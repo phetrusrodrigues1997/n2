@@ -13,6 +13,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, getSmartMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, BASE_ENTRY_FEE, calculateEntryFee, loadWrongPredictionsData, calculateParticipantStats, PENALTY_EXEMPT_CONTRACTS, PENALTY_EXEMPT_ENTRY_FEE, getFormattedTimerForContract, formatTimerDisplay, getTimerUrgency, getTimerDataForContract } from '../Database/config';
 import { getEventDate } from '../Database/eventDates';
 import LoadingScreenAdvanced from '../Components/LoadingScreenAdvanced';
+import { FaClock, FaChartBar, FaDollarSign } from 'react-icons/fa'; // Font Awesome
+
 
 
 // UTC timezone helper function for consistency with backend
@@ -1395,13 +1397,20 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
                   {/* Timer and Context - Always Visible */}
                   {contractAddress && (
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
-                      {currentTimer && (
-                        <span>⏰ {currentTimer}</span>
-                      )}
-                      <span>📊 {participantStats.eligibleParticipants} players still in the tournament</span>
-                      <span>💰 ${ethToUsd(getEntryAmount()).toFixed(2)} Re-entry</span>
-                    </div>
+                    <div className="flex items-center gap-4 text-sm text-gray-500">
+  {currentTimer && (
+    <span className="flex items-center gap-1">
+      <FaClock className="text-gray-400" /> {currentTimer}
+    </span>
+  )}
+  <span className="flex items-center gap-1">
+    <FaChartBar className="text-gray-400" /> {participantStats.eligibleParticipants} players remaining
+  </span>
+  <span className="flex items-center gap-1">
+    <FaDollarSign className="text-gray-400" /> ${ethToUsd(getEntryAmount()).toFixed(2)} Re-entry
+  </span>
+</div>
+
                   )}
                 </div>
 

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
 import { formatUnits } from 'viem';
 // Removed checkMissedPredictionPenalty import - penalties now handled server-side in setDailyOutcome
-import { ArrowRight, Bookmark, Check, BookOpen, ChevronRight, ChevronLeft, X, CheckCircle2, DollarSign, Target, TrendingUp, Users, Calendar, BarChart2, RefreshCw, Plus } from 'lucide-react';
+import { Bookmark, Check, BookOpen, ChevronRight, ChevronLeft, X, CheckCircle2, DollarSign, Target, TrendingUp, Users, Calendar, BarChart2, RefreshCw, Plus } from 'lucide-react';
 import { Language, getTranslation, supportedLanguages, getTranslatedMarketQuestion } from '../Languages/languages';
 import { getMarkets, Market } from '../Constants/markets';
 import { CustomAlert, useCustomAlert } from '../Components/CustomAlert';
@@ -1962,11 +1962,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                         setActiveSection('potInfo');
                                       }}
-                                      className="w-full group relative overflow-hidden hover:bg-[#f4f4f4] text-white hover:text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
+                                      className="w-full group relative overflow-hidden bg-black hover:bg-[#f4f4f4] text-white hover:text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                                     >
                                       <span className="relative z-10 flex items-center justify-center gap-2">
                                         More Info
-                                        <ArrowRight className="w-4 h-4 text-white hover:text-black" />
                                       </span>
                                     </button>
                                   </div>
@@ -2572,7 +2571,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   >
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                       More Info
-                                      <ArrowRight className="w-4 h-4 text-white hover:text-black" />
                                     </span>
                                   </button>
                                 </div>

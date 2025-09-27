@@ -21,19 +21,8 @@ import { useContractData } from '../hooks/useContractData';
 import { getPredictionPercentages, isEliminated, getEliminatedPlayersCount, getTomorrowsBet } from '../Database/actions';
 import {
   Clock,
-  Target,
- 
-  X,
-  Trophy,
-  DollarSign,
- 
-  Info,
- 
   ChevronDown,
-  Crown,
-  Wallet,
-  Eye,
-  ArrowRight
+ 
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
@@ -624,7 +613,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
           {/* Tournament Journey Flow - Keep as is */}
           <div className="bg-white rounded-lg border border-gray-200 p-3 md:p-4 mb-4">
-            <div className="text-xs text-gray-500 mb-4 text-center">Your progress</div>
+            <div className="text-sm text-gray-500 mb-4 text-left">Your progress</div>
 
             <div className="relative flex items-center justify-between px-4 md:px-8 py-2">
               {/* Step 1: Join */}
@@ -700,21 +689,21 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 {/* Line 1->2 */}
                 <div className="flex-1 h-0.5 md:h-1 mx-2 md:mx-3 bg-slate-200 rounded-full overflow-hidden">
                   <div className={`h-full transition-all duration-700 ease-out rounded-full ${
-                    isParticipant ? 'bg-gradient-to-r from-purple-600 to-purple-600' : 'bg-slate-300'
+                    isParticipant ? 'bg-black' : 'bg-slate-300'
                   }`} style={{ width: isParticipant ? '100%' : '0%' }}></div>
                 </div>
 
                 {/* Line 2->3 */}
                 <div className="flex-1 h-0.5 md:h-1 mx-2 md:mx-3 bg-slate-200 rounded-full overflow-hidden">
                   <div className={`h-full transition-all duration-700 ease-out rounded-full ${
-                    isParticipant && hasUserPredictedToday === true ? 'bg-gradient-to-r from-purple-600 to-purple-600' : 'bg-slate-300'
+                    isParticipant && hasUserPredictedToday === true ? 'bg-black' : 'bg-slate-300'
                   }`} style={{ width: isParticipant && hasUserPredictedToday === true ? '100%' : '0%' }}></div>
                 </div>
 
                 {/* Line 3->4 */}
                 <div className="flex-1 h-0.5 md:h-1 mx-2 md:mx-3 bg-slate-200 rounded-full overflow-hidden">
                   <div className={`h-full transition-all duration-700 ease-out rounded-full ${
-                    potInfo.isFinalDay ? 'bg-gradient-to-r from-purple-600 to-purple-600' : 'bg-slate-300'
+                    potInfo.isFinalDay ? 'bg-black' : 'bg-slate-300'
                   }`} style={{ width: potInfo.isFinalDay ? '100%' : '0%' }}></div>
                 </div>
 
@@ -761,7 +750,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               <div className="p-4 space-y-4">
                 <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">Entry Fee</h4>
+                    <h4 className="text-sm font-medium text-gray-900">{isParticipant ? 'Re-Entry Fee' : 'Entry Fee'}</h4>
                     <p className="text-sm text-gray-600 mt-1">${entryFee?.toFixed(2) || '0.00'}</p>
                   </div>
 
@@ -802,10 +791,9 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             ) : (
               'Join Tournament'
             )}
-            <ArrowRight className="w-5 h-5 inline-block ml-2" />
           </button>
           {/* Status */}
-          <div className="text-center translate-y-2">
+          <div className="text-center translate-y-4">
             <span className="text-sm text-gray-500">{getPlayerMessage()}</span>
           </div>
         </div>
