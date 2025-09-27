@@ -59,7 +59,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const [questionCountLoading, setQuestionCountLoading] = useState(true);
   const [eliminatedCount, setEliminatedCount] = useState(0);
   const [currentTimer, setCurrentTimer] = useState<string>('');
-  const [isTournamentInfoCollapsed, setIsTournamentInfoCollapsed] = useState<boolean>(window.innerWidth >= 640);
+  const [isTournamentInfoCollapsed, setIsTournamentInfoCollapsed] = useState<boolean>(true);
   const [cookiesLoaded, setCookiesLoaded] = useState(false);
   const [dataLoadingComplete, setDataLoadingComplete] = useState(false);
 
@@ -238,29 +238,24 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const getPlayerMessage = () => {
     if (isLoading) return 'Loading...';
 
-    if (userEliminated) return 'You have been eliminated';
+    if (userEliminated) return 'Eliminated';
 
-    if (!isConnected) return 'Connect wallet to participate';
+    if (!isConnected) return 'Sign in to join';
 
-    if (!isParticipant) {
-      if (!hasEnoughPlayers) {
-        return 'Waiting for more players';
-      } else if (potInfo.hasStarted) {
-        return 'Tournament starts soon';
-      } else {
-        return 'Tournament started';
-      }
-    }
+    
+      
+    
 
     if (potInfo.hasStarted) {
       if (questionCountLoading) {
-        return 'Loading prediction status...';
+        return 'Loading...';
       }
-      return questionCount === null
-        ? 'Ready to make prediction'
-        : `${current} ${current > 1 ? 'players' : 'player'} remaining`;
+      return `${current} players remaining`;
     } else {
-      return `${current} players ready`;
+      if (hasEnoughPlayers) {
+        return `Starting soon`;
+      }
+      return `Waiting for more players`;
     }
   };
 
