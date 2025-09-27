@@ -281,6 +281,9 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   const [votingPreference, setVotingPreference] = useState<string | null>(null);
   const [selectedMarketForVoting, setSelectedMarketForVoting] = useState<string | null>(null);
   const [hasAutoSubmitted, setHasAutoSubmitted] = useState<boolean>(false);
+
+  // Timer state
+  const [currentTimer, setCurrentTimer] = useState<string>('');
   
   // New state for collapsible sections and prediction history
   const [isMainSectionCollapsed, setIsMainSectionCollapsed] = useState<boolean>(false); // Start closed by default
@@ -535,6 +538,21 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     const interval = setInterval(updateCountdowns, 1000); // Update every second
     return () => clearInterval(interval);
   }, [contractAddress, isPenaltyExempt, eventDate]); // Update when contract address, penalty exempt status or event date changes
+
+  // Timer update effect for display
+  useEffect(() => {
+    if (!contractAddress) return;
+
+    const updateTimer = async () => {
+      const { getFormattedTimerForContract } = await import('../Database/config');
+      const formattedTimer = getFormattedTimerForContract(contractAddress);
+      setCurrentTimer(formattedTimer);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [contractAddress]);
 
   // Read contract data to get participants
   const { data: participants } = useReadContract({
@@ -1272,892 +1290,203 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
         </div>
       )}
       
-      <div className="min-h-screen bg-white p-4 relative overflow-hidden">
-        {/* Back Button - Always visible for all UI states */}
-        <div className="mb-6 relative z-10">
+      <div className="min-h-screen bg-white">
+        {/* Minimal Header */}
+        <div className="flex items-center p-4">
           <button
             onClick={() => setActiveSection('home')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-700 transition-colors duration-200 font-medium text-sm tracking-wide bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-gray-300"
+            className="text-gray-900 hover:text-gray-600 transition-colors"
           >
-            <span>←</span>
-            <span>{t.backToMarkets || 'Back to Markets'}</span>
+            <span className="text-xl">←</span>
           </button>
         </div>
 
-      {/* Dynamic background elements */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-1/4 left-1/6 w-64 h-64 bg-gray-900 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/3 right-1/6 w-48 h-48 bg-gray-700 rounded-full blur-3xl animate-pulse delay-700"></div>
-        <div className="absolute top-2/3 left-1/2 w-32 h-32 bg-gray-600 rounded-full blur-2xl animate-pulse delay-1000"></div>
-      </div>
-
      
       
-      <div className="max-w-lg mx-auto pt-12 relative z-10">
-        {(isBetLoading || !isDataLoaded) ? (
-           <div className="relative bg-white/80 backdrop-blur-xl border border-gray-200/40 rounded-3xl p-10 mb-8
-  shadow-2xl shadow-gray-900/20 text-center overflow-hidden">
-
-  {/* Subtle gradient glow border */}
-  <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-gray-500/20 via-gray-300/10 to-gray-500/20 blur-2xl"></div>
-
-  <div className="relative inline-flex items-center gap-3 text-gray-700">
-    {/* Loader: dual ring spinner */}
-    <div className="w-6 h-6 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin"></div>
-    
-    {/* Animated text */}
-    <span className="font-semibold tracking-wide text-sm animate-pulse">
-      {t.loadingYourBet || "Loading your prediction..."}
-    </span>
-  </div>
-</div>
-
-        ) : reEntryFee && reEntryFee > 0 && !potInfo.isFinalDay ? (
-          // Re-entry Required Message
-          <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8 shadow-sm">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-6 h-6 text-white" />
+        {/* Main Content */}
+        <div className="flex flex-col min-h-[calc(100vh-64px)]">
+          <div className="flex-1 px-4">
+            {/* Question Header */}
+            <div className="mb-8">
+              <div className="text-sm text-gray-500 mb-2">
+                {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
+                  ? 'Question of the Week'
+                  : 'Question of the Day'
+                }
               </div>
-              
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">{t.reentryRequired || "Re-entry Required"}</h2>
-              <p className="text-gray-600 text-sm mb-6">
-{t.wrongPredictionIn || "Wrong prediction in"} {selectedTableType ? getSmartMarketDisplayName(selectedTableType) : 'this market'}. {t.payTodaysEntryFee || "Pay today's entry fee to continue."}
-              </p>
-              
-              <button
-                onClick={handleReEntry}
-                disabled={isReEntryLoading || isPending || isConfirming}
-                className="w-full bg-black text-white font-medium py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isReEntryLoading || isPending || isConfirming ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    {t.processing || "Processing..."}
-                  </>
-                ) : (
-                  `${t.enterPot || 'Enter Pot'} (${ethToUsd(getEntryAmount()).toFixed(2)} USD)`
-                )}
-              </button>
+              <h1 className="text-xl md:text-2xl font-medium text-gray-900 leading-tight">
+                {displayQuestion || marketQuestion || 'Loading...'}
+              </h1>
             </div>
-          </div>
-        ) : (
-          <>
+            {(isBetLoading || !isDataLoaded) ? (
+              <div className="text-center py-8">
+                <div className="inline-flex items-center gap-3 text-gray-600">
+                  <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                  <span className="text-sm">{t.loadingYourBet || "Loading your prediction..."}</span>
+                </div>
+              </div>
 
-            {/* Tomorrow's Bet Interface */}
-            {(hasOutcomeBeenSet() && marketOutcome && isEvidenceWindowActive()) ? (
-              // PRIORITY: Evidence submission interface when window is active
-              <div className="space-y-6">
-                {/* Market Outcome Display - Compressed */}
-                <div className={`bg-gradient-to-br backdrop-blur-xl border-2 rounded-2xl p-6 mb-6 mt-16 shadow-xl relative overflow-hidden ${
-                  marketOutcome?.outcome === 'positive'
-                    ? 'from-green-50 via-white to-green-50 border-green-200 shadow-green-900/10'
-                    : 'from-gray-100 via-white to-gray-100 border-gray-200 shadow-gray-900/10'
-                }`}>
-                  <div className="flex items-center justify-center gap-6">
-                    <div className={`w-16 h-16 bg-gradient-to-br rounded-xl flex items-center justify-center shadow-lg ${
-                      marketOutcome?.outcome === 'positive' 
-                        ? 'from-green-500 to-green-600' 
-                        : 'from-gray-600 to-gray-700'
-                    }`}>
-                      {marketOutcome?.outcome === 'positive' ? (
-                        <TrendingUp className="w-8 h-8 text-white" />
-                      ) : (
-                        <TrendingDown className="w-8 h-8 text-white" />
-                      )}
-                    </div>
-                    <div className="text-center">
-                      <h2 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">{t.dailyOutcomeSet || "Daily Outcome Set"}</h2>
-                      <div className={`inline-flex items-center px-6 py-2 rounded-xl bg-gradient-to-br backdrop-blur-sm border shadow-md ${
-                        marketOutcome?.outcome === 'positive' 
-                          ? 'from-green-50/80 to-white/80 border-green-200/30' 
-                          : 'from-gray-100/80 to-white/80 border-gray-200/30'
-                      }`}>
-                        <div className={`text-2xl font-black tracking-tight ${
-                          marketOutcome?.outcome === 'positive' ? 'text-green-700' : 'text-gray-700'
-                        }`}>
-                          {marketOutcome?.outcome === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {marketOutcome?.finalOutcome && marketOutcome.finalOutcome !== marketOutcome.outcome && (
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mt-4">
-                      <p className="text-yellow-800 font-semibold text-sm text-center">
-                        ⚠️ Outcome disputed and updated to: <span className="font-bold">
-                          {marketOutcome.finalOutcome === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
-                        </span>
-                      </p>
-                    </div>
+            ) : reEntryFee && reEntryFee > 0 && !potInfo.isFinalDay ? (
+              <div className="text-center py-8">
+                <h2 className="text-lg font-medium text-gray-900 mb-2">{t.reentryRequired || "Re-entry Required"}</h2>
+                <p className="text-gray-600 text-sm mb-6">
+                  {t.wrongPredictionIn || "Wrong prediction in"} {selectedTableType ? getSmartMarketDisplayName(selectedTableType) : 'this market'}. {t.payTodaysEntryFee || "Pay today's entry fee to continue."}
+                </p>
+                <button
+                  onClick={handleReEntry}
+                  disabled={isReEntryLoading || isPending || isConfirming}
+                  className="bg-gray-900 text-white font-medium py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isReEntryLoading || isPending || isConfirming ? (
+                    `${t.processing || "Processing..."}`
+                  ) : (
+                    `${t.enterPot || 'Enter Pot'} (${ethToUsd(getEntryAmount()).toFixed(2)} USD)`
                   )}
-                </div>
-
-                {/* Evidence Submission Interface - Collapsible */}
-                {isEvidenceWindowActive() && !hasUserSubmittedEvidence() && (
-                  <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 backdrop-blur-xl border-2 border-gray-300 rounded-3xl p-8 mb-8 shadow-2xl shadow-gray-900/20 relative overflow-hidden">
-                    {/* Collapsible Header */}
-                    <div 
-                      className="cursor-pointer hover:bg-gray-50/50 rounded-2xl p-2 -m-2 transition-colors duration-200"
-                      onClick={() => setIsEvidenceSectionExpanded(!isEvidenceSectionExpanded)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center shadow-lg">
-                            <AlertTriangle className="w-8 h-8 text-white" />
-                          </div>
-                          <div className="text-left">
-                            <h3 className="text-xl font-black text-gray-900 mb-1 tracking-tight">{t.disputeOutcome || "Dispute the Outcome?"}</h3>
-                            <div className="flex items-center gap-2">
-                              <Clock className="w-4 h-4 text-gray-600" />
-                              <p className="text-gray-800 font-bold text-sm">
-                                {formatTimeRemaining(timeUntilEvidenceExpires)} remaining
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <span className="text-sm font-medium">
-                            {isEvidenceSectionExpanded ? 'Collapse' : 'Expand'}
-                          </span>
-                          {isEvidenceSectionExpanded ?
-                            <ChevronDown className="w-5 h-5" /> :
-                            <ChevronUp className="w-5 h-5" />
-                          }
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Collapsible Content */}
-                    {isEvidenceSectionExpanded && (
-                      <div className="mt-8 space-y-6">
-                        <div className="bg-gray-100 rounded-2xl p-4 border border-gray-200">
-                          <p className="text-gray-800 text-sm text-center font-medium">
-                            Submit evidence against this outcome within the time limit
-                          </p>
-                        </div>
-
-                        <div>
-                          <label className="block text-gray-900 font-bold mb-3">
-                            Evidence Against Outcome
-                          </label>
-                          <textarea
-                            value={evidenceText}
-                            onChange={(e) => setEvidenceText(e.target.value)}
-                            placeholder={t.evidencePlaceholder || "Provide detailed evidence why this outcome is incorrect. Include links, sources, or explanations..."}
-                            className="w-full text-black h-32 p-4 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 resize-none transition-all duration-200"
-                            disabled={isSubmittingEvidence}
-                          />
-                        </div>
-
-                        <div className="bg-gradient-to-r from-black to-gray-900 border border-gray-700 rounded-2xl p-6">
-                          <div className="flex items-start gap-3">
-                            <AlertTriangle className="w-6 h-6 text-gray-400 flex-shrink-0 mt-1" />
-                            <div className="text-white">
-                              <p className="font-bold mb-2 text-gray-300">{t.evidenceSubmissionTerms || "Evidence Submission Terms:"}</p>
-                              <ul className="text-sm space-y-1 text-gray-300">
-                                <li>• Submit detailed evidence to dispute the outcome</li>
-                                <li>• Include sources, links, or clear explanations</li>
-                                <li>• Admin will review within 24 hours</li>
-                                <li>• One submission per outcome per user</li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={handleEvidenceSubmission}
-                          disabled={!evidenceText.trim() || isSubmittingEvidence}
-                          className="w-full bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center gap-3"
-                        >
-                          {isSubmittingEvidence ? (
-                            <>
-                              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              {t.submittingEvidence || "Submitting Evidence..."}
-                            </>
-                          ) : (
-                            <>
-                              <Upload className="w-6 h-6" />
-                              {t.submitEvidence || "Submit Evidence"}
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Evidence Submitted Status */}
-                {hasUserSubmittedEvidence() && (
-                  <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 backdrop-blur-xl border-2 border-gray-200 rounded-3xl p-10 mb-8 shadow-2xl shadow-gray-900/10">
-                    <div className="text-center">
-                      <div className="w-24 h-24 bg-gradient-to-br from-gray-500 to-gray-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
-                        <FileText className="w-12 h-12 text-white" />
-                      </div>
-                      <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">{t.evidenceSubmitted || "Evidence Submitted"}</h3>
-                      <div className="bg-gray-100 rounded-2xl p-6 border border-gray-200 mb-6">
-                        <p className="text-gray-800 font-bold mb-2">{t.status || "Status:"} {userEvidenceSubmission?.status === 'pending' ? (t.underReview || 'Under Review') : userEvidenceSubmission?.status}</p>
-                        <p className="text-gray-700 text-sm">
-                          Admin will review your evidence within 24 hours
-                        </p>
-                      </div>
-                      <div className="text-gray-600 text-sm">
-                        <p className="mb-1">📄 {t.evidenceSubmittedAt || "Evidence submitted:"} {userEvidenceSubmission?.submittedAt.toLocaleString()}</p>
-                        <p>⏳ {t.status || "Status:"} {userEvidenceSubmission?.status === 'pending' ? (t.underReview || 'Under Review') : userEvidenceSubmission?.status}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Evidence Window Expired */}
-                {!isEvidenceWindowActive() && !hasUserSubmittedEvidence() && (
-                  <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 backdrop-blur-xl border-2 border-gray-200 rounded-3xl p-10 mb-8 shadow-2xl shadow-gray-900/10">
-                    <div className="text-center">
-                      <div className="w-24 h-24 bg-gradient-to-br from-gray-400 to-gray-500 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
-                        <Clock className="w-12 h-12 text-white" />
-                      </div>
-                      <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">{t.evidenceWindowClosed || "Evidence Window Closed"}</h3>
-                      <p className="text-gray-600 text-lg mb-6">
-                        The 1-hour evidence submission window has expired
-                      </p>
-                      <div className="bg-gray-100 rounded-2xl p-6 border border-gray-200">
-                        <p className="text-gray-700 font-medium">
-                          The pot outcome is now final and pot distribution will proceed
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : tomorrowsBet ? (
-              <div className="bg-white border-2 border-black rounded-3xl shadow-2xl overflow-hidden relative">
-                {/* Header Section */}
-                <div className="bg-black text-white px-6 py-4 text-center">
-                  <h2 className="text-2xl font-bold tracking-tight">{t.youChose || "You Chose"}</h2>
-                  {/* <p className="text-gray-300 text-sm mt-1">
-                    {t.for || "For:"} <span className="text-gray-700">{t.tomorrow || "tomorrow"}</span>
-                  </p> */}
-                </div>
-
-                {/* Main Prediction Display */}
-                <div className="p-4 text-center">
-                  <div className="flex items-center justify-center gap-6 mb-6">
-                    <div className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg ${
-                      (tomorrowsBet as TodaysBet).prediction === 'positive' 
-                        ? 'bg-black' 
-                        : 'bg-gray-700'
-                    }`}>
-                      {(tomorrowsBet as TodaysBet).prediction === 'positive' ? (
-                        <TrendingUp className="w-10 h-10 text-white" />
-                      ) : (
-                        <TrendingDown className="w-10 h-10 text-white" />
-                      )}
-                    </div>
-                    
-                    <div className="text-left">
-                      <div className="text-5xl font-black text-black tracking-tight mb-2">
-                        {(tomorrowsBet as TodaysBet).prediction === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
-                      </div>
-                      {/* <div className="text-gray-600 text-sm font-medium">
-                        Set at {new Date(tomorrowsBet.createdAt).toLocaleTimeString('en-GB', {
-                          timeZone: 'Europe/London',
-                          hour: '2-digit', 
-                          minute: '2-digit'
-                        })}
-                      </div> */}
-                    </div>
-                  </div>
-
-                  {/* Market Question */}
-                  {/* {marketQuestion && (
-                    <div className="bg-black rounded-2xl p-6 mb-8 text-center">
-                      <p className="text-white font-semibold text-lg leading-relaxed">
-                        {marketQuestion}
-                      </p>
-                    </div>
-                  )} */}
-
-                  {/* Tiny Timer */}
-                  <div className="flex justify-center mb-4">
-                    <div className="bg-white border border-gray-300 rounded-lg px-3 py-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-gray-600 rounded-full flex items-center justify-center">
-                          <Clock className="w-1.5 h-1.5 text-white" />
-                        </div>
-                        <span className="text-gray-700 font-medium text-xs">
-                          {isPenaltyExempt ? "Race Day" : (t.nextQuestion || "Next Question")}
-                        </span>
-                        <span className="font-black text-gray-900 text-xs tracking-wider">
-                          {formatTimerDisplay(timerData)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            ) : isResultsDay() ? (
-              // Saturday - Results Day message (when no outcome set yet)
-              <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 backdrop-blur-xl border-2 border-gray-200 rounded-3xl p-10 mb-8 shadow-2xl shadow-gray-900/10 relative overflow-hidden">
-                <div className="text-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-gray-500 to-gray-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
-                    <Zap className="w-12 h-12 text-white animate-pulse" />
-                  </div>
-                  <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">{t.resultsDay || "Results Day! 🎉"}</h2>
-                  
-                  <div className="bg-gradient-to-r from-gray-100 to-gray-50 rounded-2xl p-6 border border-gray-200 mb-6">
-                    <div className="flex items-center justify-center gap-3 mb-3">
-                      <div className="w-3 h-3 bg-gray-500 rounded-full animate-bounce"></div>
-                      <div className="w-3 h-3 bg-gray-500 rounded-full animate-bounce delay-100"></div>
-                      <div className="w-3 h-3 bg-gray-500 rounded-full animate-bounce delay-200"></div>
-                    </div>
-                    <p className="text-gray-800 font-bold text-lg">
-                      Outcome will be set soon!
-                    </p>
-                    <p className="text-gray-600 text-sm mt-2">
-                      You&apos;ll have 1 hour to submit evidence if you disagree
-                    </p>
-                  </div>
-                  <div className="text-gray-600 text-sm">
-                    <p className="mb-1">📊 Your predictions are locked in</p>
-                    <p>⚖️ Evidence submission window opens after outcome is set</p>
-                  </div>
-                  
-                  {/* Refresh button to check for new outcomes */}
-                  <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-                    <button
-                      onClick={refreshMarketData}
-                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                    >
-                      🔄 Check for Outcome Updates
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : !isBettingAllowed() ? (
-              // This case should never happen now since betting is only closed on Saturday (which is Results Day)
-              // But keeping this as a fallback
-              <div className="bg-white/70 backdrop-blur-xl border border-gray-200/50 rounded-3xl p-10 mb-8 shadow-2xl shadow-gray-900/10 relative overflow-hidden">
-                <div className="text-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
-                    <Shield className="w-12 h-12 text-gray-600" />
-                  </div>
-                  <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">{t.predictionsClosed || "Predictions Closed"}</h2>
-                  <p className="text-gray-600 text-lg mb-6">
-                    Predictions can be placed Sunday through Friday
-                  </p>
-                  <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                    <p className="text-gray-700 font-medium mb-2">Prediction Schedule:</p>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-600">Sunday - Friday:</span>
-                        <span className="text-green-600 font-bold">✓ Predictions Open</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-600">Saturday:</span>
-                        <span className="text-gray-700 font-bold">✗ Results Day</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                </button>
               </div>
             ) : (
-              // Combined Collapsible Voting and Timer Interface
-              <div className="relative">
-                {/* Compact timer above dropdown when closed */}
-                <div className={`flex justify-end mb-2 ${isMainSectionCollapsed ? 'block' : 'hidden'}`}>
-                  <div className="bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-gray-600 rounded-full flex items-center justify-center">
-                        <Clock className="w-1.5 h-1.5 text-white" />
+              <>
+                {/* Active Prediction Display */}
+                {tomorrowsBet ? (
+                  <div className="bg-gray-50 rounded-lg p-6 mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <div className="text-sm text-gray-500 mb-1">Your prediction</div>
+                        <div className={`text-2xl font-semibold flex items-center gap-2 ${
+                          (tomorrowsBet as TodaysBet).prediction === 'positive' ? 'text-purple-600' : 'text-blue-600'
+                        }`}>
+                          <span className="text-2xl">
+                            {(tomorrowsBet as TodaysBet).prediction === 'positive' ? '✓' : '✗'}
+                          </span>
+                          {(tomorrowsBet as TodaysBet).prediction === 'positive' ? 'YES' : 'NO'}
+                        </div>
                       </div>
-                      <span className="text-gray-700 font-medium text-xs">
-                        {isPenaltyExempt ? "Race Day" : (t.nextQuestion || "Next Question")}
-                      </span>
-                      <span className="font-black text-gray-900 text-xs tracking-wider">
-                        {formatTimerDisplay(timerData)}
-                      </span>
+                      <div className="text-xs text-gray-500">
+                        Made on {new Date((tomorrowsBet as TodaysBet).createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {displayQuestion || marketQuestion}
                     </div>
                   </div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-white via-gray-50/30 to-white border border-gray-200/50 rounded-3xl mb-8 shadow-2xl shadow-gray-900/5 relative overflow-hidden">
-                {/* Header with collapse toggle - Improved mobile layout */}
-                <div 
-                  onClick={() => setIsMainSectionCollapsed(!isMainSectionCollapsed)}
-                  className="cursor-pointer hover:bg-gray-50/20 transition-all duration-200 border-b border-gray-100/50"
-                >
-                  {/* Top section with question */}
-                  <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-base sm:text-lg font-black text-gray-900 tracking-tight leading-tight mb-1">
-                          {tomorrowsBet ? (t.activePrediction || 'Active Prediction') : (displayQuestion || (t.makePrediction || 'Make Prediction'))}
-                        </h2>
-                        <p className="text-gray-500 text-xs sm:text-sm font-medium">
-                          {tomorrowsBet
-                            ? (t.managePrediction || "Manage your current prediction")
-                            : <><span className="text-gray-700"></span></>
-                          }
-                        </p>
+                ) : (
+                  /* Prediction Interface */
+                  <div className="space-y-6 mb-6">
+                    {/* Prediction Question Context */}
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-2">
+                        {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
+                          ? "This week's question"
+                          : "Today's question"
+                        }
                       </div>
-                      <div className={`p-2 rounded-lg transition-colors duration-200 flex-shrink-0 ${
-                        isMainSectionCollapsed ? 'bg-gray-100 hover:bg-gray-200' : 'bg-gray-100 hover:bg-gray-200'
-                      }`}>
-                        {isMainSectionCollapsed ? (
-                          <ChevronUp className="w-4 h-4 text-gray-700" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4 text-gray-700" />
-                        )}
+                      <div className="text-base text-gray-900 mb-3">
+                        {displayQuestion || marketQuestion || 'Loading question...'}
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Bottom section with buttons - only show when collapsed */}
-                  {isMainSectionCollapsed && (
-                    <div className="px-4 sm:px-6 pb-4 sm:pb-6 pt-2">
-                      <div className="flex items-center justify-center gap-3">
-                        {tomorrowsBet ? (
-                          <div className={`px-4 py-2 rounded-full text-sm font-black shadow-sm ${
-                            (tomorrowsBet as TodaysBet).prediction === 'positive' 
-                              ? 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-200' 
-                              : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-200'
-                          }`}>
-                            {(tomorrowsBet as TodaysBet).prediction === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
-                          </div>
-                        ) : (
-                          // Show YES/NO buttons when collapsed and no active prediction
-                          isBettingAllowed() && (
-                            <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
-                              <button
-                                onClick={() => handlePlaceBet('positive')}
-                                disabled={isLoading}
-                                className="bg-[#000000] hover:bg-[#009900] disabled:opacity-50 text-white px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-                              >
-                                {t.yesButton || "YES"}
-                              </button>
-                              <button
-                                onClick={() => handlePlaceBet('negative')}
-                                disabled={isLoading}
-                                className="bg-[#bb0000] hover:bg-[#990000] disabled:opacity-50 text-white px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-                              >
-                                {t.noButton || "NO"}
-                              </button>
-                            </div>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Collapsible Content */}
-                {!isMainSectionCollapsed && (
-                  <div className="px-4 sm:px-6 pb-6">
-                    
-                    {/* Prediction Date Information */}
-                    <div className="bg-gradient-to-r from-gray-50 to-gray-50 border border-gray-200/50 rounded-2xl p-4 mb-6 text-center">
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <h4 className="text-sm font-black text-gray-900">{t.predictingForTomorrow || "Predicting for Tomorrow"}</h4>
-                      </div>
-                      <p className="text-gray-700 font-semibold text-base sm:text-lg">
-                        {(() => {
-                          const tomorrow = new Date();
-                          tomorrow.setDate(tomorrow.getDate() + 1);
-                          // Use appropriate locale based on current language
-                          const locale = currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-US';
-                          return tomorrow.toLocaleDateString(locale, { 
-                            weekday: 'long',
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
-                          });
-                        })()}
-                      </p>
-                      
+                      {/* Timer and Context */}
+                      {contractAddress && (
+                        <div className="flex items-center gap-4 text-xs text-gray-500">
+                          {currentTimer && (
+                            <span>⏰ {currentTimer}</span>
+                          )}
+                          <span>📊 {participantStats.eligibleParticipants} players remaining</span>
+                          <span>💰 ${ethToUsd(getEntryAmount()).toFixed(2)} Re-entry</span>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Auto-submission status */}
-                    {votingPreference && !tomorrowsBet && (
-                      <div className="mb-6 text-center">
-                        <h3 className="text-xl font-black text-gray-700 mb-3 tracking-tight">
-                          {t.autoSubmittingChoice || "Auto-Submitting Your Choice"}
-                        </h3>
-                        <div className="bg-gradient-to-r from-gray-50/80 to-white border border-gray-200/50 rounded-2xl p-4 max-w-sm mx-auto">
-                          <p className="text-gray-700 text-sm font-medium">
-                            Submitting: <span className="font-black text-gray-700">
-                              {votingPreference === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
-                            </span>
-                          </p>
+                    {/* Prediction Buttons */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <button
+                        onClick={() => handlePlaceBet('positive')}
+                        disabled={isLoading || !isBettingAllowed()}
+                        className="bg-purple-600 text-white font-medium py-4 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg flex items-center justify-center gap-2"
+                      >
+                        <span className="text-xl">✓</span>
+                        YES
+                      </button>
+                      <button
+                        onClick={() => handlePlaceBet('negative')}
+                        disabled={isLoading || !isBettingAllowed()}
+                        className="bg-blue-600 text-white font-medium py-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg flex items-center justify-center gap-2"
+                      >
+                        <span className="text-xl">✗</span>
+                        NO
+                      </button>
+                    </div>
+
+                    {isLoading && (
+                      <div className="text-center py-4">
+                        <div className="inline-flex items-center gap-2 text-gray-600">
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                          <span className="text-sm">Placing prediction...</span>
                         </div>
                       </div>
                     )}
-
-                    {/* Yes/No Buttons - Moved much higher, no padding */}
-                    <div className="mb-8">
-                      <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                        {/* YES Button - Black */}
-                        <button
-                          onClick={() => handlePlaceBet('positive')}
-                          disabled={isLoading || !isBettingAllowed()}
-                          className="group relative bg-gradient-to-br from-gray-900 to-black hover:from-gray-800 hover:to-black disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 sm:p-5 rounded-2xl font-black text-lg transition-all duration-200 hover:scale-[1.02] shadow-lg hover:shadow-xl border border-gray-800 hover:border-gray-700"
-                        >
-                          <div className="flex flex-col items-center justify-center">
-                            <div className="p-2 bg-white/10 rounded-lg mb-2 flex items-center justify-center">
-                              <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />
-                            </div>
-                            <div className="tracking-wide">{t.yesButton || "YES"}</div>
-                          </div>
-                        </button>
-
-                        {/* NO Button - White */}
-                        <button
-                          onClick={() => handlePlaceBet('negative')}
-                          disabled={isLoading || !isBettingAllowed()}
-                          className="group relative bg-white hover:bg-gray-50 border-2 border-gray-900 hover:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 hover:text-gray-700 p-4 sm:p-5 rounded-2xl font-black text-lg transition-all duration-200 hover:scale-[1.02] shadow-lg hover:shadow-xl"
-                        >
-                          <div className="flex flex-col items-center justify-center">
-                            <div className="p-2 bg-gray-900/10 group-hover:bg-gray-700/10 rounded-lg mb-2 flex items-center justify-center transition-colors duration-200">
-                              <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6" />
-                            </div>
-                            <div className="tracking-wide">{t.noButton || "NO"}</div>
-                          </div>
-                        </button>
-                      </div>
-
-                      {isLoading && (
-                        <div className="text-center mt-6">
-                          <div className="inline-flex items-center gap-3 text-gray-700 bg-gray-50 border border-gray-200 px-6 py-3 rounded-2xl shadow-lg">
-                            <div className="relative">
-                              <Zap className="w-5 h-5 text-gray-700" />
-                              <div className="absolute inset-0 animate-ping">
-                                <Zap className="w-5 h-5 text-gray-700 opacity-30" />
-                              </div>
-                            </div>
-                            <span className="font-bold text-sm">Placing prediction...</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Timer Section */}
-                    <div className="border-t border-gray-100 pt-6">
-                      <h4 className="text-lg font-black text-gray-900 text-center mb-6">{t.importantTimers || "Important Timers"}</h4>
-                      <div className="space-y-3">
-                      
-                      {/* New Question Timer */}
-                      <div className="bg-white border border-gray-200 rounded-xl p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="text-gray-700 font-semibold text-sm">
-                            {isPenaltyExempt ? "Race Day" : (t.nextQuestion || "Next Question")}
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 bg-gray-600 rounded-full flex items-center justify-center">
-                              <Clock className="w-3 h-3 text-white" />
-                            </div>
-                            <span className="font-black text-gray-900 text-lg tracking-wider">
-                              {formatTimerDisplay(timerData)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Next Elimination Timer - Hidden for penalty-exempt contracts */}
-                      {!isPenaltyExempt && (
-                        <div className="bg-white border border-gray-200 rounded-xl p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="text-gray-700 font-semibold text-sm">{t.resultsReveal || "Results Reveal"}</div>
-                            <div className="flex items-center gap-3">
-                             <span className='text-gray-700 font-semibold'>{t.tomorrowAtMidnight || "Tomorrow at Midnight"}</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      </div>
-                    </div>
                   </div>
                 )}
-              </div>
-              </div>
-            )}
-          </>
-        )}
 
-        {/* Enhanced Status Message */}
-        {message && (
-          <div className={`p-6 rounded-2xl mb-8 text-center border shadow-lg transform animate-in fade-in duration-500 ${
-            message.includes('Failed') || message.includes('Error') 
-              ? 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200 text-gray-800' 
-              : 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200 text-gray-800'
-          }`}>
-            <p className="font-black text-base">{message}</p>
-          </div>
-        )}
-
-        {/* Prediction History Dashboard - Collapsible */}
-        {predictionHistory && predictionHistory.length > 0 && (
-          <div className="bg-gradient-to-br from-white via-gray-50/20 to-white border border-gray-200/50 rounded-3xl mb-8 shadow-lg overflow-hidden">
-            {/* Collapsible Header */}
-            <div 
-              className="cursor-pointer hover:bg-gray-50/50 p-6 transition-colors duration-200"
-              onClick={() => setIsPredictionHistoryCollapsed(!isPredictionHistoryCollapsed)}
-            >
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-black text-gray-900 tracking-tight">{t.predictionHistory || 'Prediction History'}</h3>
-                <div className="flex items-center gap-2">
-                  {/* <span className="text-sm text-gray-500 font-medium">
-                    {predictionHistory.length} {predictionHistory.length === 1 ? (currentLanguage === 'pt-BR' ? 'previsão' : 'prediction') : (t.predictions || 'predictions')}
-                  </span> */}
-                  {isPredictionHistoryCollapsed ?
-                    <ChevronUp className="w-5 h-5 text-gray-400" /> :
-                    <ChevronDown className="w-5 h-5 text-gray-400" />
-                  }
-                </div>
-              </div>
-            </div>
-            
-            {/* Collapsible Content */}
-            {!isPredictionHistoryCollapsed && (
-              <div className="px-6 pb-6">
-                <div className="space-y-3">
-                  {predictionHistory.slice(0, 5).map((prediction, index) => (
-                    <div 
-                      key={index}
-                      className="bg-white border border-gray-100 rounded-2xl p-4 hover:border-gray-200 hover:shadow-md transition-all duration-200"
+                {/* Prediction History */}
+                {predictionHistory.length > 0 && (
+                  <div className="border border-gray-200 rounded-lg mb-6">
+                    <div
+                      className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                      onClick={() => setIsPredictionHistoryCollapsed(!isPredictionHistoryCollapsed)}
                     >
-                      <div className="flex items-center gap-4">
-                        {/* Prediction Icon */}
-                        <div className={`p-2 rounded-xl ${
-                          prediction.prediction === 'positive' 
-                            ? 'bg-gradient-to-br from-gray-600 to-gray-700' 
-                            : 'bg-gradient-to-br from-gray-600 to-gray-700'
-                        }`}>
-                          {prediction.prediction === 'positive' ? (
-                            <TrendingUp className="w-4 h-4 text-white" />
-                          ) : (
-                            <TrendingDown className="w-4 h-4 text-white" />
-                          )}
-                        </div>
-                        
-                        {/* Prediction Details */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-1">
-                            <span className={`font-black text-base ${
-                              prediction.prediction === 'positive' ? 'text-gray-700' : 'text-gray-700'
-                            }`}>
-                              {prediction.prediction === 'positive' ? getTranslation(currentLanguage).higher : getTranslation(currentLanguage).lower}
-                            </span>
-                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium">
-                              {new Date(prediction.predictionDate).toLocaleDateString(currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-US', { 
-                                month: 'short', 
-                                day: 'numeric'
-                              })}
-                            </span>
-                          </div>
-                          <p className="text-gray-700 text-sm font-medium line-clamp-1 mb-1">
-                            {translateMarketQuestion(prediction.questionName, currentLanguage || 'en')}
-                          </p>
-                          <p className="text-gray-400 text-xs">
-                            {new Date(prediction.createdAt).toLocaleDateString(currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-US')} • {' '}
-                            {new Date(prediction.createdAt).toLocaleTimeString(currentLanguage === 'pt-BR' ? 'pt-BR' : 'en-GB', {
-                              hour: '2-digit', 
-                              minute: '2-digit'
-                            })}
-                          </p>
-                        </div>
-
-                        {/* Result Status */}
-                        <div className="flex-shrink-0">
-                          {prediction.status === 'correct' && (
-                            <div className="bg-black-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                              <span>✓</span> Correct
-                              {prediction.isProvisional && (
-                                <span className="text-green-600 ml-1">*</span>
-                              )}
-                            </div>
-                          )}
-                          {prediction.status === 'incorrect' && (
-                            <div className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                              <span>✗</span> Wrong
-                              {prediction.isProvisional && (
-                                <span className="text-red-600 ml-1">*</span>
-                              )}
-                            </div>
-                          )}
-                          {prediction.status === 'pending' && (
-                            <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                              <Clock className="w-3 h-3" /> Pending
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Additional Result Details */}
-                      {prediction.actualOutcome && prediction.status !== 'pending' && (
-                        <div className="mt-2 pt-2 border-t border-gray-100">
-                          <p className="text-xs text-gray-500">
-                            Actual result: <span className="font-medium text-gray-700">
-                              {prediction.actualOutcome === 'positive' ? 'Positive' : 'Negative'}
-                            </span>
-                            {prediction.isProvisional && (
-                              <span className="text-gray-400 ml-1">(provisional)</span>
-                            )}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                
-                {predictionHistory.length > 5 && (
-                  <div className="mt-4 pt-4 border-t border-gray-100 text-center">
-                    <p className="text-gray-500 text-xs font-medium">
-                      {t.showingLatest || 'Showing latest 5 of'} {predictionHistory.length} {t.predictions || 'predictions'}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-
-        {/* Premium Rules Section - Only show when no provisional outcome is set */}
-        {false && !hasOutcomeBeenSet() && (
-          <div className="bg-gradient-to-r from-gray-50/80 via-white/80 to-gray-50/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-6 text-center shadow-xl shadow-gray-900/5 relative overflow-hidden">
-            {/* Subtle pattern */}
-            <div className="absolute inset-0 opacity-5">
-              <div className="absolute inset-0 bg-gradient-to-r from-gray-900/10 via-transparent to-gray-900/10"></div>
-            </div>
-            
-            
-          </div>
-        )}
-
-
-        {/* Admin Evidence Review Panel - Removed - Now available on dedicated admin page */}
-        {false && isAdmin() && hasOutcomeBeenSet() && marketOutcome && (
-          <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 backdrop-blur-xl border-2 border-gray-200 rounded-3xl p-8 mt-8 shadow-2xl shadow-gray-900/10 relative overflow-hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-gray-500 to-gray-600 rounded-2xl flex items-center justify-center shadow-lg">
-                  <FileText className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-black text-gray-900 tracking-tight">Admin Panel</h3>
-                  <p className="text-gray-700 font-medium">Review Evidence Submissions</p>
-                </div>
-              </div>
-              <button
-                onClick={toggleAdminPanel}
-                className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-              >
-                {showAdminPanel ? (
-                  <>
-                    <ChevronDown className="w-4 h-4" />
-                    Hide
-                  </>
-                ) : (
-                  <>
-                    <ChevronUp className="w-4 h-4" />
-                    Show Evidence ({allEvidenceSubmissions.length})
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Evidence List */}
-            {showAdminPanel && (
-              <div className="space-y-4">
-                {isLoadingEvidence ? (
-                  <div className="text-center py-8">
-                    <div className="inline-flex items-center gap-3 text-gray-600">
-                      <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
-                      <span className="font-medium">Loading evidence submissions...</span>
-                    </div>
-                  </div>
-                ) : allEvidenceSubmissions.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <FileText className="w-8 h-8 text-gray-400" />
-                    </div>
-                    <p className="text-gray-600 font-medium">No evidence submissions yet</p>
-                    <p className="text-gray-500 text-sm">Evidence will appear here when users dispute the outcome</p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="bg-gray-100 rounded-xl p-4 mb-4">
-                      <h4 className="font-bold text-gray-900 mb-2">📋 Evidence Summary</h4>
-                      <div className="grid grid-cols-3 gap-4 text-sm">
-                        <div className="text-center">
-                          <div className="font-bold text-gray-800">{allEvidenceSubmissions.length}</div>
-                          <div className="text-gray-600">Total</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-bold text-orange-800">{allEvidenceSubmissions.filter(e => e.status === 'pending').length}</div>
-                          <div className="text-orange-600">Pending</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-bold text-green-800">{allEvidenceSubmissions.filter(e => e.status === 'approved').length}</div>
-                          <div className="text-green-600">Approved</div>
-                        </div>
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-medium text-gray-900">Prediction History</h3>
+                        <span className="text-gray-400">
+                          {isPredictionHistoryCollapsed ? '↓' : '↑'}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {allEvidenceSubmissions.map((submission, index) => (
-                        <div key={submission.id} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                          <div className="flex justify-between items-start mb-4">
+                    {!isPredictionHistoryCollapsed && (
+                      <div className="border-t border-gray-200 p-4 space-y-3">
+                        {predictionHistory.slice(0, 5).map((prediction, index) => (
+                          <div key={index} className="flex items-center justify-between text-sm">
                             <div>
-                              <h5 className="font-bold text-gray-900">Evidence #{index + 1}</h5>
-                              <p className="text-sm text-gray-600">
-                                From: {submission.walletAddress.slice(0, 6)}...{submission.walletAddress.slice(-4)}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                Submitted: {new Date(submission.submittedAt).toLocaleString()}
-                              </p>
+                              <span className={`font-medium flex items-center gap-1 ${
+                                prediction.status === 'correct' ? 'text-green-600' :
+                                prediction.status === 'incorrect' ? 'text-red-600' :
+                                prediction.prediction === 'positive' ? 'text-purple-600' : 'text-blue-600'
+                              }`}>
+                                <span className="text-sm">
+                                  {prediction.prediction === 'positive' ? '✓' : '✗'}
+                                </span>
+                                {prediction.prediction === 'positive' ? 'YES' : 'NO'}
+                              </span>
+                              <span className="text-gray-500 ml-2">
+                                {new Date(prediction.predictionDate).toLocaleDateString()}
+                              </span>
                             </div>
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                              submission.status === 'pending' 
-                                ? 'bg-orange-100 text-orange-800'
-                                : submission.status === 'approved'
-                                ? 'bg-black-100 text-green-800'
-                                : 'bg-gray-100 text-gray-800'
+                            <span className={`text-xs px-2 py-1 rounded-full ${
+                              prediction.status === 'correct' ? 'bg-green-100 text-green-700' :
+                              prediction.status === 'incorrect' ? 'bg-red-100 text-red-700' :
+                              'bg-gray-100 text-gray-700'
                             }`}>
-                              {submission.status.toUpperCase()}
+                              {prediction.status === 'pending' ? 'Pending' :
+                               prediction.status === 'correct' ? 'Correct' : 'Incorrect'}
                             </span>
                           </div>
-                          
-                          <div className="bg-gray-50 rounded-lg p-4">
-                            <h6 className="font-semibold text-gray-700 mb-2">Evidence:</h6>
-                            <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">
-                              {submission.evidence}
-                            </p>
-                          </div>
-
-                          {submission.reviewNotes && (
-                            <div className="mt-4 bg-gray-50 border border-gray-200 rounded-lg p-3">
-                              <h6 className="font-semibold text-gray-700 mb-1">Admin Review:</h6>
-                              <p className="text-gray-800 text-sm">{submission.reviewNotes}</p>
-                              {submission.reviewedAt && (
-                                <p className="text-gray-600 text-xs mt-1">
-                                  Reviewed: {new Date(submission.reviewedAt).toLocaleString()}
-                                </p>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )}
-              </div>
+              </>
             )}
           </div>
-        )}
+        </div>
       </div>
-    </div>
+
+      {/* Message Display */}
+      {message && (
+        <div className="fixed bottom-4 left-4 right-4 bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg z-50">
+          {message}
+        </div>
+      )}
     </>
   );
 }

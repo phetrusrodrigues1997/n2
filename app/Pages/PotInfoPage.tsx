@@ -593,86 +593,33 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header with back button - Mobile optimized */}
-      <div className="absolute top-4 left-4 md:top-6 md:left-6 z-10">
+      {/* Minimal Header */}
+      <div className="flex items-center p-4">
         <button
           onClick={handleBack}
-          className="flex items-center gap-1.5 md:gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white/90 hover:bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-gray-200/60 hover:border-purple-300 backdrop-blur-sm shadow-sm"
+          className="text-gray-900 hover:text-gray-600 transition-colors"
         >
-          <span className="text-base md:text-sm">←</span>
-          <span className="hidden sm:inline">{t.back}</span>
+          <span className="text-xl">←</span>
         </button>
       </div>
 
-      {/* Main Content - Mobile optimized spacing */}
-      <div className="min-h-screen px-3 py-16 md:px-4 md:py-8">
-        <div className="max-w-4xl w-full mx-auto space-y-4 md:space-y-0">
-
-          {/* Modern Premium Header */}
-          <div className="text-center mb-6 -translate-y-6 md:mb-8 md:translate-y-0">
-            <div className="inline-flex items-center gap-3 px-6 md:px-8 mb-2 md:mb-4">
-              <span className="text-2xl lg:text-3xl font-semibold text-gray-800">Question of The Day</span>
+      {/* Main Content */}
+      <div className="flex flex-col min-h-[calc(100vh-64px)]">
+        <div className="flex-1 px-4">
+          {/* Clean Question Display */}
+          <div className="mb-6">
+            <div className="text-sm text-gray-500 mb-2">
+              {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
+                ? 'Question of the Week'
+                : 'Question of the Day'
+              }
             </div>
-            <div className="flex items-center justify-center gap-2 max-w-3xl mx-auto px-2">
-              <h2 className="text-xs md:text-sm lg:text-base font-normal text-gray-600 leading-relaxed">
-                {marketQuestion || market?.question || 'Loading...'}
-              </h2>
-              <div className="w-5 h-5 md:w-6 md:h-6 bg-white rounded-full border border-gray-300 flex items-center justify-center flex-shrink-0">
-                <span className="text-xs md:text-sm font-semibold text-gray-600">?</span>
-              </div>
-            </div>
+            <h1 className="text-xl md:text-2xl font-medium text-gray-900 leading-tight">
+              {marketQuestion || market?.question || 'Loading...'}
+            </h1>
           </div>
 
-          {/* Player status and action button - Desktop layout */}
-          <div className="hidden sm:flex justify-between items-center gap-3 mb-4">
-            <div className="flex items-center">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-100 to-gray-200 border border-gray-300 rounded-full px-3 py-2 animate-pulse-status">
-                <div className="w-2 h-2 bg-gray-700 rounded-full animate-pulse-soft"></div>
-                <span className="text-sm font-bold text-gray-800 tracking-wide">{getPlayerMessage()}</span>
-              </div>
-            </div>
-            <button
-              onClick={handleReady}
-              disabled={!isConnected || (isParticipant && userEliminated)}
-              className=" bg-black text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 py-3 px-6 text-sm -translate-y-1">
-              {!isConnected ? (
-                <>
-                  <Wallet className="w-4 h-4" />
-                  Connect Wallet
-                </>
-              ) : isParticipant && userEliminated ? (
-                <>
-                  <X className="w-4 h-4" />
-                  Eliminated
-                </>
-              ) : isParticipant && potInfo.hasStarted && hasUserPredictedToday === false ? (
-                <>
-                  Make Prediction
-                  <ArrowRight className="w-4 h-4 text-white" />
-                </>
-              ) : isParticipant ? (
-                <>
-                  <Eye className="w-4 h-4" />
-                  My Predictions
-                </>
-              ) : (
-                <>
-                  <Trophy className="w-4 h-4" />
-                  Join Tournament
-                </>
-              )}
-            </button>
-          </div>
-
-          {/* Player status message - Mobile only */}
-          <div className="flex sm:hidden justify-start mb-4">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-100 to-gray-200 border border-gray-300 rounded-full px-3 py-2 animate-pulse-status">
-              <div className="w-2 h-2 bg-gray-700 rounded-full animate-pulse-soft"></div>
-              <span className="text-sm font-bold text-gray-800 tracking-wide">{getPlayerMessage()}</span>
-            </div>
-          </div>
-
-          {/* Tournament Journey Flow */}
+          {/* Tournament Journey Flow - Keep as is */}
           <div className="bg-white rounded-lg border border-gray-200 p-3 md:p-4 mb-4">
             <div className="text-xs text-gray-500 mb-4 text-center">Your progress</div>
 
@@ -791,146 +738,72 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             )}
           </div>
 
-          {/* Action Button - Mobile only, centered between progress and details */}
-          <div className="flex sm:hidden mb-4">
-            <button
-              onClick={handleReady}
-              disabled={!isConnected || (isParticipant && userEliminated)}
-              className=" bg-black text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-400 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 py-4 px-8 text-base font-semibold w-full">
-              {!isConnected ? (
-                <>
-                  <Wallet className="w-5 h-5" />
-                  Connect Wallet
-                </>
-              ) : isParticipant && userEliminated ? (
-                <>
-                  <X className="w-5 h-5" />
-                  Eliminated
-                </>
-              ) : isParticipant && potInfo.hasStarted && hasUserPredictedToday === false ? (
-                <>
-                  Make Prediction
-                  <ArrowRight className="w-5 h-5 text-white" />
-                </>
-              ) : isParticipant ? (
-                <>
-                  <Eye className="w-5 h-5" />
-                  My Predictions
-                </>
-              ) : (
-                <>
-                  <Trophy className="w-5 h-5" />
-                  Join Tournament
-                </>
-              )}
-            </button>
-          </div>
 
-          {/* Collapsible Tournament Details */}
-          <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden translate-y-1 md:translate-y-6">
+          {/* Tournament Details - Simplified */}
+          <div className="bg-white border border-gray-200 rounded-lg mb-6">
             <div
               onClick={() => setIsTournamentInfoCollapsed(!isTournamentInfoCollapsed)}
-              className="cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-all duration-200 p-3 md:p-4 border-b border-gray-100"
+              className="cursor-pointer p-4 border-b border-gray-100"
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 md:w-8 md:h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Info className="w-3.5 h-3.5 md:w-4 md:h-4 text-purple-600" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-semibold text-gray-900 leading-tight">Tournament Details</h3>
-                    <p className="text-xs text-gray-600 leading-tight mt-0.5">Learn about this {tournamentType.toLowerCase()} tournament</p>
-                  </div>
+                <div>
+                  <h3 className="text-base font-medium text-gray-900">Tournament Details</h3>
+                  <p className="text-sm text-gray-500 mt-1">{tournamentType} tournament</p>
                 </div>
-                <div className={`transform transition-transform duration-200 flex-shrink-0 ${isTournamentInfoCollapsed ? 'rotate-0' : 'rotate-180'}`}>
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
-                </div>
+                <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isTournamentInfoCollapsed ? '' : 'rotate-180'}`} />
               </div>
             </div>
 
             {!isTournamentInfoCollapsed && (
-              <div className="p-3 md:p-4 space-y-4">
-                {/* Entry Fee Info */}
-                <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 md:w-6 md:h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <DollarSign className="w-2.5 h-2.5 md:w-3 md:h-3 text-blue-600" />
+              <div className="p-4 space-y-4">
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">Entry Fee</h4>
+                    <p className="text-sm text-gray-600 mt-1">${entryFee?.toFixed(2) || '0.00'}</p>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-sm font-medium text-gray-900 leading-tight">{isParticipant ? 'Re-entry Fee' : 'Entry Fee'}: ${entryFee?.toFixed(2) || '0.00'}</h4>
-                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-                      {isPenaltyExempt
-                        ? `Fixed ${isParticipant ? 're-entry' : 'entry'} fee for all participants throughout the week-long prediction window.`
-                        : `${isParticipant ? 'Re-entry fee' : 'Entry fee'} doubles daily starting from Day 5. Join early for the lowest price, or pay more later for fewer remaining players and better odds.`
-                      }
-                    </p>
-                  </div>
-                </div>
 
-                {/* Tournament Type Info */}
-                <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 md:w-6 md:h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Trophy className="w-2.5 h-2.5 md:w-3 md:h-3 text-purple-600" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-sm font-medium text-gray-900 leading-tight">{tournamentType} Tournament</h4>
-                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-                      {isPenaltyExempt
-                        ? 'Weekly tournament focused on a single event. Survive to the last 5 players, then all 5 compete in a final day prediction to determine the winner(s).'
-                        : 'Daily elimination tournament. Survive daily questions until only 5 players remain, then all 5 compete in a final day prediction to determine the winner(s).'
-                      }
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">Format</h4>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {isPenaltyExempt ? 'Weekly elimination' : 'Daily elimination'}
                     </p>
                   </div>
-                </div>
 
-                {/* Topic Info */}
-                <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 md:w-6 md:h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Target className="w-2.5 h-2.5 md:w-3 md:h-3 text-green-600" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-sm font-medium text-gray-900 leading-tight">Topic: {market?.potTopic || 'General'}</h4>
-                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-                      All questions in this tournament will be related to this topic.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Tournament Rules */}
-                <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 md:w-6 md:h-6 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Target className="w-2.5 h-2.5 md:w-3 md:h-3 text-orange-600" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-sm font-medium text-gray-900 leading-tight">Key Rules</h4>
-                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-                      {isPenaltyExempt
-                        ? 'You have up to 7 days to research and make your prediction for the weekly event. Wrong predictions eliminate you, but if you reach the last 5, you get another chance on final day.'
-                        : 'You have 24 hours to make each daily prediction. Wrong predictions eliminate you, but if you reach the last 5, you get to compete on final day.'
-                      }
-                    </p>
-                  </div>
-                </div>
-
-                {/* How to Win */}
-                <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 md:w-6 md:h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Crown className="w-2.5 h-2.5 md:w-3 md:h-3 text-yellow-600" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-sm font-medium text-gray-900 leading-tight">How to Win</h4>
-                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-                      {isPenaltyExempt
-                        ? 'Make your prediction for the weekly event and wait for results. Survive to be one of the last 5 players, then compete in the final day prediction. The winner(s) of the final day split the prize pool.'
-                        : 'Survive daily questions to reach the last 5 players. On the final day, these 5 players make one final prediction. The winner(s) of the final day prediction split the entire prize pool.'
-                      }
-                    </p>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">Topic</h4>
+                    <p className="text-sm text-gray-600 mt-1">{market?.potTopic || 'General'}</p>
                   </div>
                 </div>
               </div>
             )}
           </div>
+        </div>
 
+        {/* Bottom Action Section - Polymarket Style */}
+        <div className="p-4 border-t border-gray-100">
+          {/* Status */}
+          <div className="text-center mb-3">
+            <span className="text-sm text-gray-500">{getPlayerMessage()}</span>
+          </div>
 
+          {/* Action Button */}
+          <button
+            onClick={handleReady}
+            disabled={!isConnected || (isParticipant && userEliminated)}
+            className="w-full bg-gray-900 text-white font-medium rounded-lg py-3 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {!isConnected ? (
+              'Connect Wallet'
+            ) : isParticipant && userEliminated ? (
+              'Eliminated'
+            ) : isParticipant && potInfo.hasStarted && hasUserPredictedToday === false ? (
+              'Make Prediction'
+            ) : isParticipant ? (
+              'My Predictions'
+            ) : (
+              'Join Tournament'
+            )}
+          </button>
         </div>
       </div>
 

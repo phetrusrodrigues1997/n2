@@ -302,253 +302,216 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <Bookmark className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.connectYourWallet}</h2>
-          <p className="text-gray-600">{t.connectWalletBookmarks}</p>
+          <h2 className="text-lg font-medium text-gray-900 mb-2">{t.connectYourWallet}</h2>
+          <p className="text-gray-500">{t.connectWalletBookmarks}</p>
         </div>
       </div>
     );
   }
 
   if (loading) {
-    return <LoadingScreen title="Prediwin" subtitle={t.loadingBookmarks} />;
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500">{t.loadingBookmarks}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <Bookmark className="w-8 h-8 text-gray-700" />
-            <h1 className="text-3xl font-bold text-gray-900">{t.yourPots}</h1>
+    <div className="min-h-screen bg-white">
+      {/* Minimal Header */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-100">
+        <button
+          onClick={() => setActiveSection('home')}
+          className="text-gray-900 hover:text-gray-600 transition-colors"
+        >
+          <span className="text-xl">←</span>
+        </button>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex flex-col min-h-[calc(100vh-73px)]">
+        <div className="flex-1 px-4 py-6">
+          {/* Page Title */}
+          <div className="mb-8">
+            <h1 className="text-xl md:text-2xl font-medium text-gray-900 mb-2">{t.yourPots}</h1>
+            <p className="text-sm text-gray-500">{t.potsBookmarkedEntered}</p>
           </div>
-          <p className="text-gray-600">{t.potsBookmarkedEntered}</p>
-        </div>
 
-        {/* Tab Navigation */}
-        <div className="flex space-x-1 mb-8 bg-gray-100 p-1 rounded-lg">
-          <button
-            onClick={() => setActiveTab('entered')}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md font-medium transition-colors ${
-              activeTab === 'entered'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <Trophy className="w-5 h-5" />
-            {t.enteredPots}
-            {userPots.length > 0 && (
-              <span className={`text-xs px-2 py-1 rounded-full ${
-                activeTab === 'entered' ? 'bg-gray-100' : 'bg-gray-200'
-              }`}>
-                {userPots.length}
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab('bookmarks')}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md font-medium transition-colors ${
-              activeTab === 'bookmarks'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <Bookmark className="w-5 h-5" />
-            {t.bookmarked}
-            {bookmarks.length > 0 && (
-              <span className={`text-xs px-2 py-1 rounded-full ${
-                activeTab === 'bookmarks' ? 'bg-gray-100' : 'bg-gray-200'
-              }`}>
-                {bookmarks.length}
-              </span>
-            )}
-          </button>
-        </div>
+          {/* Simple Tab Navigation */}
+          <div className="flex border-b border-gray-200 mb-6">
+            <button
+              onClick={() => setActiveTab('entered')}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'entered'
+                  ? 'border-gray-900 text-gray-900'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {t.enteredPots}
+              {userPots.length > 0 && (
+                <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">
+                  {userPots.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('bookmarks')}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'bookmarks'
+                  ? 'border-gray-900 text-gray-900'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {t.bookmarked}
+              {bookmarks.length > 0 && (
+                <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">
+                  {bookmarks.length}
+                </span>
+              )}
+            </button>
+          </div>
 
-        {/* Content based on active tab */}
-        {activeTab === 'bookmarks' ? (
-          /* Bookmarks Tab Content */
-          bookmarks.length === 0 ? (
-            <div className="text-center py-16">
-              <Bookmark className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.noBookmarksYet}</h2>
-              <p className="text-gray-600 mb-6">{t.startBookmarking}</p>
-              <button
-                onClick={() => setActiveSection('home')}
-                className="bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-lg font-medium transition-colors"
-              >
-                {t.explore}
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {bookmarks.map((bookmark) => (
-                <div
-                  key={bookmark.id}
-                  className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200 group"
+          {/* Content based on active tab */}
+          {activeTab === 'bookmarks' ? (
+            bookmarks.length === 0 ? (
+              <div className="text-center py-12">
+                <h2 className="text-lg font-medium text-gray-900 mb-2">{t.noBookmarksYet}</h2>
+                <p className="text-gray-500 mb-6">{t.startBookmarking}</p>
+                <button
+                  onClick={() => setActiveSection('home')}
+                  className="bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
                 >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      {/* Category Badge */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                          {bookmark.marketCategory}
-                        </span>
+                  {t.explore}
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {bookmarks.map((bookmark) => (
+                  <div
+                    key={bookmark.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                            {bookmark.marketCategory}
+                          </span>
+                        </div>
+
+                        <h3 className="font-medium text-gray-900 mb-1">
+                          {(() => {
+                            const liveData = getCurrentMarketData(bookmark.marketId, bookmark.marketCategory);
+                            if (liveData?.question) {
+                              return translateMarketQuestion(liveData.question, currentLanguage);
+                            }
+                            return t.marketNotAvailable;
+                          })()}
+                        </h3>
+
+                        <p className="text-sm text-gray-500">
+                          {(() => {
+                            if (!bookmark.contractAddress) return bookmark.marketId;
+                            const liveData = getCurrentMarketData(bookmark.marketId, bookmark.marketCategory);
+                            if (liveData?.name) {
+                              return getMarketDisplayName(liveData.name, currentLanguage);
+                            }
+                            return bookmark.marketId;
+                          })()}
+                        </p>
                       </div>
 
-                      {/* Market Question */}
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                        {(() => {
-                          const liveData = getCurrentMarketData(bookmark.marketId, bookmark.marketCategory);
-                          if (liveData?.question) {
-                            return translateMarketQuestion(liveData.question, currentLanguage);
-                          }
-                          return t.marketNotAvailable;
-                        })()}
-                      </h3>
-
-                      {/* Market Name / Pot Number */}
-                      <p className="text-gray-600 text-sm">
-                        {(() => {
-                          if (!bookmark.contractAddress) return bookmark.marketId;
-
-                          const liveData = getCurrentMarketData(bookmark.marketId, bookmark.marketCategory);
-                          if (liveData?.name) {
-                            return getMarketDisplayName(liveData.name, currentLanguage);
-                          }
-                          return bookmark.marketId;
-                        })()}
-                      </p>
+                      <button
+                        onClick={() => handleRemoveBookmark(bookmark.marketId)}
+                        disabled={removing === bookmark.marketId}
+                        className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 p-1"
+                      >
+                        {removing === bookmark.marketId ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+                        ) : (
+                          <X className="w-4 h-4" />
+                        )}
+                      </button>
                     </div>
 
-                    {/* Remove Button */}
-                    <button
-                      onClick={() => handleRemoveBookmark(bookmark.marketId)}
-                      disabled={removing === bookmark.marketId}
-                      className="ml-4 p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
-                      title={t.removeBookmark}
-                    >
-                      {removing === bookmark.marketId ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700"></div>
-                      ) : (
-                        <X className="w-4 h-4" />
+                    <div className="mt-3 flex items-center justify-between">
+                      <button
+                        onClick={() => handleViewMarket(bookmark)}
+                        className="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors"
+                      >
+                        {bookmark.contractAddress ? t.viewPot : t.goToCategory}
+                      </button>
+                      {bookmark.contractAddress && potBalances[bookmark.contractAddress] && (
+                        <span className="text-xs text-gray-500">
+                          {potBalances[bookmark.contractAddress]} {t.inPot}
+                        </span>
                       )}
-                    </button>
+                    </div>
                   </div>
-
-                  {/* Action Buttons */}
-                  <div className="mt-4 flex gap-2">
-                    <button
-                      onClick={() => handleViewMarket(bookmark)}
-                      className="bg-gray-50 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                    >
-                      {bookmark.contractAddress ? t.viewPot : t.goToCategory}
-                    </button>
-                    {bookmark.contractAddress && (
-                      <div className="flex items-center gap-2">
-                       
-                        
-                        {/* Show balance if available, otherwise show loading */}
-                        {potBalances[bookmark.contractAddress] !== undefined ? (
-                          <span className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded-full self-center">
-                            {potBalances[bookmark.contractAddress]} {t.inPot}
-                          </span>
-                        ) : (
-                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full self-center">
-                            $0
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )
-        ) : (
-          /* Entered Markets Tab Content */
-          userPots.length === 0 ? (
-            <div className="text-center py-16">
-              <Trophy className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.noPotsEntered}</h2>
-              <p className="text-gray-600 mb-6">{t.enterPredictionPots}</p>
-              <button
-                onClick={() => setActiveSection('home')}
-                className="bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-lg font-medium transition-colors"
-              >
-                {t.findPotsToEnter}
-              </button>
-            </div>
-          ) : (
-            <div>
-              <div className="flex items-center gap-2 mb-6">
-                <Users className="w-6 h-6 text-gray-600" />
-                <h2 className="text-xl font-bold text-gray-900">{t.potsYouEntered}</h2>
-                {/* <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm font-medium">
-                  {userPots.length} Active
-                </span> */}
+                ))}
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            )
+          ) : (
+            userPots.length === 0 ? (
+              <div className="text-center py-12">
+                <h2 className="text-lg font-medium text-gray-900 mb-2">{t.noPotsEntered}</h2>
+                <p className="text-gray-500 mb-6">{t.enterPredictionPots}</p>
+                <button
+                  onClick={() => setActiveSection('home')}
+                  className="bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+                >
+                  {t.findPotsToEnter}
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
                 {userPots.map((contractAddress) => {
                   const marketType = CONTRACT_TO_TABLE_MAPPING[contractAddress as keyof typeof CONTRACT_TO_TABLE_MAPPING];
-                  // Get proper market display name using translations
                   const getLocalMarketDisplayName = (type: string) => {
                     return getMarketDisplayName(type, currentLanguage) || t.unknownMarket;
                   };
                   const marketName = getLocalMarketDisplayName(marketType);
-                  
+
                   return (
-                    <button 
+                    <button
                       key={contractAddress}
                       onClick={() => handleMarketClick(contractAddress)}
-                      className="text-left p-6 bg-white border-2 border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-lg transition-all duration-200 group"
+                      className="w-full text-left border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
                     >
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                          <TrendingUp className="w-5 h-5 text-gray-600" />
-                        </div>
+                      <div className="flex items-center justify-between">
                         <div>
-                          <h3 className="font-bold text-gray-900 group-hover:text-gray-700 transition-colors">
-  {marketName === "Trending" ? "All in One" : marketName}
-</h3>
-
-                          <div className="flex items-center gap-2">
-                            {hasEnoughParticipants(contractAddress) && (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
-                               {t.nextQuestion} {contractTimers[contractAddress] || ''}
-                              </span>
-                            )}
+                          <h3 className="font-medium text-gray-900 mb-1">
+                            {marketName === "Trending" ? "All in One" : marketName}
+                          </h3>
+                          <p className="text-sm text-gray-500">{t.participatingInPot}</p>
+                          {hasEnoughParticipants(contractAddress) && contractTimers[contractAddress] && (
+                            <p className="text-xs text-gray-400 mt-1">
+                              {t.nextQuestion} {contractTimers[contractAddress]}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          {potBalances[contractAddress] && (
+                            <div className="text-xs text-gray-500 mb-2">
+                              {potBalances[contractAddress]} {t.inPot}
+                            </div>
+                          )}
+                          <div className="text-sm font-medium text-gray-700">
+                            {t.view} →
                           </div>
                         </div>
                       </div>
-                      
-                      <div className="text-sm text-gray-600 mb-3">
-                        {t.participatingInPot}
-                      </div>
-                      
-                     <div className="flex items-center">
-  {potBalances[contractAddress] && (
-    <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-      {potBalances[contractAddress]} {t.inPot}
-    </div>
-  )}
-  <div className="ml-auto px-4 py-2 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 transition-colors cursor-pointer shadow-sm">
-  {t.view}
-</div>
-
-</div>
-
                     </button>
                   );
                 })}
               </div>
-              
-              
-            </div>
-          )
-        )}
+            )
+          )}
+        </div>
       </div>
     </div>
   );

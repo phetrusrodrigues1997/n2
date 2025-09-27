@@ -48,9 +48,9 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
   // QR Code component
   const QRCodeDisplay = ({ value }: { value: string }) => {
     return (
-      <div className="bg-white p-3 rounded-xl shadow-inner border">
+      <div className="bg-white border border-gray-200 rounded-lg p-4">
         <div className="w-32 h-32 bg-white flex items-center justify-center mx-auto">
-          <img 
+          <img
             src={`https://api.qrserver.com/v1/create-qr-code/?size=128x128&data=${encodeURIComponent(value)}&bgcolor=ffffff&color=000000&margin=3`}
             alt="QR Code"
             className="w-full h-full object-contain"
@@ -74,48 +74,51 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-md mx-auto px-4 py-8">
-        {/* How to Buy Crypto Link */}
-        <div className="mb-6 flex justify-end">
-          <button
-            onClick={() => window.open('https://keys.coinbase.com', '_blank', 'noopener,noreferrer')}
-            className="text-gray-700 hover:text-black transition-all duration-200 font-medium text-sm tracking-wide border-b border-gray-300 hover:border-black pb-0.5"
-          >
-            How do I buy crypto?
-          </button>
-        </div>
+      {/* Minimal Header */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-100">
+        <button
+          onClick={() => setActiveSection?.('home')}
+          className="text-gray-900 hover:text-gray-600 transition-colors"
+        >
+          <span className="text-xl">←</span>
+        </button>
+        <button
+          onClick={() => window.open('https://keys.coinbase.com', '_blank', 'noopener,noreferrer')}
+          className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          How to buy crypto?
+        </button>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-md mx-auto px-4 py-6">
 
         {!isConnected || !address ? (
           /* Not Connected State */
-          <div className="bg-white rounded-3xl border border-gray-200 p-8 text-center shadow-xl">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Wallet className="w-10 h-10 text-gray-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-black mb-3">{t.connectYourWalletReceive}</h2>
-            <p className="text-gray-600">
-              {t.connectWalletToViewAddress}
-            </p>
+          <div className="text-center py-16">
+            <h2 className="text-lg font-medium text-gray-900 mb-2">{t.connectYourWalletReceive}</h2>
+            <p className="text-gray-500">{t.connectWalletToViewAddress}</p>
           </div>
         ) : (
           /* Connected State */
           <div className="space-y-6">
-            {/* Combined QR Code & Address Section */}
-            <div className="bg-white rounded-3xl border border-gray-200 p-5 shadow-xl">
-              <div className="text-center mb-4">
-                <div className="inline-flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full mb-3">
-                  <QrCode className="w-4 h-4 text-gray-600" />
-                  <span className="text-sm font-semibold text-gray-600">{t.receiveETH}</span>
-                </div>
-              </div>
+            {/* Page Title */}
+            <div className="text-center">
+              <h1 className="text-xl font-medium text-gray-900 mb-2">{t.receiveETH}</h1>
+              <p className="text-sm text-gray-500">Your wallet address on Base network</p>
+            </div>
+
+            {/* QR Code & Address Section */}
+            <div className="border border-gray-200 rounded-lg p-6">
 
               {/* QR Code */}
-              <div className="flex justify-center mb-4">
+              <div className="flex justify-center mb-6">
                 <QRCodeDisplay value={address} />
               </div>
 
               {/* Wallet Address */}
-              <div className="bg-gray-50 rounded-xl p-3 mb-4">
-                <div className="font-mono text-xs text-gray-900 break-all text-center leading-relaxed">
+              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <div className="font-mono text-sm text-gray-900 break-all text-center">
                   {address}
                 </div>
               </div>
@@ -123,7 +126,7 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
               {/* Copy Button */}
               <button
                 onClick={copyAddressToClipboard}
-                className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 mb-3"
+                className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2 mb-4"
               >
                 {copied ? (
                   <>
@@ -140,9 +143,9 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
 
               {/* Network Badge */}
               <div className="flex justify-center">
-                <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-full">
-                  <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
-                  <span className="text-gray-700 text-xs font-semibold">{t.baseNetworkOnly}</span>
+                <div className="inline-flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-lg">
+                  <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
+                  <span className="text-gray-700 text-xs font-medium">{t.baseNetworkOnly}</span>
                 </div>
               </div>
             </div>

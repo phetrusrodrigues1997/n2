@@ -2,6 +2,16 @@
 
 **PrediWin.com** - Next.js prediction tournament platform on Base network.
 
+## Design Reference
+
+**IMPORTANT**: All UI design should follow the clean, minimalistic Polymarket aesthetic shown in `design-references/polymarket-reference.jfif`. Key principles:
+- Clean white backgrounds
+- Minimal UI elements and spacing
+- Simple, readable typography
+- No unnecessary animations or decorations
+- Focus on core functionality
+- Professional, modern appearance
+
 ## Development Commands
 
 ```bash
