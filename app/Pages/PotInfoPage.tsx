@@ -19,6 +19,7 @@ import {
 import { getEventDate } from '../Database/eventDates';
 import { useContractData } from '../hooks/useContractData';
 import { getPredictionPercentages, isEliminated, getEliminatedPlayersCount } from '../Database/actions';
+import { getUserPrediction } from '../Database/actions2';
 import {
   Clock,
   Target,
@@ -62,6 +63,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const [isTournamentInfoCollapsed, setIsTournamentInfoCollapsed] = useState<boolean>(true);
   const [cookiesLoaded, setCookiesLoaded] = useState(false);
   const [dataLoadingComplete, setDataLoadingComplete] = useState(false);
+  const [hasUserPredictedToday, setHasUserPredictedToday] = useState<boolean | null>(null);
 
   // Tournament state from NotReadyPage logic
   const [potInfo, setPotInfo] = useState<{
@@ -315,6 +317,26 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
         console.log('🔍 PotInfoPage - Eliminated players count:', eliminatedPlayersCount);
         setEliminatedCount(eliminatedPlayersCount);
 
+        // Check if user has made a prediction for today
+        console.log('🔍 PotInfoPage - Checking if user has predicted for today...');
+        try {
+          // Get current UTC date for prediction check
+          const today = new Date();
+          const currentUTCDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+
+          const userPrediction = await getUserPrediction(contractAddress, address, currentUTCDate);
+          const hasPredicted = userPrediction !== null;
+          console.log('🔍 PotInfoPage - User prediction check:', {
+            currentUTCDate,
+            userPrediction,
+            hasPredicted
+          });
+          setHasUserPredictedToday(hasPredicted);
+        } catch (error) {
+          console.error('❌ PotInfoPage - Error checking user prediction:', error);
+          setHasUserPredictedToday(false);
+        }
+
         console.log('✅ PotInfoPage - All tournament data loaded successfully');
       } catch (error) {
         console.error('❌ PotInfoPage - Error loading tournament data:', error);
@@ -347,6 +369,21 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
     return () => clearInterval(interval);
   }, [contractAddress]);
+
+  // Debug logging effect
+  useEffect(() => {
+    console.log('🔍 Tournament Journey Debug:', {
+      isParticipant,
+      userEliminated,
+      potInfo,
+      questionCount,
+      questionCountLoading,
+      hasUserPredictedToday,
+      predictStepCompleted: isParticipant && !questionCountLoading && questionCount !== null,
+      shouldShowPredictButton: isParticipant && potInfo.hasStarted && !questionCountLoading && questionCount === null,
+      newPredictStepLogic: isParticipant && hasUserPredictedToday === true
+    });
+  }, [isParticipant, userEliminated, potInfo, questionCount, questionCountLoading, hasUserPredictedToday]);
 
   // Fetch pot information (same logic as NotReadyPage)
   useEffect(() => {
@@ -608,9 +645,8 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   <X className="w-4 h-4" />
                   Eliminated
                 </>
-              ) : isParticipant && potInfo.hasStarted && !questionCountLoading && questionCount === null ? (
+              ) : isParticipant && potInfo.hasStarted && hasUserPredictedToday === false ? (
                 <>
-
                   Make Prediction
                   <ArrowRight className="w-4 h-4 text-white" />
                 </>
@@ -637,7 +673,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           </div>
 
           {/* Tournament Journey Flow */}
-          <div className="bg-white rounded-lg border border-gray-100 p-3 md:p-4 mb-4">
+          <div className="bg-white rounded-lg border border-gray-200 p-3 md:p-4 mb-4">
             <div className="text-xs text-gray-500 mb-4 text-center">Your progress</div>
 
             <div className="relative flex items-center justify-between px-4 md:px-8 py-2">
@@ -660,13 +696,13 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               {/* Step 2: Predict */}
               <div className="flex flex-col items-center relative z-10">
                 <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold mb-2 md:mb-3 transition-all duration-300 shadow-sm ${
-                  isParticipant && !userEliminated && potInfo.hasStarted && !questionCountLoading && questionCount === null
+                  isParticipant && !userEliminated && potInfo.hasStarted && hasUserPredictedToday === false
                     ? 'bg-purple-600 text-white border-2 border-purple-600 animate-pulse-soft shadow-purple-200'
-                    : isParticipant && !questionCountLoading && questionCount !== null
+                    : isParticipant && !userEliminated && hasUserPredictedToday === true
                       ? 'bg-gray-800 text-white border-2 border-gray-800 shadow-gray-200'
                       : 'bg-slate-200 text-slate-500 border-2 border-slate-200'
                 }`}>
-                  {isParticipant && !questionCountLoading && questionCount !== null ? '✓' : '2'}
+                  {isParticipant && !userEliminated && hasUserPredictedToday === true ? '✓' : '2'}
                 </div>
                 <div className="text-xs font-medium text-slate-700 text-center">Predict</div>
               </div>
@@ -674,13 +710,13 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               {/* Step 3: Wait */}
               <div className="flex flex-col items-center relative z-10">
                 <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold mb-2 md:mb-3 transition-all duration-300 shadow-sm ${
-                  isParticipant && !userEliminated && !questionCountLoading && questionCount !== null && !potInfo.isFinalDay
+                  isParticipant && !userEliminated && hasUserPredictedToday === true && !potInfo.isFinalDay
                     ? 'bg-purple-600 text-white border-2 border-purple-600 animate-pulse-soft shadow-purple-200'
-                    : isParticipant && !questionCountLoading && questionCount !== null && potInfo.isFinalDay
+                    : isParticipant && !userEliminated && hasUserPredictedToday === true && potInfo.isFinalDay
                       ? 'bg-gray-800 text-white border-2 border-gray-800 shadow-gray-200'
                       : 'bg-slate-200 text-slate-500 border-2 border-slate-200'
                 }`}>
-                  {isParticipant && !questionCountLoading && questionCount !== null && potInfo.isFinalDay ? '✓' : '3'}
+                  {isParticipant && !userEliminated && hasUserPredictedToday === true && potInfo.isFinalDay ? '✓' : '3'}
                 </div>
                 <div className="text-xs font-medium text-slate-700 text-center">Wait</div>
               </div>
@@ -721,8 +757,8 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 {/* Line 2->3 */}
                 <div className="flex-1 h-0.5 md:h-1 mx-2 md:mx-3 bg-slate-200 rounded-full overflow-hidden">
                   <div className={`h-full transition-all duration-700 ease-out rounded-full ${
-                    isParticipant && !questionCountLoading && questionCount !== null ? 'bg-gradient-to-r from-purple-600 to-purple-600' : 'bg-slate-300'
-                  }`} style={{ width: isParticipant && !questionCountLoading && questionCount !== null ? '100%' : '0%' }}></div>
+                    isParticipant && hasUserPredictedToday === true ? 'bg-gradient-to-r from-purple-600 to-purple-600' : 'bg-slate-300'
+                  }`} style={{ width: isParticipant && hasUserPredictedToday === true ? '100%' : '0%' }}></div>
                 </div>
 
                 {/* Line 3->4 */}
@@ -771,7 +807,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   <X className="w-5 h-5" />
                   Eliminated
                 </>
-              ) : isParticipant && potInfo.hasStarted && !questionCountLoading && questionCount === null ? (
+              ) : isParticipant && potInfo.hasStarted && hasUserPredictedToday === false ? (
                 <>
                   Make Prediction
                   <ArrowRight className="w-5 h-5 text-white" />
