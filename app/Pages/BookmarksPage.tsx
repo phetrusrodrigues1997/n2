@@ -333,7 +333,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
       </div> */}
 
       {/* Main Content */}
-      <div className="flex flex-col min-h-[calc(100vh-73px)]">
+      <div className="flex flex-col min-h-[calc(100vh-73px)] px-6 md:px-9">
         <div className="flex-1 px-4 py-6">
           {/* Page Title */}
           <div className="mb-8">
@@ -500,9 +500,9 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                               {potBalances[contractAddress]} {t.inPot}
                             </div>
                           )}
-                          <div className="text-sm font-medium text-gray-700">
-                            {t.view} →
-                          </div>
+                          <button className="bg-red-700 py-2 px-4 rounded-md hover:bg-black">
+                            {t.view}
+                          </button>
                         </div>
                       </div>
                     </button>

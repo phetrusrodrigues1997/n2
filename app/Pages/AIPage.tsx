@@ -41,7 +41,7 @@ const GamesHub = ({ activeSection, setActiveSection }: AIPageProps) => {
             {/* Wordle Game */}
             <div 
               onClick={() => setSelectedGame('wordle')}
-              className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-purple-300 hover:shadow-lg transition-all duration-200 cursor-pointer group"
+              className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-red-300 hover:shadow-lg transition-all duration-200 cursor-pointer group"
             >
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
@@ -60,7 +60,7 @@ const GamesHub = ({ activeSection, setActiveSection }: AIPageProps) => {
               </div>
               
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-purple-700">Play Now →</span>
+                <span className="text-sm font-medium text-red-700">Play Now →</span>
                 <div className="text-xs text-gray-500">5 min</div>
               </div>
             </div>

@@ -35,7 +35,7 @@ const ComingSoonPage: React.FC<ComingSoonPageProps> = () => {
 
       {/* Optional subtle background pattern */}
       <div className="fixed inset-0 opacity-10 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-black to-blue-900"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-red-900 via-black to-blue-900"></div>
       </div>
     </div>
   );

@@ -223,7 +223,7 @@ const CreatePotPage = ({ navigateToPrivatePot }: CreatePotPageProps) => {
                     setShowMyPots(false);
                     setShowCreateForm(true);
                   }}
-                  className="bg-purple-700 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+                  className="bg-red-700 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-colors"
                 >
                   Create Your First Pot
                 </button>
@@ -324,7 +324,7 @@ const CreatePotPage = ({ navigateToPrivatePot }: CreatePotPageProps) => {
             </button>
             
             {!address && (
-              <p className="text-center text-sm text-purple-1000">
+              <p className="text-center text-sm text-red-1000">
                 Connect your wallet to create a pot
               </p>
             )}
@@ -361,8 +361,8 @@ const CreatePotPage = ({ navigateToPrivatePot }: CreatePotPageProps) => {
               <p className="text-sm text-gray-600">You decide the winners</p>
             </div> */}
             <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-3">
-                <span className="text-purple-600 text-xl">🏆</span>
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-3">
+                <span className="text-red-600 text-xl">🏆</span>
               </div>
               <p className="text-sm text-gray-600">Winners split the pot equally</p>
             </div>
@@ -381,7 +381,7 @@ const CreatePotPage = ({ navigateToPrivatePot }: CreatePotPageProps) => {
           <button
             onClick={handleMyMarketsClick}
             disabled={isLoadingMyPots}
-            className="w-full bg-purple-700 py-4 px-6 rounded-lg text-lg text-white font-medium hover:border-gray-400 hover:bg-gray-500 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-red-700 py-4 px-6 rounded-lg text-lg text-white font-medium hover:border-gray-400 hover:bg-gray-500 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isLoadingMyPots ? (
               <>
