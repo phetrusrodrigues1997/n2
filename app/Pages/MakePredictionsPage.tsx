@@ -1394,14 +1394,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
               <>
                 {/* Question and Context - Always Visible */}
                 <div className="border border-gray-200 rounded-lg p-4 mb-6">
-                  <div className="md:text-sm text-gray-500 mb-2 leading-tight">
-                    <style jsx>{`
-                      @media (max-width: 767px) {
-                        div {
-                          font-size: 8px !important;
-                        }
-                      }
-                    `}</style>
+                  <div className="text-xs md:text-sm text-gray-500 mb-2">
                     {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
                       ? "This week's question"
                       : "Today's question"
@@ -1413,7 +1406,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
                   {/* Timer and Context - Always Visible */}
                   {contractAddress && (
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-4 text-xs md:text-sm text-gray-500">
   {currentTimer && (
     <span className="flex items-center gap-1">
       <FaClock className="text-gray-400" /> {currentTimer}
