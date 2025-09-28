@@ -584,8 +584,13 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             {/* Right Column: Tournament Details - Hidden on mobile, shown on desktop */}
             <div className="hidden lg:block bg-white border border-gray-200 rounded-xl p-6">
               <div className="mb-6">
-                <h3 className="text-lg font-normal text-gray-900">Tournament Details</h3>
-                <p className="text-sm text-gray-500 mt-1">{tournamentType} format</p>
+                <h3 className="text-[10px] md:text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Details</h3>
+                <p className="text-sm text-gray-500 mt-1">{new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}</p>
               </div>
 
               <div className="grid grid-cols-3 gap-6">
@@ -611,7 +616,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
           {/* Tournament Journey Flow - Full Width */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 relative">
-            <div className="text-sm font-medium text-gray-600 mb-3 tracking-wide">Tournament Progress</div>
+            <div className="text-[10px] md:text-xs font-medium text-gray-500 tracking-wide uppercase mb-3">Tournament Progress</div>
 
             <div className="relative flex items-center justify-between px-2 md:px-4 py-1 pb-10">
               {/* Step 1: Join */}
@@ -729,8 +734,13 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           {/* Tournament Details - Mobile only */}
           <div className="lg:hidden bg-white border border-gray-200 rounded-xl p-6 mb-6">
             <div className="mb-6">
-              <h3 className="text-lg font-normal text-gray-900">Tournament Details</h3>
-              <p className="text-sm text-gray-500 mt-1">{tournamentType} format</p>
+              <h3 className="text-[10px] md:text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Details</h3>
+              <p className="text-sm text-gray-500 mt-1">{new Date().toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}</p>
             </div>
 
             <div className="grid grid-cols-3 gap-6">

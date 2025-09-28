@@ -1588,8 +1588,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 return showThermometer ? 'pr-16' : 'pr-4';
                               })()}`}>                <p className="text-sm leading-tight font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]" style={{
                                   color: '#374151',
-                                  fontWeight: '650',
-                                  whiteSpace: 'nowrap'
+                                  fontWeight: '600',
+                                  whiteSpace: 'nowrap',
+                                  letterSpacing: '-0.01em'
                                 }}>
                                   {(() => {
                                     const wrapLimit = market.useTraditionalLayout ? 25 : 37;
@@ -1643,7 +1644,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     <div className="absolute top-1/2 right-0 transform -translate-y-1/2">
                                       <div className="text-right flex flex-col items-end">
                                         {/* Just percentage for first market - vertically centered */}
-                                        <div className="text-base font-bold text-gray-900 leading-none">
+                                        <div className="text-base font-semibold text-gray-900 leading-none tracking-tight">
                                           {(() => {
                                             const percentageData = predictionPercentages[market.tabId || market.id];
                                             if (!percentageData) return '0%'; // Fallback to 0%
@@ -1699,7 +1700,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                                           {/* Text overlaid inside the arc */}
                                           <div className="absolute inset-0 flex flex-col items-center justify-center mt-6">
-                                            <div className="text-base font-bold text-gray-900 leading-none">
+                                            <div className="text-base font-semibold text-gray-900 leading-none tracking-tight">
                                               {(() => {
                                                 const percentageData = predictionPercentages[market.tabId || market.id];
                                                 if (!percentageData) return '0'; // Fallback to 0%
@@ -2350,7 +2351,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                                         {/* Text overlaid inside the arc */}
                                         <div className="absolute inset-0 flex flex-col items-center justify-center mt-6">
-                                          <div className="text-base font-bold text-gray-900 leading-none">
+                                          <div className="text-base font-semibold text-gray-900 leading-none tracking-tight">
                                             {(() => {
                                               const percentageData = predictionPercentages[market.tabId || market.id];
                                               if (!percentageData) return '0'; // Fallback to 0%
@@ -2664,10 +2665,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         <section className="relative z-10 py-16 hidden md:block">
           <div className="max-w-4xl mx-auto px-2 md:px-8 text-center">
             <div className="space-y-4 mb-12">
-              <h2 className="text-4xl font-light text-gray-900 tracking-tight">
+              <h2 className="text-4xl font-light text-gray-900 tracking-tight leading-[1.15]">
                 <span className="text-purple-700 font-medium">{t.thousandsOfPlayers}</span>
               </h2>
-              <h3 className="text-3xl font-black text-gray-900 tracking-tight">
+              <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-[1.2]">
                 {t.lastStandingQuestion}
               </h3>
             </div>
@@ -2675,7 +2676,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
             {/* Minimalist Entry Button */}
             <button
               onClick={() => handleMarketClick('Trending')}
-              className="group relative bg-black border-2 border-black text-white px-20 py-5 rounded-lg font-semibold text-xl tracking-[0.1em] uppercase transition-all duration-300 hover:bg-purple-700 hover:border-purple-700 hover:text-white overflow-hidden shadow-xl hover:shadow-purple-200"
+              className="group relative bg-black border-2 border-black text-white px-20 py-5 rounded-lg font-semibold text-xl tracking-[0.05em] uppercase transition-all duration-300 hover:bg-purple-700 hover:border-purple-700 hover:text-white overflow-hidden shadow-xl hover:shadow-purple-200"
             >
               <span className="relative z-10">Enter</span>
 
@@ -2696,17 +2697,17 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         {/* Sleek Call to Action - Mobile Only */}
         <section id="call-to-action" className="relative z-10 mt-16 mb-16 md:hidden">
           <div className="max-w-7xl mx-auto px-2 md:px-8 text-center">
-            <h2 className="text-2xl font-light text-gray-900 mb-2 tracking-tight">
+            <h2 className="text-2xl font-light text-gray-900 mb-2 tracking-tight leading-[1.3]">
               <span className="text-purple-700 font-medium">{t.thousandsOfWinners}</span>
             </h2>
-            <h3 className="text-xl font-black text-gray-900 mb-10 tracking-tight">
+            <h3 className="text-xl font-extrabold text-gray-900 mb-10 tracking-tight leading-[1.3]">
               {t.lastStandingQuestion}
             </h3>
 
             {/* Minimalist Entry Button - Mobile */}
             <button
               onClick={() => handleMarketClick('Trending')}
-              className="group relative bg-white border-2 border-black text-black px-12 py-4 rounded-lg font-semibold text-base tracking-[0.1em] uppercase transition-all duration-300 hover:bg-purple-700 hover:border-purple-700 hover:text-white overflow-hidden mx-auto shadow-lg hover:shadow-purple-200"
+              className="group relative bg-white border-2 border-black text-black px-12 py-4 rounded-lg font-semibold text-base tracking-[0.05em] uppercase transition-all duration-300 hover:bg-purple-700 hover:border-purple-700 hover:text-white overflow-hidden mx-auto shadow-lg hover:shadow-purple-200"
             >
               <span className="relative z-10">Enter</span>
 
@@ -2829,10 +2830,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                   /* Normal Tutorial Steps - Polymarket Style */
                   <>
                     <div className="text-center space-y-6">
-                      <h3 className="text-2xl font-medium text-gray-900">
+                      <h3 className="text-2xl font-semibold text-gray-900 tracking-tight leading-[1.25]">
                         {tutorialSteps[tutorialStep].title}
                       </h3>
-                      <p className="text-gray-600 leading-relaxed text-base max-w-md mx-auto">
+                      <p className="text-gray-600 leading-relaxed text-base max-w-md mx-auto tracking-wide">
                         {tutorialSteps[tutorialStep].content}
                       </p>
                     </div>
