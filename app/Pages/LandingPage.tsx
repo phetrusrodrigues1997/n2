@@ -888,11 +888,36 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   };
 
   // Helper function to get button content based on user's prediction
-  const getButtonContent = (marketId: string, buttonType: 'positive' | 'negative') => {
+  const getButtonContent = (marketId: string, buttonType: 'positive' | 'negative', isMobile: boolean = false) => {
     const prediction = getUserPrediction(marketId);
     const contractAddress = getContractAddress(marketId);
     const isParticipant = contractAddress && isUserParticipant(contractAddress);
     const isLoading = voteChangeLoading[marketId];
+
+    // Check if this is the first market (index 0)
+    const marketIndex = marketOptions.findIndex(m => m.id === marketId);
+    const isFirstMarket = marketIndex === 0;
+
+    // Helper function to get percentage for first market (only on mobile)
+    const getPercentageForButton = (type: 'positive' | 'negative') => {
+      if (!isFirstMarket || !isMobile) return '';
+
+      const percentageData = predictionPercentages[marketId];
+      if (!percentageData) return '0%';
+
+      const totalVotes = percentageData.totalPredictions ?? 0;
+      const positive = Math.round((percentageData.positivePercentage ?? 0) / 100 * totalVotes);
+      const negative = totalVotes - positive;
+
+      if (type === 'positive') {
+        const yesPercentage = (((positive + 0.5) / (positive + negative + 1)) * 100).toFixed(0);
+        return yesPercentage + '%';
+      } else {
+        const yesPercentage = (((positive + 0.5) / (positive + negative + 1)) * 100);
+        const noPercentage = (100 - yesPercentage).toFixed(0);
+        return noPercentage + '%';
+      }
+    };
 
     // Show loading spinner if vote is being changed
     if (isLoading) {
@@ -907,13 +932,36 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       // User has voted for this option
       if (isParticipant) {
         // Show confirmed tick for participants (they can't click to change from same option)
-        return (
-          <div className="flex items-center justify-center gap-2">
-            <Check className={`w-4 h-4 ${buttonType === 'positive' ? 'text-purple-600' : 'text-blue-600'}`} />
-            {/* <span>✓</span> */}
-          </div>
-        );
+        // For first market on mobile, also show percentage next to tick
+        if (isFirstMarket && isMobile) {
+          const percentage = getPercentageForButton(buttonType);
+          return (
+            <div className="flex items-center justify-center gap-2">
+              <Check className={`w-4 h-4 ${buttonType === 'positive' ? 'text-purple-600' : 'text-blue-600'}`} />
+              <span className="text-xs font-semibold opacity-75">{percentage}</span>
+            </div>
+          );
+        } else {
+          return (
+            <div className="flex items-center justify-center gap-2">
+              <Check className={`w-4 h-4 ${buttonType === 'positive' ? 'text-purple-600' : 'text-blue-600'}`} />
+              {/* <span>✓</span> */}
+            </div>
+          );
+        }
       }
+    }
+
+    // For first market on mobile, show button text with percentage
+    if (isFirstMarket && isMobile) {
+      const percentage = getPercentageForButton(buttonType);
+      const buttonText = buttonType === 'positive' ? t.higher : t.lower;
+      return (
+        <div className="flex items-center justify-center gap-2">
+          <span>{buttonText}</span>
+          <span className="text-xs font-semibold opacity-75">{percentage}</span>
+        </div>
+      );
     }
 
     // For participants who haven't voted or want to change: show clickable option
@@ -1593,7 +1641,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   letterSpacing: '-0.01em'
                                 }}>
                                   {(() => {
-                                    const wrapLimit = market.useTraditionalLayout ? 25 : 37;
+                                    const wrapLimit = market.marketIndex === 0 ? 50 : (market.useTraditionalLayout ? 25 : 37);
                                     const truncateLimit = 60;
 
                                     let text = getTranslatedMarketQuestion(market, currentLanguage);
@@ -1638,27 +1686,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 const contractAddress = getContractAddress(market.id);
                                 const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
-                                // Show percentage for first market - always display, fallback to 0%
+                                // For first market, percentages are now shown inside buttons instead of on the right
                                 if (market.marketIndex === 0 && !isEliminated) {
-                                  return (
-                                    <div className="absolute top-1/2 right-0 transform -translate-y-1/2">
-                                      <div className="text-right flex flex-col items-end">
-                                        {/* Just percentage for first market - vertically centered */}
-                                        <div className="text-base font-semibold text-gray-900 leading-none tracking-tight">
-                                          {(() => {
-                                            const percentageData = predictionPercentages[market.tabId || market.id];
-                                            if (!percentageData) return '0%'; // Fallback to 0%
-
-                                            const totalVotes = percentageData.totalPredictions ?? 0;
-                                            const positive = Math.round((percentageData.positivePercentage ?? 0) / 100 * totalVotes);
-                                            const negative = totalVotes - positive;
-                                            const smoothedPercentage = (((positive + 0.5) / (positive + negative + 1)) * 100).toFixed(0);
-                                            return smoothedPercentage + '%';
-                                          })()}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
+                                  return null;
                                 }
                                 // Show thermometer for traditional layout (even index markets), but not for first market
                                 else if (market.useTraditionalLayout && !isEliminated && market.marketIndex !== 0) {
@@ -1754,7 +1784,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       })}
                                       className={getButtonStyles(market.id, 'positive', "bg-purple-50 hover:bg-blue-200 text-purple-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
                                     >
-                                      {getButtonContent(market.id, 'positive')}
+                                      {getButtonContent(market.id, 'positive', true)}
                                     </button>
                                     <button
                                       onClick={handleButtonClick(market.id, 'negative', (e) => {
@@ -1773,7 +1803,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       })}
                                       className={getButtonStyles(market.id, 'negative', "bg-blue-50 hover:bg-purple-200 text-blue-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
                                     >
-                                      {getButtonContent(market.id, 'negative')}
+                                      {getButtonContent(market.id, 'negative', true)}
                                     </button>
                                   </div>
                                 );
@@ -1832,7 +1862,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           })}
                                           className={`${getButtonStyles(market.id, 'positive', "bg-purple-50 hover:bg-blue-200 text-purple-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
                                         >
-                                          {getButtonContent(market.id, 'positive')}
+                                          {getButtonContent(market.id, 'positive', true)}
                                         </button>
                                         <button
                                           onClick={handleButtonClick(market.id, 'negative', (e) => {
@@ -1851,7 +1881,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           })}
                                           className={`${getButtonStyles(market.id, 'negative', "bg-blue-50 hover:bg-purple-200 text-blue-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
                                         >
-                                          {getButtonContent(market.id, 'negative')}
+                                          {getButtonContent(market.id, 'negative', true)}
                                         </button>
                                       </div>
                                     </div>
@@ -2298,7 +2328,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     overflow: 'hidden'
                                   }}>
                                     {(() => {
-                                      const charLimit = market.useTraditionalLayout ? 30 : 45; // Desktop: keep traditional tight, moderate expansion for new style
+                                      const charLimit = market.marketIndex === 0 ? 60 : (market.useTraditionalLayout ? 30 : 45); // First market gets higher limit, desktop: keep traditional tight, moderate expansion for new style
                                       return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
                                     })()}
                                   </p>
@@ -2398,7 +2428,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     })}
                                     className={getButtonStyles(market.id, 'positive', "bg-purple-50 hover:bg-blue-200 text-purple-700 px-14 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 flex-1 max-w-[130px]")}
                                   >
-                                    {getButtonContent(market.id, 'positive')}
+                                    {getButtonContent(market.id, 'positive', false)}
                                   </button>
                                   <button
                                     onClick={handleButtonClick(market.id, 'negative', (e) => {
@@ -2417,7 +2447,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     })}
                                     className={getButtonStyles(market.id, 'negative', "bg-blue-50 hover:bg-purple-200 text-blue-700 px-14 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 flex-1 max-w-[130px]")}
                                   >
-                                    {getButtonContent(market.id, 'negative')}
+                                    {getButtonContent(market.id, 'negative', false)}
                                   </button>
                                 </div>
                               );
@@ -2469,7 +2499,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         })}
                                         className={`${getButtonStyles(market.id, 'positive', "bg-purple-50 hover:bg-blue-200 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[35px]")}`}
                                       >
-                                        {getButtonContent(market.id, 'positive')}
+                                        {getButtonContent(market.id, 'positive', false)}
                                       </button>
                                       <button
                                         onClick={handleButtonClick(market.id, 'negative', (e) => {
@@ -2488,7 +2518,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         })}
                                         className={`${getButtonStyles(market.id, 'negative', "bg-blue-50 hover:bg-purple-200 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[35px]")}`}
                                       >
-                                        {getButtonContent(market.id, 'negative')}
+                                        {getButtonContent(market.id, 'negative', false)}
                                       </button>
                                     </div>
                                   </div>
@@ -2743,7 +2773,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         {/* Tutorial Modal - Polymarket Style */}
         {showTutorial && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-red-700/30 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full border border-gray-100">
               {/* Modal Header - Clean */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">

@@ -754,6 +754,10 @@ export default function App() {
   onClick={() => {
     setSelectedMarket(market.id);
     setActiveCarousel('first');
+    // If not on home section, navigate to home
+    if (activeSection !== 'home') {
+      setActiveSection('home');
+    }
   }}
   className={`
     flex-shrink-0 flex items-center px-1.5 py-0.5 cursor-pointer whitespace-nowrap

@@ -456,31 +456,31 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const entryFee = getEntryFee();
 
   // Get next question timing for penalty-exempt contracts
-  const getNextQuestionInfo = () => {
-    if (!contractAddress || !isPenaltyExempt) return null;
+  // const getNextQuestionInfo = () => {
+  //   if (!contractAddress || !isPenaltyExempt) return null;
 
-    const eventDate = getEventDate(contractAddress);
-    if (!eventDate) return null;
+  //   const eventDate = getEventDate(contractAddress);
+  //   if (!eventDate) return null;
 
-    const eventDateTime = new Date(eventDate + 'T00:00:00Z');
-    const now = new Date();
+  //   const eventDateTime = new Date(eventDate + 'T00:00:00Z');
+  //   const now = new Date();
 
-    if (eventDateTime > now) {
-      return {
-        type: 'event',
-        date: eventDateTime,
-        label: 'Event Date'
-      };
-    } else {
-      // Event has passed, prediction deadline is at 23:59 of the same day
-      const predictionDeadline = new Date(eventDate + 'T23:59:59Z');
-      return {
-        type: 'deadline',
-        date: predictionDeadline,
-        label: 'Prediction Deadline'
-      };
-    }
-  };
+  //   if (eventDateTime > now) {
+  //     return {
+  //       type: 'event',
+  //       date: eventDateTime,
+  //       label: 'Event Date'
+  //     };
+  //   } else {
+  //     // Event has passed, prediction deadline is at 23:59 of the same day
+  //     const predictionDeadline = new Date(eventDate + 'T23:59:59Z');
+  //     return {
+  //       type: 'deadline',
+  //       date: predictionDeadline,
+  //       label: 'Prediction Deadline'
+  //     };
+  //   }
+  // };
 
 
   // Get days since tournament started
@@ -533,11 +533,11 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
  
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white px-6 md:px-9">
       
 
       {/* Main Content */}
-      <div className="flex flex-col px-6 md:px-9">
+      <div className="flex flex-col">
         <div className=" pt-6">
           {/* Desktop: Two column layout, Mobile: Stacked */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -552,9 +552,16 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                       : 'Question of the Day'
                     }
                   </div>
-                  <div className="bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
-                    {getPlayerMessage()}
-                  </div>
+                  {/* Timer positioned at top right of question section */}
+                  {currentTimer && (
+                    <div className="flex items-center gap-2 bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
+                      {/* <Clock className="w-3 h-3 text-gray-500" /> */}
+                      <span className="text-[10px] md:text-xs text-gray-600">Next question</span>
+                      <span className="font-medium text-gray-900 text-[10px] md:text-xs">
+                        {currentTimer}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <h1 className="text-xl md:text-2xl font-normal text-gray-900 leading-[1.3] tracking-tight">
                   {marketQuestion || market?.question || 'Loading...'}
@@ -582,7 +589,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             </div>
 
             {/* Right Column: Tournament Details - Hidden on mobile, shown on desktop */}
-            <div className="hidden lg:block bg-white border border-gray-200 rounded-xl p-6">
+            <div className="hidden lg:flex lg:flex-col bg-white border border-gray-200 rounded-xl p-6">
               <div className="mb-6">
                 <h3 className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Details</h3>
                 <p className="text-sm text-gray-500 mt-1">{new Date().toLocaleDateString('en-US', {
@@ -593,7 +600,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 })}</p>
               </div>
 
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-3 gap-6 mt-auto">
                 <div>
                   <h4 className="text-sm font-medium text-gray-900 mb-2">{isParticipant ? 'Re-Entry' : 'Entry Fee'}</h4>
                   <p className="text-lg font-normal text-gray-900">${entryFee?.toFixed(2) || '0.00'}</p>
@@ -616,9 +623,15 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
           {/* Tournament Journey Flow - Full Width */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 relative">
-            <div className="text-xs font-medium text-gray-500 tracking-wide uppercase mb-3">Tournament Progress</div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Progress</div>
+              {/* Tournament status message positioned at top right */}
+              <div className="flex items-center gap-2 bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
+                <span className="text-[10px] md:text-xs text-gray-600">{getPlayerMessage()}</span>
+              </div>
+            </div>
 
-            <div className="relative flex items-center justify-between px-2 md:px-4 py-1 pb-10">
+            <div className="relative flex items-center justify-between px-2 md:px-4 py-6">
               {/* Step 1: Join */}
               <div className="flex flex-col items-center relative z-10">
                 <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs font-medium mb-3 transition-all duration-200 ${
@@ -688,7 +701,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               </div>
 
               {/* Clean Connecting Lines */}
-              <div className="absolute top-5 md:top-6 left-0 right-0 flex items-center justify-between px-6 md:px-8">
+              <div className="absolute top-10 md:top-11 left-0 right-0 flex items-center justify-between px-6 md:px-8">
                 {/* Line 1->2 */}
                 <div className="flex-1 h-px mx-2 bg-gray-200">
                   <div className={`h-full transition-all duration-300 ${
@@ -717,18 +730,6 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               </div>
             </div>
 
-            {/* Next Question Timer - Only show if pot has started */}
-            {potInfo.hasStarted && (
-              <div className="absolute bottom-3 left-0 right-0 flex justify-center">
-                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5">
-                  <Clock className="w-3 h-3 text-gray-500" />
-                  <span className="text-xs text-gray-600">Next question in</span>
-                  <span className="font-medium text-gray-900 text-xs">
-                    {currentTimer}
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Tournament Details - Mobile only */}
