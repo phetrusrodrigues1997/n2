@@ -615,7 +615,7 @@ export const translations: Record<Language, Translations> = {
     
     // PredictionPotTest interface elements
     processingYourEntry: 'Processing your entry...',
-    preparingYourPots: 'Preparing your pots...',
+    preparingYourPots: 'Preparing your tournaments...',
     fundYourAccount: 'Fund Your Account',
     fundAccountMessage: 'You need at least $0.01 worth of ETH to participate in prediction pots.',
     letsFundAccount: "Let's fund your account →",
@@ -881,8 +881,8 @@ export const translations: Record<Language, Translations> = {
     connectYourWallet: 'Connect Your Wallet',
     connectWalletBookmarks: 'Connect your wallet to view your bookmarked pots.',
     loadingBookmarks: 'Loading your bookmarks...',
-    yourPots: 'Your Pots',
-    potsBookmarkedEntered: 'The pots you need to monitor',
+    yourPots: 'Your Tournaments',
+    potsBookmarkedEntered: 'The tournaments you need to monitor',
     enteredPots: 'Entered',
     bookmarked: 'Bookmarked',
     noBookmarksYet: 'No bookmarks yet',

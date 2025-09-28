@@ -661,7 +661,7 @@ export default function App() {
                   {/* Balance display - Mobile: rightmost, Desktop: middle */}
                   {isConnected && (
                     <button
-                      onClick={() => setActiveSection('receive')}
+                      onClick={() => setActiveSection('profile')}
                       className={`hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer order-2`}
                   >
                     <div className="text-xs text-gray-600 font-medium whitespace-nowrap">{t.yourBalance}</div>
@@ -688,7 +688,7 @@ export default function App() {
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              setActiveSection('receive');
+                              setActiveSection('profile');
                             }}
                             className="flex flex-col items-center bg-transparent text-gray-700 font-medium text-xs hover:bg-gray-100 cursor-pointer px-2 py-1 rounded-md transition-colors duration-200"
                           >

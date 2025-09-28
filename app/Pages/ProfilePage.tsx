@@ -258,10 +258,10 @@ const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => 
               {/* Action Buttons */}
               <div className="space-y-3">
                 <button
-                  onClick={() => setActiveSection('referralProgram')}
+                  onClick={() => setActiveSection('receive')}
                   className="w-full bg-red-700 text-white font-medium py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors text-sm"
                 >
-                  {t.referrals}
+                  {t.fundAccount}
                 </button>
                 <button
                   onClick={() => setActiveSection('emailManagement')}

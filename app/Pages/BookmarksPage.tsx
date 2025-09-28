@@ -334,7 +334,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
 
       {/* Main Content */}
       <div className="flex flex-col min-h-[calc(100vh-73px)] px-6 md:px-9">
-        <div className="flex-1 px-4 py-6">
+        <div className="flex-1 py-6">
           {/* Page Title */}
           <div className="mb-8">
             <h1 className="text-xl md:text-2xl font-medium text-gray-900 mb-2">{t.yourPots}</h1>
@@ -397,9 +397,12 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex items-center gap-2 mb-3">
                           <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                            {bookmark.marketCategory}
+                            Current Question
+                          </span>
+                          <span className="text-xs font-medium text-red-600 bg-red-100 px-2 py-1 rounded">
+                            Bookmarked
                           </span>
                         </div>
 
@@ -438,18 +441,28 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                       </button>
                     </div>
 
-                    <div className="mt-3 flex items-center justify-between">
-                      <button
-                        onClick={() => handleViewMarket(bookmark)}
-                        className="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors"
-                      >
-                        {bookmark.contractAddress ? t.viewPot : t.goToCategory}
-                      </button>
-                      {bookmark.contractAddress && potBalances[bookmark.contractAddress] && (
-                        <span className="text-xs text-gray-500">
-                          {potBalances[bookmark.contractAddress]} {t.inPot}
-                        </span>
-                      )}
+                    <div className="mt-2 flex items-center justify-end">
+                      <div className="flex items-center gap-3">
+                        {bookmark.contractAddress && potBalances[bookmark.contractAddress] && (
+                          <span className="text-xs text-gray-500">
+                            {potBalances[bookmark.contractAddress]} {t.inPot}
+                          </span>
+                        )}
+                        {bookmark.contractAddress && userPots.includes(bookmark.contractAddress) && (
+                          <button
+                            onClick={() => handleMarketClick(bookmark.contractAddress!)}
+                            className="bg-green-600 text-white py-1.5 px-3 rounded-md hover:bg-green-700 transition-colors text-xs font-medium"
+                          >
+                            Entered
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleViewMarket(bookmark)}
+                          className="bg-red-700 text-white py-2 px-4 rounded-md hover:bg-black transition-colors text-sm font-semibold"
+                        >
+                          {t.view}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -476,36 +489,87 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                   };
                   const marketName = getLocalMarketDisplayName(marketType);
 
+                  // Get the current question for this contract
+                  // Try multiple market categories to find the question
+                  let market = null;
+                  let currentQuestion = t.participatingInPot;
+
+                  // First try the mapped market type
+                  const markets = getMarkets(t, marketType);
+                  market = markets.find(m => m.contractAddress === contractAddress);
+
+                  // If not found and this is "Trending" type, try the "options" category
+                  if (!market && (marketName === "All in One" || marketName.includes("Trending"))) {
+                    const optionsMarkets = getMarkets(t, 'options');
+                    market = optionsMarkets.find(m => m.contractAddress === contractAddress);
+                  }
+
+                  // If still not found, try all possible categories
+                  if (!market) {
+                    const allCategories = ['options', 'trending', 'sports', 'crypto', 'stocks', 'music', 'formula1'];
+                    for (const category of allCategories) {
+                      try {
+                        const categoryMarkets = getMarkets(t, category);
+                        market = categoryMarkets.find(m => m.contractAddress === contractAddress);
+                        if (market) break;
+                      } catch (error) {
+                        // Category might not exist, continue
+                      }
+                    }
+                  }
+
+                  if (market?.question) {
+                    currentQuestion = translateMarketQuestion(market.question, currentLanguage);
+                  }
+
                   return (
-                    <button
+                    <div
                       key={contractAddress}
-                      onClick={() => handleMarketClick(contractAddress)}
-                      className="w-full text-left border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                      className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
                     >
-                      <div className="flex items-center justify-between">
-                        <div>
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                              Current Question
+                            </span>
+                            <span className="text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded">
+                              Entered
+                            </span>
+                          </div>
+
                           <h3 className="font-medium text-gray-900 mb-1">
-                            {marketName === "Trending" ? "All in One" : marketName}
+                            {currentQuestion}
                           </h3>
-                          <p className="text-sm text-gray-500">{t.participatingInPot}</p>
+
+                          <p className="text-sm text-gray-500">
+                            {marketName === "Trending" ? "All in One" : marketName}
+                          </p>
+
                           {hasEnoughParticipants(contractAddress) && contractTimers[contractAddress] && (
-                            <p className="text-xs text-gray-400 mt-1">
+                            <p className="text-xs text-gray-400 translate-y-9">
                               {t.nextQuestion} {contractTimers[contractAddress]}
                             </p>
                           )}
                         </div>
-                        <div className="text-right">
+                      </div>
+
+                      <div className="mt-2 flex items-center justify-end">
+                        <div className="flex items-center gap-3">
                           {potBalances[contractAddress] && (
-                            <div className="text-xs text-gray-500 mb-2">
+                            <span className="text-xs text-gray-500">
                               {potBalances[contractAddress]} {t.inPot}
-                            </div>
+                            </span>
                           )}
-                          <button className="bg-red-700 py-2 px-4 rounded-md hover:bg-black">
+                          <button
+                            onClick={() => handleMarketClick(contractAddress)}
+                            className="bg-red-700 text-white py-2 px-4 rounded-md hover:bg-black transition-colors text-sm font-semibold"
+                          >
                             {t.view}
                           </button>
                         </div>
                       </div>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
