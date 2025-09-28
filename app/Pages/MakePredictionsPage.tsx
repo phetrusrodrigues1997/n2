@@ -1352,8 +1352,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
      
       
         {/* Main Content */}
-        <div className="flex flex-col py-12">
-          <div className="flex-1 px-4">
+        <div className="flex flex-col py-12 px-7 md:px-10">
+          <div className="flex-1">
             {/* Page Header */}
             <div className="mb-8 text-center">
               <h1 className="text-3xl md:text-4xl font-normal text-gray-900 tracking-tight mb-2">
