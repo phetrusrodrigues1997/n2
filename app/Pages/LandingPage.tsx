@@ -1474,7 +1474,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   e.preventDefault();
                                   handleMarketClick(market.id, true);
                                 }}
-                                className="w-full group relative overflow-hidden bg-black hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
+                                className="w-full group relative overflow-hidden bg-red-700 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                               >
                                 <span className="relative z-10 flex items-center justify-center gap-2">
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1963,7 +1963,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                         setActiveSection('potInfo');
                                       }}
-                                      className="w-full group relative overflow-hidden bg-black hover:bg-[#f4f4f4] text-white hover:text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
+                                      className="w-full group relative overflow-hidden bg-red-700 hover:bg-[#f4f4f4] text-white hover:text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                                     >
                                       <span className="relative z-10 flex items-center justify-center gap-2">
                                         More Info
@@ -2207,7 +2207,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 e.preventDefault();
                                 handleMarketClick(market.id, true);
                               }}
-                              className="w-full group relative overflow-hidden bg-black hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
+                              className="w-full group relative overflow-hidden bg-red-700 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                             >
                               <span className="relative z-10 flex items-center justify-center gap-2">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2568,7 +2568,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       handleMarketClick(market.id);
                                       setActiveSection('potInfo');
                                     }}
-                                    className="w-full group relative overflow-hidden bg-black hover:bg-[#f4f4f4] text-white hover:text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
+                                    className="w-full group relative overflow-hidden bg-red-700 hover:bg-[#f4f4f4] text-white hover:text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                                   >
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                       More Info
@@ -2676,7 +2676,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
             {/* Minimalist Entry Button */}
             <button
               onClick={() => handleMarketClick('Trending')}
-              className="group relative bg-black border-2 border-black text-white px-20 py-5 rounded-lg font-semibold text-xl tracking-[0.05em] uppercase transition-all duration-300 hover:bg-purple-700 hover:border-purple-700 hover:text-white overflow-hidden shadow-xl hover:shadow-purple-200"
+              className="group relative bg-red-700 border-2 border-black text-white px-20 py-5 rounded-lg font-semibold text-xl tracking-[0.05em] uppercase transition-all duration-300 hover:bg-purple-700 hover:border-purple-700 hover:text-white overflow-hidden shadow-xl hover:shadow-purple-200"
             >
               <span className="relative z-10">Enter</span>
 
@@ -2743,7 +2743,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         {/* Tutorial Modal - Polymarket Style */}
         {showTutorial && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-red-700/30 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full border border-gray-100">
               {/* Modal Header - Clean */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">

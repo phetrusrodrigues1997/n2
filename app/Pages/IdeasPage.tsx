@@ -381,7 +381,7 @@ const IdeasPage = ({ activeSection, setActiveSection }: IdeasPageProps) => {
                   <button
                     type="submit"
                     disabled={isSubmitting || idea.trim().length < 10}
-                    className="w-full bg-purple-700 text-white py-3 px-6 rounded-lg font-medium hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                    className="w-full bg-purple-700 text-white py-3 px-6 rounded-lg font-medium hover:bg-purple-700 disabled:bg-red-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                   >
                     {isSubmitting ? (
                       <>

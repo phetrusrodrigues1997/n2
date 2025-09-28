@@ -546,7 +546,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               {/* Question Display */}
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-3">
-                  <div className="text-[10px] md:text-xs font-medium text-gray-500 tracking-wide uppercase">
+                  <div className="text-xs font-medium text-gray-500 tracking-wide uppercase">
                     {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
                       ? 'Question of the Week'
                       : 'Question of the Day'
@@ -566,7 +566,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 <button
                   onClick={handleReady}
                   disabled={!isConnected || (isParticipant && userEliminated)}
-                  className="w-full bg-black text-white font-medium rounded-xl py-3.5 text-base transition-all duration-200 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500"
+                  className="w-full bg-red-700 text-white font-medium rounded-xl py-3.5 text-base transition-all duration-200 hover:bg-gray-800 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500"
                 >
                   {!isConnected ? (
                     'Connect Wallet'
@@ -584,7 +584,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             {/* Right Column: Tournament Details - Hidden on mobile, shown on desktop */}
             <div className="hidden lg:block bg-white border border-gray-200 rounded-xl p-6">
               <div className="mb-6">
-                <h3 className="text-[10px] md:text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Details</h3>
+                <h3 className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Details</h3>
                 <p className="text-sm text-gray-500 mt-1">{new Date().toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
@@ -616,7 +616,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
           {/* Tournament Journey Flow - Full Width */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 relative">
-            <div className="text-[10px] md:text-xs font-medium text-gray-500 tracking-wide uppercase mb-3">Tournament Progress</div>
+            <div className="text-xs font-medium text-gray-500 tracking-wide uppercase mb-3">Tournament Progress</div>
 
             <div className="relative flex items-center justify-between px-2 md:px-4 py-1 pb-10">
               {/* Step 1: Join */}
@@ -688,7 +688,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               </div>
 
               {/* Clean Connecting Lines */}
-              <div className="absolute top-6 md:top-7 left-0 right-0 flex items-center justify-between px-6 md:px-8">
+              <div className="absolute top-5 md:top-6 left-0 right-0 flex items-center justify-between px-6 md:px-8">
                 {/* Line 1->2 */}
                 <div className="flex-1 h-px mx-2 bg-gray-200">
                   <div className={`h-full transition-all duration-300 ${
@@ -734,7 +734,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           {/* Tournament Details - Mobile only */}
           <div className="lg:hidden bg-white border border-gray-200 rounded-xl p-6 mb-6">
             <div className="mb-6">
-              <h3 className="text-[10px] md:text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Details</h3>
+              <h3 className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Details</h3>
               <p className="text-sm text-gray-500 mt-1">{new Date().toLocaleDateString('en-US', {
                 weekday: 'long',
                 year: 'numeric',

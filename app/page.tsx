@@ -566,7 +566,7 @@ export default function App() {
                   className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium transition-colors px-4 py-2 whitespace-nowrap min-w-fit hover:bg-gray-50 rounded-lg"
                 >
                   {/* Smaller red circle with i */}
-                  <span className="flex items-center justify-center w-4 h-4 rounded-full bg-purple-600 text-white text-[10px] font-bold">
+                  <span className="flex items-center justify-center w-4 h-4 rounded-full bg-red-600 text-white text-[10px] font-bold">
                     i
                   </span>
                   <span className="text-gray-700">{t.howItWorks}</span>
@@ -594,9 +594,9 @@ export default function App() {
                       type="button"
                     >
                       <Bell className="w-5 h-5 text-gray-800 stroke-2 hover:text-black transition-colors" fill="white" />
-                      {/* Purple dot indicator for unread announcements */}
+                      {/* red dot indicator for unread announcements */}
                       {hasUnreadAnnouncementsState && (
-                        <div className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-purple-500 rounded-full border-2 border-white animate-pulse"></div>
+                        <div className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></div>
                       )}
                     </button>
                   )}
@@ -642,7 +642,7 @@ export default function App() {
                             key={language.code}
                             onClick={() => handleLanguageChange(language.code)}
                             className={`w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors flex items-center gap-2  ${
-                              currentLanguage === language.code ? 'bg-purple-50 text-purple-700' : 'text-gray-700'
+                              currentLanguage === language.code ? 'bg-red-50 text-red-700' : 'text-gray-700'
                             }`}
                           >
                             <img
@@ -678,7 +678,7 @@ export default function App() {
                 <Wallet>
                   <ConnectWallet
                     text={t.signIn}
-                    className={`${isConnected ? '!bg-transparent !border-none !shadow-none !p-0' : ''} ${isMobile ? 'bg-purple-700 hover:bg-black !px-4 !py-2 !min-w-0' : 'bg-purple-700 hover:bg-black !px-4 !py-2 !min-w-0 !w-24 !whitespace-nowrap'}`}
+                    className={`${isConnected ? '!bg-transparent !border-none !shadow-none !p-0' : ''} ${isMobile ? 'bg-red-700 hover:bg-black !px-4 !py-2 !min-w-0' : 'bg-red-700 hover:bg-black !px-4 !py-2 !min-w-0 !w-24 !whitespace-nowrap'}`}
                   >
                     {isConnected && (
                       <div className="flex items-center gap-2">
@@ -698,7 +698,7 @@ export default function App() {
                             </div>
                           </div>
                         ) : (
-                          // <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-700 via-purple-900 to-black hover:from-indigo-300 hover:via-violet-400 hover:via-fuchsia-400 hover:via-rose-400 hover:via-amber-300 hover:to-teal-400 transition-all duration-200 hover:shadow-xl hover:scale-105"></div>
+                          // <div className="h-8 w-8 rounded-full bg-gradient-to-br from-red-700 via-red-900 to-black hover:from-indigo-300 hover:via-violet-400 hover:via-fuchsia-400 hover:via-rose-400 hover:via-amber-300 hover:to-teal-400 transition-all duration-200 hover:shadow-xl hover:scale-105"></div>
                           <div className=" ml-2 translate-x-2">
                 <NavigationMenu 
                   activeSection={activeSection} 
@@ -798,19 +798,19 @@ export default function App() {
             placeholder={t.searchPotsPlaceholder}
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-transparent border border-gray-200 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:bg-white focus:border-purple-700 transition-colors duration-200"
+            className="w-full pl-10 pr-4 py-2 bg-transparent border border-gray-200 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:bg-white focus:border-red-700 transition-colors duration-200"
           />
         </div>
 
         {/* Filter Symbol */}
         <button
           className={`flex items-center justify-center w-10 h-10 bg-transparent rounded-lg transition-colors duration-200 ${
-            isFilterDropdownOpen ? 'bg-purple-50 border border-purple-200' : 'hover:bg-gray-100'
+            isFilterDropdownOpen ? 'bg-red-50 border border-red-200' : 'hover:bg-gray-100'
           }`}
           onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
         >
           <svg className={`w-5 h-5 transition-colors duration-200 ${
-            isFilterDropdownOpen ? 'text-purple-700' : 'text-black'
+            isFilterDropdownOpen ? 'text-red-700' : 'text-black'
           }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
@@ -853,7 +853,7 @@ export default function App() {
                     placeholder={t.search}
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:bg-white focus:border-2 focus:border-purple-700 transition-colors duration-200"
+                    className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:bg-white focus:border-2 focus:border-red-700 transition-colors duration-200"
                   />
                 </div>
 
@@ -862,11 +862,11 @@ export default function App() {
                   <button
                     onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
                     className={`flex items-center justify-center w-9 h-9 bg-white rounded-lg transition-colors duration-200 ${
-                      isFilterDropdownOpen ? 'bg-purple-50 border border-purple-200' : 'hover:bg-gray-50'
+                      isFilterDropdownOpen ? 'bg-red-50 border border-red-200' : 'hover:bg-gray-50'
                     }`}
                   >
                     <svg className={`w-5 h-5 transition-colors duration-200 ${
-                      isFilterDropdownOpen ? 'text-purple-700' : 'text-black'
+                      isFilterDropdownOpen ? 'text-red-700' : 'text-black'
                     }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                     </svg>
@@ -940,7 +940,7 @@ export default function App() {
                       onClick={() => setTournamentFilter('all')}
                       className={`flex-shrink-0 px-3 py-1.5 text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                         tournamentFilter === 'all'
-                          ? 'bg-purple-100 text-purple-700 rounded-md'
+                          ? 'bg-red-100 text-red-700 rounded-md'
                           : 'bg-white text-gray-600 hover:text-gray-800 rounded-full'
                       }`}
                     >
@@ -950,7 +950,7 @@ export default function App() {
                       onClick={() => setTournamentFilter('daily')}
                       className={`flex-shrink-0 px-3 py-1.5 text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                         tournamentFilter === 'daily'
-                          ? 'bg-purple-100 text-purple-700 rounded-md'
+                          ? 'bg-red-100 text-red-700 rounded-md'
                           : 'bg-white text-gray-600 hover:text-gray-800 rounded-full'
                       }`}
                     >
@@ -960,7 +960,7 @@ export default function App() {
                       onClick={() => setTournamentFilter('weekly')}
                       className={`flex-shrink-0 px-3 py-1.5 text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                         tournamentFilter === 'weekly'
-                          ? 'bg-purple-100 text-purple-700 rounded-md'
+                          ? 'bg-red-100 text-red-700 rounded-md'
                           : 'bg-white text-gray-600 hover:text-gray-800 rounded-full'
                       }`}
                     >
@@ -970,7 +970,7 @@ export default function App() {
                       onClick={() => setTournamentFilter('recently')}
                       className={`flex-shrink-0 px-3 py-1.5 text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                         tournamentFilter === 'recently'
-                          ? 'bg-purple-100 text-purple-700 rounded-md'
+                          ? 'bg-red-100 text-red-700 rounded-md'
                           : 'bg-white text-gray-600 hover:text-gray-800 rounded-full'
                       }`}
                     >
@@ -1062,7 +1062,7 @@ export default function App() {
                   }}
                   className={`group flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 transition-all duration-300 ${
                     (selectedMarket === 'All' && activeCarousel === 'second') || (selectedMarket === 'Trending' && activeCarousel === 'first')
-                      ? 'text-purple-700 bg-purple-100 border border-purple-200 rounded-full'
+                      ? 'text-red-700 bg-red-100 border border-red-200 rounded-full'
                       : 'text-black border border-gray-200 rounded-full hover:text-gray-600'
                   }`}
                   style={{
@@ -1084,7 +1084,7 @@ export default function App() {
                       setActiveCarousel('second');
                     }}
                     className={`group flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 transition-all duration-300 ${selectedMarket === market.id && activeCarousel === 'second'
-                        ? 'text-purple-700 bg-purple-100 border border-purple-200 rounded-full'
+                        ? 'text-red-700 bg-red-100 border border-red-200 rounded-full'
                         : 'text-black border border-gray-200 rounded-full hover:bg-[#f2f2f2]'
                       }`}
                     style={{

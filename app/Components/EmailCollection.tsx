@@ -97,7 +97,7 @@ const EmailCollection: React.FC<EmailCollectionProps> = ({
           <button
             onClick={handleEmailSubmit}
             disabled={emailSubmitting || !email.trim()}
-            className="flex-1 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300
+            className="flex-1 bg-gray-900 hover:bg-gray-800 disabled:bg-red-300
                        text-white font-medium py-2.5 px-4 rounded-lg
                        transition-all duration-200 disabled:cursor-not-allowed text-sm
                        shadow-sm hover:shadow-md disabled:shadow-none"

@@ -961,7 +961,7 @@ const PrivatePotInterface: React.FC<PrivatePotInterfaceProps> = ({
                     <button
                       onClick={handleUpdatePotDetails}
                       disabled={!editingPotName.trim() && !editingDescription.trim()}
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:bg-gray-300 font-medium transition-colors"
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:bg-red-300 font-medium transition-colors"
                     >
                       Save Changes
                     </button>
@@ -1001,7 +1001,7 @@ const PrivatePotInterface: React.FC<PrivatePotInterfaceProps> = ({
                 <button
                   onClick={handleUpdateEntryAmount}
                   disabled={!newEntryAmount}
-                  className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 font-medium transition-colors"
+                  className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-red-300 font-medium transition-colors"
                 >
                   Update Entry Amount
                 </button>

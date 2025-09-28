@@ -184,7 +184,7 @@ const EmailManagement: React.FC<EmailManagementProps> = ({
                 <button
                   onClick={handleEmailSubmit}
                   disabled={emailSubmitting || !email.trim()}
-                  className="bg-black hover:bg-gray-800 disabled:bg-gray-300
+                  className="bg-black hover:bg-gray-800 disabled:bg-red-300
                              text-white font-medium py-3 px-6 rounded-lg
                              transition-colors duration-200 disabled:cursor-not-allowed"
                 >

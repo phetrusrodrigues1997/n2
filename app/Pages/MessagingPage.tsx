@@ -473,7 +473,7 @@ const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead, currentL
                 <button
                   onClick={handleAddAnnouncement}
                   disabled={loading || !newAnnouncement.trim()}
-                  className="bg-purple-700 text-white px-6 py-2 rounded-lg hover:bg-purple-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 font-semibold"
+                  className="bg-purple-700 text-white px-6 py-2 rounded-lg hover:bg-purple-800 disabled:bg-red-300 disabled:cursor-not-allowed transition-colors duration-200 font-semibold"
                 >
                   {loading ? 'Posting...' : 'Post Announcement'}
                 </button>
