@@ -573,10 +573,10 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           </div>
 
           {/* Tournament Journey Flow */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-            <div className="text-sm font-medium text-gray-600 mb-4 tracking-wide">Tournament Progress</div>
+          <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 relative">
+            <div className="text-sm font-medium text-gray-600 mb-3 tracking-wide">Tournament Progress</div>
 
-            <div className="relative flex items-center justify-between px-2 md:px-4 py-2">
+            <div className="relative flex items-center justify-between px-2 md:px-4 py-1 pb-10">
               {/* Step 1: Join */}
               <div className="flex flex-col items-center relative z-10">
                 <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs font-medium mb-3 transition-all duration-200 ${
@@ -677,8 +677,8 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
             {/* Next Question Timer - Only show if pot has started */}
             {potInfo.hasStarted && (
-              <div className="mt-3 flex justify-center">
-                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
+              <div className="absolute bottom-3 left-0 right-0 flex justify-center">
+                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5">
                   <Clock className="w-3 h-3 text-gray-500" />
                   <span className="text-xs text-gray-600">Next question in</span>
                   <span className="font-medium text-gray-900 text-xs">
@@ -731,7 +731,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
         </div>
 
         {/* Bottom Action Section - Polymarket Style */}
-        <div className="p-6 border-t border-gray-100 bg-gray-50">
+        <div className="p-6 -translate-y-7">
           <button
             onClick={handleReady}
             disabled={!isConnected || (isParticipant && userEliminated)}
