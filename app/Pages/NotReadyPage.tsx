@@ -342,7 +342,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
   return (
     <div className="min-h-screen bg-white text-black w-full overflow-x-hidden">
       <div className="w-full mx-auto p-6">
-        {/* Back Button - Always visible for all UI states */}
+        {/* Back Button - Always visible for all UI states
         <div className="mb-6 relative z-10">
           <button
             onClick={() => setActiveSection('home')}
@@ -351,19 +351,16 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
             <span>←</span>
             <span>{t.backToMarkets || 'Back to Markets'}</span>
           </button>
-        </div>
+        </div> */}
 
-        <div className="flex items-center justify-center -translate-y-8 md:translate-y-0">
-          <div className="text-center w-full max-w-4xl">
+        <div className="flex items-center justify-center">
+          <div className="text-center w-full max-w-2xl">
             {/* Email Collection Modal */}
             {showEmailCollection && (
-              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-3xl p-8 max-w-md w-full">
+              <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-xl border border-gray-200 p-8 max-w-md w-full">
                   <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                      <Mail className="w-8 h-8 text-purple-600" />
-                    </div>
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-3">
+                    <h2 className="text-xl font-medium text-gray-900 mb-3">
                       {t.getNotified || 'Get Notified'}
                     </h2>
                     <p className="text-gray-600 text-sm leading-relaxed">
@@ -377,7 +374,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder={t.enterEmailAddress || 'Enter your email address'}
-                      className="w-full px-4 py-3 text-base bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-purple-400 focus:outline-none transition-all duration-300 placeholder-gray-500"
+                      className="w-full px-4 py-3 text-base bg-white border border-gray-200 rounded-lg focus:border-gray-400 focus:outline-none transition-all duration-200 placeholder-gray-500"
                       onKeyPress={(e) => e.key === 'Enter' && handleEmailSubmit()}
                     />
 
@@ -385,7 +382,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
                       <button
                         onClick={handleEmailSubmit}
                         disabled={emailSubmitting || !email.trim()}
-                        className="w-full bg-black hover:from-purple-700 hover:to-purple-800 disabled:from-purple-300 disabled:to-purple-400 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 disabled:cursor-not-allowed"
+                        className="w-full bg-black hover:bg-gray-800 disabled:bg-gray-300 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed"
                       >
                         {emailSubmitting ? (t.saving || 'Saving...') : (t.notifyMe || 'Notify Me')}
                       </button>
@@ -402,38 +399,13 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
             )}
 
             {/* Main Not Ready Message */}
-            <div className="bg-white rounded-3xl border-0 p-8 translate-y-2 md:p-12 md:translate-y-0  text-center">
-              <div className="flex flex-col items-center space-y-6">
-                {/* Ghostie Image */}
-                {/* <img 
-                  src="/ghostienobg.png" 
-                  alt="Not ready yet" 
-                  className="w-24 h-24 md:w-32 md:h-32 opacity-80"
-                /> */}
-                
+            <div className="bg-gray-50 rounded-xl p-8 md:p-12 text-center mt-6 md:mt-10">
+              <div className="space-y-8">
                 {/* Main Message */}
-                <div className="bg-gradient-to-br from-white via-purple-50/30 to-blue-50/20 rounded-2xl border border-purple-100/40 p-6 md:p-8 shadow-lg shadow-purple-100/20">
-                  <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
-                    {/* Icon */}
-                    <div className="flex-shrink-0">
-                      <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl flex items-center justify-center shadow-md border border-purple-100/50">
-                        {isFinalDay && isEliminated ? (
-                          <div className="text-2xl md:text-3xl">🏆</div>
-                        ) : hasEnoughPlayers && potInfo.hasStarted ? (
-                          <div className="text-2xl md:text-3xl">🚀</div>
-                        ) : hasEnoughPlayers && !potInfo.hasStarted ? (
-                          <div className="text-2xl md:text-3xl">🎉</div>
-                        ) : isPenaltyExempt ? (
-                          <div className="text-2xl md:text-3xl">🏁</div>
-                        ) : (
-                          <Clock className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 text-center md:text-left space-y-3">
-                      <h1 className="text-xl md:text-2xl font-semibold text-gray-900 leading-tight">
+                <div className="space-y-6">
+                  {/* Content */}
+                  <div className="space-y-4">
+                      <h1 className="text-2xl md:text-3xl font-normal text-gray-900 leading-tight tracking-tight">
                         {isFinalDay && isEliminated
                           ? (t.tournamentComplete || "Tournament Complete - You Were Eliminated")
                           : hasEnoughPlayers && potInfo.hasStarted
@@ -446,7 +418,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
                         }
                       </h1>
 
-                      <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                      <p className="text-base text-gray-600 leading-relaxed max-w-lg mx-auto">
                         {isFinalDay && isEliminated
                           ? (t.finalDayEliminated || "The final day has arrived and winners are being determined. Unfortunately, you were eliminated earlier in the tournament.")
                           : hasEnoughPlayers && potInfo.hasStarted
@@ -468,67 +440,49 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
                                 : (t.inviteFriends || "Invite your friends! We'll notify you when there are enough players.")
                         }
                       </p>
-                    </div>
                   </div>
                 </div>
-
                 {/* Status Display - Only show if not eliminated on final day */}
                 {!(isFinalDay && isEliminated) && (
                   <div className="flex justify-center">
                     {hasEnoughPlayers && potInfo.hasStarted ? (
                       // Pot is active
-                      <div className="inline-flex items-center gap-2 md:gap-3 px-3 py-2 md:px-6 md:py-3 bg-blue-50 rounded-xl md:rounded-2xl border border-blue-200">
-                        <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-blue-100 to-blue-50 rounded-full flex items-center justify-center">
-                          <Users className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
-                        </div>
-                        <div className="flex items-center gap-1 md:gap-2">
-                          <span className="text-xs md:text-sm text-blue-700 font-medium">
-                            {formatMessage(t.potLiveWithPlayers || 'Pot is live with {count} players!', { count: current.toString() })}
-                          </span>
-                        </div>
+                      <div className="bg-gray-100 border border-gray-200 rounded-lg px-4 py-3">
+                        <span className="text-sm text-gray-700 font-medium">
+                          {formatMessage(t.potLiveWithPlayers || 'Pot is live with {count} players!', { count: current.toString() })}
+                        </span>
                       </div>
                     ) : hasEnoughPlayers && !potInfo.hasStarted ? (
                       // Pot ready, waiting to start
-                      <div className="inline-flex items-center gap-2 md:gap-3 px-3 py-2 md:px-6 md:py-3 bg-green-50 rounded-xl md:rounded-2xl border border-green-200">
-                        <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-green-100 to-green-50 rounded-full flex items-center justify-center">
-                          <Clock className="w-3 h-3 md:w-4 md:h-4 text-green-600" />
-                        </div>
-                        <div className="flex items-center gap-1 md:gap-2">
-                          <span className="text-xs md:text-sm text-green-700 font-medium">
-                            {formatMessage(t.starts || 'Starts {date}', {
-                              date: isPenaltyExempt && eventDate ? getTournamentStartDate(eventDate) : getNextCalendarDayUTC()
-                            })}
-                          </span>
-                        </div>
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+                        <span className="text-sm text-gray-700 font-medium">
+                          {formatMessage(t.starts || 'Starts {date}', {
+                            date: isPenaltyExempt && eventDate ? getTournamentStartDate(eventDate) : getNextCalendarDayUTC()
+                          })}
+                        </span>
                       </div>
                     ) : (
                       // Waiting for more players
-                      <div className="inline-flex items-center gap-2 md:gap-3 px-3 py-2 md:px-6 md:py-3 bg-gray-50 rounded-xl md:rounded-2xl border border-gray-200">
-                        <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-purple-100 to-purple-50 rounded-full flex items-center justify-center">
-                          <Users className="w-3 h-3 md:w-4 md:h-4 text-purple-600" />
-                        </div>
-                        <div className="flex items-center gap-1 md:gap-2">
-                          <span className="text-xs md:text-sm text-gray-500">
-                            {getWaitingMessage(required - current)}
-                          </span>
-                        </div>
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+                        <span className="text-sm text-gray-700 font-medium">
+                          {getWaitingMessage(required - current)}
+                        </span>
                       </div>
                     )}
                   </div>
                 )}
                 
-                {/* Action Buttons - Only show email notification if not eliminated on final day */}
+                {/* Action Button */}
                 {!(isFinalDay && isEliminated) && (
-                  <div className="flex flex-col sm:flex-row gap-4  md:pt-4">
-                    
+                  <div className="flex justify-center">
                     <button
                       onClick={() => setShowEmailCollection(true)}
-                    className="bg-black hover:to-purple-800 text-white px-6 py-3 rounded-2xl font-medium transition-colors duration-200 flex items-center gap-2 justify-center -translate-y-2"
-                  >
-                    <Mail className="w-4 h-4" />
-                    {t.getNotified || 'Get Notified'}
-                  </button>
-                </div>
+                      className="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
+                    >
+                      <Mail className="w-4 h-4" />
+                      {t.getNotified || 'Get Notified'}
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

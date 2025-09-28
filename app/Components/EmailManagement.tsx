@@ -105,22 +105,20 @@ const EmailManagement: React.FC<EmailManagementProps> = ({
   if (isLoadingEmail) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
       </div>
     );
   }
 
   return (
     <div className="w-full min-h-[70vh] flex items-center justify-center px-4 md:px-8">
-      <div className="relative max-w-xl mx-auto w-full animate-fade-in-up opacity-0" style={{
-        animation: 'fadeInUp 0.6s ease-out 0.1s forwards'
-      }}>
+      <div className="relative max-w-xl mx-auto w-full">
         {/* Top Navigation Bar */}
         <div className="mb-6 flex justify-between items-center">
           {showBackButton && onBack && (
             <button
               onClick={onBack}
-              className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-purple-300"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors duration-200 font-medium text-sm bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-gray-300"
             >
               <span>←</span>
               <span>{t.back}</span>
@@ -130,37 +128,35 @@ const EmailManagement: React.FC<EmailManagementProps> = ({
           {onClose && (
             <button
               onClick={onClose}
-              className="text-purple-600 hover:text-gray-700 transition-colors duration-200 font-light text-sm tracking-wide"
+              className="text-gray-600 hover:text-gray-800 transition-colors duration-200 font-medium text-sm"
             >
-              {t.close || 'Close'}
+              Close
             </button>
           )}
         </div>
 
-        {/* Modern Sleek Container */}
-        <div className="bg-white rounded-3xl border border-gray-200/60 shadow-lg p-10 md:p-12">
+        {/* Clean Container */}
+        <div className="bg-white rounded-xl border border-gray-200 p-8 md:p-10">
           {/* Header Section */}
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-3 mb-6 flex-nowrap">
-              <h1 className="text-2xl md:text-4xl font-light text-gray-900 tracking-tight flex-shrink-0">
-                {currentUserEmail && !isEditingEmail ? t.yourEmail : t.updateEmailTitle || 'Update Email'}📩
-              </h1>
-            </div>
-
-            {/* Show current email if exists and not editing */}
-            {currentUserEmail && !isEditingEmail && (
-              <div className="mb-6">
-                <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-4">
-                  <p className="text-green-800 font-medium">{currentUserEmail}</p>
-                </div>
-                <p className="text-sm text-gray-500 mb-4">{t.emailNotificationMessage}</p>
-              </div>
-            )}
+          <div className="text-center mb-8">
+            <h1 className="text-2xl md:text-3xl font-normal text-gray-900 tracking-tight">
+              {currentUserEmail && !isEditingEmail ? t.yourEmail : t.updateEmailTitle || 'Update Email'}
+            </h1>
           </div>
+
+          {/* Show current email if exists and not editing */}
+          {currentUserEmail && !isEditingEmail && (
+            <div className="mb-6">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                <p className="text-gray-900 font-medium">{currentUserEmail}</p>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">{t.emailNotificationMessage}</p>
+            </div>
+          )}
 
           {/* Input Section - Show when no email or editing */}
           {(!currentUserEmail || isEditingEmail) && (
-            <div className="space-y-8">
+            <div className="space-y-6">
               <EmailInput
                 email={email}
                 onChange={setEmail}
@@ -170,34 +166,31 @@ const EmailManagement: React.FC<EmailManagementProps> = ({
               />
 
               {/* Message Area - Fixed height to prevent layout shift */}
-              <div className="min-h-[3rem] flex items-center justify-center">
+              <div className="min-h-[2rem] flex items-center justify-center">
                 {error && (
-                  <div className="w-full bg-red-50 border border-red-200 rounded-xl p-3 animate-fade-in">
+                  <div className="w-full bg-red-50 border border-red-200 rounded-lg p-3">
                     <p className="text-red-700 text-sm text-center">{error}</p>
                   </div>
                 )}
                 {success && (
-                  <div className="w-full bg-green-50 border border-green-200 rounded-xl p-3 animate-fade-in">
+                  <div className="w-full bg-green-50 border border-green-200 rounded-lg p-3">
                     <p className="text-green-700 text-sm text-center">✓ Email updated successfully!</p>
                   </div>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col items-center space-y-5">
+              <div className="flex flex-col items-center space-y-4">
                 <button
                   onClick={handleEmailSubmit}
                   disabled={emailSubmitting || !email.trim()}
-                  className="w-48 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800
-                             disabled:bg-black disabled:from-black disabled:to-black disabled:text-white
-                             text-white font-medium py-4 px-8 rounded-2xl
-                             transition-all duration-300 text-lg disabled:cursor-not-allowed transform hover:scale-[1.02]
-                             active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl
-                             disabled:opacity-100 disabled:shadow-lg"
+                  className="bg-black hover:bg-gray-800 disabled:bg-gray-300
+                             text-white font-medium py-3 px-6 rounded-lg
+                             transition-colors duration-200 disabled:cursor-not-allowed"
                 >
                   {emailSubmitting ? (
-                    <span className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                       {t.updating}
                     </span>
                   ) : (
@@ -209,7 +202,7 @@ const EmailManagement: React.FC<EmailManagementProps> = ({
                 {isEditingEmail && (
                   <button
                     onClick={handleCancelEdit}
-                    className="w-full text-gray-500 hover:text-gray-700 font-light py-3 px-6 transition-all duration-200 text-base tracking-wide"
+                    className="text-gray-500 hover:text-gray-700 font-medium py-2 px-4 transition-colors duration-200"
                   >
                     {t.cancel}
                   </button>
@@ -220,13 +213,11 @@ const EmailManagement: React.FC<EmailManagementProps> = ({
 
           {/* Action buttons when email exists and not editing */}
           {currentUserEmail && !isEditingEmail && (
-            <div className="flex flex-col items-center space-y-5">
+            <div className="flex flex-col items-center space-y-4">
               <button
                 onClick={() => setIsEditingEmail(true)}
-                className="w-48 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800
-                           text-white font-medium py-4 px-8 rounded-2xl
-                           transition-all duration-300 text-lg transform hover:scale-[1.02]
-                           active:scale-[0.98] tracking-wide shadow-lg hover:shadow-xl"
+                className="bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-6 rounded-lg
+                           transition-colors duration-200"
               >
                 {t.changeEmail}
               </button>
@@ -234,35 +225,15 @@ const EmailManagement: React.FC<EmailManagementProps> = ({
               {onClose && (
                 <button
                   onClick={onClose}
-                  className="w-full text-purple-600 hover:text-gray-700 font-light py-3 px-6 transition-all duration-200 text-base tracking-wide"
+                  className="text-gray-500 hover:text-gray-700 font-medium py-2 px-4 transition-colors duration-200"
                 >
-                  {t.continueToTutorial || 'Continue'}
+                  Close
                 </button>
               )}
             </div>
           )}
         </div>
 
-        {/* Enhanced CSS for animations */}
-        <style>{`
-          @keyframes fadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(40px) scale(0.95);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0) scale(1);
-            }
-          }
-          @keyframes fade-in {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fade-in {
-            animation: fade-in 0.3s ease-out;
-          }
-        `}</style>
       </div>
     </div>
   );

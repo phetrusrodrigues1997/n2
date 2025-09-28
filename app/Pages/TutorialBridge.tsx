@@ -69,8 +69,8 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
             {showEmailUI && isConnected && (
               <EmailManagement
                 currentLanguage={currentLanguage}
-                onClose={() => setShowEmailUI(false)}
-                onBack={() => setActiveSection('home')}
+                onClose={() => setActiveSection('profile')}
+                onBack={() => setActiveSection('profile')}
                 showBackButton={true}
               />
             )}
@@ -80,29 +80,22 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
               <div>
                 <div className="w-full min-h-[70vh] flex items-center justify-center px-4 md:px-8">
                   <div className="relative max-w-lg mx-auto w-full">
-                    {/* Modern Connect Wallet Container */}
-                    <div className="bg-white rounded-3xl border-0 p-8 md:p-10 text-center">
-                      {/* Wallet Icon */}
-                      <div className="mb-8">
-                        <div className="mx-auto w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
-                          <Wallet className="w-10 h-10 text-white" />
-                        </div>
-                      </div>
-
+                    {/* Clean Connect Wallet Container */}
+                    <div className="bg-white border border-gray-200 rounded-xl p-8 md:p-10 text-center">
                       {/* Header Section */}
-                      <div className="mb-10">
-                        <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-tight">
+                      <div className="mb-8">
+                        <h1 className="text-2xl md:text-3xl font-normal text-gray-900 mb-4 tracking-tight">
                           {t.connectWallet}
                         </h1>
                       </div>
 
                       {/* Instruction Text */}
                       <div className="mb-8">
-                        <p className="text-gray-600 text-lg leading-relaxed font-light">
+                        <p className="text-gray-600 text-base leading-relaxed max-w-md mx-auto">
                           {t.clickSignInButton.split('Sign In').map((part, index) =>
                             index === 0 ? part :
                             <>
-                              <span className="font-medium text-purple-600">Sign In</span>
+                              <span className="font-medium text-gray-900">Sign In</span>
                               {part}
                             </>
                           )}
@@ -125,8 +118,8 @@ const Dashboard = ({ activeSection, setActiveSection, selectedMarket, currentLan
             {!showEmailUI && isConnected && (
               <div className="flex items-center justify-center min-h-[50vh]">
                 <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
-                  <p className="text-lg text-gray-600">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300 mx-auto mb-4"></div>
+                  <p className="text-base text-gray-600">
                     {currentLanguage === 'pt-BR' ? 'Redirecionando...' : 'Redirecting...'}
                   </p>
                 </div>
