@@ -539,20 +539,77 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
       {/* Main Content */}
       <div className="flex flex-col px-6 md:px-9">
         <div className=" pt-6">
-          {/* Clean Question Display */}
-          <div className="mb-6">
-            <div className="text-xs font-medium text-gray-500 mb-2 tracking-wide uppercase">
-              {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
-                ? 'Question of the Week'
-                : 'Question of the Day'
-              }
+          {/* Desktop: Two column layout, Mobile: Stacked */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Left Column: Question + Action Button */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              {/* Question Display */}
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-[10px] md:text-xs font-medium text-gray-500 tracking-wide uppercase">
+                    {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
+                      ? 'Question of the Week'
+                      : 'Question of the Day'
+                    }
+                  </div>
+                  <div className="bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
+                    {getPlayerMessage()}
+                  </div>
+                </div>
+                <h1 className="text-xl md:text-2xl font-normal text-gray-900 leading-[1.3] tracking-tight">
+                  {marketQuestion || market?.question || 'Loading...'}
+                </h1>
+              </div>
+
+              {/* Action Button */}
+              <div>
+                <button
+                  onClick={handleReady}
+                  disabled={!isConnected || (isParticipant && userEliminated)}
+                  className="w-full bg-black text-white font-medium rounded-xl py-3.5 text-base transition-all duration-200 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500"
+                >
+                  {!isConnected ? (
+                    'Connect Wallet'
+                  ) : isParticipant && userEliminated ? (
+                    `Re-enter Tournament - $${entryFee?.toFixed(2) || '0.00'}`
+                  ) : isParticipant ? (
+                    userEliminated ? 'Eliminated' : 'Make Prediction'
+                  ) : (
+                    'Join Tournament'
+                  )}
+                </button>
+              </div>
             </div>
-            <h1 className="text-xl md:text-2xl font-normal text-gray-900 leading-[1.3] tracking-tight">
-              {marketQuestion || market?.question || 'Loading...'}
-            </h1>
+
+            {/* Right Column: Tournament Details - Hidden on mobile, shown on desktop */}
+            <div className="hidden lg:block bg-white border border-gray-200 rounded-xl p-6">
+              <div className="mb-6">
+                <h3 className="text-lg font-normal text-gray-900">Tournament Details</h3>
+                <p className="text-sm text-gray-500 mt-1">{tournamentType} format</p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-6">
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">{isParticipant ? 'Re-Entry' : 'Entry Fee'}</h4>
+                  <p className="text-lg font-normal text-gray-900">${entryFee?.toFixed(2) || '0.00'}</p>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">Format</h4>
+                  <p className="text-lg font-normal text-gray-900">
+                    {isPenaltyExempt ? 'Weekly' : 'Daily'}
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">Topic</h4>
+                  <p className="text-lg font-normal text-gray-900">{market?.potTopic || 'General'}</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Tournament Journey Flow */}
+          {/* Tournament Journey Flow - Full Width */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 relative">
             <div className="text-sm font-medium text-gray-600 mb-3 tracking-wide">Tournament Progress</div>
 
@@ -669,70 +726,33 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             )}
           </div>
 
-
-          {/* Tournament Details - Simplified */}
-          <div className="bg-white border border-gray-200 rounded-xl mb-6">
-            <div
-              onClick={() => setIsTournamentInfoCollapsed(!isTournamentInfoCollapsed)}
-              className="cursor-pointer p-5 border-b border-gray-100"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-normal text-gray-900">Tournament Details</h3>
-                  <p className="text-sm text-gray-500 mt-1">{tournamentType} format</p>
-                </div>
-                <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isTournamentInfoCollapsed ? '' : 'rotate-180'}`} />
-              </div>
+          {/* Tournament Details - Mobile only */}
+          <div className="lg:hidden bg-white border border-gray-200 rounded-xl p-6 mb-6">
+            <div className="mb-6">
+              <h3 className="text-lg font-normal text-gray-900">Tournament Details</h3>
+              <p className="text-sm text-gray-500 mt-1">{tournamentType} format</p>
             </div>
 
-            {!isTournamentInfoCollapsed && (
-              <div className="p-5 space-y-5">
-                <div className="grid grid-cols-3 gap-6">
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">{isParticipant ? 'Re-Entry' : 'Entry Fee'}</h4>
-                    <p className="text-lg font-normal text-gray-900">${entryFee?.toFixed(2) || '0.00'}</p>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">Format</h4>
-                    <p className="text-lg font-normal text-gray-900">
-                      {isPenaltyExempt ? 'Weekly' : 'Daily'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">Topic</h4>
-                    <p className="text-lg font-normal text-gray-900">{market?.potTopic || 'General'}</p>
-                  </div>
-                </div>
+            <div className="grid grid-cols-3 gap-6">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">{isParticipant ? 'Re-Entry' : 'Entry Fee'}</h4>
+                <p className="text-lg font-normal text-gray-900">${entryFee?.toFixed(2) || '0.00'}</p>
               </div>
-            )}
-          </div>
-        </div>
 
-        {/* Bottom Action Section - Polymarket Style */}
-        <div className="py-6 -translate-y-7">
-          <button
-            onClick={handleReady}
-            disabled={!isConnected || (isParticipant && userEliminated)}
-            className="w-full bg-black text-white font-medium rounded-xl py-4 text-base transition-all duration-200 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500"
-          >
-            {!isConnected ? (
-              'Connect Wallet'
-            ) : isParticipant && userEliminated ? (
-              'Eliminated'
-            ) : isParticipant && potInfo.hasStarted && hasUserPredictedToday === false ? (
-              'Make Prediction'
-            ) : isParticipant ? (
-              'View My Predictions'
-            ) : (
-              'Join Tournament'
-            )}
-          </button>
+              <div>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">Format</h4>
+                <p className="text-lg font-normal text-gray-900">
+                  {isPenaltyExempt ? 'Weekly' : 'Daily'}
+                </p>
+              </div>
 
-          <div className="text-center mt-4">
-            <span className="text-sm text-gray-600">{getPlayerMessage()}</span>
+              <div>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">Topic</h4>
+                <p className="text-lg font-normal text-gray-900">{market?.potTopic || 'General'}</p>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
 
