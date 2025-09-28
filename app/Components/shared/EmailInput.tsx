@@ -49,14 +49,14 @@ const EmailInput: React.FC<EmailInputProps> = ({
 
   const getBorderColor = () => {
     if (disabled) return 'border-gray-200';
-    if (!email.trim()) return 'border-gray-200 focus:border-purple-500';
-    if (emailValidation.isValid) return 'border-green-300 focus:border-green-500';
-    return 'border-red-300 focus:border-red-500';
+    if (!email.trim()) return 'border-gray-200 focus:border-gray-400';
+    if (emailValidation.isValid) return 'border-green-400 focus:border-green-500';
+    return 'border-red-400 focus:border-red-500';
   };
 
   const getRingColor = () => {
-    if (disabled) return 'focus:ring-purple-100';
-    if (!email.trim() || emailValidation.isValid) return 'focus:ring-purple-100';
+    if (disabled) return 'focus:ring-gray-100';
+    if (!email.trim() || emailValidation.isValid) return 'focus:ring-gray-100';
     return 'focus:ring-red-100';
   };
 
@@ -79,30 +79,27 @@ const EmailInput: React.FC<EmailInputProps> = ({
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
           disabled={disabled}
-          className={`w-full px-6 py-3 md:px-7 md:py-5 pr-12
-                     text-lg bg-gray-50/80 border-2 ${getBorderColor()} rounded-2xl
-                     focus:bg-white focus:ring-4 ${getRingColor()} focus:outline-none
-                     transition-all duration-300 ease-out placeholder-gray-400 font-normal
-                     tracking-normal text-center hover:border-gray-300 hover:bg-white
-                     hover:shadow-sm focus:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed`}
+          className={`w-full px-4 py-2.5 pr-10
+                     text-sm bg-white border ${getBorderColor()} rounded-lg
+                     focus:ring-2 ${getRingColor()} focus:outline-none
+                     transition-all duration-200 placeholder-gray-500 font-normal
+                     text-left hover:border-gray-300
+                     disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50`}
           onKeyPress={handleKeyPress}
         />
 
         {/* Icon */}
-        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
           {email.trim() ? (
             emailValidation.isValid ? (
-              <Check className={`w-5 h-5 ${getIconColor()}`} />
+              <Check className={`w-4 h-4 ${getIconColor()}`} />
             ) : (
-              <AlertCircle className={`w-5 h-5 ${getIconColor()}`} />
+              <AlertCircle className={`w-4 h-4 ${getIconColor()}`} />
             )
           ) : (
-            <Mail className={`w-5 h-5 ${getIconColor()}`} />
+            <Mail className={`w-4 h-4 ${getIconColor()}`} />
           )}
         </div>
-
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
       </div>
 
       {/* Error message */}

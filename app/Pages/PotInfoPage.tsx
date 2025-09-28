@@ -503,13 +503,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
     return 'Open for Entry';
   };
 
-  const getStatusColor = () => {
-    const status = getStatus();
-    if (status === 'Active') return 'text-green-600 bg-green-100';
-    if (status === 'Loading...') return 'text-gray-600 bg-gray-100';
-    // Note: If we add "Begins Soon" status later, it would get orange styling here
-    return 'text-blue-600 bg-blue-100'; // For "Open for Entry"
-  };
+  
 
   const handleReady = () => {
     // Route based on participation status (same logic as TutorialBridge)
@@ -537,28 +531,14 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
     }
   };
 
-  const handleBack = () => {
-    // Navigate back to home
-    if (setActiveSection) {
-      setActiveSection('home');
-    }
-  };
-
+ 
   return (
     <div className="min-h-screen bg-white">
-      {/* Minimal Header */}
-      {/* <div className="flex items-center p-4">
-        <button
-          onClick={handleBack}
-          className="text-gray-900 hover:text-gray-600 transition-colors"
-        >
-          <span className="text-xl">←</span>
-        </button>
-      </div> */}
+      
 
       {/* Main Content */}
-      <div className="flex flex-col">
-        <div className="px-6 pt-6">
+      <div className="flex flex-col px-6 md:px-9">
+        <div className=" pt-6">
           {/* Clean Question Display */}
           <div className="mb-6">
             <div className="text-xs font-medium text-gray-500 mb-2 tracking-wide uppercase">
@@ -585,7 +565,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                     : isParticipant && !potInfo.hasStarted
                       ? 'bg-black text-white'
                     : isParticipant
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-black text-white'
                       : 'bg-gray-200 text-gray-500'
                 }`}>
                   {!isParticipant ? '1' : '✓'}
@@ -599,7 +579,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   isParticipant && !userEliminated && potInfo.hasStarted && hasUserPredictedToday === false
                     ? 'bg-black text-white'
                     : isParticipant && !userEliminated && hasUserPredictedToday === true
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-black text-white'
                       : 'bg-gray-200 text-gray-500'
                 }`}>
                   {isParticipant && !userEliminated && hasUserPredictedToday === true ? '✓' : '2'}
@@ -613,7 +593,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   isParticipant && !userEliminated && hasUserPredictedToday === true && !potInfo.isFinalDay
                     ? 'bg-black text-white'
                     : isParticipant && !userEliminated && hasUserPredictedToday === true && potInfo.isFinalDay
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-black text-white'
                       : 'bg-gray-200 text-gray-500'
                 }`}>
                   {isParticipant && !userEliminated && hasUserPredictedToday === true && potInfo.isFinalDay ? '✓' : '3'}
@@ -731,7 +711,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
         </div>
 
         {/* Bottom Action Section - Polymarket Style */}
-        <div className="p-6 -translate-y-7">
+        <div className="py-6 -translate-y-7">
           <button
             onClick={handleReady}
             disabled={!isConnected || (isParticipant && userEliminated)}

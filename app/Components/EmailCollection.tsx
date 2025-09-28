@@ -69,19 +69,15 @@ const EmailCollection: React.FC<EmailCollectionProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto px-6 py-8">
-      {/* Header Section - Polymarket Style */}
-      <div className="text-center mb-8">
-        <h3 className="text-2xl font-medium text-gray-900 mb-4">
-          {t.readyToPlay?.replace('📩', '') || 'Ready to Play?'}
-        </h3>
-        <p className="text-gray-600 text-sm leading-relaxed">
-          {t.emailNotificationMessage}
-        </p>
-      </div>
+    <div className="text-center space-y-6">
+      <h3 className="text-2xl font-medium text-gray-900">
+        {t.readyToPlay?.replace('📩', '') || 'Ready to Play?'}
+      </h3>
+      <p className="text-gray-600 leading-relaxed text-base max-w-md mx-auto">
+        {t.emailNotificationMessage}
+      </p>
 
-      {/* Email Input Section - Clean Layout */}
-      <div className="space-y-6">
+      <div className="space-y-4 max-w-sm mx-auto">
         <EmailInput
           email={email}
           onChange={setEmail}
@@ -90,32 +86,25 @@ const EmailCollection: React.FC<EmailCollectionProps> = ({
           disabled={emailSubmitting || success}
         />
 
-        {/* Message Area - Clean Alerts */}
-        <div className="min-h-[2rem] flex items-center justify-center">
-          {error && (
-            <div className="w-full bg-red-50 border border-red-200 rounded-lg p-3 animate-fade-in">
-              <p className="text-red-700 text-sm text-center">{error}</p>
-            </div>
-          )}
-          {success && (
-            <div className="w-full bg-green-50 border border-green-200 rounded-lg p-3 animate-fade-in">
-              <p className="text-green-700 text-sm text-center">✓ Email saved successfully!</p>
-            </div>
-          )}
-        </div>
+        {error && (
+          <p className="text-red-600 text-sm">{error}</p>
+        )}
+        {success && (
+          <p className="text-green-600 text-sm">✓ Email saved successfully!</p>
+        )}
 
-        {/* Action Buttons - Polymarket Style */}
-        <div className="space-y-3">
+        <div className="flex gap-3">
           <button
             onClick={handleEmailSubmit}
             disabled={emailSubmitting || !email.trim()}
-            className="w-full bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400
-                       text-white font-medium py-3 px-6 rounded-lg
-                       transition-colors duration-200 disabled:cursor-not-allowed"
+            className="flex-1 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300
+                       text-white font-medium py-2.5 px-4 rounded-lg
+                       transition-all duration-200 disabled:cursor-not-allowed text-sm
+                       shadow-sm hover:shadow-md disabled:shadow-none"
           >
             {emailSubmitting ? (
               <span className="flex items-center justify-center gap-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                <div className="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></div>
                 {t.joining}
               </span>
             ) : (
@@ -125,7 +114,9 @@ const EmailCollection: React.FC<EmailCollectionProps> = ({
 
           <button
             onClick={handleSkipEmail}
-            className="w-full text-gray-500 hover:text-gray-700 font-medium py-3 px-6 transition-colors duration-200 text-sm"
+            className="flex-1 text-gray-600 hover:text-gray-800 font-medium py-2.5 px-4
+                       transition-all duration-200 text-sm border border-gray-200 rounded-lg
+                       hover:bg-gray-50 hover:border-gray-300 bg-white"
           >
             {t.skipForNow}
           </button>

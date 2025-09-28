@@ -794,7 +794,7 @@ export const translations: Record<Language, Translations> = {
     saveEmail: 'Save Email',
     changeEmail: 'Change Email',
     continueToTutorial: 'Continue to Tutorial',
-    emailNotificationMessage: 'We\'ll notify you at this address when pots are ready',
+    emailNotificationMessage: 'We\'ll notify you when your tournaments begin',
 
     // Tutorial - How It Works
     skipButton: 'Skip →',
@@ -1309,7 +1309,7 @@ export const translations: Record<Language, Translations> = {
     saveEmail: 'Salvar Email',
     changeEmail: 'Alterar Email',
     continueToTutorial: 'Continuar para Tutorial',
-    emailNotificationMessage: 'Notificaremos você neste endereço quando os potes estiverem prontos',
+    emailNotificationMessage: 'Notificaremos você quando os seus torneios começarem',
 
     // Tutorial - How It Works
     skipButton: 'Pular →',

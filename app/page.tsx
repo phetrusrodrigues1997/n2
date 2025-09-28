@@ -764,7 +764,7 @@ export default function App() {
     }
   `}
   style={{
-    fontSize: '15px',
+    fontSize: '15.5px',
     lineHeight: '24px',
     letterSpacing: '0.15px',
     fontFeatureSettings: '"cv09", "cv01", "cv08", "case"',
