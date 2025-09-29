@@ -280,10 +280,6 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
   // Announcement sending state to prevent race conditions
   const [isSendingAnnouncement, setIsSendingAnnouncement] = useState<boolean>(false);
 
-  // Voting preference from cookies
-  const [votingPreference, setVotingPreference] = useState<string | null>(null);
-  const [selectedMarketForVoting, setSelectedMarketForVoting] = useState<string | null>(null);
-  const [hasAutoSubmitted, setHasAutoSubmitted] = useState<boolean>(false);
 
   // Timer state
   const [currentTimer, setCurrentTimer] = useState<string>('');
@@ -493,13 +489,6 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
       console.log('Display question (translated):', translatedQuestion);
     }
     
-    // Load voting preference from cookies
-    const preference = Cookies.get('votingPreference');
-    const marketForVoting = Cookies.get('selectedMarketForVoting');
-    setVotingPreference(preference || null);
-    setSelectedMarketForVoting(marketForVoting || null);
-    console.log('Loaded voting preference:', preference, 'for market:', marketForVoting);
-    
     console.log('🍪 MakePredictionsPage - Cookie initialization:', {
       savedContract,
       tableMapping,
@@ -684,52 +673,6 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
     }
   }, [participants, contractAddress]); // Trigger when participants or contract changes
 
-  // Auto-submission effect for voting preference
-  useEffect(() => {
-    const autoSubmitPrediction = async () => {
-      // Only auto-submit if:
-      // 1. User has a voting preference from landing page
-      // 2. User is connected and is a participant
-      // 3. User hasn't already made a prediction (no tomorrowsBet)
-      // 4. Betting is allowed
-      // 5. Haven't already auto-submitted
-      // 6. Data is fully loaded
-      // 7. There are enough participants in the pot
-      
-      // Check if there are enough participants before auto-submitting
-      const contractAddresses = Object.keys(CONTRACT_TO_TABLE_MAPPING);
-      const contractIndex = contractAddresses.indexOf(contractAddress);
-      const minPlayersRequired = contractIndex === 0 ? MIN_PLAYERS : MIN_PLAYERS2;
-      const hasEnoughParticipants = participants && Array.isArray(participants) && participants.length >= minPlayersRequired;
-      
-      if (
-        votingPreference &&
-        selectedMarketForVoting &&
-        address &&
-        isParticipant &&
-        !tomorrowsBet &&
-        isBettingAllowed() &&
-        !hasAutoSubmitted &&
-        isDataLoaded &&
-        !isLoading &&
-        hasEnoughParticipants
-      ) {
-        console.log('Auto-submitting prediction:', votingPreference, 'for market:', selectedMarketForVoting);
-        setHasAutoSubmitted(true);
-        
-        // Clear cookies after auto-submission
-        Cookies.remove('votingPreference');
-        Cookies.remove('selectedMarketForVoting');
-        
-        // Auto-submit the prediction
-        await handlePlaceBet(votingPreference as 'positive' | 'negative');
-      } else if (votingPreference && !hasEnoughParticipants) {
-        console.log('Auto-submission prevented: insufficient participants (', participants?.length || 0, '/', minPlayersRequired, ')');
-      }
-    };
-
-    autoSubmitPrediction();
-  }, [votingPreference, selectedMarketForVoting, address, isParticipant, tomorrowsBet, isDataLoaded, isLoading, hasAutoSubmitted, participants, contractAddress]);
 
   // Load wrong predictions data and calculate participant statistics
   useEffect(() => {

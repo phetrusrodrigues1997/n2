@@ -561,6 +561,13 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
       contractAddress
     });
 
+    // Special users should always go to PotPredictionTest
+    if (isConnected && isSpecialUser) {
+      console.log('Special user detected, redirecting to bitcoinPot');
+      setActiveSection('bitcoinPot');
+      return;
+    }
+
     if (isConnected && isParticipant && !isSpecialUser) {
       console.log('User is already a participant, redirecting to makePrediction');
       setActiveSection('makePrediction');

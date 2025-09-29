@@ -239,9 +239,6 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
     }
   }, []);
 
-  // Add state for voting preference
-  const [votingPreference, setVotingPreference] = useState<string | null>(null);
-  const [selectedMarketForVoting, setSelectedMarketForVoting] = useState<string | null>(null);
   const [marketQuestion, setMarketQuestion] = useState<string | null>(null);
 
   // Functions for pot information management
@@ -299,13 +296,9 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
     return response.json();
   };
   
-  // Load voting preference from cookies
+  // Load market question from cookies
   useEffect(() => {
-    const preference = Cookies.get('votingPreference');
-    const marketForVoting = Cookies.get('selectedMarketForVoting');
     const savedQuestion = Cookies.get('selectedMarketQuestion');
-    setVotingPreference(preference || null);
-    setSelectedMarketForVoting(marketForVoting || null);
     setMarketQuestion(savedQuestion || null);
   }, []);
 
@@ -1660,7 +1653,7 @@ useEffect(() => {
             // Set daily outcome with statistics (this will add new wrong predictions to the table)
             // Note: Non-predictor penalties are now handled at the page level
             const questionName = marketQuestion || getMarketDisplayName(selectedTableType);
-            const outcomeStats = await setDailyOutcomeWithStats(outcome as "positive" | "negative", selectedTableType, questionName, dateParam, contractParticipants);
+            const outcomeStats = await setDailyOutcomeWithStats(outcome as "positive" | "negative", selectedTableType, questionName, dateParam);
             
             // 🔔 Send notifications after successful outcome setting with REAL counts
             try {

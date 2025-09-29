@@ -412,7 +412,6 @@ export interface Translations {
   predictingForTomorrow: string;
   resultsReveal: string;
   tomorrowAtMidnight: string;
-  autoSubmittingChoice: string;
   
   // BookmarksPage - Active Pots section
   currentlyParticipatingIn: string;
@@ -979,7 +978,6 @@ export const translations: Record<Language, Translations> = {
     predictingForTomorrow: 'Predicting for Tomorrow',
     resultsReveal: 'Results Reveal',
     tomorrowAtMidnight: 'Tomorrow at Midnight',
-    autoSubmittingChoice: 'Auto-Submitting Your Choice',
     
     // BookmarksPage - Active Pots section
     currentlyParticipatingIn: 'You\'re currently participating in',
@@ -1493,7 +1491,6 @@ export const translations: Record<Language, Translations> = {
     predictingForTomorrow: 'Prevendo para Amanhã',
     resultsReveal: 'Revelação dos Resultados',
     tomorrowAtMidnight: 'Amanhã à Meia-noite',
-    autoSubmittingChoice: 'Enviando Sua Escolha Automaticamente',
     
     // BookmarksPage - Active Pots section
     currentlyParticipatingIn: 'Você está participando atualmente de',

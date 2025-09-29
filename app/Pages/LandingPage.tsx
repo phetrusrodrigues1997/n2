@@ -1775,8 +1775,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         e.stopPropagation();
                                         e.preventDefault();
                                         console.log('Yes button clicked for market:', market.id);
-                                        Cookies.set('votingPreference', 'positive', { sameSite: 'lax', expires: 1 });
-                                        Cookies.set('selectedMarketForVoting', market.id, { sameSite: 'lax', expires: 1 });
                                         // Visual feedback
                                         (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#faf5ff';
                                         (e.currentTarget as HTMLButtonElement).style.color = '#7e22ce';
@@ -1794,8 +1792,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         e.stopPropagation();
                                         e.preventDefault();
                                         console.log('No button clicked for market:', market.id);
-                                        Cookies.set('votingPreference', 'negative', { sameSite: 'lax', expires: 1 });
-                                        Cookies.set('selectedMarketForVoting', market.id, { sameSite: 'lax', expires: 1 });
                                         // Visual feedback
                                         (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#eff6ff';
                                         (e.currentTarget as HTMLButtonElement).style.color = '#1d4ed8';
@@ -1853,8 +1849,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             e.stopPropagation();
                                             e.preventDefault();
                                             console.log('Yes button clicked for market:', market.id);
-                                            Cookies.set('votingPreference', 'positive', { sameSite: 'lax', expires: 1 });
-                                            Cookies.set('selectedMarketForVoting', market.id, { sameSite: 'lax', expires: 1 });
                                             // Visual feedback
                                             (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#faf5ff';
                                             (e.currentTarget as HTMLButtonElement).style.color = '#7e22ce';
@@ -1872,8 +1866,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             e.stopPropagation();
                                             e.preventDefault();
                                             console.log('No button clicked for market:', market.id);
-                                            Cookies.set('votingPreference', 'negative', { sameSite: 'lax', expires: 1 });
-                                            Cookies.set('selectedMarketForVoting', market.id, { sameSite: 'lax', expires: 1 });
                                             // Visual feedback
                                             (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#eff6ff';
                                             (e.currentTarget as HTMLButtonElement).style.color = '#1d4ed8';
@@ -2419,8 +2411,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       e.stopPropagation();
                                       e.preventDefault();
                                       console.log('Yes button clicked for market:', market.id);
-                                      Cookies.set('votingPreference', 'positive', { sameSite: 'lax', expires: 1 });
-                                      Cookies.set('selectedMarketForVoting', market.id, { sameSite: 'lax', expires: 1 });
                                       // Visual feedback
                                       (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#faf5ff';
                                       (e.currentTarget as HTMLButtonElement).style.color = '#7e22ce';
@@ -2438,8 +2428,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       e.stopPropagation();
                                       e.preventDefault();
                                       console.log('No button clicked for market:', market.id);
-                                      Cookies.set('votingPreference', 'negative', { sameSite: 'lax', expires: 1 });
-                                      Cookies.set('selectedMarketForVoting', market.id, { sameSite: 'lax', expires: 1 });
                                       // Visual feedback
                                       (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#eff6ff';
                                       (e.currentTarget as HTMLButtonElement).style.color = '#1d4ed8';
@@ -2490,8 +2478,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           e.stopPropagation();
                                           e.preventDefault();
                                           console.log('Yes button clicked for market:', market.id);
-                                          Cookies.set('votingPreference', 'positive', { sameSite: 'lax', expires: 1 });
-                                          Cookies.set('selectedMarketForVoting', market.id, { sameSite: 'lax', expires: 1 });
                                           // Visual feedback
                                           (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#faf5ff';
                                           (e.currentTarget as HTMLButtonElement).style.color = '#7e22ce';
@@ -2509,8 +2495,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           e.stopPropagation();
                                           e.preventDefault();
                                           console.log('No button clicked for market:', market.id);
-                                          Cookies.set('votingPreference', 'negative', { sameSite: 'lax', expires: 1 });
-                                          Cookies.set('selectedMarketForVoting', market.id, { sameSite: 'lax', expires: 1 });
                                           // Visual feedback
                                           (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#eff6ff';
                                           (e.currentTarget as HTMLButtonElement).style.color = '#1d4ed8';

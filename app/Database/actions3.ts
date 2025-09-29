@@ -333,7 +333,8 @@ export async function getUserPredictionsByContract(
     
     console.log(`🔍 Getting predictions for wallet: ${normalizedWalletAddress}, contract: ${normalizedContractAddress}`);
     
-    const predictions = await getDb()
+    // Get all predictions first
+    const allPredictions = await getDb()
       .select({
         questionName: UserPredictionHistory.questionName,
         prediction: UserPredictionHistory.prediction,
@@ -349,8 +350,23 @@ export async function getUserPredictionsByContract(
       )
       .orderBy(desc(UserPredictionHistory.createdAt)); // Most recent first
 
-    console.log(`📊 Found ${predictions.length} predictions for ${normalizedWalletAddress} in contract ${normalizedContractAddress}`);
-    
+    console.log(`📊 Found ${allPredictions.length} total predictions for ${normalizedWalletAddress} in contract ${normalizedContractAddress}`);
+
+    // Group by predictionDate and keep only the most recent prediction for each date
+    const latestPredictionsPerDate = new Map<string, typeof allPredictions[0]>();
+
+    for (const prediction of allPredictions) {
+      if (!latestPredictionsPerDate.has(prediction.predictionDate)) {
+        latestPredictionsPerDate.set(prediction.predictionDate, prediction);
+      }
+    }
+
+    // Convert back to array and sort by date descending (most recent dates first)
+    const predictions = Array.from(latestPredictionsPerDate.values())
+      .sort((a, b) => new Date(b.predictionDate).getTime() - new Date(a.predictionDate).getTime());
+
+    console.log(`📊 Filtered to ${predictions.length} unique predictions per date for ${normalizedWalletAddress}`);
+
     // Cast prediction type since we know it's either 'positive' or 'negative'
     return predictions.map(prediction => ({
       ...prediction,
