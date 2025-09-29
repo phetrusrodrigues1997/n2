@@ -22,12 +22,9 @@ import {
 import { getEventDate } from '../Database/eventDates';
 import { useContractData } from '../hooks/useContractData';
 import { getPredictionPercentages, isEliminated, getEliminatedPlayersCount, getTomorrowsBet } from '../Database/actions';
-import {
-  Clock,
-  ChevronDown,
- 
-} from 'lucide-react';
+
 import Cookies from 'js-cookie';
+import JoinPotModal from '../Components/JoinPotModal';
 
 interface PotInfoPageProps {
   currentLanguage?: Language;
@@ -55,6 +52,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const [cookiesLoaded, setCookiesLoaded] = useState(false);
   const [dataLoadingComplete, setDataLoadingComplete] = useState(false);
   const [hasUserPredictedToday, setHasUserPredictedToday] = useState<boolean | null>(null);
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
 
   // Tournament state from NotReadyPage logic
   const [potInfo, setPotInfo] = useState<{
@@ -573,8 +571,9 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
       console.log('User is already a participant, redirecting to makePrediction');
       setActiveSection('makePrediction');
     } else {
-      console.log('User is not a participant, redirecting to predictionPotTest');
-      setActiveSection('bitcoinPot');
+      // User is not a participant - show join modal instead of navigating away
+      console.log('User is not a participant, showing join modal');
+      setIsJoinModalOpen(true);
     }
   };
 
@@ -829,6 +828,24 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
         </div>
       </div>
+
+      {/* Join Pot Modal */}
+      {contractAddress && marketQuestion && marketIcon && entryFee && (
+        <JoinPotModal
+          isOpen={isJoinModalOpen}
+          onClose={() => setIsJoinModalOpen(false)}
+          contractAddress={contractAddress}
+          marketQuestion={marketQuestion}
+          marketIcon={marketIcon}
+          potBalance={market ? getRealPotBalance(market.id) : '$0.00'}
+          entryFee={entryFee}
+          currentLanguage={currentLanguage}
+          onSuccess={() => {
+            // Refresh the page or trigger a data reload after successful entry
+            window.location.reload();
+          }}
+        />
+      )}
 
     </div>
   );

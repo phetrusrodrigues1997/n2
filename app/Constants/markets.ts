@@ -370,7 +370,7 @@ export const getMarkets = (t: Translation, category: string): Market[] => {
       }
 
       // Apply dynamic translations for specific markets
-      let translatedMarket = { ...market };
+      const translatedMarket = { ...market };
 
       // Apply Tesla question translation for stocks
       if (key === 'stocks') {
