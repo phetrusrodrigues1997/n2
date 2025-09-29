@@ -135,7 +135,7 @@ const EmailManagement: React.FC<EmailManagementProps> = ({
                   Get Notified!
                 </h1>
                 <p className="text-base text-gray-600 max-w-md mx-auto">
-                  Get notified when your favourite tournaments begin
+                  Get notified when your favourite tournaments begin.
                 </p>
               </>
             ) : (
