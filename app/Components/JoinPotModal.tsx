@@ -171,7 +171,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
       }}
     >
       <div
-        className="bg-white rounded-t-2xl md:rounded-2xl max-w-md w-full h-[70vh] md:max-h-[75vh] overflow-hidden animate-slide-up md:animate-none flex flex-col md:block"
+        className="bg-white rounded-t-2xl md:rounded-2xl max-w-md w-full max-h-[80vh] md:max-h-[75vh] overflow-hidden animate-slide-up md:animate-none md:flex md:flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile drag indicator */}
@@ -180,7 +180,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between p-3 md:p-5 border-b border-gray-200 flex-shrink-0 md:flex-shrink">
+        <div className="flex items-center justify-between p-3 md:p-5 border-b border-gray-200 md:flex-shrink">
           <h2 className="text-lg font-semibold text-gray-900">Join Tournament</h2>
           <button
             onClick={onClose}
@@ -191,13 +191,13 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-4 md:p-5 flex-1 overflow-hidden md:flex-initial md:overflow-visible">
+        <div className="p-4 md:p-5 md:flex-initial md:overflow-visible">
           {/* Market Info */}
           <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg">
             <img
               src={marketIcon}
               alt="Market"
-              className="w-8 h-8 rounded-lg"
+              className="w-16 h-16 rounded-lg"
             />
             <div className="flex-1">
               <div className="text-xs text-gray-500 font-medium mb-1">

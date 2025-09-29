@@ -551,28 +551,22 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   
 
   const handleReady = () => {
-    // Route based on participation status (same logic as TutorialBridge)
+    // Route based on participation status
     if (!setActiveSection) return;
 
-    if (!isConnected || !address) {
-      // Not connected, send to pot entry page which will prompt for wallet connection
-      console.log('User not connected - sending to predictionPotTest');
-      setActiveSection('bitcoinPot');
-      return;
-    }
-
     console.log('🔍 PotInfoPage handleReady - Routing decision:', {
+      isConnected,
       isParticipant,
       isSpecialUser,
       contractAddress
     });
 
-    if (isParticipant && !isSpecialUser) {
+    if (isConnected && isParticipant && !isSpecialUser) {
       console.log('User is already a participant, redirecting to makePrediction');
       setActiveSection('makePrediction');
     } else {
-      // User is not a participant - show join modal instead of navigating away
-      console.log('User is not a participant, showing join modal');
+      // Show join modal for both connected and non-connected users
+      console.log('Showing join modal');
       setIsJoinModalOpen(true);
     }
   };
@@ -620,11 +614,11 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               <div>
                 <button
                   onClick={handleReady}
-                  disabled={!isConnected || (isParticipant && userEliminated)}
+                  disabled={isConnected && isParticipant && userEliminated}
                   className="w-full bg-red-700 text-white font-medium rounded-xl py-3.5 text-base transition-all duration-200 hover:bg-gray-800 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500"
                 >
                   {!isConnected ? (
-                    'Connect Wallet'
+                    'Join Tournament'
                   ) : isParticipant && userEliminated ? (
                     `Re-enter Tournament - $${entryFee?.toFixed(2) || '0.00'}`
                   ) : isParticipant ? (
