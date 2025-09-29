@@ -1394,32 +1394,37 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
               <>
                 {/* Question and Context - Always Visible */}
                 <div className="border border-gray-200 rounded-lg p-4 mb-6">
-                  <div className="text-xs md:text-sm text-gray-500 mb-2">
-                    {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
-                      ? "This week's question"
-                      : "Today's question"
-                    }
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs md:text-sm text-gray-500">
+                      {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
+                        ? "This week's question"
+                        : "Today's question"
+                      }
+                    </div>
+                    {/* Timer positioned at top right */}
+                    {currentTimer && (
+                      <div className="flex flex-col items-center bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
+                        <span className="text-[10px] md:text-xs text-gray-600">Next question</span>
+                        <span className="font-medium text-gray-900 text-[10px] md:text-xs">
+                          {currentTimer}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="text-base text-gray-900 mb-3">
                     {displayQuestion || marketQuestion || 'Loading question...'}
                   </div>
 
-                  {/* Timer and Context - Always Visible */}
+                  {/* Context info - Always Visible */}
                   {contractAddress && (
                     <div className="flex items-center gap-4 text-xs md:text-sm text-gray-500">
-  {currentTimer && (
-    <span className="flex items-center gap-1">
-      <FaClock className="text-gray-400" /> {currentTimer}
-    </span>
-  )}
-  <span className="flex items-center gap-1">
-    <FaChartBar className="text-gray-400" /> {participantStats.eligibleParticipants} players remaining
-  </span>
-  <span className="flex items-center gap-1">
-    <FaDollarSign className="text-gray-400" /> ${ethToUsd(getEntryAmount()).toFixed(2)} Re-entry
-  </span>
-</div>
-
+                      <span className="flex items-center gap-1">
+                        <FaChartBar className="text-gray-400" /> {participantStats.eligibleParticipants} players remaining
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <FaDollarSign className="text-gray-400" /> ${ethToUsd(getEntryAmount()).toFixed(2)} Re-entry
+                      </span>
+                    </div>
                   )}
                 </div>
 
@@ -1439,7 +1444,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     <div className="flex items-center justify-center gap-2">
-                      <span>✓</span>
+                      {/* Only show symbol if this button is selected */}
+                      {tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive' && <span>✓</span>}
                       {tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive' ? (
                         predictionPercentages && (
                           <span className="font-medium">
@@ -1471,7 +1477,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     <div className="flex items-center justify-center gap-2">
-                      <span>✗</span>
+                      {/* Only show symbol if this button is selected */}
+                      {tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative' && <span>✗</span>}
                       {tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative' ? (
                         predictionPercentages && (
                           <span className="font-medium">
