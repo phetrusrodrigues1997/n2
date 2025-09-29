@@ -48,10 +48,10 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
   // QR Code component
   const QRCodeDisplay = ({ value }: { value: string }) => {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
-        <div className="w-32 h-32 bg-white flex items-center justify-center mx-auto">
+      <div className="bg-white border border-gray-200 rounded-lg p-3">
+        <div className="w-24 h-24 bg-white flex items-center justify-center mx-auto">
           <img
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=128x128&data=${encodeURIComponent(value)}&bgcolor=ffffff&color=000000&margin=3`}
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=96x96&data=${encodeURIComponent(value)}&bgcolor=ffffff&color=000000&margin=3`}
             alt="QR Code"
             className="w-full h-full object-contain"
             onError={(e) => {
@@ -126,7 +126,7 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
               {/* Copy Button */}
               <button
                 onClick={copyAddressToClipboard}
-                className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2 mb-4"
+                className="w-full bg-red-700 hover:bg-red-800 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2 mb-4"
               >
                 {copied ? (
                   <>

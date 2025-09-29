@@ -563,7 +563,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                           )}
                           <button
                             onClick={() => handleMarketClick(contractAddress)}
-                            className="bg-red-700 text-white py-2 px-4 rounded-md hover:bg-black transition-colors text-sm font-semibold"
+                            className="bg-red-700 text-white py-2 px-4 rounded-md hover:bg-black cursor-pointer transition-colors text-sm font-semibold"
                           >
                             {t.view}
                           </button>

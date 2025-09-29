@@ -682,7 +682,7 @@ export default function App() {
                   >
                     {isConnected && (
                       <div className="flex items-center gap-2">
-                        {/* Show balance on mobile, colorful circle on desktop */}
+                        {/* Show balance on mobile, navigation menu on desktop */}
                         {isMobile ? (
                           <div
                             onClick={(e) => {
@@ -698,37 +698,39 @@ export default function App() {
                             </div>
                           </div>
                         ) : (
-                          // <div className="h-8 w-8 rounded-full bg-gradient-to-br from-red-700 via-red-900 to-black hover:from-indigo-300 hover:via-violet-400 hover:via-fuchsia-400 hover:via-rose-400 hover:via-amber-300 hover:to-teal-400 transition-all duration-200 hover:shadow-xl hover:scale-105"></div>
-                          <div className=" ml-2 translate-x-2">
-                <NavigationMenu 
-                  activeSection={activeSection} 
-                  setActiveSection={setActiveSection} 
-                  onMenuToggle={setIsNavigationMenuOpen}
-                  onTriggerWallet={navigateToWallet}
-                  currentLanguage={currentLanguage}
-                />
-              </div>
+                          <div className="ml-2 translate-x-2" onClick={(e) => e.stopPropagation()}>
+                            <NavigationMenu
+                              activeSection={activeSection}
+                              setActiveSection={setActiveSection}
+                              onMenuToggle={setIsNavigationMenuOpen}
+                              onTriggerWallet={navigateToWallet}
+                              currentLanguage={currentLanguage}
+                            />
+                          </div>
                         )}
                       </div>
                     )}
                   </ConnectWallet>
-                  <WalletDropdown>
-                    <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
-                      <Avatar />
-                      <Name />
-                      <Address />
-                      <EthBalance />
-                    </Identity>
-                    <WalletDropdownLink
-                      icon="wallet"
-                      href="https://keys.coinbase.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Wallet
-                    </WalletDropdownLink>
-                    <WalletDropdownDisconnect />
-                  </WalletDropdown>
+                  {/* Only show WalletDropdown on mobile */}
+                  {isMobile && (
+                    <WalletDropdown>
+                      <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
+                        <Avatar />
+                        <Name />
+                        <Address />
+                        <EthBalance />
+                      </Identity>
+                      <WalletDropdownLink
+                        icon="wallet"
+                        href="https://keys.coinbase.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Wallet
+                      </WalletDropdownLink>
+                      <WalletDropdownDisconnect />
+                    </WalletDropdown>
+                  )}
                 </Wallet>
                 </div>
               </div>

@@ -14,7 +14,10 @@ import {
   PENALTY_EXEMPT_ENTRY_FEE,
   getTimerDataForContract,
   formatTimerDisplay,
-  CONTRACT_TO_TABLE_MAPPING
+  CONTRACT_TO_TABLE_MAPPING,
+  getMarketDisplayName,
+  getTableTypeFromMarketId,
+  MARKETS_WITH_CONTRACTS
 } from '../Database/config';
 import { getEventDate } from '../Database/eventDates';
 import { useContractData } from '../hooks/useContractData';
@@ -68,6 +71,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   const [contractAddress, setContractAddress] = useState<string | undefined>(undefined);
   const [marketQuestion, setMarketQuestion] = useState<string>('');
   const [marketIcon, setMarketIcon] = useState<string>('');
+  const [potBalances, setPotBalances] = useState<Record<string, string>>({});
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -85,10 +89,23 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
       const question = Cookies.get('selectedMarketQuestion') || '';
       const icon = Cookies.get('selectedMarketIcon') || '';
 
+      // Load pot balances from cookies
+      const potBalancesCookie = Cookies.get('potBalances');
+      let balances: Record<string, string> = {};
+      if (potBalancesCookie) {
+        try {
+          balances = JSON.parse(potBalancesCookie);
+          setPotBalances(balances);
+        } catch (error) {
+          console.error('❌ PotInfoPage - Error parsing pot balances cookie:', error);
+        }
+      }
+
       console.log('🍪 PotInfoPage - Loading cookies (attempt:', retryCount + 1, '):', {
         contract,
         question,
         icon,
+        potBalances: balances,
         timestamp: new Date().toISOString()
       });
 
@@ -146,6 +163,35 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
   const market = contractAddress ? findMarketByContract(contractAddress) : null;
 
+  // Helper function to get real pot balance for a market (same as LandingPage.tsx)
+  const getRealPotBalance = (marketId: string): string => {
+    console.log(`🔍 getRealPotBalance called with marketId: "${marketId}"`);
+    console.log(`🔍 Available potBalances keys:`, Object.keys(potBalances));
+
+    // Check if we have real balance data
+    if (potBalances[marketId]) {
+      console.log(`✅ Found balance for "${marketId}": ${potBalances[marketId]}`);
+      return potBalances[marketId];
+    }
+
+    // Only try display name mapping for markets that have contracts
+    if (MARKETS_WITH_CONTRACTS.includes(marketId as any)) {
+      // Try to map market ID to table type, then to display name for lookup
+      const tableType = getTableTypeFromMarketId(marketId);
+      const displayName = getMarketDisplayName(tableType as any);
+      console.log(`🔍 Trying display name "${displayName}" for market ID "${marketId}" (table type: ${tableType})`);
+
+      if (potBalances[displayName]) {
+        console.log(`✅ Found balance using display name "${displayName}": ${potBalances[displayName]}`);
+        return potBalances[displayName];
+      }
+    }
+
+    // Fallback to $0 if no data
+    console.log(`❌ No balance found for "${marketId}" or mapped display name, returning $0`);
+    return '$0';
+  };
+
 
   // Use contract data hook
   const { contractAddresses, participantsData, balancesData } = useContractData();
@@ -153,6 +199,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
   // Find the index of our contract address in the contractAddresses array
   const contractIndex = contractAddresses.findIndex(addr => addr === contractAddress);
   const participants = contractIndex !== -1 ? participantsData[contractIndex] : undefined;
+  const potBalance = contractIndex !== -1 ? balancesData[contractIndex] : undefined;
   // Calculate remaining players: unique participants - eliminated players
   const uniqueParticipants = participants ? Array.from(new Set(participants)).length : 0;
   const playerCount = Math.max(0, uniqueParticipants - eliminatedCount);
@@ -542,7 +589,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           {/* Desktop: Two column layout, Mobile: Stacked */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             {/* Left Column: Question + Action Button */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
               {/* Question Display */}
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-3">
@@ -554,13 +601,15 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   </div>
                   {/* Timer positioned at top right of question section */}
                   {currentTimer && (
-                    <div className="flex items-center gap-2 bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
-                      {/* <Clock className="w-3 h-3 text-gray-500" /> */}
-                      <span className="text-[10px] md:text-xs text-gray-600">Next question</span>
-                      <span className="font-medium text-gray-900 text-[10px] md:text-xs">
-                        {currentTimer}
-                      </span>
-                    </div>
+                    <div className="flex flex-col items-center bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
+  {/* <Clock className="w-3 h-3 text-gray-500" /> */}
+  <span className="text-[10px] md:text-xs text-gray-600">Next question</span>
+  <span className="font-medium text-gray-900 text-[10px] md:text-xs">
+    {currentTimer}
+  </span>
+</div>
+
+
                   )}
                 </div>
                 <h1 className="text-xl md:text-2xl font-normal text-gray-900 leading-[1.3] tracking-tight">
@@ -600,10 +649,17 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 })}</p>
               </div>
 
-              <div className="grid grid-cols-3 gap-6 mt-auto">
+              <div className="grid grid-cols-2 gap-6 mt-auto">
                 <div>
                   <h4 className="text-sm font-medium text-gray-900 mb-2">{isParticipant ? 'Re-Entry' : 'Entry Fee'}</h4>
                   <p className="text-lg font-normal text-gray-900">${entryFee?.toFixed(2) || '0.00'}</p>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">Prize</h4>
+                  <p className="text-lg font-normal text-gray-900">
+                    {market ? getRealPotBalance(market.id) : '$0'}
+                  </p>
                 </div>
 
                 <div>
@@ -624,7 +680,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           {/* Tournament Journey Flow - Full Width */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 relative">
             <div className="flex items-center justify-between mb-3">
-              <div className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Progress</div>
+              <div className="text-xs font-medium text-gray-500 tracking-wide uppercase">Your Progress</div>
               {/* Tournament status message positioned at top right */}
               <div className="flex items-center gap-2 bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
                 <span className="text-[10px] md:text-xs text-gray-600">{getPlayerMessage()}</span>
@@ -733,7 +789,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           </div>
 
           {/* Tournament Details - Mobile only */}
-          <div className="lg:hidden bg-white border border-gray-200 rounded-xl p-6 mb-6">
+          <div className="lg:hidden bg-white border border-gray-200 rounded-xl p-4 mb-6">
             <div className="mb-6">
               <h3 className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Details</h3>
               <p className="text-sm text-gray-500 mt-1">{new Date().toLocaleDateString('en-US', {
@@ -744,10 +800,17 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               })}</p>
             </div>
 
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 gap-6">
               <div>
                 <h4 className="text-sm font-medium text-gray-900 mb-2">{isParticipant ? 'Re-Entry' : 'Entry Fee'}</h4>
                 <p className="text-lg font-normal text-gray-900">${entryFee?.toFixed(2) || '0.00'}</p>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">Prize Pool</h4>
+                <p className="text-lg font-normal text-gray-900">
+                  {market ? getRealPotBalance(market.id) : '$0'}
+                </p>
               </div>
 
               <div>
