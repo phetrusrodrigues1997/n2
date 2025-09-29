@@ -662,7 +662,7 @@ export default function App() {
                   {isConnected && (
                     <button
                       onClick={() => setActiveSection('profile')}
-                      className={`hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer order-2`}
+                      className={`hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer order-2 mr-6`}
                   >
                     <div className="text-xs text-gray-600 font-medium whitespace-nowrap">{t.yourBalance}</div>
                     <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">

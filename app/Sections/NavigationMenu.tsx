@@ -119,7 +119,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                 <div className="relative">
                   <button
                     onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
-                    className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-700 font-semibold rounded-md hover:bg-red-800 hover:text-white transition-colors border border-red-200"
+                    className="flex items-center gap-2 px-3 py-2 bg-gray-50 text-gray-700 font-semibold rounded-md hover:bg-[#f4f4f4] hover:text-white transition-colors border border-gray-200"
                   >
                     <img
                       src={supportedLanguages.find(lang => lang.code === currentLanguage)?.flag}
@@ -130,7 +130,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                       {supportedLanguages.find(lang => lang.code === currentLanguage)?.name}
                     </span>
                     <svg
-                      className={`w-4 h-4 text-red-600 hover:text-white transition-transform duration-200 ${
+                      className={`w-4 h-4 text-gray-600 hover:text-white transition-transform duration-200 ${
                         isLanguageDropdownOpen ? 'rotate-180' : 'rotate-0'
                       }`}
                       fill="none"
@@ -153,7 +153,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                             setIsLanguageDropdownOpen(false);
                           }}
                           className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors ${
-                            currentLanguage === language.code ? 'bg-red-50 text-red-700' : 'text-gray-700'
+                            currentLanguage === language.code ? 'bg-white text-red-700' : 'text-gray-700'
                           }`}
                         >
                           <img
