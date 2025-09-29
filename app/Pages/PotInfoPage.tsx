@@ -841,8 +841,10 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           entryFee={entryFee}
           currentLanguage={currentLanguage}
           onSuccess={() => {
-            // Refresh the page or trigger a data reload after successful entry
-            window.location.reload();
+            // Redirect to MakePredictionsPage after successful entry
+            if (setActiveSection) {
+              setActiveSection('makePrediction');
+            }
           }}
         />
       )}

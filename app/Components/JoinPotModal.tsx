@@ -5,7 +5,7 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt, useBalance 
 import { formatUnits, parseEther } from 'viem';
 import { X } from 'lucide-react';
 import { Language, getTranslation } from '../Languages/languages';
-import { calculateEntryFee } from '../Database/config';
+import { calculateEntryFee, PENALTY_EXEMPT_CONTRACTS } from '../Database/config';
 import { getPrice } from '../Constants/getPrice';
 
 // Contract ABI for SimplePredictionPot (ETH-based)lol
@@ -171,7 +171,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
       }}
     >
       <div
-        className="bg-white rounded-t-2xl md:rounded-2xl max-w-md w-full max-h-[70vh] md:max-h-[75vh] overflow-y-auto animate-slide-up md:animate-none"
+        className="bg-white rounded-t-2xl md:rounded-2xl max-w-md w-full h-[70vh] md:max-h-[75vh] overflow-hidden animate-slide-up md:animate-none flex flex-col md:block"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile drag indicator */}
@@ -180,7 +180,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between p-4 md:p-5 border-b border-gray-200">
+        <div className="flex items-center justify-between p-3 md:p-5 border-b border-gray-200 flex-shrink-0 md:flex-shrink">
           <h2 className="text-lg font-semibold text-gray-900">Join Tournament</h2>
           <button
             onClick={onClose}
@@ -191,7 +191,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-4 md:p-5">
+        <div className="p-4 md:p-5 flex-1 overflow-hidden md:flex-initial md:overflow-visible">
           {/* Market Info */}
           <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg">
             <img
@@ -200,6 +200,9 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
               className="w-8 h-8 rounded-lg"
             />
             <div className="flex-1">
+              <div className="text-xs text-gray-500 font-medium mb-1">
+                {PENALTY_EXEMPT_CONTRACTS.includes(contractAddress) ? 'Question of the Week' : 'Question of the Day'}
+              </div>
               <h3 className="font-medium text-gray-900 text-sm leading-tight">
                 {marketQuestion}
               </h3>
@@ -221,12 +224,12 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
                   <div>
                     <div className="text-blue-700 text-xs font-medium">Entry Fee</div>
                     <div className="text-gray-900 font-semibold text-sm">
-                      ${entryFee.toFixed(2)} ({entryAmountEth.toFixed(4)} ETH)
+                      ${entryFee.toFixed(2)}
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-blue-700 text-xs font-medium">Prize Pool</div>
+                  <div className="text-blue-700 text-xs font-medium">Prize</div>
                   <div className="text-gray-900 font-semibold text-sm">
                     {potBalance}
                   </div>
@@ -298,7 +301,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
               ) : !isConnected ? (
                 'Connect Wallet'
               ) : (
-                `Join Tournament - $${entryFee.toFixed(2)}`
+                `Join Tournament`
               )}
             </button>
 
