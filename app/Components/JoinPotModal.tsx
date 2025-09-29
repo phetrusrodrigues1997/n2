@@ -8,7 +8,7 @@ import { Language, getTranslation } from '../Languages/languages';
 import { calculateEntryFee } from '../Database/config';
 import { getPrice } from '../Constants/getPrice';
 
-// Contract ABI for SimplePredictionPot (ETH-based)
+// Contract ABI for SimplePredictionPot (ETH-based)lol
 const PREDICTION_POT_ABI = [
   {
     "inputs": [],
