@@ -1432,19 +1432,29 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                     disabled={isLoading || !isBettingAllowed()}
                     className={`p-4 rounded-lg border transition-colors ${
                       tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive'
-                        ? 'bg-purple-100 border-purple-300 text-purple-700 shadow-lg'
+                        ? 'bg-blue-700 border-blue-700 text-white hover:text-blue-700 shadow-lg'
                         : tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative'
-                        ? 'bg-white border-purple-300 text-purple-700 hover:bg-purple-50'
-                        : 'bg-purple-50 border-purple-200 text-purple-700 hover:border-purple-300 hover:bg-purple-100'
+                        ? 'bg-white border-blue-700 text-blue-700 hover:bg-blue-500'
+                        : 'bg-blue-500 border-blue-200 text-white hover:border-blue-700 hover:text-blue-700 hover:bg-blue-100'
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <span>✓</span>
-                      <span className="font-medium">Tap for Yes</span>
-                      {predictionPercentages && (
-                        <span className="text-xs">
-                          {getBayesianPercentages().yesPercentage}%
-                        </span>
+                      {tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive' ? (
+                        predictionPercentages && (
+                          <span className="font-medium">
+                            {getBayesianPercentages().yesPercentage}%
+                          </span>
+                        )
+                      ) : (
+                        <>
+                          <span className="font-medium">Tap for Yes</span>
+                          {predictionPercentages && (
+                            <span className="text-xs">
+                              {getBayesianPercentages().yesPercentage}%
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
                   </button>
@@ -1454,19 +1464,29 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                     disabled={isLoading || !isBettingAllowed()}
                     className={`p-4 rounded-lg border transition-colors ${
                       tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative'
-                        ? 'bg-blue-100 border-blue-300 text-blue-700 shadow-lg'
+                        ? 'bg-purple-700 border-purple-700 text-white hover:text-purple-700 shadow-lg'
                         : tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive'
-                        ? 'bg-white border-blue-300 text-blue-700 hover:bg-blue-50'
-                        : 'bg-blue-50 border-blue-200 text-blue-700 hover:border-blue-300 hover:bg-blue-100'
+                        ? 'bg-white border-purple-700 text-purple-700 hover:bg-purple-500'
+                        : 'bg-purple-500 border-purple-200 text-white hover:text-purple-700 hover:border-purple-700 hover:bg-purple-100'
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <span>✗</span>
-                      <span className="font-medium">Tap for No</span>
-                      {predictionPercentages && (
-                        <span className="text-xs">
-                          {getBayesianPercentages().noPercentage}%
-                        </span>
+                      {tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative' ? (
+                        predictionPercentages && (
+                          <span className="font-medium">
+                            {getBayesianPercentages().noPercentage}%
+                          </span>
+                        )
+                      ) : (
+                        <>
+                          <span className="font-medium">Tap for No</span>
+                          {predictionPercentages && (
+                            <span className="text-xs">
+                              {getBayesianPercentages().noPercentage}%
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
                   </button>
@@ -1494,7 +1514,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                       onClick={() => setIsPredictionHistoryCollapsed(!isPredictionHistoryCollapsed)}
                     >
                       <div className="flex items-center justify-between">
-                        <h3 className="font-medium text-gray-900">Prediction History</h3>
+                        <h3 className="font-medium text-gray-900">{t.predictionHistory}</h3>
                         <span className="text-gray-400">
                           {isPredictionHistoryCollapsed ? <ChevronDown></ChevronDown>: <ChevronUp></ChevronUp>}
                         </span>
@@ -1507,9 +1527,9 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                           <div key={index} className="flex items-center justify-between text-sm">
                             <div>
                               <span className={`font-medium flex items-center gap-1 ${
-                                prediction.status === 'correct' ? 'text-purple-600' :
-                                prediction.status === 'incorrect' ? 'text-blue-600' :
-                                prediction.prediction === 'positive' ? 'text-purple-600' : 'text-blue-600'
+                                prediction.status === 'correct' ? 'text-blue-600' :
+                                prediction.status === 'incorrect' ? 'text-purple-600' :
+                                prediction.prediction === 'positive' ? 'text-blue-600' : 'text-purple-600'
                               }`}>
                                 <span className="text-sm">
                                   {prediction.prediction === 'positive' ? '✓' : '✗'}
@@ -1521,8 +1541,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                               </span>
                             </div>
                             <span className={`text-xs px-2 py-1 rounded-full ${
-                              prediction.status === 'correct' ? 'bg-purple-100 text-purple-700' :
-                              prediction.status === 'incorrect' ? 'bg-blue-100 text-blue-700' :
+                              prediction.status === 'correct' ? 'bg-blue-100 text-blue-700' :
+                              prediction.status === 'incorrect' ? 'bg-purple-100 text-purple-700' :
                               'bg-gray-100 text-gray-700'
                             }`}>
                               {prediction.status === 'pending' ? 'Pending' :
