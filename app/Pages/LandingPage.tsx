@@ -158,8 +158,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
   const [isTutorialLanguageDropdownOpen, setIsTutorialLanguageDropdownOpen] = useState(false);
-  const [showTutorialEmailCollection, setShowTutorialEmailCollection] = useState(false);
-  const [userHasEmail, setUserHasEmail] = useState<boolean | null>(null);
+  // Email collection removed - keeping variables for future use if needed
+  // const [showTutorialEmailCollection, setShowTutorialEmailCollection] = useState(false);
+  // const [userHasEmail, setUserHasEmail] = useState<boolean | null>(null);
 
   // Notify parent when tutorial state changes
   useEffect(() => {
@@ -297,24 +298,23 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     setShowTutorial(false);
     setTutorialStep(0);
     setIsTutorialLanguageDropdownOpen(false);
-    setShowTutorialEmailCollection(false);
+    // setShowTutorialEmailCollection(false); // Email collection removed
     // Set cookie to remember user has seen tutorial
     Cookies.set('landingPageTutorialSeen', 'true', { expires: 1 / 24 }); // 1 hour expiry for testing
   };
 
-  const handleEmailCollectionComplete = (hasEmail: boolean) => {
-    // Update email status and move to first tutorial step after email collection
-    setUserHasEmail(true);
-    setShowTutorialEmailCollection(false);
-    setTutorialStep(0);
-  };
+  // Email collection functions removed
+  // const handleEmailCollectionComplete = (hasEmail: boolean) => {
+  //   setUserHasEmail(true);
+  //   setShowTutorialEmailCollection(false);
+  //   setTutorialStep(0);
+  // };
 
-  const handleEmailCollectionSkip = () => {
-    // Mark as skipped (no email but don't show collection again) and move to first tutorial step
-    setUserHasEmail(false);
-    setShowTutorialEmailCollection(false);
-    setTutorialStep(0);
-  };
+  // const handleEmailCollectionSkip = () => {
+  //   setUserHasEmail(false);
+  //   setShowTutorialEmailCollection(false);
+  //   setTutorialStep(0);
+  // };
 
   const handleTutorialLanguageChange = (language: Language) => {
     setIsTutorialLanguageDropdownOpen(false);
@@ -323,46 +323,23 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     window.dispatchEvent(event);
   };
 
-  // Check user email status when connected (only once)
-  useEffect(() => {
-    const checkUserEmail = async () => {
-      if (isConnected && address && userHasEmail === null) {
-        try {
-          const userEmailData = await getUserEmail(address);
-          setUserHasEmail(!!userEmailData?.email);
-        } catch (error) {
-          console.error('Error checking user email:', error);
-          setUserHasEmail(false);
-        }
-      } else if (!isConnected || !address) {
-        setUserHasEmail(null);
-      }
-    };
-
-    checkUserEmail();
-  }, [isConnected, address, userHasEmail]);
+  
 
   // Check if user has seen tutorial before and show automatically
   useEffect(() => {
     const hasSeenTutorial = Cookies.get('landingPageTutorialSeen');
 
-    // Only show tutorial if user hasn't seen it before, loading is complete, and we know email status
-    if (!hasSeenTutorial && !isLoading && userHasEmail !== null && isConnected) {
+    // Only show tutorial if user hasn't seen it before and loading is complete
+    if (!hasSeenTutorial && !isLoading) {
       // Delay showing tutorial by 1 second after loading completes for better UX
       const tutorialTimer = setTimeout(() => {
         setShowTutorial(true);
-        // If user doesn't have email, start with email collection, otherwise start with tutorial steps
-        if (!userHasEmail) {
-          setShowTutorialEmailCollection(true);
-          setTutorialStep(-1); // Use -1 to indicate email collection step
-        } else {
-          setTutorialStep(0); // Start with first tutorial step
-        }
+        setTutorialStep(0); // Start with first tutorial step
       }, 1000);
 
       return () => clearTimeout(tutorialTimer);
     }
-  }, [isLoading, userHasEmail, isConnected]);
+  }, [isLoading]);
 
   // Loading effect
   useEffect(() => {
@@ -2764,14 +2741,14 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
             <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full border border-gray-100">
               {/* Modal Header - Clean */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900">
-                    {t.howItWorksTitle || "How It Works"}
-                  </h2>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {tutorialStep + 1} of {tutorialSteps.length}
-                  </p>
-                </div>
+                  <div>
+                    <h2 className="text-lg font-medium text-gray-900">
+                      {t.howItWorksTitle || "How It Works"}
+                    </h2>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {tutorialStep + 1} of {tutorialSteps.length}
+                    </p>
+                  </div>
 
                 <div className="flex items-center gap-3">
                   {/* Language dropdown in tutorial - Polymarket style */}
@@ -2836,16 +2813,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
               {/* Modal Content - Clean Layout */}
               <div className="p-6">
-                {showTutorialEmailCollection ? (
-                  /* Email Collection Step */
-                  <EmailCollection
-                    currentLanguage={currentLanguage}
-                    onComplete={handleEmailCollectionComplete}
-                    onSkip={handleEmailCollectionSkip}
-                  />
-                ) : (
-                  /* Normal Tutorial Steps - Polymarket Style */
-                  <>
+                {/* Tutorial Steps - Polymarket Style */}
+                <>
                     <div className="text-center space-y-6">
                       <h3 className="text-2xl font-semibold text-gray-900 tracking-tight leading-[1.25]">
                         {tutorialSteps[tutorialStep].title}
@@ -2867,12 +2836,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                       ))}
                     </div>
                   </>
-                )}
               </div>
 
               {/* Modal Footer - Clean Navigation */}
-              {!showTutorialEmailCollection && (
-                <div className="border-t border-gray-100 p-6">
+              <div className="border-t border-gray-100 p-6">
                   <div className="flex items-center justify-between">
                     <button
                       onClick={prevTutorialStep}
@@ -2902,7 +2869,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                     )}
                   </div>
                 </div>
-              )}
             </div>
           </div>
         )}

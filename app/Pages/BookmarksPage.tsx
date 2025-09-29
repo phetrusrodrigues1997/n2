@@ -70,10 +70,11 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
         console.log('🔍 Looking for marketId:', marketId, 'Found market:', market);
         
         if (market) {
-          console.log('✅ Successfully found market data:', { name: market.name, question: market.question });
+          console.log('✅ Successfully found market data:', { name: market.name, question: market.question, icon: market.icon });
           return {
             name: market.name,
-            question: market.question
+            question: market.question,
+            icon: market.icon
           };
         }
       } catch (error) {
@@ -257,24 +258,30 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
 
   const handleViewMarket = (bookmark: BookmarkItem) => {
     if (bookmark.contractAddress) {
-      // Set cookies for market navigation if contract address is available
-      Cookies.set('selectedMarket', bookmark.contractAddress, { 
-        sameSite: 'lax',
-        expires: 7 
-      });
-      
-      // Get live market question for cookie
+      // Get live market data for cookies
       const liveData = getCurrentMarketData(bookmark.marketId, bookmark.marketCategory);
       const marketQuestion = liveData?.question || 'Market question not available';
-      
-      Cookies.set('selectedMarketQuestion', marketQuestion, { 
+      const marketIcon = liveData?.icon || '';
+
+      // Set cookies for market navigation
+      Cookies.set('selectedMarket', bookmark.contractAddress, {
         sameSite: 'lax',
-        expires: 7 
+        expires: 7
       });
 
-      // Navigate to dashboard/prediction page
+      Cookies.set('selectedMarketQuestion', marketQuestion, {
+        sameSite: 'lax',
+        expires: 7
+      });
+
+      Cookies.set('selectedMarketIcon', marketIcon, {
+        sameSite: 'lax',
+        expires: 7
+      });
+
+      // Navigate to pot info page
       setTimeout(() => {
-        setActiveSection('dashboard');
+        setActiveSection('potInfo');
       }, 200);
     } else {
       // Fallback: navigate to home and show the market category

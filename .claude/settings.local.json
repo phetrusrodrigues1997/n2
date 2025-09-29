@@ -38,7 +38,8 @@
       "Bash(keytool:*)",
       "Bash(npm run lint:*)",
       "Read(//c/Users/grasi/**)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(rd:*)"
     ],
     "deny": [],
     "ask": [],

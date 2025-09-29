@@ -785,7 +785,7 @@ export const translations: Record<Language, Translations> = {
 
     // Email Management
     manageEmail: 'Manage Email',
-    yourEmail: 'Your Email',
+    yourEmail: 'Enter Your Email Address',
     updateEmailTitle: 'Update Email',
     updateEmailAddress: 'Update your email address',
     updateEmail: 'Update Email',
@@ -924,7 +924,7 @@ export const translations: Record<Language, Translations> = {
     bottomNavMyPots: 'My Pots',
 
     // MakePredictionsPage (VERY LIMITED - only safe display strings)
-    loadingPredictions: 'Loading your information...',
+    loadingPredictions: 'Getting things ready for you...',
     loadingScreenSubtitle: 'Just a moment...',
     finalPredictions: 'Final Predictions',
     congratulationsFinal10: 'Congratulations! You are down to the last 5. Make your predictions as you normally would and if you win we will notify you.',
@@ -1299,7 +1299,7 @@ export const translations: Record<Language, Translations> = {
 
     // Email Management
     manageEmail: 'Gerenciar Email',
-    yourEmail: 'Seu Email',
+    yourEmail: 'Digite Seu Endereço de E-mail',
     updateEmailTitle: 'Atualizar Email',
     updateEmailAddress: 'Atualize seu endereço de email',
     updateEmail: 'Atualizar Email',

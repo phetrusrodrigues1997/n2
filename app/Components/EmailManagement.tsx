@@ -11,13 +11,15 @@ interface EmailManagementProps {
   onClose?: () => void;
   onBack?: () => void;
   showBackButton?: boolean;
+  isInitialCollection?: boolean; // True when collecting email for first time
 }
 
 const EmailManagement: React.FC<EmailManagementProps> = ({
   currentLanguage = 'en',
   onClose,
   onBack,
-  showBackButton = false
+  showBackButton = false,
+  isInitialCollection = false
 }) => {
   const [email, setEmail] = useState<string>('');
   const [emailSubmitting, setEmailSubmitting] = useState<boolean>(false);
@@ -34,17 +36,24 @@ const EmailManagement: React.FC<EmailManagementProps> = ({
   useEffect(() => {
     const loadUserEmail = async () => {
       if (isConnected && address) {
+        console.log('🔍 EmailManagement: Loading email for address:', address);
         setIsLoadingEmail(true);
         try {
           const userEmailData = await getUserEmail(address);
+          console.log('🔍 EmailManagement: getUserEmail returned:', userEmailData);
           if (userEmailData?.email) {
+            console.log('✅ EmailManagement: Setting email to:', userEmailData.email);
             setCurrentUserEmail(userEmailData.email);
             setEmail(userEmailData.email);
+          } else {
+            console.log('⚠️ EmailManagement: No email found for user');
           }
         } catch (error) {
-          console.error('Error loading user email:', error);
+          console.error('❌ EmailManagement: Error loading user email:', error);
         }
         setIsLoadingEmail(false);
+      } else {
+        console.log('⚠️ EmailManagement: Not loading email - isConnected:', isConnected, 'address:', address);
       }
     };
 
@@ -103,6 +112,7 @@ const EmailManagement: React.FC<EmailManagementProps> = ({
 
   // Show loading state
   if (isLoadingEmail) {
+    console.log('🔄 EmailManagement: Rendering loading state');
     return (
       <div className="flex items-center justify-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
@@ -110,38 +120,33 @@ const EmailManagement: React.FC<EmailManagementProps> = ({
     );
   }
 
+  console.log('🎨 EmailManagement: Rendering main view - currentUserEmail:', currentUserEmail, 'isEditingEmail:', isEditingEmail);
+
   return (
-    <div className="w-full min-h-[70vh] flex items-center justify-center px-4 md:px-8">
+    <div className="w-full">
       <div className="relative max-w-xl mx-auto w-full">
-        {/* Top Navigation Bar */}
-        <div className="mb-6 flex justify-between items-center">
-          {showBackButton && onBack && (
-            <button
-              onClick={onBack}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors duration-200 font-medium text-sm bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-gray-300"
-            >
-              <span>←</span>
-              <span>{t.back}</span>
-            </button>
-          )}
-
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="text-gray-600 hover:text-gray-800 transition-colors duration-200 font-medium text-sm"
-            >
-              Close
-            </button>
-          )}
-        </div>
-
         {/* Clean Container */}
-        <div className="bg-white rounded-xl border border-gray-200 p-8 md:p-10">
+        <div className="bg-white rounded-xl p-8 md:p-10">
           {/* Header Section */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl md:text-3xl font-normal text-gray-900 tracking-tight">
-              {currentUserEmail && !isEditingEmail ? t.yourEmail : t.updateEmailTitle || 'Update Email'}
-            </h1>
+            {isInitialCollection ? (
+              <>
+                <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 tracking-tight mb-3">
+                  Get Notified!
+                </h1>
+                <p className="text-base text-gray-600 max-w-md mx-auto">
+                  Get notified when your favourite tournaments begin
+                </p>
+              </>
+            ) : (
+              <h1 className="text-2xl md:text-3xl font-normal text-gray-900 tracking-tight">
+                {currentUserEmail && !isEditingEmail
+                  ? t.updateEmailAddress || 'Update Your Email Address'
+                  : currentUserEmail && isEditingEmail
+                    ? t.updateEmailTitle || 'Update Email'
+                    : t.manageEmail || 'Enter Your Email'}
+              </h1>
+            )}
           </div>
 
           {/* Show current email if exists and not editing */}
@@ -155,13 +160,23 @@ const EmailManagement: React.FC<EmailManagementProps> = ({
           )}
 
           {/* Input Section - Show when no email or editing */}
-          {(!currentUserEmail || isEditingEmail) && (
+          {(() => {
+            const shouldShowInput = !currentUserEmail || isEditingEmail;
+            console.log('🎨 EmailManagement: Should show input?', shouldShowInput, '- currentUserEmail:', currentUserEmail, 'isEditingEmail:', isEditingEmail);
+            return shouldShowInput;
+          })() && (
             <div className="space-y-6">
               <EmailInput
                 email={email}
                 onChange={setEmail}
                 onSubmit={handleEmailSubmit}
-                placeholder={isEditingEmail ? t.updateEmailAddress : t.enterEmailAddress}
+                placeholder={
+                  isInitialCollection
+                    ? t.yourEmail
+                    : isEditingEmail
+                      ? t.updateEmailAddress
+                      : t.enterEmailAddress
+                }
                 disabled={emailSubmitting || success}
               />
 

@@ -12,7 +12,6 @@ import PredictionPotTest from './Pages/PredictionPotTest';
 import LandingPage from './Pages/LandingPage';
 import MakePredicitions from './Pages/MakePredictionsPage';
 import ProfilePage from './Pages/ProfilePage';
-import TutorialBridge from './Pages/TutorialBridge';
 import NotReadyPage from './Pages/NotReadyPage';
 import ReferralProgram from './Pages/ReferralProgram';
 import ReceiveSection from "./Pages/ReceivePage";
@@ -33,6 +32,7 @@ import AdminEvidenceReviewPage from './Pages/AdminEvidenceReviewPage';
 import ComingSoonPage from './Pages/ComingSoonPage';
 import NewsPage from './Pages/NewsPage';
 import PotInfoPage from './Pages/PotInfoPage';
+import EmailManagementPage from './Pages/EmailManagementPage';
 import { getMarkets } from './Constants/markets';
 import { Language, getTranslation, supportedLanguages, getMarketDisplayName, getPersonalizedLabel } from './Languages/languages';
 import { getPrice } from './Constants/getPrice';
@@ -1124,8 +1124,7 @@ export default function App() {
         {activeSection === "discord" && <HowItWorksSection setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {/* {activeSection === "notifications" && <CreateMessage />} */}
         {activeSection === "potInfo" && <PotInfoPage currentLanguage={currentLanguage} activeSection={activeSection} setActiveSection={setActiveSection} />}
-        {activeSection === "dashboard" && <TutorialBridge key={currentLanguage} activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
-        {activeSection === "emailManagement" && <TutorialBridge key={`${currentLanguage}-email`} activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} showEmailManagement={true} />}
+        {activeSection === "emailManagement" && <EmailManagementPage currentLanguage={currentLanguage} setActiveSection={setActiveSection} />}
         {activeSection === "notReadyPage" && <NotReadyPage activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "bitcoinPot" && <PredictionPotTest activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "referralProgram" && <ReferralProgram activeSection={activeSection} setActiveSection={setActiveSection} />}
@@ -1162,7 +1161,7 @@ export default function App() {
       </main>
 
       {/* Mobile Bottom Navigation */}
-      {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'ideas' && activeSection !== 'bitcoinPot' && activeSection !== 'dashboard' && activeSection !== 'discord' && (
+      {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'ideas' && activeSection !== 'bitcoinPot' && activeSection !== 'discord' && (
         <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40 border-t border-gray-200">
           <div className="flex items-center justify-around py-2 px-1">
             <button
@@ -1172,14 +1171,14 @@ export default function App() {
                 setIsMobileSearchActive(false);
               }}
               className={`flex flex-col items-center justify-center min-w-[60px] py-0.5 px-3 transition-all duration-200 ${
-                (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot' || activeSection === 'notReadyPage')
+                (activeSection === 'home' || activeSection === 'bitcoinPot' || activeSection === 'notReadyPage')
                   ? 'text-black'
                   : 'text-gray-400 hover:text-gray-600 active:scale-95'
               }`}
             >
               <div className="relative mb-1">
                 <svg className={`w-5 h-5 transition-all duration-200 ${
-                  (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot' || activeSection === 'notReadyPage')
+                  (activeSection === 'home' || activeSection === 'bitcoinPot' || activeSection === 'notReadyPage')
                     ? 'text-black'
                     : 'text-gray-400'
                 }`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -1188,7 +1187,7 @@ export default function App() {
                 </svg>
               </div>
               <span className={`text-xs transition-all duration-200 ${
-                (activeSection === 'home' || activeSection === 'dashboard' || activeSection === 'bitcoinPot' || activeSection === 'notReadyPage')
+                (activeSection === 'home' || activeSection === 'bitcoinPot' || activeSection === 'notReadyPage')
                   ? 'font-black text-black'
                   : 'font-medium text-gray-400'
               }`}>
