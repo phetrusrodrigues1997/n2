@@ -57,6 +57,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   const [referralCode, setReferralCode] = useState('');
   const [isReferralDropdownOpen, setIsReferralDropdownOpen] = useState(false);
   const [ethPrice, setEthPrice] = useState<number | null>(null);
+  const [showImageIntro, setShowImageIntro] = useState(true);
 
   // Get user's ETH balance
   const ethBalance = useBalance({
@@ -84,6 +85,17 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
 
     fetchEthPrice();
   }, []);
+
+  // Handle image intro animation
+  useEffect(() => {
+    if (isOpen) {
+      setShowImageIntro(true);
+      const timer = setTimeout(() => {
+        setShowImageIntro(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   // Calculate entry amount in ETH (convert USD to wei)
   const ethToUsd = (ethAmount: bigint): number => {
@@ -171,7 +183,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
       }}
     >
       <div
-        className="bg-white rounded-t-2xl md:rounded-2xl max-w-md w-full max-h-[80vh] md:max-h-[75vh] overflow-hidden animate-slide-up md:animate-none md:flex md:flex-col"
+        className="bg-white rounded-t-2xl md:rounded-2xl max-w-md w-full max-h-[80vh] md:max-h-[75vh] overflow-hidden animate-slide-up md:animate-none md:flex md:flex-col relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile drag indicator */}
@@ -181,7 +193,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
 
         {/* Header */}
         <div className="flex items-center justify-between p-3 md:p-5 border-b border-gray-200 md:flex-shrink">
-          <h2 className="text-lg font-semibold text-gray-900">Join Tournament</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Ready to Play?</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -190,23 +202,29 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-4 md:p-5 md:flex-initial md:overflow-visible">
-          {/* Market Info */}
-          <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg">
+        {/* Image Intro Animation */}
+        {showImageIntro && (
+          <div className="absolute inset-x-0 top-[60px] md:top-[73px] bottom-0 bg-white flex items-center justify-center z-10 animate-fade-in">
             <img
               src={marketIcon}
               alt="Market"
-              className="w-16 h-16 rounded-lg"
+              className="max-w-full max-h-full object-contain rounded-lg"
             />
-            <div className="flex-1">
-              <div className="text-xs text-gray-500 font-medium mb-1">
-                {PENALTY_EXEMPT_CONTRACTS.includes(contractAddress) ? 'Question of the Week' : 'Question of the Day'}
-              </div>
-              <h3 className="font-medium text-gray-900 text-sm leading-tight">
-                {marketQuestion}
-              </h3>
+          </div>
+        )}
+
+        {/* Content */}
+        <div className={`md:flex-initial md:overflow-visible transition-all duration-500 ${
+          showImageIntro ? 'opacity-0 p-0' : 'opacity-100 p-4 md:p-5'
+        }`}>
+          {/* Market Info - without image */}
+          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+            <div className="text-xs text-gray-500 font-medium mb-1">
+              {PENALTY_EXEMPT_CONTRACTS.includes(contractAddress) ? 'Question of the Week' : 'Question of the Day'}
             </div>
+            <h3 className="font-medium text-gray-900 text-sm leading-tight">
+              {marketQuestion}
+            </h3>
           </div>
 
           {/* Entry Details */}
