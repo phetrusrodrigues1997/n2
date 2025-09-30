@@ -2285,7 +2285,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             handleMarketClick(market.id);
                           }
                         }}
-                        className={`group hover:bg-gray-50 cursor-pointer relative overflow-hidden transition-all duration-200 border-t border-gray-200 ${(() => {
+                        className={`group hover:bg-gray-50 cursor-pointer relative transition-all duration-200 border-t border-gray-200 ${(() => {
                           const contractAddress = getContractAddress(market.id);
                           const isEliminated = contractAddress && eliminationStatus[contractAddress];
                           // Position in row: 0 = first, 1, 2, 3 = last

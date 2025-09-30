@@ -333,8 +333,6 @@ div[class*="fixed bottom-0"] button[aria-label="Toggle menu"]:hover svg {
   top: 12px;
   bottom: 12px;
   width: 1px;
-  background-color: #e5e7eb; /* gray-200 */
-  pointer-events: none;
-  z-index: 10;
+  box-shadow: -0.5px 0 0 0 #e5e7eb;
 }
 
