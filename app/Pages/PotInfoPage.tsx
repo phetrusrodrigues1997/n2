@@ -601,7 +601,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   </div>
                   {/* Timer positioned at top right of question section */}
                   {currentTimer && (
-                    <div className="flex flex-col items-center bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
+                    <div className="flex flex-col items-center bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 md:px-2.5 py-1.5 rounded-full font-medium">
   {/* <Clock className="w-3 h-3 text-gray-500" /> */}
   <span className="text-[10px] md:text-xs text-gray-600">Next question</span>
   <span className="font-medium text-gray-900 text-[10px] md:text-xs">
@@ -680,7 +680,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           {/* Tournament Journey Flow - Full Width */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 relative">
             <div className="flex items-center justify-between mb-3">
-              <div className="text-xs font-medium text-gray-500 tracking-wide uppercase">Your Progress</div>
+              <div className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Progress</div>
               {/* Tournament status message positioned at top right */}
               <div className="flex items-center gap-2 bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
                 <span className="text-[10px] md:text-xs text-gray-600">{getPlayerMessage()}</span>

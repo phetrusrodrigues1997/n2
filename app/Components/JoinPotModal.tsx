@@ -140,7 +140,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
         value: entryAmount,
       });
 
-      showMessage('Tournament entry submitted! Waiting for confirmation...');
+      showMessage('Waiting for confirmation...');
     } catch (error) {
       console.error('Enter pot failed:', error);
       showMessage('Transaction failed. Please try again.', true);

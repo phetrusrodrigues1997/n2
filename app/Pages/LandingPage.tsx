@@ -9,7 +9,7 @@ import { Language, getTranslation, supportedLanguages, getTranslatedMarketQuesti
 import { getMarkets, Market } from '../Constants/markets';
 import { CustomAlert, useCustomAlert } from '../Components/CustomAlert';
 import { addBookmark, removeBookmark, isMarketBookmarked, getPredictionPercentages, getTomorrowsBet, placeBitcoinBet, isEliminated, getUserEmail } from '../Database/actions';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, getTableTypeFromMarketId, MARKETS_WITH_CONTRACTS, PENALTY_EXEMPT_CONTRACTS, calculateEntryFee, PENALTY_EXEMPT_ENTRY_FEE } from '../Database/config';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, getTableTypeFromMarketId, MARKETS_WITH_CONTRACTS, PENALTY_EXEMPT_CONTRACTS, calculateEntryFee, PENALTY_EXEMPT_ENTRY_FEE, getTimerDataForContract, formatTimerDisplay } from '../Database/config';
 import { getEventDate } from '../Database/eventDates';
 import { getPrice } from '../Constants/getPrice';
 import { useContractData } from '../hooks/useContractData';
@@ -124,6 +124,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     isFinalDay: boolean;
     startedOnDate: string | null;
   }>>({});
+
+  // Timer state for each contract (contract address -> formatted timer string)
+  const [contractTimers, setContractTimers] = useState<Record<string, string>>({});
 
   // Vote change loading states
   const [voteChangeLoading, setVoteChangeLoading] = useState<Record<string, boolean>>({});
@@ -683,6 +686,31 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
     fetchAllPotInformation();
   }, [contractAddresses]); // Only trigger when contractAddresses changes
+
+  // Update timers for all contracts every second
+  useEffect(() => {
+    if (contractAddresses.length === 0) return;
+
+    const updateAllTimers = () => {
+      const newTimers: Record<string, string> = {};
+
+      for (const contractAddress of contractAddresses) {
+        const timerData = getTimerDataForContract(contractAddress);
+        const formattedTimer = formatTimerDisplay(timerData);
+        newTimers[contractAddress] = formattedTimer;
+      }
+
+      setContractTimers(newTimers);
+    };
+
+    // Update immediately
+    updateAllTimers();
+
+    // Set up interval to update every second
+    const interval = setInterval(updateAllTimers, 1000);
+
+    return () => clearInterval(interval);
+  }, [contractAddresses]);
 
   // Handle bookmark toggle
   const handleBookmarkToggle = async (market: any, event: React.MouseEvent) => {
@@ -1874,9 +1902,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               }
                               // For all other markets when user is participant
                               if (userIsParticipant) {
-                                return !market.useTraditionalLayout ? '-translate-y-14' : '-translate-y-6';
+                                return !market.useTraditionalLayout ? '-translate-y-14' : '-translate-y-10';
                               }
-                              return !market.useTraditionalLayout ? '-translate-y-8' : '';
+                              return !market.useTraditionalLayout ? '-translate-y-8' : '-translate-y-2';
                             })()}`}>
                               <div className="flex items-center gap-2 text-sm text-gray-700 opacity-100">
                                 <span className= "font-bold opacity-50" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>{getEntryFeeDisplay(market.id)}</span>
@@ -1968,7 +1996,22 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       className="w-full group relative overflow-hidden bg-red-700 hover:bg-[#f4f4f4] text-white hover:text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                                     >
                                       <span className="relative z-10 flex items-center justify-center gap-2">
-                                        More Info
+                                        {t.TapforMoreInfo}
+                                        {/* Show timer if pot has started */}
+                                        {(() => {
+                                          const potInfo = contractAddress ? potInformation[contractAddress] : null;
+                                          const potHasStarted = potInfo?.hasStarted || false;
+                                          const timer = contractAddress ? contractTimers[contractAddress] : null;
+
+                                          if (potHasStarted && timer) {
+                                            return (
+                                              <span className="ml-auto text-[10px] opacity-80">
+                                                {timer}
+                                              </span>
+                                            );
+                                          }
+                                          return null;
+                                        })()}
                                       </span>
                                     </button>
                                   </div>
@@ -2565,7 +2608,22 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     className="w-full group relative overflow-hidden bg-red-700 hover:bg-[#f4f4f4] text-white hover:text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                                   >
                                     <span className="relative z-10 flex items-center justify-center gap-2">
-                                      More Info
+                                      {t.ClickforMoreInfo}
+                                      {/* Show timer if pot has started */}
+                                      {(() => {
+                                        const potInfo = contractAddress ? potInformation[contractAddress] : null;
+                                        const potHasStarted = potInfo?.hasStarted || false;
+                                        const timer = contractAddress ? contractTimers[contractAddress] : null;
+
+                                        if (potHasStarted && timer) {
+                                          return (
+                                            <span className="ml-auto text-[10px] opacity-80">
+                                              {timer}
+                                            </span>
+                                          );
+                                        }
+                                        return null;
+                                      })()}
                                     </span>
                                   </button>
                                 </div>

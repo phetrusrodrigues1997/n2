@@ -429,6 +429,8 @@ export interface Translations {
   thousandsOfPlayers: string;
   thousandsOfWinners: string;
   lastStandingQuestion: string;
+  TapforMoreInfo: string;
+  ClickforMoreInfo: string;
 
   // Search
   search: string;
@@ -798,7 +800,7 @@ export const translations: Record<Language, Translations> = {
     // Tutorial - How It Works
     skipButton: 'Skip →',
     globalCompetition: 'Global competition',
-    globalCompetitionDesc: 'You\'re about to see the question of the day for our prediction tournaments.',
+    globalCompetitionDesc: 'You\'re about to see the question of the day for each of our prediction tournaments.',
     dailyPredictions: 'Daily predictions',
     dailyPredictionsDesc: 'Choose a question, enter the tournament, and predict what\'s gonna happen tomorrow!',
     dynamicPricing: 'Entry Fees Grow the Pots',
@@ -995,10 +997,12 @@ export const translations: Record<Language, Translations> = {
     thousandsOfPlayers: 'Thousands of players,',
     thousandsOfWinners: 'Thousands of winners,',
     lastStandingQuestion: 'will you be among the last 5 standing?',
+    TapforMoreInfo: 'Tap for More Info',
+    ClickforMoreInfo: 'Click for More Info',
 
     // ProfilePage translations
     referrals: 'Referrals',
-    tapForStats: 'Tap for Stats & Earnings',
+    tapForStats: 'Your Stats & Earnings',
     newBadge: 'New',
     profile: 'Profile',
     totalEarnings: 'Total Earnings',
@@ -1085,7 +1089,7 @@ export const translations: Record<Language, Translations> = {
     skipTutorial: 'Pular Tutorial',
     previous: 'Anterior',
     next: 'Próximo',
-    startPlaying: 'Começar a Jogar',
+    startPlaying: 'Vamos Jogar?',
     tutorialTip: 'Quanto mais precisas suas previsões, mais você ganhará!',
     tutorialGoal: 'Continue prevendo corretamente até ser um dos últimos 5.',
     yourGoal: 'Seu Objetivo:',
@@ -1312,7 +1316,7 @@ export const translations: Record<Language, Translations> = {
     // Tutorial - How It Works
     skipButton: 'Pular →',
     globalCompetition: 'Competição global',
-    globalCompetitionDesc: 'Você está prestes a ver a pergunta do dia dos nossos torneios de previsão.',
+    globalCompetitionDesc: 'Você está prestes a ver a pergunta do dia para cada um dos nossos torneios de previsão.',
     dailyPredictions: 'Previsões diárias',
     dailyPredictionsDesc: 'Escolha uma pergunta, entre no torneio e preveja o que vai acontecer amanhã!',
     dynamicPricing: 'Taxas de Entrada Crescem os Potes',
@@ -1508,10 +1512,12 @@ export const translations: Record<Language, Translations> = {
     thousandsOfPlayers: 'Milhares de jogadores,',
     thousandsOfWinners: 'Milhares de vencedores,',
     lastStandingQuestion: 'você estará entre os 5 últimos de pé?',
+    TapforMoreInfo: 'Toque para Saber Mais',
+    ClickforMoreInfo: 'Clique para Saber Mais',
 
     // ProfilePage translations
     referrals: 'Indicações',
-    tapForStats: 'Toque para Ver Estatísticas e Ganhos',
+    tapForStats: 'Suas Estatísticas e Ganhos',
     newBadge: 'Novo',
     profile: 'Perfil',
     totalEarnings: 'Ganhos Totais',
