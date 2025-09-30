@@ -70,3 +70,5 @@ npm run lint         # Run linter
 **Key Config Files:**
 - `Database/config.ts` - `PENALTY_EXEMPT_CONTRACTS`
 - `Database/eventDates.ts` - `EVENT_DATE_MAPPING`
+
+**Test Coverage:** See `TESTING.md` for comprehensive test coverage analysis.

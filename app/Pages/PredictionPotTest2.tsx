@@ -9,8 +9,17 @@ import { getPrice } from '../Constants/getPrice';
 import { setDailyOutcome, setDailyOutcomeWithStats, setProvisionalOutcome, getProvisionalOutcome, determineWinners, clearWrongPredictions, testDatabaseConnection, getUserStats, clearPotInformation } from '../Database/OwnerActions'; // Adjust path as needed
 import { notifyMarketOutcome, notifyEliminatedUsers, notifyWinners, notifyPotDistributed, notifyMarketUpdate, notifyMinimumPlayersReached, clearContractMessages } from '../Database/actions';
 import { useQueryClient } from '@tanstack/react-query';
-import { clearPotParticipationHistory } from '../Database/actions3';
-import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, PENALTY_EXEMPT_CONTRACTS } from '../Database/config';
+import { 
+  recordReferral, 
+  confirmReferralPotEntry, 
+  getAvailableFreeEntries, 
+  consumeFreeEntry, 
+  isEliminated,
+  processReEntry,
+  removeBookmark,
+} from '../Database/actions';
+import { recordPotEntry,clearPotParticipationHistory } from '../Database/actions3';
+import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, calculateEntryFee, getMinimumPlayersForContract, checkMinimumPlayersThreshold, loadWrongPredictionsData, PENALTY_EXEMPT_CONTRACTS, PENALTY_EXEMPT_ENTRY_FEE } from '../Database/config';
 import { updateWinnerStats } from '../Database/OwnerActions';
 import { clear } from 'console';
 import LoadingScreenAdvanced from '../Components/LoadingScreenAdvanced';
@@ -141,12 +150,40 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
   const [ethPrice, setEthPrice] = useState<number | null>(null);
   const [isLoadingPrice, setIsLoadingPrice] = useState<boolean>(true);
   
+  // Referral system state (simplified for navigation button)
+  const [inputReferralCode, setInputReferralCode] = useState<string>('');
+  const [isReferralDropdownOpen, setIsReferralDropdownOpen] = useState<boolean>(false);
+  const [freeEntriesAvailable, setFreeEntriesAvailable] = useState<number>(0);
+  const [reEntryFee, setReEntryFee] = useState<number | null>(null);
+  const [allReEntryFees, setAllReEntryFees] = useState<{market: string, fee: number}[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
   const [isSkeletonLoading, setIsSkeletonLoading] = useState<boolean>(false);
+  const [wrongPredictionsAddresses, setWrongPredictionsAddresses] = useState<string[]>([]);
   
+  
+  // Note: Countdown states kept for potential future use
+  const [timeUntilReopening, setTimeUntilReopening] = useState<{
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  }>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  
+  // Pot entry deadline countdown state
+  const [timeUntilDeadline, setTimeUntilDeadline] = useState<{
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  }>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  
+  // Track successful pot entry for enhanced UI feedback
+  const [justEnteredPot, setJustEnteredPot] = useState(false);
+  const [postEntryLoading, setPostEntryLoading] = useState(false);
 
   // Track final day status from pot information
   const [isFinalDay, setIsFinalDay] = useState(false);
+  const [usedDiscountedEntry, setUsedDiscountedEntry] = useState(false);
   
 
   // Wait for transaction receipt with error handling
@@ -272,6 +309,23 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
     }
   }, [contractAddress]);
 
+  // Load referral data when wallet connects or market changes
+  useEffect(() => {
+    if (address && selectedTableType) {
+      loadReferralData();
+    }
+  }, [address, selectedTableType]);
+
+  // Load wrong predictions data when table type changes
+  useEffect(() => {
+    if (selectedTableType) {
+      const loadData = async () => {
+        const addresses = await loadWrongPredictionsData(selectedTableType);
+        setWrongPredictionsAddresses(addresses);
+      };
+      loadData();
+    }
+  }, [selectedTableType]);
 
   // Track timing for proper loading sequence
   const [loadingStartTime] = useState<number>(Date.now());
@@ -347,6 +401,32 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
   // Note: Removed hardcoded countdown timer effects
   // Final day timing is now owner-controlled, not schedule-based
 
+  const loadReferralData = async () => {
+    if (!address) return;
+    
+    try {
+      // Load available free entries
+      const freeEntries = await getAvailableFreeEntries(address);
+      setFreeEntriesAvailable(freeEntries);
+      
+      // Check if user needs to pay re-entry fee for current market
+      const reEntryAmount = await isEliminated(address, selectedTableType);
+      setReEntryFee(reEntryAmount);
+      
+      // Note: getAllReEntryFees was removed since we now use dynamic pricing
+      setAllReEntryFees([]);
+      
+      // Load wrong predictions addresses for current table type
+      const addresses = await loadWrongPredictionsData(selectedTableType);
+      setWrongPredictionsAddresses(addresses);
+      
+    } catch (error) {
+      console.error("Error loading referral data:", error);
+    }
+  };
+
+
+  
 
   // Simple transaction reset - only if truly stuck - with better conditions
   useEffect(() => {
@@ -439,6 +519,30 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
   
   
   // Get dynamic entry amount using the new pricing system
+  const getEntryAmount = (): bigint => {
+    // Check if this is a penalty-exempt contract
+    if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+      // Use fixed fee for penalty-exempt contracts
+      return usdToEth(PENALTY_EXEMPT_ENTRY_FEE);
+    }
+
+    // Use dynamic pricing for regular contracts
+    const entryFeeUsd = calculateEntryFee(potInfo.hasStarted, potInfo.startedOnDate);
+    return usdToEth(entryFeeUsd);
+  };
+  
+  // Helper function to convert USD to ETH
+  const usdToEth = (usdAmount: number): bigint => {
+    const fallbackEthPrice = 4700; // Fallback price if ETH price not loaded
+    const currentEthPrice = ethPrice || fallbackEthPrice;
+    const ethAmount = usdAmount / currentEthPrice;
+    return parseEther(ethAmount.toString());
+  };
+
+  // Current entry amount based on pot status and free entries
+  const baseEntryAmount = getEntryAmount();
+  const entryAmount = freeEntriesAvailable > 0 ? usdToEth(0.02) : baseEntryAmount; // Fixed $0.02 if using free entry, otherwise dynamic price
+
   // ETH balance is handled by the wallet - no need for contract reads
 
 
@@ -451,6 +555,26 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
     }
   };
 
+  // Helper to get USD equivalent of ETH amount
+  const getUsdEquivalent = (ethAmount: bigint): string => {
+    if (!ethPrice) return '~$?.??';
+    const ethValue = Number(formatUnits(ethAmount, 18));
+    const usdValue = ethValue * ethPrice;
+    return `~$${usdValue.toFixed(4)}`;
+  };
+
+  // Helper to get the current USD entry price
+  const getCurrentUsdPrice = (): string => {
+    // Check if this is a penalty-exempt contract
+    if (contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)) {
+      // Use fixed fee for penalty-exempt contracts
+      return `$${PENALTY_EXEMPT_ENTRY_FEE.toFixed(2)}`;
+    }
+
+    // Use dynamic pricing for regular contracts
+    const entryFeeUsd = calculateEntryFee(potInfo.hasStarted, potInfo.startedOnDate);
+    return `$${entryFeeUsd.toFixed(2)}`;
+  };
 
 
 
@@ -467,6 +591,8 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
         return ethValue * currentEthPrice;
       };
 
+  // Check if user has sufficient balance (at least $0.01 USD worth of ETH)
+  const hasInsufficientBalance = isConnected && ethBalance.data && ethToUsd(ethBalance.data.value) < 0.01;
 
   // Note: Removed updateCountdown function - no longer needed with owner-controlled final day
 
@@ -483,9 +609,81 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
 
   // Removed handleApprove - not needed for ETH transactions
 
+  const handleEnterPot = async (useDiscounted: boolean = false) => {
+    if (!contractAddress) return;
+    
+    setIsLoading(true);
+    setLastAction('enterPot');
+    setUsedDiscountedEntry(useDiscounted); // Track if discounted entry was attempted
+    
+    try {
+      // Don't consume free entry yet - wait for transaction confirmation
+      if (useDiscounted && freeEntriesAvailable === 0) {
+        showMessage('No discounted entries available', true);
+        setIsLoading(false);
+        setLastAction('');
+        return;
+      }
+      
+      // Handle referral code if provided for paid entries (run in background)
+      if (inputReferralCode.trim()) {
+        // Don't await this - run in background to avoid blocking pot entry
+        recordReferral(inputReferralCode.trim().toUpperCase(), address!)
+          .then(() => {
+          })
+          .catch(() => {
+            // Silently fail - don't let referral issues affect main app flow
+          });
+      }
+      
+      // Always use the regular enterPot function with ETH value
+      await writeContract({
+        address: contractAddress as `0x${string}`,
+        abi: PREDICTION_POT_ABI,
+        functionName: 'enterPot',
+        args: [], // No args needed - ETH sent via value
+        value: entryAmount, // Send ETH as value
+      });
+      
+      const message = useDiscounted 
+        ? 'Discounted entry submitted! Waiting for confirmation...'
+        : 'Enter pot transaction submitted! Waiting for confirmation...';
+      showMessage(message);
+    } catch (error) {
+      console.error('Enter pot failed:', error);
+      showMessage('Enter pot failed. Check console for details.', true);
+      setLastAction('');
+      setIsLoading(false);
+      setUsedDiscountedEntry(false); // Reset flag on error
+    }
+  };
 
   // Removed handleReEntryApprove - not needed for ETH transactions
 
+  const handleReEntry = async () => {
+    if (!contractAddress || !reEntryFee) return;
+    
+    setIsLoading(true);
+    setLastAction('reEntry');
+    
+    try {
+      // Process re-entry payment using the same logic as normal pot entry
+      await writeContract({
+        address: contractAddress as `0x${string}`,
+        abi: PREDICTION_POT_ABI,
+        functionName: 'enterPot',
+        args: [],
+        value: entryAmount, // Use same entry amount as normal pot entry
+      });
+      
+      showMessage('Re-entry payment submitted! Waiting for confirmation...');
+    } catch (error) {
+      console.error('Re-entry payment failed:', error);
+      showMessage('Re-entry payment failed. Check console for details.', true);
+      setLastAction('');
+      setIsLoading(false);
+    }
+  };
 
 
   const isActuallyLoading = isLoading || isPending || isConfirming;
@@ -514,7 +712,160 @@ useEffect(() => {
       selectedTableType
     });
     
-    if (lastAction === 'distributePot') {
+    if (lastAction === 'enterPot') {
+      // Keep loading state active while background processes complete
+      setIsLoading(false); // Clear transaction loading
+      setPostEntryLoading(true); // Start post-entry loading
+      setJustEnteredPot(true);
+      
+      // Record the pot entry in participation history
+      if (address) {
+        recordPotEntry(address, contractAddress, selectedTableType, 'entry').catch(() => {
+          // Silently handle pot entry recording errors
+          console.warn('Failed to record pot entry in participation history');
+        });
+        
+        // Remove bookmark for this market since user has now entered the pot
+        const marketId = getMarketDisplayName(selectedTableType);
+        removeBookmark(address, marketId).catch(() => {});
+      }
+      
+      // Now consume the free entry after successful transaction
+      if (usedDiscountedEntry && address) {
+        consumeFreeEntry(address).catch(() => {
+          // Silently handle free entry consumption errors
+        });
+      }
+      
+      showMessage('Successfully entered the pot! Welcome to the prediction game!');
+      
+      // Refresh contract data
+      queryClient.invalidateQueries({ queryKey: ['readContract'] });
+      
+      
+      // Clear post-entry loading state after a reasonable delay
+      setTimeout(() => {
+        setPostEntryLoading(false);
+        console.log(`🔄 Additional contract data refresh after pot entry`);
+        queryClient.invalidateQueries({ queryKey: ['readContract'] });
+        queryClient.invalidateQueries({ queryKey: ['balance'] });
+      }, 2000);
+      
+      // Clear the "just entered" state after showing success for a while
+      setTimeout(() => {
+        setJustEnteredPot(false);
+        setUsedDiscountedEntry(false); // Reset discounted entry flag
+      }, 8000); // Extended to 8 seconds for better visibility
+      
+      // Reload free entries and handle referral confirmation in background
+      if (address) {
+        setTimeout(async () => {
+          try {
+            const updatedFreeEntries = await getAvailableFreeEntries(address);
+            setFreeEntriesAvailable(updatedFreeEntries);
+            
+            // Handle referral confirmation
+            await confirmReferralPotEntry(address);
+            loadReferralData();
+          } catch (error) {
+            // Silently handle background task errors
+          }
+        }, 3000);
+      }
+      
+      
+      // Always redirect to make prediction section after entry (regardless of participant count)
+      setActiveSection('makePrediction');
+      setLastAction('');
+      
+    } else if (lastAction === 'reEntry') {
+      // Handle re-entry confirmation
+      const completeReEntry = async () => {
+        try {
+          // Remove user from wrong predictions table
+          const success = await processReEntry(address!, selectedTableType);
+          if (success) {
+            // Record the re-entry in participation history
+            recordPotEntry(address!, contractAddress, selectedTableType, 're-entry').catch(() => {
+              // Silently handle pot entry recording errors
+              console.warn('Failed to record re-entry in participation history');
+            });
+            
+            // Remove bookmark for this market since user has re-entered the pot
+            const marketId = getMarketDisplayName(selectedTableType);
+            removeBookmark(address!, marketId).catch(() => {});
+            
+            setIsLoading(false);
+            showMessage('Re-entry successful! You can now predict again.');
+            setReEntryFee(null); // Clear re-entry fee
+            
+            // Refresh contract data and referral data
+            setTimeout(() => {
+              queryClient.invalidateQueries({ queryKey: ['readContract'] });
+              loadReferralData();
+            }, 1000);
+            
+            // 🔔 Check for minimum players threshold reached (same logic as regular entry)
+            setTimeout(async () => {
+              try {
+                // Force refresh contract data first
+                await queryClient.invalidateQueries({ queryKey: ['readContract'] });
+                await queryClient.invalidateQueries({ queryKey: ['balance'] });
+                
+                // Wait for refresh to complete
+                setTimeout(async () => {
+                  try {
+                    // Use the same logic as hasEnoughParticipants() function
+                    const currentParticipants = participants ? participants.length : 0;
+                    const contractAddresses = Object.keys(CONTRACT_TO_TABLE_MAPPING);
+                    const contractIndex = contractAddresses.indexOf(contractAddress);
+                    const minPlayersRequired = contractIndex === 0 ? MIN_PLAYERS : MIN_PLAYERS2;
+                    
+                    console.log(`📊 Checking minimum players after re-entry (using same logic as redirect):`, {
+                      contractAddress,
+                      currentParticipants,
+                      minPlayersRequired,
+                      hasEnoughNow: currentParticipants >= minPlayersRequired,
+                      selectedTableType
+                    });
+                    
+                    // Check if we just reached minimum players
+                    if (currentParticipants >= minPlayersRequired && currentParticipants === minPlayersRequired) {
+                      console.log(`🎯 Minimum players threshold reached via re-entry! Sending notification...`);
+                      
+                      const notificationResult = await notifyMinimumPlayersReached(
+                        contractAddress, 
+                        currentParticipants, 
+                        selectedTableType,
+                        participants || []
+                      );
+                      
+                      console.log(`✅ Re-entry minimum players notification result:`, notificationResult);
+                    } else {
+                      console.log(`📊 Re-entry minimum players status: ${currentParticipants}/${minPlayersRequired} - ${currentParticipants >= minPlayersRequired ? 'sufficient' : 'insufficient'}`);
+                    }
+                  } catch (innerError) {
+                    console.error("❌ Error in re-entry inner notification check:", innerError);
+                  }
+                }, 2000); // Additional 2s wait after refresh
+              } catch (notificationError) {
+                console.error("❌ Error checking/sending minimum players notification after re-entry:", notificationError);
+              }
+            }, 4000); // Initial 4s delay for re-entry check
+          } else {
+            setIsLoading(false);
+            showMessage('Re-entry payment processed but database update failed. Please contact support.', true);
+          }
+        } catch (error) {
+          setIsLoading(false);
+          showMessage('Re-entry payment processed but database update failed. Please contact support.', true);
+        }
+      };
+      
+      completeReEntry();
+      setLastAction('');
+      return; // Don't execute common cleanup below
+    } else if (lastAction === 'distributePot') {
       
       console.log("📊 Transaction confirmation details:", {
         txHash,
@@ -734,7 +1085,52 @@ useEffect(() => {
     return <PredictionPotSkeleton />;
   }
 
+  // Show post-entry loading
+  if (postEntryLoading) {
+    return (
+      <LoadingScreenAdvanced
+        subtitle={t.processingYourEntry || "Processing your entry..."}
+      />
+    );
+  }
 
+  // If user has insufficient ETH balance, show funding message
+  if (hasInsufficientBalance) {
+    return (
+      <div className="min-h-screen bg-white text-black p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="bg-white rounded-xl border-2 border-gray-200 p-8 text-center shadow-lg max-w-md">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Wallet className="w-8 h-8 text-orange-500" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">{t.fundYourAccount || 'Fund Your Account'}</h2>
+              <p className="text-gray-600 mb-6">
+                {t.fundAccountMessage || 'You need at least $0.01 worth of ETH to participate in prediction pots.'} 
+                Current balance: <span className="font-semibold text-red-500">
+                  ${ethBalance.data ? ethToUsd(ethBalance.data.value).toFixed(4) : '$0.00'}
+                </span>
+              </p>
+              <button
+                onClick={() => setActiveSection('receive')}
+                className="w-full bg-purple-700 text-white px-6 py-3 rounded-lg hover:bg-black transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
+              >
+                {t.letsFundAccount || "Let's fund your account →"}
+              </button>
+              <div className="mt-4">
+                <button 
+                  onClick={() => setActiveSection('home')}
+                  className="text-sm text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium text-sm tracking-wide bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-purple-300"
+                >
+                  {t.backToHome || '← Back to Home'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-invisible p-4">
@@ -794,11 +1190,250 @@ useEffect(() => {
           )}
 
 
+          {/* Re-entry Payment Section - Show if user has re-entry fee */}
+          {isConnected && contractAddress && reEntryFee && (
+            <div className="mb-6">
+              <div className="bg-white rounded-xl border border-gray-200 p-8 hover:border-gray-300 transition-all duration-300 text-center">
+                <div className="text-2xl font-light text-gray-900 mb-3">
+                  {t.reEntryRequired || '⚠️ Re-entry Required'}
+                </div>
+                <div className="text-gray-600 font-light mb-4 leading-relaxed">
+                  {t.reEntryDescription || `You made a wrong prediction in ${selectedTableType === 'featured' ? 'Trending' : 'Crypto'} and need to pay today's entry fee to re-enter this specific pot.`}
+                </div>
+                
+                
+                
+                <div className="text-gray-500 text-sm mb-6 font-light">
+                  {t.payReEntryFee || 'Pay the re-entry fee to resume predicting in this pot'}
+                </div>
+                
+                <button
+                  onClick={handleReEntry}
+                  disabled={isActuallyLoading}
+                  className="px-8 py-3 bg-gray-900 text-white font-light rounded-lg hover:bg-gray-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isActuallyLoading && lastAction === 'reEntry'
+                    ? (t.processingReEntry || 'Processing Re-entry...')
+                    : (t.payToReEnter || `Pay ${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)} USD to Re-enter`)}
+                </button>
+                
+                
+              </div>
+            </div>
+          )}
 
 
 
           
 
+          {/* User Actions - Show countdown or pot entry based on day */}
+          {isConnected && contractAddress && !isParticipant && !reEntryFee && (
+            <div className="mb-6">
+              {isFinalDay ? (
+                /* Final Day - Results */
+                <div className="bg-white rounded-xl border-2 border-gray-900 p-6 text-center">
+                  <div className="mb-4">
+                    <h2 className="text-2xl font-black text-gray-900 mb-3">
+                      Final Predictions
+                    </h2>
+                    <div className="text-gray-600">
+                      <p className="font-medium mb-2">
+                        🏆 Today <span className='text-purple-700'>{potInfo.lastDayDate ? `${new Date(potInfo.lastDayDate).toLocaleDateString()}` : ''}</span> is the last prediction day
+                      </p>
+                      <p className="text-sm">
+                        Winners will be determined <span className='text-purple-700'>tomorrow at midnight</span>{' '}
+                        {potInfo.lastDayDate ? (
+                          (() => {
+                            const nextDay = new Date(potInfo.lastDayDate);
+                            nextDay.setDate(nextDay.getDate() + 1);
+                            return `(end of ${nextDay.toLocaleDateString()})`;
+                          })()
+                        ) : (
+                          ''
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Regular pot entry - Tournament active */
+                <div className="space-y-4">
+
+
+
+                  {/* Loading state for pot info */}
+                  {potInfoLoading && (
+                    <div className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+                          <span className="text-gray-400 text-lg">⏳</span>
+                        </div>
+                        <div>
+                          <h3 className="text-gray-600 font-medium text-lg">{t.loadingTournamentInfo || 'Loading Tournament Info...'}</h3>
+                          <p className="text-gray-400 text-sm">{t.checkingTournamentStatus || 'Checking tournament status'}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  
+                  
+                  {/* Free Entry Option - Only show if not loading and not final day */}
+                  {freeEntriesAvailable > 0 && !potInfoLoading && !potInfo.isFinalDay && (
+                    <div className="relative bg-gradient-to-br from-emerald-50 to-green-50 p-6 rounded-2xl border-2 border-emerald-200 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                      {/* Decorative background elements */}
+                      <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-100/50 rounded-full blur-xl"></div>
+                      <div className="absolute bottom-0 left-0 w-16 h-16 bg-green-100/50 rounded-full blur-lg"></div>
+                      
+                      <div className="relative z-10">
+                        {/* Header with icon */}
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <span className="text-white text-lg font-bold">✨</span>
+                          </div>
+                          <div>
+                            <h3 className="text-emerald-900 text-lg font-bold leading-tight">{t.specialDiscountAvailable || 'Special Discount Available'}</h3>
+                            <p className="text-emerald-700/80 text-sm">{t.congratulations || 'Congratulations!!!'}</p>
+                          </div>
+                        </div>
+                        
+                        {/* Pricing comparison */}
+                        <div className="bg-white/60 backdrop-blur-sm p-4 rounded-xl mb-4 border border-emerald-100">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="text-gray-500 text-sm line-through">{t.regularPrice || 'Regular'}: ${(Number(baseEntryAmount) / 1000000).toFixed(2)} ({formatETH(usdToEth(Number(baseEntryAmount) / 1000000))} ETH)</span>
+                              <div className="text-emerald-800 text-xl font-bold">
+                                {t.yourPrice || 'Your Price'}: ${(Number(entryAmount) / 1000000).toFixed(2)} ({formatETH(usdToEth(Number(entryAmount) / 1000000))} ETH)
+                              </div>
+                            </div>
+                            <div className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                              {t.saveAmount || 'SAVE'} ${((Number(baseEntryAmount) - Number(entryAmount)) / 1000000).toFixed(2)}
+                            </div>
+                          </div>
+                        </div>
+                        
+                       
+                        
+                        {/* Action buttons */}
+                        <div className="space-y-3">
+                          <button
+                            onClick={() => handleEnterPot(true)}
+                            disabled={isActuallyLoading}
+                            className="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-emerald-700 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.02]"
+                          >
+                            {isActuallyLoading && lastAction === 'enterPot'
+                              ? (
+                                <div className="flex items-center justify-center gap-2">
+                                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                  {t.usingDiscount || 'Using Discount...'}
+                                </div>
+                              )
+                              : (t.payToEnter || `Pay ${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)} USD to Enter`)}
+                          </button>
+                          
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+
+                  {/* Enter Pot - Only show if no free entries available and not loading and not final day */}
+                  {freeEntriesAvailable === 0 && !potInfoLoading && !potInfo.isFinalDay && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                      {/* Header */}
+                      <div className="mb-6">
+                        <h3 className="text-gray-900 font-semibold text-xl mb-2">
+                          <span className="md:hidden">{t.joinTournament || 'Join Tournament'}</span>
+                          <span className="hidden md:block">{t.joinPredictionsTournament || 'Join Predictions Tournament'}</span>
+                        </h3>
+                        <p className="text-gray-600 text-sm">
+                          {t.enterAndCompete || 'Will you be among the last 5?'}
+                        </p>
+                      </div>
+
+                      {/* Entry price highlight */}
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <img
+                              src="https://dynamic-assets.coinbase.com/dbb4b4983bde81309ddab83eb598358eb44375b930b94687ebe38bc22e52c3b2125258ffb8477a5ef22e33d6bd72e32a506c391caa13af64c00e46613c3e5806/asset_icons/4113b082d21cc5fab17fc8f2d19fb996165bcce635e6900f7fc2d57c4ef33ae9.png"
+                              alt="ETH"
+                              className="w-6 h-6"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-purple-600 text-sm font-medium">
+                              {t.entryFeePredictionPotTest || 'Entry Fee (Prediction Pot Test)'}
+                            </div>
+                            <div className="text-gray-900 font-semibold text-lg">
+                              ${ethToUsd(entryAmount ?? BigInt(0)).toFixed(2)} USD
+                            </div>
+                            <div className="mt-3 text-green-600 text-sm font-medium">
+                              {t.prize || 'Pot balance (Prize)'}
+                            </div>
+                            <div className="text-gray-900 font-semibold text-lg">
+                               ${potBalance ? ethToUsd(potBalance).toFixed(2) : '0.00'} USD
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Referral Code Dropdown */}
+                      <div className="mb-6">
+                        <div
+                          className="flex items-center justify-between cursor-pointer bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-lg p-3 transition-colors"
+                          onClick={() => setIsReferralDropdownOpen(!isReferralDropdownOpen)}
+                        >
+                          <span className="text-gray-700 text-sm font-medium">
+                            <span className="md:hidden">{t.referralCodeShort || 'Referral Code'}</span>
+                            <span className="hidden md:block">{t.referralCode || 'Referral Code (Optional)'}</span>
+                          </span>
+                          <div className="w-5 h-5 flex items-center justify-center text-gray-600 font-bold text-lg">
+                            {isReferralDropdownOpen ? '−' : '+'}
+                          </div>
+                        </div>
+
+                        {isReferralDropdownOpen && (
+                          <div className="mt-2">
+                            <input
+                              type="text"
+                              placeholder={t.enterCode || 'Enter code...'}
+                              value={inputReferralCode}
+                              onChange={(e) => setInputReferralCode(e.target.value.toUpperCase())}
+                              className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                              maxLength={8}
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Action button */}
+                      <button
+                        onClick={() => handleEnterPot(false)}
+                        disabled={isActuallyLoading}
+                        className="w-full bg-green-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                      >
+                        {isActuallyLoading && lastAction === 'enterPot'
+                          ? (
+                            <div className="flex items-center gap-2">
+                              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                              <span className="md:hidden">{t.processingMobile || 'Processing...'}</span>
+                              <span className="hidden md:block">{t.processingYourEntry || 'Processing your entry...'}</span>
+                            </div>
+                          )
+                          : (
+                            <>
+                              <span className="md:hidden">{t.enterButtonShort || 'Enter Tournament'}</span>
+                              <span className="hidden md:block">{t.enterButton || 'Enter Tournament'}</span>
+                            </>
+                          )}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
 
           {/* Owner Actions */}
@@ -1110,60 +1745,6 @@ useEffect(() => {
         className="bg-green-600 text-[#F5F5F5] px-6 py-3 rounded-md font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed w-full"
       >
         {isActuallyLoading && lastAction === "distributePot" ? "Processing Winners..." : "🏆 Process Winners & Distribute Pot"}
-      </button>
-    </div>
-
-    {/* Send Minimum Players Announcement */}
-    <div className="bg-[#2C2C47] p-4 rounded-lg mb-4 border-2 border-yellow-500">
-      <h3 className="text-[#F5F5F5] font-medium mb-2">📢 Send Minimum Players Announcement</h3>
-      <p className="text-[#A0A0B0] text-sm mb-3">
-        Manually send announcement and email to pot participants that minimum players threshold has been reached.
-      </p>
-      <button
-        onClick={async () => {
-          if (!contractAddress || !participants) {
-            showMessage('No contract or participants data available', true);
-            return;
-          }
-
-          setIsLoading(true);
-          try {
-            const contractAddresses = Object.keys(CONTRACT_TO_TABLE_MAPPING);
-            const contractIndex = contractAddresses.indexOf(contractAddress);
-            const minPlayersRequired = contractIndex === 0 ? MIN_PLAYERS : MIN_PLAYERS2;
-            const currentParticipants = participants.length;
-
-            if (currentParticipants < minPlayersRequired) {
-              showMessage(`Not enough players yet: ${currentParticipants}/${minPlayersRequired}`, true);
-              setIsLoading(false);
-              return;
-            }
-
-            console.log(`📢 Sending minimum players notification for contract ${contractAddress}...`);
-            const notificationResult = await notifyMinimumPlayersReached(
-              contractAddress,
-              currentParticipants,
-              selectedTableType || 'market',
-              participants
-            );
-
-            if (notificationResult.isDuplicate) {
-              showMessage('Announcement already sent previously (duplicate prevented)');
-            } else {
-              showMessage(`Announcement and emails sent to ${participants.length} participants!`);
-            }
-            console.log('✅ Notification result:', notificationResult);
-          } catch (error) {
-            console.error('❌ Failed to send minimum players notification:', error);
-            showMessage('Failed to send announcement', true);
-          } finally {
-            setIsLoading(false);
-          }
-        }}
-        disabled={isActuallyLoading}
-        className="bg-yellow-600 text-[#F5F5F5] px-6 py-3 rounded-md font-medium hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed w-full"
-      >
-        {isActuallyLoading ? "Sending..." : "📢 Send Minimum Players Announcement"}
       </button>
     </div>
 

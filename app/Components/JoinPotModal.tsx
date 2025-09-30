@@ -5,8 +5,9 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt, useBalance 
 import { formatUnits, parseEther } from 'viem';
 import { X } from 'lucide-react';
 import { Language, getTranslation } from '../Languages/languages';
-import { calculateEntryFee, PENALTY_EXEMPT_CONTRACTS } from '../Database/config';
+import { calculateEntryFee, PENALTY_EXEMPT_CONTRACTS, CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName } from '../Database/config';
 import { getPrice } from '../Constants/getPrice';
+import { recordPotEntry } from '../Database/actions3';
 
 // Contract ABI for SimplePredictionPot (ETH-based)lol
 const PREDICTION_POT_ABI = [
@@ -60,6 +61,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   const [showImageIntro, setShowImageIntro] = useState(true);
   const [showSuccessScreen, setShowSuccessScreen] = useState(false);
   const [showSuccessTick, setShowSuccessTick] = useState(false);
+  const [hasRecordedEntry, setHasRecordedEntry] = useState(false);
 
   // Get user's ETH balance
   const ethBalance = useBalance({
@@ -152,9 +154,22 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
 
   // Handle transaction confirmation
   useEffect(() => {
-    if (isConfirmed) {
+    if (isConfirmed && !hasRecordedEntry) {
       setIsLoading(false);
       setShowSuccessScreen(true);
+
+      // Record the pot entry in participation history (only once)
+      if (address && contractAddress) {
+        // Get the table type from contract address mapping
+        const tableType = CONTRACT_TO_TABLE_MAPPING[contractAddress as keyof typeof CONTRACT_TO_TABLE_MAPPING];
+
+        recordPotEntry(address, contractAddress, tableType || 'featured', 'entry').catch(() => {
+          // Silently handle pot entry recording errors
+          console.warn('Failed to record pot entry in participation history');
+        });
+
+        setHasRecordedEntry(true); // Mark as recorded to prevent duplicates
+      }
 
       // Show tick after 800ms
       setTimeout(() => {
@@ -169,10 +184,11 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
           // Reset states for next time
           setShowSuccessScreen(false);
           setShowSuccessTick(false);
+          setHasRecordedEntry(false); // Reset for next use
         }, 2500);
       }
     }
-  }, [isConfirmed, onSuccess, onClose]);
+  }, [isConfirmed, onSuccess, onClose, address, contractAddress, hasRecordedEntry]);
 
   // Reset loading state if transaction fails
   useEffect(() => {
