@@ -400,7 +400,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                 {bookmarks.map((bookmark) => (
                   <div
                     key={bookmark.id}
-                    className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                    className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
@@ -465,7 +465,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                         )}
                         <button
                           onClick={() => handleViewMarket(bookmark)}
-                          className="bg-red-700 text-white py-2 px-4 rounded-md hover:bg-black transition-colors text-sm font-semibold"
+                          className="bg-red-700 text-white py-2 px-4 rounded-md transition-colors text-sm font-semibold"
                         >
                           {t.view}
                         </button>
@@ -532,7 +532,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                   return (
                     <div
                       key={contractAddress}
-                      className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                      className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
@@ -570,7 +570,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                           )}
                           <button
                             onClick={() => handleMarketClick(contractAddress)}
-                            className="bg-red-700 text-white py-2 px-4 rounded-md hover:bg-black cursor-pointer transition-colors text-sm font-semibold"
+                            className="bg-red-700 text-white py-2 px-4 rounded-md cursor-pointer transition-colors text-sm font-semibold"
                           >
                             {t.view}
                           </button>

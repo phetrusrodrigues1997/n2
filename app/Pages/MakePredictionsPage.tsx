@@ -1346,7 +1346,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                     </div>
                     {/* Timer positioned at top right */}
                     {currentTimer && (
-                      <div className="flex flex-col items-center bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
+                      <div className="flex flex-col items-center bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-1.5 md:px-2.5 rounded-full font-medium">
                         <span className="text-[10px] md:text-xs text-gray-600">Next question</span>
                         <span className="font-medium text-gray-900 text-[10px] md:text-xs">
                           {currentTimer}

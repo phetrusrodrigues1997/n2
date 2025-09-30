@@ -149,6 +149,51 @@ body::before {
   animation: fade-in 0.4s ease-out;
 }
 
+/* Success screen animations */
+@keyframes scale-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s ease-out;
+}
+
+@keyframes draw-check {
+  0% {
+    stroke-dasharray: 0, 100;
+  }
+  100% {
+    stroke-dasharray: 100, 0;
+  }
+}
+
+.animate-draw-check {
+  stroke-dasharray: 100;
+  animation: draw-check 0.5s ease-out 0.2s forwards;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out 0.4s backwards;
+}
+
 [data-testid="ockAvatar_ImageContainer"] {
   display: none !important;
   /* green-600 */

@@ -58,6 +58,8 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   const [isReferralDropdownOpen, setIsReferralDropdownOpen] = useState(false);
   const [ethPrice, setEthPrice] = useState<number | null>(null);
   const [showImageIntro, setShowImageIntro] = useState(true);
+  const [showSuccessScreen, setShowSuccessScreen] = useState(false);
+  const [showSuccessTick, setShowSuccessTick] = useState(false);
 
   // Get user's ETH balance
   const ethBalance = useBalance({
@@ -151,13 +153,23 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   // Handle transaction confirmation
   useEffect(() => {
     if (isConfirmed) {
-      showMessage('Successfully joined tournament! 🎉');
       setIsLoading(false);
+      setShowSuccessScreen(true);
+
+      // Show tick after 800ms
+      setTimeout(() => {
+        setShowSuccessTick(true);
+      }, 800);
+
+      // Close modal and trigger success callback after showing success animation
       if (onSuccess) {
         setTimeout(() => {
           onSuccess();
           onClose();
-        }, 2000);
+          // Reset states for next time
+          setShowSuccessScreen(false);
+          setShowSuccessTick(false);
+        }, 2500);
       }
     }
   }, [isConfirmed, onSuccess, onClose]);
@@ -213,9 +225,41 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
           </div>
         )}
 
+        {/* Success Screen */}
+        {showSuccessScreen && (
+          <div className="absolute inset-x-0 top-[60px] md:top-[73px] bottom-0 bg-white flex flex-col items-center justify-center z-20 animate-fade-in px-4">
+            {!showSuccessTick ? (
+              // Loading spinner
+              <div className="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
+            ) : (
+              // Success tick animation
+              <div className="flex flex-col items-center">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center animate-scale-in">
+                  <svg
+                    className="w-12 h-12 text-green-600 animate-draw-check"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <p className="mt-6 text-lg font-semibold text-gray-900 text-center animate-fade-in-up">
+                  Successfully Joined! 🎉
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Content */}
         <div className={`md:flex-initial md:overflow-visible transition-all duration-500 ${
-          showImageIntro ? 'opacity-0 p-0' : 'opacity-100 p-4 md:p-5'
+          showImageIntro || showSuccessScreen ? 'opacity-0 p-0' : 'opacity-100 p-4 md:p-5'
         }`}>
           {/* Market Info - without image */}
           <div className="mb-4 p-3 bg-gray-50 rounded-lg">
