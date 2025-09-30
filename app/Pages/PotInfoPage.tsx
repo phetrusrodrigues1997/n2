@@ -622,14 +622,23 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 <button
                   onClick={handleReady}
                   disabled={isConnected && isParticipant && userEliminated}
-                  className="w-full bg-red-700 text-white font-medium rounded-xl py-3.5 text-base transition-all duration-200 hover:bg-gray-800 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500"
+                  className="w-full bg-red-700 text-white font-medium rounded-xl py-3.5 text-base transition-all duration-200 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500"
                 >
                   {!isConnected ? (
                     'Join Tournament'
                   ) : isParticipant && userEliminated ? (
                     `Re-enter Tournament - $${entryFee?.toFixed(2) || '0.00'}`
                   ) : isParticipant ? (
-                    userEliminated ? 'Eliminated' : 'Make Prediction'
+                    userEliminated ? 'Eliminated' : hasUserPredictedToday ? (
+                      <>
+                        Wait for Next Question
+                        <span className="waiting-dots">
+                          <span>.</span>
+                          <span>.</span>
+                          <span>.</span>
+                        </span>
+                      </>
+                    ) : 'Make Prediction'
                   ) : (
                     'Join Tournament'
                   )}
@@ -721,13 +730,11 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               {/* Step 3: Wait */}
               <div className="flex flex-col items-center relative z-10">
                 <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs font-medium mb-3 transition-all duration-200 ${
-                  isParticipant && !userEliminated && hasUserPredictedToday === true && !potInfo.isFinalDay
+                  isParticipant && !userEliminated && hasUserPredictedToday === true
                     ? 'bg-black text-white'
-                    : isParticipant && !userEliminated && hasUserPredictedToday === true && potInfo.isFinalDay
-                      ? 'bg-black text-white'
                       : 'bg-gray-200 text-gray-500'
                 }`}>
-                  {isParticipant && !userEliminated && hasUserPredictedToday === true && potInfo.isFinalDay ? '✓' : '3'}
+                  {isParticipant && !userEliminated && hasUserPredictedToday === true ? '✓' : '3'}
                 </div>
                 <div className="text-xs font-medium text-gray-700 text-center">Wait</div>
               </div>

@@ -1993,7 +1993,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                         setActiveSection('potInfo');
                                       }}
-                                      className="w-full group relative overflow-hidden bg-red-700 hover:bg-[#f4f4f4] text-white hover:text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
+                                      className="w-full group relative overflow-hidden bg-red-700 hover:bg-black text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                                     >
                                       <span className="relative z-10 flex items-center justify-center gap-2">
                                         {t.TapforMoreInfo}
@@ -2615,7 +2615,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       handleMarketClick(market.id);
                                       setActiveSection('potInfo');
                                     }}
-                                    className="w-full group relative overflow-hidden bg-red-700 hover:bg-[#f4f4f4] text-white hover:text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
+                                    className="w-full group relative overflow-hidden bg-red-700 hover:bg-black text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                                   >
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                       {t.ClickforMoreInfo}
