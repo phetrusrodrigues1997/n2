@@ -2122,8 +2122,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         {/* Desktop Markets Grid - Full Width */}
         <section className="relative z-10 -mt-24 pb-16 hidden md:block">
           <div className="max-w-7xl mx-auto px-2 md:px-8">
-            {/* All Markets Display - Full Width Grid */}
-            <div className="grid grid-cols-4 gap-4">
+            {/* All Markets Display - Unified Grid with Shared Borders */}
+            <div className="grid grid-cols-4 bg-white">
               {(() => {
                 // Get all markets and deduplicate by ID
                 const allMarkets = marketOptions.map(option => {
@@ -2285,26 +2285,36 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             handleMarketClick(market.id);
                           }
                         }}
-                        className={`group hover:scale-[1.004] rounded-2xl cursor-pointer relative overflow-hidden transition-all duration-500  hover:shadow-blue-200 ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
-                          } ${animatingMarket === market.tabId ? 'animate-scale-once' : ''} ${(() => {
-                            const contractAddress = getContractAddress(market.id);
-                            const isEliminated = contractAddress && eliminationStatus[contractAddress];
-                            return isEliminated ? 'opacity-60 grayscale-[0.3]' : '';
-                          })()}`}
+                        className={`group hover:bg-gray-50 cursor-pointer relative overflow-hidden transition-all duration-200 border-t border-gray-200 ${(() => {
+                          const contractAddress = getContractAddress(market.id);
+                          const isEliminated = contractAddress && eliminationStatus[contractAddress];
+                          // Position in row: 0 = first, 1, 2, 3 = last
+                          const positionInRow = index % 4;
+                          const isFirstInRow = positionInRow === 0;
+
+                          // Check if this is in the last row
+                          const totalCards = displayedMarkets.length;
+                          const lastRowStartIndex = Math.floor((totalCards - 1) / 4) * 4;
+                          const isInLastRow = index >= lastRowStartIndex;
+
+                          // Build border classes
+                          let borderClasses = '';
+                          // Add left border with inset styling for all except first in row
+                          if (!isFirstInRow) {
+                            borderClasses += ' market-left-divider';
+                          }
+                          // Add bottom border ONLY to cards in the last row
+                          if (isInLastRow) {
+                            borderClasses += ' border-b border-gray-200';
+                          }
+
+                          return `${isEliminated ? 'opacity-60 grayscale-[0.3]' : ''}${borderClasses}`;
+                        })()}`}
                         style={{
                           '--swap-distance': swapDistance
                         } as React.CSSProperties}
                       >
-                        <div className={`rounded-2xl p-3 h-full flex flex-col justify-between min-h-[180px] transition-all duration-300 bg-white ${(() => {
-                          const contractAddress = getContractAddress(market.id);
-                          const isEliminated = contractAddress && eliminationStatus[contractAddress];
-
-                          if (isEliminated) {
-                            return 'border border-gray-400 hover:border-gray-500';
-                          } else {
-                            return 'border border-gray-200 hover:border-gray-300';
-                          }
-                        })()}`}>
+                        <div className="p-3 h-full flex flex-col justify-between min-h-[180px] bg-white">
 
                           {/* Main content area */}
                           <div className="flex-1 flex flex-col">

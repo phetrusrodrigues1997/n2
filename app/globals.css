@@ -325,3 +325,16 @@ div[class*="fixed bottom-0"] button[aria-label="Toggle menu"]:hover svg {
   }
 }
 
+/* Market divider - vertical line with gaps at top and bottom */
+.market-left-divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background-color: #e5e7eb; /* gray-200 */
+  pointer-events: none;
+  z-index: 10;
+}
+
