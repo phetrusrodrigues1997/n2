@@ -41,8 +41,8 @@ export default function LoadingScreenAdvanced({
         {/* Logo with Circular Loading Animation */}
         <div className="flex justify-center relative">
           {/* Circular loading ring */}
-          <div className="relative w-64 h-64">
-            <svg className="w-64 h-64 absolute inset-0 -rotate-90" viewBox="0 0 128 128">
+          <div className="relative w-48 h-48">
+            <svg className="w-48 h-48 absolute inset-0 -rotate-90" viewBox="0 0 128 128">
               {/* Background circle */}
               <circle
                 cx="64"
@@ -65,11 +65,24 @@ export default function LoadingScreenAdvanced({
                 strokeDashoffset={`${2 * Math.PI * 56 * (1 - loadingProgress / 100)}`}
                 className="transition-all duration-300 ease-out"
               />
+              {/* Animated rotating circle on top */}
+              <circle
+                cx="64"
+                cy="64"
+                r="56"
+                stroke="#b91c1c"
+                strokeWidth="2"
+                fill="none"
+                strokeLinecap="round"
+                strokeDasharray="20 200"
+                className="animate-spin"
+                style={{ transformOrigin: '64px 64px' }}
+              />
             </svg>
 
             {/* Logo in center */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <h1 className="text-5xl font-black text-red-700 tracking-tight">
+              <h1 className="text-4xl font-black text-red-700 tracking-tight">
                 {title}
               </h1>
             </div>
