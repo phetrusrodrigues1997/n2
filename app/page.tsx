@@ -524,7 +524,7 @@ export default function App() {
       {/* Hide header and all content when LandingPage is loading or showing coming soon */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && (
         <header
-  className={`z-50 bg-white py-0 md:py-2 sticky top-0 overflow-x-hidden  ${
+  className={`z-50 bg-white pt-0 md:pt-2 pb-4 md:pb-2 sticky top-0 overflow-x-hidden  ${
     (activeSection !== 'comingsoon') ? "border-b border-gray-200" : ""
   }`}
 >
@@ -741,7 +741,7 @@ export default function App() {
 
           {/* Market Carousel - show on all sections except coming soon, on its own line */}
           {activeSection !== 'comingsoon' && (
-            <div className=" mt-1 md:translate-y-2 pt-1 md:pt-0 px-5 md:px-8 ">
+            <div className=" mt-1 translate-y-4 md:translate-y-2 pt-1 md:pt-0 px-5 md:px-8 ">
               {/* Markets Container - Show first 13 on desktop, all on mobile */}
               <div className="flex overflow-x-auto md:overflow-visible scrollbar-hide pb-1"
                 style={{
