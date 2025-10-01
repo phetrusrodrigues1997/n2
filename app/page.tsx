@@ -743,7 +743,7 @@ export default function App() {
           {activeSection !== 'comingsoon' && (
             <div className=" mt-1 translate-y-4 md:translate-y-2 pt-1 md:pt-0 px-5 md:px-8 ">
               {/* Markets Container - Show first 13 on desktop, all on mobile */}
-              <div className="flex overflow-x-auto md:overflow-visible scrollbar-hide pb-1"
+              <div className="flex gap-1.5 overflow-x-auto md:overflow-visible scrollbar-hide pb-1"
                 style={{
                   scrollbarWidth: 'none',
                   msOverflowStyle: 'none'
