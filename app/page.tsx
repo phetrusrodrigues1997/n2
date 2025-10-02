@@ -1256,7 +1256,7 @@ export default function App() {
                   <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
                   <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
                 </svg>
-                {enteredTournamentsCount > 0 && (
+                {isConnected && enteredTournamentsCount > 0 && (
                   <div className="absolute -top-2 -right-3 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
                     <span className="text-white text-[10px] font-bold">{enteredTournamentsCount}</span>
                   </div>
