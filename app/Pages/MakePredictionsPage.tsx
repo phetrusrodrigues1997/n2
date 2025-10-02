@@ -1158,7 +1158,11 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
   // Show LoadingScreenAdvanced first
   if (isInitialLoading) {
-    return <LoadingScreenAdvanced subtitle={t.loadingPredictions || "Loading your predictions..."} />;
+    return (
+      <div className="-translate-y-16">
+        <LoadingScreenAdvanced subtitle={t.loadingPredictions || "Loading your predictions..."} />
+      </div>
+    );
   }
 
   // Show skeleton loading second

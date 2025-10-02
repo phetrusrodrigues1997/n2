@@ -601,7 +601,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   </div>
                   {/* Timer positioned at top right of question section */}
                   {currentTimer && (
-                    <div className="flex flex-col items-center bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 md:px-2.5 py-1.5 rounded-full font-medium">
+                    <div className="flex flex-col items-center bg-gray-100 text-gray-600 text-[10px] md:text-xs px-3 py-2 rounded-full font-medium">
   {/* <Clock className="w-3 h-3 text-gray-500" /> */}
   <span className="text-[10px] md:text-xs text-gray-600">Next question</span>
   <span className="font-medium text-gray-900 text-[10px] md:text-xs">
@@ -649,7 +649,13 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             {/* Right Column: Tournament Details - Hidden on mobile, shown on desktop */}
             <div className="hidden lg:flex lg:flex-col bg-white border border-gray-200 rounded-xl p-6">
               <div className="mb-6">
-                <h3 className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Details</h3>
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Details</h3>
+                  {/* Tournament status message positioned at top right */}
+                  <div className="flex items-center gap-2 bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
+                    <span className="text-[10px] md:text-xs text-gray-600">{getPlayerMessage()}</span>
+                  </div>
+                </div>
                 <p className="text-sm text-gray-500 mt-1">{new Date().toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
@@ -688,12 +694,8 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
           {/* Tournament Journey Flow - Full Width */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 relative">
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Progress</div>
-              {/* Tournament status message positioned at top right */}
-              <div className="flex items-center gap-2 bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
-                <span className="text-[10px] md:text-xs text-gray-600">{getPlayerMessage()}</span>
-              </div>
+            <div className="mb-3">
+              <div className="text-xs font-medium text-gray-500 tracking-wide uppercase">Your Progress</div>
             </div>
 
             <div className="relative flex items-center justify-between px-2 md:px-4 py-6">
@@ -798,9 +800,15 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           {/* Tournament Details - Mobile only */}
           <div className="lg:hidden bg-white border border-gray-200 rounded-xl p-4 mb-6">
             <div className="mb-6">
-              <h3 className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Details</h3>
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Status</h3>
+                {/* Tournament status message positioned at top right */}
+                <div className="flex items-center gap-2 bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
+                  <span className="text-[10px] md:text-xs text-gray-600">{getPlayerMessage()}</span>
+                </div>
+              </div>
               <p className="text-sm text-gray-500 mt-1">{new Date().toLocaleDateString('en-US', {
-                weekday: 'long',
+                
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
@@ -814,7 +822,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
               </div>
 
               <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-2">Prize Pool</h4>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">Prize</h4>
                 <p className="text-lg font-normal text-gray-900">
                   {market ? getRealPotBalance(market.id) : '$0'}
                 </p>

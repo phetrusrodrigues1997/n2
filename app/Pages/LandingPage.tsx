@@ -1023,18 +1023,18 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     if (prediction && prediction.prediction === buttonType) {
       // User has voted for this option - show confirmed styling with white background
       if (buttonType === 'positive') {
-        return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-white text-blue-600 cursor-default border border-blue-600');
+        return baseClasses.replace('bg-blue-50 hover:bg-blue-200 text-blue-700', 'bg-white text-blue-600 cursor-default border border-blue-600');
       } else {
-        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-white text-purple-600 cursor-default border border-purple-600');
+        return baseClasses.replace('bg-purple-50 hover:bg-purple-200 text-purple-700', 'bg-white text-purple-600 cursor-default border border-purple-600');
       }
     }
 
     // If user is participant and has voted for the opposite option, make this button more prominent (change vote)
     if (isParticipant && prediction && prediction.prediction !== buttonType) {
       if (buttonType === 'positive') {
-        return baseClasses.replace('bg-blue-50 hover:bg-purple-200 text-blue-700', 'bg-blue-100 hover:bg-blue-200 text-blue-800');
+        return baseClasses.replace('bg-blue-50 hover:bg-blue-200 text-blue-700', 'bg-blue-100 hover:bg-purple-200 text-blue-800');
       } else {
-        return baseClasses.replace('bg-purple-50 hover:bg-blue-200 text-purple-700', 'bg-purple-100 hover:bg-purple-200 text-purple-800');
+        return baseClasses.replace('bg-purple-50 hover:bg-purple-200 text-purple-700', 'bg-purple-100 hover:bg-blue-200 text-purple-800');
       }
     }
 
@@ -1555,7 +1555,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   e.preventDefault();
                                   handleMarketClick(market.id, true);
                                 }}
-                                className="w-full group relative overflow-hidden bg-red-700 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
+                                className="w-full group relative overflow-hidden bg-red-700 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                               >
                                 <span className="relative z-10 flex items-center justify-center gap-2">
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1813,7 +1813,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-purple-200 text-blue-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-blue-200 text-blue-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'positive', true)}
                                     </button>
@@ -1830,7 +1830,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-blue-200 text-purple-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-purple-200 text-purple-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'negative', true)}
                                     </button>
@@ -1887,7 +1887,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                               handleMarketClick(market.id);
                                             }, 300);
                                           })}
-                                          className={`${getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-purple-200 text-blue-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
+                                          className={`${getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-blue-200 text-blue-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
                                         >
                                           {getButtonContent(market.id, 'positive', true)}
                                         </button>
@@ -1904,7 +1904,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                               handleMarketClick(market.id);
                                             }, 300);
                                           })}
-                                          className={`${getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-blue-200 text-purple-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
+                                          className={`${getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-purple-200 text-purple-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
                                         >
                                           {getButtonContent(market.id, 'negative', true)}
                                         </button>
@@ -2130,7 +2130,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                       <div className="text-center py-6 hidden">
                         <button
                           onClick={loadMoreMarkets}
-                          className="bg-blue-700 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
+                          className="bg-blue-700 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
                         >
                           Load More Pots ({allMarkets - displayedMarketsCount} remaining)
                         </button>
@@ -2277,7 +2277,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 e.preventDefault();
                                 handleMarketClick(market.id, true);
                               }}
-                              className="w-full group relative overflow-hidden bg-red-700 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
+                              className="w-full group relative overflow-hidden bg-red-700 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                             >
                               <span className="relative z-10 flex items-center justify-center gap-2">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2474,7 +2474,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-purple-200 text-blue-700 px-14 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 flex-1 max-w-[130px]")}
+                                    className={getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-blue-200 text-blue-700 px-14 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 flex-1 max-w-[130px]")}
                                   >
                                     {getButtonContent(market.id, 'positive', false)}
                                   </button>
@@ -2491,7 +2491,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-blue-200 text-purple-700 px-14 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 flex-1 max-w-[130px]")}
+                                    className={getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-purple-200 text-purple-700 px-14 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 flex-1 max-w-[130px]")}
                                   >
                                     {getButtonContent(market.id, 'negative', false)}
                                   </button>
@@ -2541,7 +2541,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             handleMarketClick(market.id);
                                           }, 300);
                                         })}
-                                        className={`${getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-purple-200 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[35px]")}`}
+                                        className={`${getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[35px]")}`}
                                       >
                                         {getButtonContent(market.id, 'positive', false)}
                                       </button>
@@ -2558,7 +2558,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             handleMarketClick(market.id);
                                           }, 300);
                                         })}
-                                        className={`${getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-blue-200 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[35px]")}`}
+                                        className={`${getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-purple-200 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[35px]")}`}
                                       >
                                         {getButtonContent(market.id, 'negative', false)}
                                       </button>
@@ -2735,7 +2735,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                     <div className="text-center py-8 hidden">
                       <button
                         onClick={loadMoreMarkets}
-                        className="bg-blue-700 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-medium text-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
+                        className="bg-blue-700 hover:bg-purple-700 text-white px-8 py-4 rounded-lg font-medium text-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
                       >
                         Load More Pots ({allMarkets - displayedMarketsCount} remaining)
                       </button>
@@ -2763,7 +2763,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
             {/* Minimalist Entry Button */}
             <button
               onClick={() => handleMarketClick('Trending')}
-              className="group relative bg-red-700 border-2 border-black text-white px-20 py-5 rounded-lg font-semibold text-xl tracking-[0.05em] uppercase transition-all duration-300 hover:bg-blue-700 hover:border-blue-700 hover:text-white overflow-hidden shadow-xl hover:shadow-blue-200"
+              className="group relative bg-red-700 border-2 border-black text-white px-20 py-5 rounded-lg font-semibold text-xl tracking-[0.05em] uppercase transition-all duration-300 hover:bg-purple-700 hover:border-blue-700 hover:text-white overflow-hidden shadow-xl hover:shadow-blue-200"
             >
               <span className="relative z-10">Enter</span>
 
@@ -2794,7 +2794,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
             {/* Minimalist Entry Button - Mobile */}
             <button
               onClick={() => handleMarketClick('Trending')}
-              className="group relative bg-white border-2 border-black text-black px-12 py-4 rounded-lg font-semibold text-base tracking-[0.05em] uppercase transition-all duration-300 hover:bg-blue-700 hover:border-blue-700 hover:text-white overflow-hidden mx-auto shadow-lg hover:shadow-blue-200"
+              className="group relative bg-white border-2 border-black text-black px-12 py-4 rounded-lg font-semibold text-base tracking-[0.05em] uppercase transition-all duration-300 hover:bg-purple-700 hover:border-blue-700 hover:text-white overflow-hidden mx-auto shadow-lg hover:shadow-blue-200"
             >
               <span className="relative z-10">Enter</span>
 
