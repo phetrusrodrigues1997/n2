@@ -232,11 +232,11 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
 
         {/* Image Intro Animation */}
         {showImageIntro && (
-          <div className="absolute inset-x-0 top-[60px] md:top-[73px] bottom-0 bg-white flex items-center justify-center z-10 animate-fade-in">
+          <div className="absolute inset-x-0 top-[60px] md:top-[73px] bottom-0 bg-white z-10 animate-fade-in overflow-hidden">
             <img
               src={marketIcon}
               alt="Market"
-              className="max-w-full max-h-full object-contain rounded-lg"
+              className="w-full h-full object-cover"
             />
           </div>
         )}
