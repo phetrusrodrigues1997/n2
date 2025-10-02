@@ -40,6 +40,7 @@ interface LandingPageProps {
   currentLanguage?: Language;
   tournamentFilter?: 'all' | 'daily' | 'weekly' | 'recently';
   onTutorialStateChange?: (isOpen: boolean) => void;
+  onEnteredTournamentsCountChange?: (count: number) => void;
 }
 
 // Helper function to get contract address from markets data
@@ -65,7 +66,7 @@ const getEntryFeeDisplay = (marketId: string): string => {
   return `$${entryFeeUsd.toFixed(2)}`;
 };
 
-const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = false, searchQuery = '', selectedMarket: propSelectedMarket = 'Trending', setSelectedMarket, onLoadingChange, currentLanguage: propCurrentLanguage, tournamentFilter = 'all', onTutorialStateChange }: LandingPageProps) => {
+const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = false, searchQuery = '', selectedMarket: propSelectedMarket = 'Trending', setSelectedMarket, onLoadingChange, currentLanguage: propCurrentLanguage, tournamentFilter = 'all', onTutorialStateChange, onEnteredTournamentsCountChange }: LandingPageProps) => {
   const { contractAddresses, participantsData, balancesData, isConnected, address } = useContractData();
   const [isVisible, setIsVisible] = useState(false);
   // Use language from parent component or fallback to 'en'
@@ -632,6 +633,30 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
     checkEliminationStatus();
   }, [isConnected, address]);
+
+  // Count tournaments user has entered
+  useEffect(() => {
+    if (!isConnected || !address || !onEnteredTournamentsCountChange) return;
+
+    let count = 0;
+    for (const contractAddress of contractAddresses) {
+      const contractIndex = contractAddresses.findIndex(addr => addr === contractAddress);
+      if (contractIndex === -1) continue;
+
+      const participants = participantsData[contractIndex];
+      if (!participants || !Array.isArray(participants)) continue;
+
+      const isParticipant = participants.some(
+        (participant: string) => participant.toLowerCase() === address.toLowerCase()
+      );
+
+      if (isParticipant) {
+        count++;
+      }
+    }
+
+    onEnteredTournamentsCountChange(count);
+  }, [isConnected, address, contractAddresses, participantsData, onEnteredTournamentsCountChange]);
 
   // Fetch pot information for all contracts
   useEffect(() => {

@@ -64,6 +64,7 @@ export default function App() {
   const [tournamentFilter, setTournamentFilter] = useState<'all' | 'daily' | 'weekly' | 'recently'>('all'); // Filter for daily/weekly/recently started tournaments
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false); // Track filter dropdown state
   const [isTutorialOpen, setIsTutorialOpen] = useState(false); // Track tutorial modal state
+  const [enteredTournamentsCount, setEnteredTournamentsCount] = useState(0); // Track number of tournaments user has entered
 
   // Get ETH balance
   const ethBalance = useBalance({
@@ -674,10 +675,18 @@ export default function App() {
                 </div>
 
                 {/* Wallet container with spacing */}
-                <div className="wallet-container translate-x-0">
+                {!isConnected && (
+                  <Wallet>
+                    <ConnectWallet
+                      text={t.signIn}
+                      className="!bg-transparent !border-none !shadow-none !p-0 [&>span]:!text-red-700 hover:[&>span]:!text-black !font-medium !px-0 !py-2 !min-w-0 -translate-x-6 md:translate-x-12"
+                    />
+                  </Wallet>
+                )}
+                <div className="wallet-container -translate-x-2">
                 <Wallet>
                   <ConnectWallet
-                    text={t.signIn}
+                    text={t.signUp}
                     className={`${isConnected ? '!bg-transparent !border-none !shadow-none !p-0' : ''} ${isMobile ? 'bg-red-700 hover:bg-black !px-4 !py-2 !min-w-0' : 'bg-red-700 hover:bg-black !px-4 !py-2 !min-w-0 !w-24 !whitespace-nowrap'}`}
                   >
                     {isConnected && (
@@ -1128,7 +1137,7 @@ export default function App() {
         {activeSection === "notReadyPage" && <NotReadyPage activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "bitcoinPot" && <PredictionPotTest activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "referralProgram" && <ReferralProgram activeSection={activeSection} setActiveSection={setActiveSection} />}
-        {activeSection === "home" && <LandingPage activeSection={activeSection} setActiveSection={setActiveSection} isMobileSearchActive={isMobileSearchActive} searchQuery={searchQuery} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} onLoadingChange={handleLoadingChange} currentLanguage={currentLanguage} tournamentFilter={tournamentFilter} onTutorialStateChange={setIsTutorialOpen} />}
+        {activeSection === "home" && <LandingPage activeSection={activeSection} setActiveSection={setActiveSection} isMobileSearchActive={isMobileSearchActive} searchQuery={searchQuery} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} onLoadingChange={handleLoadingChange} currentLanguage={currentLanguage} tournamentFilter={tournamentFilter} onTutorialStateChange={setIsTutorialOpen} onEnteredTournamentsCountChange={setEnteredTournamentsCount} />}
         {activeSection === "makePrediction" && <MakePredicitions activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "AI" && <GamesHub activeSection={activeSection} setActiveSection={setActiveSection} />}
         {activeSection === "createPot" && <CreatePotPage navigateToPrivatePot={navigateToPrivatePot} />}
@@ -1240,9 +1249,18 @@ export default function App() {
                     ? 'text-black'
                     : 'text-gray-400'
                 }`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
+                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                  <path d="M4 22h16"></path>
+                  <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                  <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                  <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
                 </svg>
+                {enteredTournamentsCount > 0 && (
+                  <div className="absolute -top-2 -right-3 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-[10px] font-bold">{enteredTournamentsCount}</span>
+                  </div>
+                )}
               </div>
               <span className={`text-xs transition-all duration-200 truncate max-w-[80px] ${
                 (activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile')

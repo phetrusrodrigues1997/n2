@@ -212,6 +212,7 @@ export interface Translations {
   howItWorks: string;
   yourBalance: string;
   signIn: string;
+  signUp: string;
 
   // Email Collection
   readyToPlay: string;
@@ -718,7 +719,8 @@ export const translations: Record<Language, Translations> = {
     search: 'Search',
     howItWorks: 'How it works',
     yourBalance: 'Your balance',
-    signIn: 'Sign In',
+    signIn: 'Log in',
+    signUp: 'Sign up',
 
     // Filter
     allTournaments: 'All',
@@ -909,7 +911,7 @@ export const translations: Record<Language, Translations> = {
     fundAccount: 'Fund Account',
     statsRankings: 'Profile',
     games: 'Games',
-    myPots: 'My Pots',
+    myPots: 'Tournaments',
     ideas: 'Ideas',
     liveMarkets: 'Live Markets',
     wallet: 'Wallet',
@@ -923,7 +925,7 @@ export const translations: Record<Language, Translations> = {
     bottomNavHome: 'Home',
     bottomNavLive: 'Live',
     bottomNavSearch: 'Search',
-    bottomNavMyPots: 'My Pots',
+    bottomNavMyPots: 'Tournaments',
 
     // MakePredictionsPage (VERY LIMITED - only safe display strings)
     loadingPredictions: 'Getting things ready for you...',
@@ -1235,6 +1237,7 @@ export const translations: Record<Language, Translations> = {
     howItWorks: 'Como funciona',
     yourBalance: 'Seu saldo',
     signIn: 'Entrar',
+    signUp: 'Inscrever-se',
 
     // Filter
     allTournaments: 'Todos',
@@ -1425,7 +1428,7 @@ export const translations: Record<Language, Translations> = {
     fundAccount: 'Depositar',
     statsRankings: 'Perfil',
     games: 'Jogos',
-    myPots: 'Meus Potes',
+    myPots: 'Torneios',
     ideas: 'Ideias',
     liveMarkets: 'Mercados Ao Vivo',
     wallet: 'Carteira',
@@ -1439,7 +1442,7 @@ export const translations: Record<Language, Translations> = {
     bottomNavHome: 'Início',
     bottomNavLive: 'Ao Vivo',
     bottomNavSearch: 'Buscar',
-    bottomNavMyPots: 'Meus potes',
+    bottomNavMyPots: 'Torneios',
 
     // MakePredictionsPage (VERY LIMITED - only safe display strings)
     loadingPredictions: 'Carregando sua informação...',
