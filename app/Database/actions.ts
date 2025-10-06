@@ -3025,9 +3025,7 @@ export async function notifyMinimumPlayersReached(
     } else {
       // Regular contract behavior
       const nextDay = getNextCalendarDayUTC();
-      message = currentParticipants === 2
-        ? `🚀 Let's go! Your pot has reached ${currentParticipants} participants and is now live! Daily predictions begin ${nextDay}. May the best predictor win! 🎯`
-        : `🎉 ${friendlyMarketName} is officially live with ${currentParticipants} participants! Ready to test your prediction skills? Daily challenges start ${nextDay}. Good luck! 💪`;
+      message = `The ${friendlyMarketName} tournament is ready to begin with ${currentParticipants} participants! Ready to test your prediction skills? Daily challenges start ${nextDay}. Good luck! 💪`;
     }
     
     // Create the announcement directly since we've already checked for duplicates

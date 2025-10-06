@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
-import { Megaphone, Plus, Calendar, User } from 'lucide-react';
 import {
   createAnnouncement,
   getAllAnnouncements,
@@ -393,14 +392,11 @@ const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead, currentL
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-6">
         <div className="text-center max-w-md mx-auto">
-          <div className="w-16 h-16 bg-purple-700 rounded-full flex items-center justify-center mx-auto mb-8">
-            <Megaphone className="text-white w-8 h-8" />
-          </div>
-          <h1 className="text-3xl font-bold text-purple-700 mb-4 tracking-tight">
-            Global Announcements
+          <h1 className="text-2xl font-medium text-gray-900 mb-3">
+            Announcements
           </h1>
-          <p className="text-gray-600 text-lg leading-relaxed">
-            Connect your wallet to see the latest updates and announcements
+          <p className="text-gray-500 text-base">
+            Connect your wallet to view updates
           </p>
         </div>
       </div>
@@ -410,76 +406,58 @@ const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead, currentL
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="border-b border-purple-200 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+      <div className="border-b border-gray-200 bg-white">
+        <div className="max-w-3xl mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              
-              
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-purple-700 rounded-full flex items-center justify-center shadow-lg">
-                  <Megaphone className="text-white w-6 h-6" />
-                </div>
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-purple-700 tracking-tight">Global Announcements</h1>
-                  <p className="text-sm text-gray-600">Latest updates from the Prediwin team</p>
-                </div>
-              </div>
-            </div>
-            
+            <h1 className="text-xl font-medium text-gray-900">Announcements</h1>
+
             {/* Add announcement button - only visible to admin */}
             {isSpecialUser && (
               <button
                 onClick={() => setShowAddForm(true)}
-                className="bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-800 transition-colors duration-200 flex items-center gap-2 shadow-lg"
+                className="text-sm text-gray-700 hover:text-gray-900 border border-gray-300 px-4 py-1.5 rounded hover:border-gray-400 transition-colors"
               >
-                <Plus className="w-4 h-4" />
-                <span className="text-sm font-semibold uppercase tracking-wide">Add</span>
+                New
               </button>
             )}
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-3xl mx-auto px-6 py-6">
         {/* Add announcement form - only visible to admin */}
         {isSpecialUser && showAddForm && (
-          <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-8 shadow-sm">
+          <div className="bg-gray-50 border border-gray-200 rounded p-5 mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-purple-700">Create New Announcement</h3>
+              <h3 className="text-base font-medium text-gray-900">New Announcement</h3>
               <button
                 onClick={() => setShowAddForm(false)}
-                className="text-gray-500 hover:text-purple-700 transition-colors duration-200"
+                className="text-gray-400 hover:text-gray-600 text-sm"
               >
                 ✕
               </button>
             </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-purple-700 mb-2">
-                  Announcement Message
-                </label>
-                <textarea
-                  value={newAnnouncement}
-                  onChange={(e) => setNewAnnouncement(e.target.value)}
-                  placeholder="Enter your announcement message here..."
-                  rows={4}
-                  className="w-full p-3 border border-purple-200 rounded-lg focus:border-purple-500 focus:outline-none transition-colors duration-200 resize-none text-black"
-                />
-              </div>
-              
-              <div className="flex gap-3">
+
+            <div className="space-y-3">
+              <textarea
+                value={newAnnouncement}
+                onChange={(e) => setNewAnnouncement(e.target.value)}
+                placeholder="Enter announcement..."
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:border-gray-400 focus:outline-none resize-none text-black text-sm"
+              />
+
+              <div className="flex gap-2">
                 <button
                   onClick={handleAddAnnouncement}
                   disabled={loading || !newAnnouncement.trim()}
-                  className="bg-purple-700 text-white px-6 py-2 rounded-lg hover:bg-purple-800 disabled:bg-red-300 disabled:cursor-not-allowed transition-colors duration-200 font-semibold"
+                  className="bg-gray-900 text-white text-sm px-4 py-2 rounded hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                 >
-                  {loading ? 'Posting...' : 'Post Announcement'}
+                  {loading ? 'Posting...' : 'Post'}
                 </button>
                 <button
                   onClick={() => setShowAddForm(false)}
-                  className="border border-purple-200 text-purple-700 px-6 py-2 rounded-lg hover:bg-purple-50 transition-colors duration-200 font-semibold"
+                  className="text-sm text-gray-700 px-4 py-2 hover:text-gray-900"
                 >
                   Cancel
                 </button>
@@ -489,96 +467,52 @@ const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead, currentL
         )}
 
         {/* Announcements List */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           {announcements.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Megaphone className="text-purple-400 w-8 h-8" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No announcements yet</h3>
-              <p className="text-gray-600">Check back later for updates from the team.</p>
+            <div className="text-center py-16">
+              <h3 className="text-base font-medium text-gray-900 mb-1">No announcements</h3>
+              <p className="text-gray-500 text-sm">Check back later for updates</p>
             </div>
           ) : (
             announcements.map((announcement) => (
               <div
                 key={announcement.id}
-                className={`bg-white border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200 ${
-                  announcement.isContractSpecific 
-                    ? 'border-green-200 bg-gradient-to-r from-green-50 to-white' 
-                    : 'border-purple-200'
-                }`}
+                className="border border-gray-200 rounded p-4 hover:border-gray-300 transition-colors"
               >
-                <div className="flex items-start gap-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    announcement.isContractSpecific 
-                      ? 'bg-green-700' 
-                      : 'bg-purple-700'
-                  }`}>
-                    <Megaphone className="text-white w-5 h-5" />
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <div className="flex items-center gap-2">
-                        <User className={`w-4 h-4 ${
-                          announcement.isContractSpecific ? 'text-green-600' : 'text-purple-600'
-                        }`} />
-                        <span className={`text-sm font-semibold ${
-                          announcement.isContractSpecific ? 'text-green-700' : 'text-purple-700'
-                        }`}>
-                          Prediwin Team
-                        </span>
-                      </div>
-                      
-                      {/* Market-specific badge */}
-                      {announcement.isContractSpecific && (
-                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
-                          🎯 Pot Update
-                        </span>
-                      )}
-                      
-                      {/* Global announcement badge */}
-                      {!announcement.isContractSpecific && (
-                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
-                          📢 Global
-                        </span>
-                      )}
-                      
-                      <div className="flex items-center gap-1 text-gray-500">
-                        <Calendar className="w-3 h-3" />
-                        <span className="text-xs">{formatTime(announcement.datetime)}</span>
-                      </div>
-                    </div>
-                    
-                   <p className="text-gray-800 leading-relaxed text-sm sm:text-base">
-  {translateAnnouncementMessage(announcement.message).split("\n").map((line, i) => (
-    <span key={i}>
-      {line}
-      <br />
-    </span>
-  ))}
-</p>
-
-                    
-                    {/* Contract address for debugging (you can remove this later) */}
-                    {announcement.contractAddress && (
-                      <p className="text-xs text-gray-500 mt-2 font-mono">
-                        Contract: {announcement.contractAddress.slice(0, 6)}...{announcement.contractAddress.slice(-4)}
-                      </p>
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm font-medium text-gray-900">
+                      PrediWin
+                    </span>
+                    {announcement.isContractSpecific && (
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+                        Tournament
+                      </span>
                     )}
                   </div>
+                  <span className="text-xs text-gray-500 whitespace-nowrap">
+                    {formatTime(announcement.datetime)}
+                  </span>
                 </div>
+
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {translateAnnouncementMessage(announcement.message).split("\n").map((line, i) => (
+                    <span key={i}>
+                      {line}
+                      <br />
+                    </span>
+                  ))}
+                </p>
               </div>
             ))
           )}
-          
         </div>
       </div>
 
       {/* Status Message */}
       {status && (
-        <div className="fixed bottom-6 right-6 bg-purple-700 text-white px-4 py-2 rounded-lg shadow-lg">
-          <p className="text-sm font-semibold">{status}</p>
+        <div className="fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-4 py-2 rounded">
+          {status}
         </div>
       )}
     </div>

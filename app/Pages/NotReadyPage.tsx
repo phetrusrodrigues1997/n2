@@ -456,7 +456,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
                       // Pot ready, waiting to start
                       <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
                         <span className="text-sm text-gray-700 font-medium">
-                          {formatMessage(t.starts || 'Starts {date}', {
+                          {formatMessage('{date}', {
                             date: isPenaltyExempt && eventDate ? getTournamentStartDate(eventDate) : getNextCalendarDayUTC()
                           })}
                         </span>

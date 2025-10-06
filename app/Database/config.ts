@@ -3,8 +3,8 @@ import {  FeaturedBets, CryptoBets, StocksBets, MusicBets, Formula1Bets, LivePre
 import { getEventDate } from './eventDates';
 
 // Minimum players required to start a pot
-export const MIN_PLAYERS = 1; // Minimum participants for pot
-export const MIN_PLAYERS2 = 1; // Minimum participants for all other pots
+export const MIN_PLAYERS = 2; // Minimum participants for pot
+export const MIN_PLAYERS2 = 2; // Minimum participants for all other pots
 
 // Dynamic pricing configuration
 export const BASE_ENTRY_FEE = 0.02; // Base entry fee in USD (used when pot hasn't started)

@@ -6,8 +6,8 @@ import { createPortal } from 'react-dom';
 import { useAccount, useReadContract, useBalance } from 'wagmi';
 import { formatUnits } from 'viem';
 import { User, ChevronLeft, ChevronRight, Bell } from 'lucide-react';
-import { getUnreadAnnouncements } from './Database/actions';
-import { filterUnreadAnnouncements } from './utils/announcementCookies';
+import { getUnreadAnnouncements, getUserContractAnnouncements } from './Database/actions';
+import { filterUnreadAnnouncements, markAnnouncementsAsRead } from './utils/announcementCookies';
 import PredictionPotTest from './Pages/PredictionPotTest';
 import LandingPage from './Pages/LandingPage';
 import MakePredicitions from './Pages/MakePredictionsPage';
@@ -26,7 +26,6 @@ import PrivatePotInterface from './Pages/PrivatePotInterface';
 import BookmarksPage from './Pages/BookmarksPage';
 import FifteenMinuteQuestions from './Sections/FifteenMinuteQuestions';
 import LiveMarketPotEntry from './Pages/LiveMarketPotEntry';
-import MessagingPage from './Pages/MessagingPage';
 import IdeasPage from './Pages/IdeasPage';
 import AdminEvidenceReviewPage from './Pages/AdminEvidenceReviewPage';
 import ComingSoonPage from './Pages/ComingSoonPage';
@@ -50,7 +49,7 @@ const LIVE_POT_ADDRESS = '0xDc6725F0E3D654c3Fde0480428b194ab19F20a9E';
 
 export default function App() {
   const { address, isConnected } = useAccount();
-  const [activeSection, setActiveSection] = useState('comingsoon'); // Default section 
+  const [activeSection, setActiveSection] = useState('home'); // Default section 
   const [privatePotAddress, setPrivatePotAddress] = useState<string>(''); // For routing to private pots
   const [hasEnteredLivePot, setHasEnteredLivePot] = useState(false); // Track live pot entry
   const [isMobileSearchActive, setIsMobileSearchActive] = useState(false); // Track mobile search state
@@ -65,6 +64,9 @@ export default function App() {
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false); // Track filter dropdown state
   const [isTutorialOpen, setIsTutorialOpen] = useState(false); // Track tutorial modal state
   const [enteredTournamentsCount, setEnteredTournamentsCount] = useState(0); // Track number of tournaments user has entered
+  const [isAnnouncementsDropdownOpen, setIsAnnouncementsDropdownOpen] = useState(false); // Track announcements dropdown state
+  const [announcements, setAnnouncements] = useState<any[]>([]); // Store announcements
+  const [loadingAnnouncements, setLoadingAnnouncements] = useState(false); // Track announcements loading state
 
   // Get ETH balance
   const ethBalance = useBalance({
@@ -160,6 +162,44 @@ export default function App() {
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, [isFilterDropdownOpen]);
+
+  // Close announcements dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (isAnnouncementsDropdownOpen && !target.closest('[data-announcements-dropdown]')) {
+        setIsAnnouncementsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isAnnouncementsDropdownOpen]);
+
+  // Load announcements when dropdown opens
+  useEffect(() => {
+    const loadAnnouncements = async () => {
+      if (!isAnnouncementsDropdownOpen || !address) return;
+
+      try {
+        setLoadingAnnouncements(true);
+        const allAnnouncements = await getUserContractAnnouncements(address);
+        setAnnouncements(allAnnouncements);
+
+        // Mark all as read when opening dropdown
+        if (allAnnouncements.length > 0) {
+          const announcementIds = allAnnouncements.map((a: any) => a.id);
+          markAnnouncementsAsRead(announcementIds);
+        }
+      } catch (error) {
+        console.error('Error loading announcements:', error);
+      } finally {
+        setLoadingAnnouncements(false);
+      }
+    };
+
+    loadAnnouncements();
+  }, [isAnnouncementsDropdownOpen, address]);
 
 
 
@@ -276,18 +316,6 @@ export default function App() {
     }
   }, [isConnected, address]);
 
-  // Function for MessagingPage to notify when announcements are marked as read
-  const onAnnouncementsMarkedAsRead = () => {
-    setHasUnreadAnnouncementsState(false);
-    console.log('📖 Announcements marked as read - clearing notification dot');
-  };
-
-  // Clear unread state when user visits announcements page (immediate UI feedback)
-  useEffect(() => {
-    if (activeSection === 'messagesPage') {
-      setHasUnreadAnnouncementsState(false);
-    }
-  }, [activeSection]);
 
 
   // Search functionality
@@ -584,22 +612,79 @@ export default function App() {
                 <div className="flex items-center gap-0">
                   {/* Bell button - Mobile: leftmost, Desktop: rightmost */}
                   {isConnected && (
-                    <button
-                      className={`relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-4 md:translate-x-0 md:-mr-6 ${isMobile ? 'order-1 ' : 'order-3'}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Bell button clicked');
-                        setActiveSection('messagesPage');
-                      }}
-                      type="button"
-                    >
-                      <Bell className="w-5 h-5 text-gray-800 stroke-2 hover:text-black transition-colors" fill="white" />
-                      {/* red dot indicator for unread announcements */}
-                      {hasUnreadAnnouncementsState && (
-                        <div className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></div>
+                    <div className={`relative ${isMobile ? 'order-1' : 'order-3'}`} data-announcements-dropdown>
+                      <button
+                        className="relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-3 md:-translate-x-1 md:-mr-6"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log('Bell button clicked');
+                          setIsAnnouncementsDropdownOpen(!isAnnouncementsDropdownOpen);
+                          if (!isAnnouncementsDropdownOpen) {
+                            // Mark as read when opening
+                            setHasUnreadAnnouncementsState(false);
+                          }
+                        }}
+                        type="button"
+                      >
+                        <Bell className="w-5 h-5 text-gray-800 stroke-2 hover:text-black transition-colors" fill="white" />
+                        {/* red dot indicator for unread announcements */}
+                        {hasUnreadAnnouncementsState && (
+                          <div className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></div>
+                        )}
+                      </button>
+
+                      {/* Announcements Dropdown */}
+                      {isAnnouncementsDropdownOpen && createPortal(
+                        <div
+                          className="fixed bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-[80] max-h-[500px] overflow-y-auto"
+                          style={{
+                            top: '60px',
+                            right: isMobile ? '10px' : '20px',
+                            width: isMobile ? 'calc(100vw - 20px)' : '384px',
+                            maxWidth: '384px'
+                          }}
+                        >
+                          {/* Header */}
+                          <div className="border-b border-gray-200 p-4">
+                            <h3 className="text-base font-medium text-gray-900">Notifications</h3>
+                          </div>
+
+                          {/* Content */}
+                          {loadingAnnouncements ? (
+                            <div className="p-8 text-center">
+                              <div className="text-sm text-gray-500">Loading...</div>
+                            </div>
+                          ) : announcements.length === 0 ? (
+                            <div className="p-8 text-center">
+                              <div className="text-sm text-gray-500">You have no notifications.</div>
+                            </div>
+                          ) : (
+                            <div className="divide-y divide-gray-200">
+                              {announcements.map((announcement) => (
+                                <div key={announcement.id} className="p-4 hover:bg-gray-50 transition-colors">
+                                  <div className="flex items-start justify-between gap-2 mb-1">
+                                    <span className="text-xs font-medium text-gray-900">PrediWin</span>
+                                    <span className="text-xs text-gray-500">
+                                      {(() => {
+                                        const date = new Date(announcement.datetime);
+                                        const now = new Date();
+                                        const diffHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+                                        if (diffHours < 1) return 'Just now';
+                                        if (diffHours < 24) return `${Math.floor(diffHours)}h ago`;
+                                        return `${Math.floor(diffHours / 24)}d ago`;
+                                      })()}
+                                    </span>
+                                  </div>
+                                  <p className="text-sm text-gray-700 leading-relaxed">{announcement.message}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>,
+                        document.body
                       )}
-                    </button>
+                    </div>
                   )}
 
                   {/* Language dropdown - Mobile: middle, Desktop: leftmost - Always visible */}
@@ -1126,10 +1211,9 @@ export default function App() {
 
 
 
-        {activeSection === "comingsoon" && <ComingSoonPage />} 
+        {activeSection === "comingsoon" && <ComingSoonPage />}
         {activeSection === "receive" && <ReceiveSection activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {activeSection === "profile" && <ProfilePage activeSection={activeSection} setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
-        {activeSection === "messagesPage" && <MessagingPage activeSection={activeSection} setActiveSection={setActiveSection} onAnnouncementsMarkedAsRead={onAnnouncementsMarkedAsRead} currentLanguage={currentLanguage} />}
         {activeSection === "discord" && <HowItWorksSection setActiveSection={setActiveSection} currentLanguage={currentLanguage} />}
         {/* {activeSection === "notifications" && <CreateMessage />} */}
         {activeSection === "potInfo" && <PotInfoPage currentLanguage={currentLanguage} activeSection={activeSection} setActiveSection={setActiveSection} />}
