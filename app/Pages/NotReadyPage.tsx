@@ -266,6 +266,9 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
             current
           });
 
+          console.log(`📧 NotReadyPage: Participant addresses to be sent for email lookup:`, participants || []);
+          console.log(`📧 NotReadyPage: First 3 participants (sample):`, participants?.slice(0, 3) || []);
+
           const notificationResult = await notifyMinimumPlayersReached(
             contractAddress,
             current,

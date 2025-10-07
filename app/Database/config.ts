@@ -229,7 +229,7 @@ export const getMarketDisplayName = (tableType: TableType): string => {
 export const getSmartMarketDisplayName = (tableType: TableType): string => {
   switch (tableType) {
     case 'featured':
-      return 'Pot #1'; // Use "Pot #1" instead of confusing "Trending"
+      return 'All in One'; // Use "All in One" instead of confusing "Trending"
     case 'crypto':
       return 'Crypto';
     case 'stocks':

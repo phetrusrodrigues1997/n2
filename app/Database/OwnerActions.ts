@@ -1157,7 +1157,8 @@ export async function clearPotInformation(contractAddress: string): Promise<bool
         isFinalDay: false,
         startedOnDate: null,
         lastDayDate: null,
-        announcementSent: false
+        announcementSent: false,
+        emailsSent: false
       })
       .where(eq(PotInformation.contractAddress, contractAddress.toLowerCase()));
     
@@ -1173,7 +1174,8 @@ export async function clearPotInformation(contractAddress: string): Promise<bool
           isFinalDay: false,
           startedOnDate: null,
           lastDayDate: null,
-          announcementSent: false
+          announcementSent: false,
+          emailsSent: false
         })
         .where(eq(PotInformation.contractAddress, normalizedAddress));
       
@@ -1190,7 +1192,8 @@ export async function clearPotInformation(contractAddress: string): Promise<bool
           isFinalDay: false,
           startedOnDate: null,
           lastDayDate: null,
-          announcementSent: false
+          announcementSent: false,
+          emailsSent: false
         })
         .where(eq(PotInformation.contractAddress, upperCaseAddress));
       

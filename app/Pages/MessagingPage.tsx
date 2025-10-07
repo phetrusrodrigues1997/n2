@@ -347,8 +347,8 @@ const MessagingPage = ({ setActiveSection, onAnnouncementsMarkedAsRead, currentL
         const startDate = dateMatch[1];
 
         if (currentLanguage === 'pt-BR') {
-          // Use smart naming: "Trending" -> "Pot #1"
-          const translatedMarketName = marketName === 'Trending' ? 'Pot #1' : marketName;
+          // Use smart naming: "Trending" -> "All in One"
+          const translatedMarketName = marketName === 'Trending' ? 'All in One' : marketName;
           const translated = `🎉 Incrível! Seu pote ${translatedMarketName} está pronto com ${participants} participantes! Começando em ${startDate} quando o pote oficialmente inicia.`;
           console.log('🔍 [Translation] Legacy pot ready translated to PT:', translated);
           return translated;

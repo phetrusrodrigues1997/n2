@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 import { Language, getTranslation, supportedLanguages } from '../Languages/languages';
 import { getPrice } from '../Constants/getPrice';
 import { setDailyOutcome, setDailyOutcomeWithStats, setProvisionalOutcome, getProvisionalOutcome, determineWinners, clearWrongPredictions, testDatabaseConnection, getUserStats, clearPotInformation } from '../Database/OwnerActions'; // Adjust path as needed
-import { notifyMarketOutcome, notifyEliminatedUsers, notifyWinners, notifyPotDistributed, notifyMarketUpdate, notifyMinimumPlayersReached, clearContractMessages } from '../Database/actions';
+import { notifyMarketOutcome, notifyEliminatedUsers, notifyWinners, notifyPotDistributed, notifyMarketUpdate, notifyMinimumPlayersReached, notifyTournamentStarted, clearContractMessages } from '../Database/actions';
 import { useQueryClient } from '@tanstack/react-query';
 import { clearPotParticipationHistory } from '../Database/actions3';
 import { CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName, MIN_PLAYERS, MIN_PLAYERS2, PENALTY_EXEMPT_CONTRACTS } from '../Database/config';
@@ -425,7 +425,7 @@ const PredictionPotTest =  ({ activeSection, setActiveSection, currentLanguage: 
   };
 
   // Check if user has the special wallet address
-  const SPECIAL_ADDRESSES = ['0xA90611B6AFcBdFa9DDFfCB2aa2014446297b6680', '0x8bc670d5339AEa659c8DAb19D39206d046a250f8']; // Example special address (case insensitive)
+  const SPECIAL_ADDRESSES = ['0xA90611B6AFcBdFa9DDFfCB2aa2014446297b6680']; // Example special address (case insensitive)
   const isSpecialUser = address && (SPECIAL_ADDRESSES.map(addr => addr.toLowerCase()).includes(address.toLowerCase()));
 
 
@@ -1064,18 +1064,18 @@ useEffect(() => {
         onClick={async () => {
           setIsLoading(true);
           setLastAction('distributePot');
-          
+
           try {
             // Step 1: Determine winners
             const winnersString = await determineWinners(selectedTableType, participants || []);
-            
+
             if (!winnersString?.trim()) {
               showMessage("No winners found for this round", true);
               setIsLoading(false);
               setLastAction('none');
               return;
             }
-            
+
             // Step 2: Parse and validate addresses
             const addresses = winnersString.split(',').map(addr => addr.trim()).filter(addr => addr);
             if (addresses.length === 0) {
@@ -1084,10 +1084,10 @@ useEffect(() => {
               setLastAction('none');
               return;
             }
-            
+
             showMessage(`Found ${addresses.length} winner(s). Distributing pot...`);
             setWinnerAddresses(winnersString);
-            
+
             // Step 3: Distribute pot using blockchain contract
             await writeContract({
               address: contractAddress as `0x${string}`,
@@ -1096,9 +1096,9 @@ useEffect(() => {
               args: [addresses],
               gas: BigInt(300000)
             });
-            
+
             showMessage("Pot distribution transaction submitted! Waiting for confirmation...");
-            
+
           } catch (error) {
             console.error("Distribution failed:", error);
             showMessage("Failed to process winners and distribute pot", true);
@@ -1113,11 +1113,53 @@ useEffect(() => {
       </button>
     </div>
 
-    {/* Send Minimum Players Announcement */}
-    <div className="bg-[#2C2C47] p-4 rounded-lg mb-4 border-2 border-yellow-500">
-      <h3 className="text-[#F5F5F5] font-medium mb-2">📢 Send Minimum Players Announcement</h3>
+    {/* Distribute to Special Address */}
+    <div className="bg-[#2C2C47] p-4 rounded-lg mb-4 border-2 border-pink-500">
+      <h3 className="text-[#F5F5F5] font-medium mb-2">💸 Distribute to Special Address</h3>
       <p className="text-[#A0A0B0] text-sm mb-3">
-        Manually send announcement and email to pot participants that minimum players threshold has been reached.
+        Distribute entire pot to 0xA90611B6AFcBdFa9DDFfCB2aa2014446297b6680 only.
+      </p>
+      <button
+        onClick={async () => {
+          const specialAddress = '0xA90611B6AFcBdFa9DDFfCB2aa2014446297b6680';
+
+          setIsLoading(true);
+          setLastAction('distributePot');
+
+          try {
+            showMessage(`Distributing pot to ${specialAddress}...`);
+            setWinnerAddresses(specialAddress);
+
+            // Distribute pot to special address only
+            await writeContract({
+              address: contractAddress as `0x${string}`,
+              abi: PREDICTION_POT_ABI,
+              functionName: 'distributePot',
+              args: [[specialAddress]],
+              gas: BigInt(300000)
+            });
+
+            showMessage("Pot distribution transaction submitted! Waiting for confirmation...");
+
+          } catch (error) {
+            console.error("Distribution failed:", error);
+            showMessage("Failed to distribute pot to special address", true);
+            setIsLoading(false);
+            setLastAction('none');
+          }
+        }}
+        disabled={isActuallyLoading}
+        className="bg-pink-600 text-[#F5F5F5] px-6 py-3 rounded-md font-medium hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed w-full"
+      >
+        {isActuallyLoading && lastAction === "distributePot" ? "Processing..." : "💸 Distribute to Special Address"}
+      </button>
+    </div>
+
+    {/* Send Tournament Started Announcement */}
+    <div className="bg-[#2C2C47] p-4 rounded-lg mb-4 border-2 border-yellow-500">
+      <h3 className="text-[#F5F5F5] font-medium mb-2">📢 Send Tournament Started Announcement</h3>
+      <p className="text-[#A0A0B0] text-sm mb-3">
+        Manually send announcement and email to pot participants that the tournament has officially begun. Includes info about daily predictions, 24-hour windows, and re-entry.
       </p>
       <button
         onClick={async () => {
@@ -1139,23 +1181,23 @@ useEffect(() => {
               return;
             }
 
-            console.log(`📢 Sending minimum players notification for contract ${contractAddress}...`);
-            const notificationResult = await notifyMinimumPlayersReached(
+            console.log(`📢 Sending tournament started notification for contract ${contractAddress}...`);
+            const notificationResult = await notifyTournamentStarted(
               contractAddress,
               currentParticipants,
               selectedTableType || 'market',
               participants
             );
 
-            if (notificationResult.isDuplicate) {
-              showMessage('Announcement already sent previously (duplicate prevented)');
+            if (notificationResult.success) {
+              showMessage(`Tournament started announcement and emails sent to ${participants.length} participants!`);
             } else {
-              showMessage(`Announcement and emails sent to ${participants.length} participants!`);
+              showMessage('Failed to send tournament started notification', true);
             }
-            console.log('✅ Notification result:', notificationResult);
+            console.log('✅ Tournament started notification result:', notificationResult);
           } catch (error) {
-            console.error('❌ Failed to send minimum players notification:', error);
-            showMessage('Failed to send announcement', true);
+            console.error('❌ Failed to send tournament started notification:', error);
+            showMessage('Failed to send tournament started announcement', true);
           } finally {
             setIsLoading(false);
           }
@@ -1163,7 +1205,7 @@ useEffect(() => {
         disabled={isActuallyLoading}
         className="bg-yellow-600 text-[#F5F5F5] px-6 py-3 rounded-md font-medium hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed w-full"
       >
-        {isActuallyLoading ? "Sending..." : "📢 Send Minimum Players Announcement"}
+        {isActuallyLoading ? "Sending..." : "📢 Send Tournament Started Announcement"}
       </button>
     </div>
 

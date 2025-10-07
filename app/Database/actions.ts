@@ -2815,10 +2815,30 @@ export async function getParticipantEmails(participants: string[]): Promise<stri
 
     console.log(`📧 Fetching emails for ${participants.length} participants`);
     console.log(`📧 Participants:`, participants);
-    
+
     // Normalize wallet addresses for consistency
     const normalizedAddresses = participants.map(addr => addr.toLowerCase());
-    
+    console.log(`📧 Normalized addresses:`, normalizedAddresses);
+
+    // First, check ALL users in the database for these addresses (with or without email)
+    const allUsers = await db
+      .select({
+        walletAddress: UsersTable.walletAddress,
+        email: UsersTable.email
+      })
+      .from(UsersTable)
+      .where(inArray(UsersTable.walletAddress, normalizedAddresses));
+
+    console.log(`📧 Database lookup results for ${normalizedAddresses.length} addresses:`);
+    normalizedAddresses.forEach(addr => {
+      const user = allUsers.find(u => u.walletAddress === addr);
+      if (user) {
+        console.log(`  ✓ ${addr}: ${user.email ? `HAS EMAIL (${user.email})` : '❌ NO EMAIL'}`);
+      } else {
+        console.log(`  ❌ ${addr}: NOT FOUND IN DATABASE`);
+      }
+    });
+
     // Get users who have provided emails
     const usersWithEmails = await db
       .select({ email: UsersTable.email })
@@ -2829,12 +2849,13 @@ export async function getParticipantEmails(participants: string[]): Promise<stri
           sql`${UsersTable.email} IS NOT NULL AND ${UsersTable.email} != ''`
         )
       );
-    
+
     const emails = usersWithEmails
       .map(user => user.email)
       .filter((email): email is string => email !== null && email !== '');
-    
-    console.log(`📧 Found ${emails.length} email addresses out of ${participants.length} participants`);
+
+    console.log(`📧 Final result: Found ${emails.length} email addresses out of ${participants.length} participants`);
+    console.log(`📧 Emails to send to:`, emails);
     return emails;
     
   } catch (error) {
@@ -2850,7 +2871,7 @@ export async function getParticipantEmails(participants: string[]): Promise<stri
  * @param marketType Type of market (for email subject/content)
  */
 export async function sendMinimumPlayersEmail(
-  emails: string[], 
+  emails: string[],
   currentParticipants: number,
   marketType: string = 'market'
 ): Promise<{ success: boolean; sent: number; errors: string[] }> {
@@ -2861,43 +2882,53 @@ export async function sendMinimumPlayersEmail(
     }
 
     console.log(`📧 Sending minimum players email to ${emails.length} participants`);
+    console.log(`📧 Email recipients:`, emails);
+    console.log(`📧 Market type: ${marketType}, Participant count: ${currentParticipants}`);
 
-    const subject = `🎉 Your ${marketType} pot is ready! Predictions can now begin`;
+    // Display "All in One" for featured markets, capitalize first letter for others
+    const displayMarketType = marketType === 'featured'
+      ? 'All in One'
+      : marketType.charAt(0).toUpperCase() + marketType.slice(1);
+
+    const subject = `${displayMarketType} tournament - Enough players joined`;
     const htmlContent = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
-          <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">🎉 Great News!</h1>
+        <div style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+          <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">Minimum Players Reached</h1>
         </div>
-        
+
         <div style="background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-          <h2 style="color: #333; margin-top: 0;">Your pot is ready to start!</h2>
-          
+          <h2 style="color: #333; margin-top: 0;">Great news!</h2>
+
           <p style="color: #666; font-size: 16px; line-height: 1.6;">
-            Your <strong>${marketType}</strong> prediction pot now has <strong>${currentParticipants} participants</strong> and has reached the minimum threshold.
+           Your <strong>${displayMarketType}</strong> tournament has reached the minimum player threshold and will begin soon.
           </p>
-          
-          <div style="background: #f8f9ff; border-left: 4px solid #667eea; padding: 20px; margin: 20px 0; border-radius: 0 8px 8px 0;">
-            <p style="margin: 0; color: #333; font-weight: 500;">
-              🚀 Predictions can now begin! Log in to make your predictions and compete for the pot.
+
+          <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 20px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+            <p style="margin: 0 0 10px 0; color: #333; font-weight: 500;">
+              What happens next:
+            </p>
+            <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.8;">
+              The tournament will start on the next calendar day. Once it begins, you'll have 24 hours each day to make your predictions. Check back tomorrow to get started.
             </p>
           </div>
-          
+
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://prediwin.com'}" 
-               style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                      color: white; 
-                      text-decoration: none; 
-                      padding: 12px 30px; 
-                      border-radius: 6px; 
-                      font-weight: bold; 
+            <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://prediwin.com'}"
+               style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+                      color: white;
+                      text-decoration: none;
+                      padding: 12px 30px;
+                      border-radius: 6px;
+                      font-weight: bold;
                       display: inline-block;">
-              Make Predictions Now
+              View Tournament
             </a>
           </div>
-          
+
           <div style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px; text-align: center;">
             <p style="color: #999; font-size: 14px; margin: 0;">
-              Good luck with your predictions! 🍀
+              We'll notify you when daily predictions begin.
             </p>
           </div>
         </div>
@@ -2906,6 +2937,8 @@ export async function sendMinimumPlayersEmail(
 
     // Use Next.js API route to send emails - need absolute URL for server-side fetch
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    console.log(`📧 Calling email API at: ${baseUrl}/api/send-email`);
+
     const response = await fetch(`${baseUrl}/api/send-email`, {
       method: 'POST',
       headers: {
@@ -2919,15 +2952,20 @@ export async function sendMinimumPlayersEmail(
       }),
     });
 
+    console.log(`📧 Email API response status: ${response.status} ${response.statusText}`);
+
     if (!response.ok) {
-      throw new Error(`Email API responded with status: ${response.status}`);
+      const errorText = await response.text();
+      console.error(`📧 Email API error response:`, errorText);
+      throw new Error(`Email API responded with status: ${response.status} - ${errorText}`);
     }
 
     const result = await response.json();
-    
+    console.log(`📧 Email API result:`, result);
+
     console.log(`✅ Email notification sent successfully to ${emails.length} participants`);
     return { success: true, sent: emails.length, errors: [] };
-    
+
   } catch (error) {
     console.error("❌ Error sending minimum players email:", error);
     return { 
@@ -2943,23 +2981,32 @@ export async function sendMinimumPlayersEmail(
  * Call this when participant count goes from (minPlayers-1) to minPlayers
  */
 export async function notifyMinimumPlayersReached(
-  contractAddress: string, 
+  contractAddress: string,
   currentParticipants: number,
   marketType: string = 'market',
-  participantAddresses: string[] = []
+  participantAddresses: string[] = [],
+  forceResend: boolean = false
 ) {
   try {
+    // Display "All in One" for featured markets, capitalize first letter for others
+    const displayMarketType = marketType === 'featured'
+      ? 'All in One'
+      : marketType.charAt(0).toUpperCase() + marketType.slice(1);
+
     console.log(`🎯 Sending minimum players reached notification for ${contractAddress}: ${currentParticipants} participants`);
-    
+    if (forceResend) {
+      console.log(`⚠️  forceResend=true - bypassing duplicate checks (owner manual trigger)`);
+    }
+
     // Check if we've already sent a minimum players reached announcement for this contract
-    // Use database flag for robust deduplication
+    // Use database flag for robust deduplication (skip check if forceResend is true)
     const potInfo = await db
       .select({ announcementSent: PotInformation.announcementSent })
       .from(PotInformation)
       .where(eq(PotInformation.contractAddress, contractAddress.toLowerCase()))
       .limit(1);
-    
-    if (potInfo.length > 0 && potInfo[0].announcementSent) {
+
+    if (!forceResend && potInfo.length > 0 && potInfo[0].announcementSent) {
       console.log(`🔄 Minimum players notification already sent for contract ${contractAddress} - skipping duplicate (database flag)`);
       return {
         isDuplicate: true,
@@ -3025,7 +3072,7 @@ export async function notifyMinimumPlayersReached(
     } else {
       // Regular contract behavior
       const nextDay = getNextCalendarDayUTC();
-      message = `The ${friendlyMarketName} tournament is ready to begin with ${currentParticipants} participants! Ready to test your prediction skills? Daily challenges start ${nextDay}. Good luck! 💪`;
+      message = `The ${friendlyMarketName} tournament is ready to begin with ${currentParticipants} participants! Daily predictions start on ${nextDay}. Good luck! 💪`;
     }
     
     // Create the announcement directly since we've already checked for duplicates
@@ -3048,6 +3095,7 @@ export async function notifyMinimumPlayersReached(
         .values({
           contractAddress: contractAddress.toLowerCase(),
           announcementSent: true,
+          emailsSent: false, // Emails not sent yet
           hasStarted: false,
           isFinalDay: false
         });
@@ -3060,19 +3108,32 @@ export async function notifyMinimumPlayersReached(
       newAnnouncement: announcementResult[0],
       flagSet: true
     };
-    
-    // Send email notifications to participants if addresses are provided (only for new announcements)
-    if (!result.isDuplicate) {
+
+    // Check if emails have already been sent (independent from announcement)
+    const emailStatus = await db
+      .select({ emailsSent: PotInformation.emailsSent })
+      .from(PotInformation)
+      .where(eq(PotInformation.contractAddress, contractAddress.toLowerCase()))
+      .limit(1);
+
+    const emailsAlreadySent = !forceResend && emailStatus.length > 0 && emailStatus[0].emailsSent;
+
+    if (emailsAlreadySent) {
+      console.log(`📧 Emails already sent for contract ${contractAddress} - skipping duplicate emails`);
+    } else {
+      if (forceResend && emailStatus.length > 0 && emailStatus[0].emailsSent) {
+        console.log(`📧 forceResend=true - bypassing emailsSent flag, will resend emails`);
+      }
       console.log(`📧 Email notification check: ${participantAddresses.length} participant addresses provided for ${currentParticipants} participants`);
       console.log(`📧 Data freshness: ${participantAddresses.length < currentParticipants ? '❌ STALE (missing participants)' : '✅ FRESH'}`);
-    } else {
-      console.log(`📧 Skipping email notifications - announcement already sent previously`);
     }
-    
-    if (!result.isDuplicate && participantAddresses && participantAddresses.length > 0) {
+
+    if (!emailsAlreadySent && participantAddresses && participantAddresses.length > 0) {
       try {
         console.log(`📧 Attempting to send email notifications to ${participantAddresses.length} participants`);
-        
+        console.log(`📧 Full participant addresses array:`, participantAddresses);
+        console.log(`📧 Sample of first 5 addresses:`, participantAddresses.slice(0, 5));
+
         // Get email addresses for participants
         console.log(`📧 Attempting to get emails for ${participantAddresses.length} participants:`, participantAddresses);
         const emails = await getParticipantEmails(participantAddresses);
@@ -3083,13 +3144,26 @@ export async function notifyMinimumPlayersReached(
           // Send email notifications using the existing email function
           console.log(`📧 Sending email notifications to ${emails.length} participants with emails`);
           const emailResult = await sendMinimumPlayersEmail(emails, currentParticipants, marketType);
-          
+
           console.log(`📧 Email notification result:`, emailResult);
-          if (!emailResult.success) {
-            console.error(`📧 Email sending failed:`, emailResult.errors);
+          if (emailResult.success) {
+            console.log(`✅ SUCCESS: ${emailResult.sent} emails sent to participants`);
+
+            // Set emailsSent flag to prevent duplicate emails
+            await db
+              .update(PotInformation)
+              .set({ emailsSent: true })
+              .where(eq(PotInformation.contractAddress, contractAddress.toLowerCase()));
+            console.log(`🎯 Set emailsSent flag to true for contract ${contractAddress}`);
+          } else {
+            console.error(`❌ FAILED: Email sending failed:`, emailResult.errors);
+            console.log(`⚠️  emailsSent flag NOT set - will retry on next page load`);
           }
         } else {
-          console.log(`📧 No email addresses found for ${participantAddresses.length} participants - check if users have provided emails in their profiles`);
+          console.log(`⚠️  SUMMARY: No email addresses found for ${participantAddresses.length} participants`);
+          console.log(`⚠️  This means none of these ${participantAddresses.length} participants have registered their email using the "Get Notified" button`);
+          console.log(`⚠️  Only in-app announcement notification will be visible to users`);
+          console.log(`⚠️  emailsSent flag NOT set - will retry when participants have emails registered`);
         }
       } catch (emailError) {
         console.error("❌ Error sending email notifications:", emailError);
@@ -3102,6 +3176,192 @@ export async function notifyMinimumPlayersReached(
     console.error("❌ Error sending minimum players notification:", error);
     return { isDuplicate: false, error: error instanceof Error ? error.message : 'Unknown error' };
     // Don't throw - notifications failing shouldn't break main flow
+  }
+}
+
+/**
+ * Sends notification when tournament has officially started (first day)
+ * Used by owner to manually notify participants that daily predictions have begun
+ */
+export async function notifyTournamentStarted(
+  contractAddress: string,
+  currentParticipants: number,
+  marketType: string = 'market',
+  participantAddresses: string[] = []
+) {
+  try {
+    console.log(`🎯 Sending tournament started notification for ${contractAddress}: ${currentParticipants} participants`);
+
+    const { PENALTY_EXEMPT_CONTRACTS, getSmartMarketDisplayName } = await import('./config');
+    const { getEventDate } = await import('./eventDates');
+
+    const isPenaltyExempt = PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
+    const eventDate = isPenaltyExempt ? getEventDate(contractAddress) : null;
+    const friendlyMarketName = getSmartMarketDisplayName(marketType as TableType);
+
+    // Get current date for "today" reference
+    const today = new Date();
+    const todayFormatted = today.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      timeZone: 'UTC'
+    });
+
+    let message: string;
+
+    if (isPenaltyExempt && eventDate) {
+      message = `The ${friendlyMarketName} tournament has officially begun! Day 1 predictions are now open. You have 24 hours to make your first prediction. Remember to return daily to stay in the competition. If eliminated, you can re-enter and compete again.`;
+    } else {
+      message = `The ${friendlyMarketName} tournament has officially begun! Day 1 predictions are now open with ${currentParticipants} participants. You have 24 hours to make your prediction for today. Return daily to continue competing. If you're eliminated, you can re-enter and keep playing.`;
+    }
+
+    // Create the announcement
+    const announcementResult = await createContractAnnouncement(message, contractAddress);
+    console.log(`✅ Tournament started notification sent successfully (${currentParticipants} participants)`);
+
+    // Send emails to participants
+    if (participantAddresses && participantAddresses.length > 0) {
+      try {
+        console.log(`📧 Attempting to send tournament started emails to ${participantAddresses.length} participants`);
+
+        const emails = await getParticipantEmails(participantAddresses);
+        console.log(`📧 Found ${emails.length} email addresses for tournament started notification`);
+
+        if (emails.length > 0) {
+          const emailResult = await sendTournamentStartedEmail(emails, currentParticipants, marketType);
+
+          console.log(`📧 Tournament started email result:`, emailResult);
+          if (emailResult.success) {
+            console.log(`✅ SUCCESS: ${emailResult.sent} tournament started emails sent`);
+          } else {
+            console.error(`❌ FAILED: Tournament started email sending failed:`, emailResult.errors);
+          }
+        } else {
+          console.log(`⚠️  No email addresses found for ${participantAddresses.length} participants`);
+        }
+      } catch (emailError) {
+        console.error("❌ Error sending tournament started email notifications:", emailError);
+      }
+    }
+
+    return {
+      success: true,
+      message: "Tournament started notification sent successfully",
+      announcement: announcementResult[0]
+    };
+  } catch (error) {
+    console.error("❌ Error sending tournament started notification:", error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
+}
+
+/**
+ * Sends email notification when tournament has started (first day)
+ */
+export async function sendTournamentStartedEmail(
+  emails: string[],
+  currentParticipants: number,
+  marketType: string = 'market'
+): Promise<{ success: boolean; sent: number; errors: string[] }> {
+  try {
+    if (!emails || emails.length === 0) {
+      console.log('📧 No email addresses to notify for tournament start');
+      return { success: true, sent: 0, errors: [] };
+    }
+
+    console.log(`📧 Sending tournament started email to ${emails.length} participants`);
+
+    const subject = `Your ${marketType} tournament has begun - Make your first prediction`;
+    const htmlContent = `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+          <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">Tournament Has Begun</h1>
+        </div>
+
+        <div style="background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          <h2 style="color: #333; margin-top: 0;">The ${marketType} tournament has officially started with ${currentParticipants} participants</h2>   
+
+          <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 20px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+            <p style="margin: 0 0 10px 0; color: #333; font-weight: 500;">
+              You have 24 hours to make your prediction for today.
+            </p>
+            <p style="margin: 0; color: #666; font-size: 14px;">
+              Return every day to continue competing. Wrong predictions eliminate you from that round, but you can always re-enter and keep playing.
+            </p>
+          </div>
+
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://prediwin.com'}"
+               style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+                      color: white;
+                      text-decoration: none;
+                      padding: 12px 30px;
+                      border-radius: 6px;
+                      font-weight: bold;
+                      display: inline-block;">
+              Make Your Prediction Now
+            </a>
+          </div>
+
+          <div style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px;">
+            <p style="color: #666; font-size: 14px; margin: 0 0 10px 0;">
+              <strong>How it works:</strong>
+            </p>
+            <ul style="color: #666; font-size: 14px; margin: 0; padding-left: 20px;">
+              <li>Make your prediction each day within 24 hours</li>
+              <li>Wrong predictions eliminate you from the current pot</li>
+              <li>You can re-enter and continue competing</li>
+              <li>Last players standing share the prize pool</li>
+            </ul>
+          </div>
+
+          <div style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px; text-align: center;">
+            <p style="color: #999; font-size: 14px; margin: 0;">
+              Good luck with your predictions.
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    console.log(`📧 Calling email API for tournament started at: ${baseUrl}/api/send-email`);
+
+    const response = await fetch(`${baseUrl}/api/send-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        to: emails,
+        subject,
+        html: htmlContent,
+        type: 'tournament-started'
+      }),
+    });
+
+    console.log(`📧 Tournament started email API response status: ${response.status} ${response.statusText}`);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`📧 Tournament started email API error:`, errorText);
+      throw new Error(`Email API responded with status: ${response.status} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log(`📧 Tournament started email API result:`, result);
+
+    console.log(`✅ Tournament started email notification sent successfully to ${emails.length} participants`);
+    return { success: true, sent: emails.length, errors: [] };
+
+  } catch (error) {
+    console.error("❌ Error sending tournament started email:", error);
+    return {
+      success: false,
+      sent: 0,
+      errors: [error instanceof Error ? error.message : 'Unknown email error']
+    };
   }
 }
 
