@@ -2993,7 +2993,13 @@ export async function notifyMinimumPlayersReached(
       ? 'All in One'
       : marketType.charAt(0).toUpperCase() + marketType.slice(1);
 
-    console.log(`🎯 Sending minimum players reached notification for ${contractAddress}: ${currentParticipants} participants`);
+    console.log(`🎯 ==========================================`);
+    console.log(`🎯 NOTIFY MINIMUM PLAYERS - ${displayMarketType.toUpperCase()}`);
+    console.log(`🎯 ==========================================`);
+    console.log(`🎯 Contract: ${contractAddress}`);
+    console.log(`🎯 Market Type: ${marketType} (Display: ${displayMarketType})`);
+    console.log(`🎯 Participants: ${currentParticipants}`);
+    console.log(`🎯 Participant Addresses Provided: ${participantAddresses?.length || 0}`);
     if (forceResend) {
       console.log(`⚠️  forceResend=true - bypassing duplicate checks (owner manual trigger)`);
     }
@@ -3118,14 +3124,24 @@ export async function notifyMinimumPlayersReached(
 
     const emailsAlreadySent = !forceResend && emailStatus.length > 0 && emailStatus[0].emailsSent;
 
+    console.log(`📧 ==========================================`);
+    console.log(`📧 EMAIL NOTIFICATION CHECK - ${displayMarketType.toUpperCase()}`);
+    console.log(`📧 ==========================================`);
+    console.log(`📧 emailStatus from DB:`, emailStatus);
+    console.log(`📧 emailsAlreadySent flag: ${emailsAlreadySent}`);
+    console.log(`📧 forceResend: ${forceResend}`);
+
     if (emailsAlreadySent) {
-      console.log(`📧 Emails already sent for contract ${contractAddress} - skipping duplicate emails`);
+      console.log(`📧 ❌ SKIPPING - Emails already sent for contract ${contractAddress}`);
+      console.log(`📧 To resend, use forceResend=true or reset pot data`);
     } else {
       if (forceResend && emailStatus.length > 0 && emailStatus[0].emailsSent) {
-        console.log(`📧 forceResend=true - bypassing emailsSent flag, will resend emails`);
+        console.log(`📧 ✅ forceResend=true - bypassing emailsSent flag, will resend emails`);
       }
-      console.log(`📧 Email notification check: ${participantAddresses.length} participant addresses provided for ${currentParticipants} participants`);
-      console.log(`📧 Data freshness: ${participantAddresses.length < currentParticipants ? '❌ STALE (missing participants)' : '✅ FRESH'}`);
+      console.log(`📧 Participant addresses check:`);
+      console.log(`📧   - Provided: ${participantAddresses.length} addresses`);
+      console.log(`📧   - Expected: ${currentParticipants} participants`);
+      console.log(`📧   - Data status: ${participantAddresses.length < currentParticipants ? '❌ STALE (missing participants)' : '✅ FRESH'}`);
     }
 
     if (!emailsAlreadySent && participantAddresses && participantAddresses.length > 0) {
@@ -3135,14 +3151,21 @@ export async function notifyMinimumPlayersReached(
         console.log(`📧 Sample of first 5 addresses:`, participantAddresses.slice(0, 5));
 
         // Get email addresses for participants
-        console.log(`📧 Attempting to get emails for ${participantAddresses.length} participants:`, participantAddresses);
+        console.log(`📧 Fetching emails from database for ${participantAddresses.length} participants...`);
+        console.log(`📧 Sample addresses (first 3):`, participantAddresses.slice(0, 3));
         const emails = await getParticipantEmails(participantAddresses);
-        
-        console.log(`📧 Found ${emails.length} email addresses:`, emails.length > 0 ? emails : 'none');
-        
+
+        console.log(`📧 ==========================================`);
+        console.log(`📧 EMAIL LOOKUP RESULT - ${displayMarketType.toUpperCase()}`);
+        console.log(`📧 ==========================================`);
+        console.log(`📧 Participants checked: ${participantAddresses.length}`);
+        console.log(`📧 Emails found: ${emails.length}`);
+        console.log(`📧 Email addresses:`, emails.length > 0 ? emails : 'NONE - No users registered emails');
+
         if (emails.length > 0) {
           // Send email notifications using the existing email function
-          console.log(`📧 Sending email notifications to ${emails.length} participants with emails`);
+          console.log(`📧 ✅ SENDING EMAILS to ${emails.length} participants...`);
+          console.log(`📧 Market type being sent: "${marketType}" (display: "${displayMarketType}")`);
           const emailResult = await sendMinimumPlayersEmail(emails, currentParticipants, marketType);
 
           console.log(`📧 Email notification result:`, emailResult);
@@ -3160,17 +3183,25 @@ export async function notifyMinimumPlayersReached(
             console.log(`⚠️  emailsSent flag NOT set - will retry on next page load`);
           }
         } else {
-          console.log(`⚠️  SUMMARY: No email addresses found for ${participantAddresses.length} participants`);
-          console.log(`⚠️  This means none of these ${participantAddresses.length} participants have registered their email using the "Get Notified" button`);
-          console.log(`⚠️  Only in-app announcement notification will be visible to users`);
-          console.log(`⚠️  emailsSent flag NOT set - will retry when participants have emails registered`);
+          console.log(`📧 ==========================================`);
+          console.log(`📧 ⚠️  NO EMAILS TO SEND - ${displayMarketType.toUpperCase()}`);
+          console.log(`📧 ==========================================`);
+          console.log(`📧 Reason: None of the ${participantAddresses.length} participants have registered emails`);
+          console.log(`📧 Action needed: Users must click "Get Notified" button to register their email`);
+          console.log(`📧 Impact: Only in-app announcement will be visible, no email notifications sent`);
+          console.log(`📧 Note: emailsSent flag NOT set - will retry when participants register emails`);
+          console.log(`📧 ==========================================`);
         }
       } catch (emailError) {
-        console.error("❌ Error sending email notifications:", emailError);
+        console.error(`❌ Error sending email notifications for ${displayMarketType}:`, emailError);
         // Don't let email errors affect the main notification flow
       }
     }
-    
+
+    console.log(`🎯 ==========================================`);
+    console.log(`🎯 NOTIFICATION COMPLETE - ${displayMarketType.toUpperCase()}`);
+    console.log(`🎯 ==========================================`);
+
     return result;
   } catch (error) {
     console.error("❌ Error sending minimum players notification:", error);

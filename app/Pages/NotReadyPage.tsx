@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Mail, Users, Clock } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { saveUserEmail, notifyMinimumPlayersReached } from '../Database/actions';
 import { useContractData } from '../hooks/useContractData';
@@ -27,6 +27,8 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
   const [eventDate, setEventDate] = useState<string | null>(null);
   const { address } = useAccount();
   const { contractAddresses, participantsData } = useContractData();
+
+  // Track which contracts we've already notified about (prevents duplicate calls in same session)
 
   // Function to get next calendar day in UTC
   const getNextCalendarDayUTC = (): string => {
