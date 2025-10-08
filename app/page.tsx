@@ -750,7 +750,7 @@ export default function App() {
                 <Wallet>
                   <ConnectWallet
                     text={t.signUp}
-                    className={`${isConnected ? '!bg-transparent !border-none !shadow-none !p-0' : ''} ${isMobile ? 'bg-red-700 hover:bg-black !px-4 !py-2 !min-w-0' : 'bg-red-700 hover:bg-black !px-4 !py-2 !min-w-0 !w-24 !whitespace-nowrap'}`}
+                    className={`${isConnected ? '!bg-transparent !border-none !shadow-none !p-0' : ''} ${isMobile ? 'bg-red-700 hover:bg-black !px-4 !py-2 !min-w-0' : 'bg-red-700 hover:bg-black !px-4 !py-2 !min-w-0 !whitespace-nowrap'}`}
                   >
                     {isConnected && (
                       <div className="flex items-center gap-2">

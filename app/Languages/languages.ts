@@ -1239,7 +1239,7 @@ export const translations: Record<Language, Translations> = {
     howItWorks: 'Como funciona',
     yourBalance: 'Seu Saldo',
     signIn: 'Entrar',
-    signUp: 'Inscrever-se',
+    signUp: 'Criar Conta',
 
     // Filter
     allTournaments: 'Todos',
