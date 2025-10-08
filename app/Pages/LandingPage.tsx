@@ -2253,8 +2253,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 return marketsWithLayoutData.map((market, index) => {
                   // Calculate animation classes
                   const isSwapping = swapAnimation && swapAnimation.isAnimating;
-                  const isSwappingToFirst = isSwapping && swapAnimation.toIndex === index;
-                  const isSwappingFromFirst = isSwapping && swapAnimation.fromIndex === index;
 
                   // Calculate swap distance for CSS variable (desktop uses grid so different calculation)
                   const swapDistance = isSwapping
@@ -2474,7 +2472,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-blue-200 text-blue-700 px-14 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 flex-1 max-w-[130px]")}
+                                    className={getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-blue-200 text-blue-700 px-14 py-2.5 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
                                   >
                                     {getButtonContent(market.id, 'positive', false)}
                                   </button>
@@ -2491,7 +2489,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-purple-200 text-purple-700 px-14 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 flex-1 max-w-[130px]")}
+                                    className={getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-purple-200 text-purple-700 px-14 py-2.5 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
                                   >
                                     {getButtonContent(market.id, 'negative', false)}
                                   </button>
@@ -2541,7 +2539,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             handleMarketClick(market.id);
                                           }, 300);
                                         })}
-                                        className={`${getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[35px]")}`}
+                                        className={`${getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[38px]")}`}
                                       >
                                         {getButtonContent(market.id, 'positive', false)}
                                       </button>
@@ -2558,7 +2556,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             handleMarketClick(market.id);
                                           }, 300);
                                         })}
-                                        className={`${getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-purple-200 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[35px]")}`}
+                                        className={`${getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-purple-200 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[38px]")}`}
                                       >
                                         {getButtonContent(market.id, 'negative', false)}
                                       </button>

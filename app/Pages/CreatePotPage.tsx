@@ -28,6 +28,9 @@ interface CreatePotPageProps {
 }
 
 const CreatePotPage = ({ navigateToPrivatePot }: CreatePotPageProps) => {
+  // Coming soon mode - set to true to show coming soon page
+  const SHOW_COMING_SOON = true;
+
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showMyPots, setShowMyPots] = useState(false);
   const [showJoinPot, setShowJoinPot] = useState(false);
@@ -86,6 +89,27 @@ const CreatePotPage = ({ navigateToPrivatePot }: CreatePotPageProps) => {
 
 
   // Note: Pot loading now happens in handleMyMarketsClick for better UX
+
+  // Coming soon view - show before any other views
+  if (SHOW_COMING_SOON) {
+    return (
+      <div className="max-w-2xl mx-auto mt-20 p-8 text-center -translate-y-16 md:translate-y-0">
+        <div className="bg-white border-2 border-red-200 rounded-xl p-8 shadow-lg">
+          <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="text-2xl">🎉</div>
+          </div>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Private Tournaments Coming Soon!</h2>
+          <p className="text-gray-600 mb-6 leading-relaxed">
+            We're building something special for you! Soon you'll be able to create custom prediction
+            tournaments for your friends, community, or organization.
+          </p>
+          <div className="text-sm text-gray-500">
+            Stay tuned for updates! 🚀
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Handle My Markets button click with loading screen
   const handleMyMarketsClick = async () => {
@@ -155,7 +179,7 @@ const CreatePotPage = ({ navigateToPrivatePot }: CreatePotPageProps) => {
   // Success state - show created pot details
   if (isConfirmed && (createdPotAddress || receipt)) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-white ">
         <div className="max-w-2xl mx-auto px-4 py-12">
           <div className="text-center">
             <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">

@@ -3,9 +3,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useAccount, useReadContract, useBalance } from 'wagmi';
+import { useAccount, useBalance } from 'wagmi';
 import { formatUnits } from 'viem';
-import { User, ChevronLeft, ChevronRight, Bell } from 'lucide-react';
+import {  ChevronLeft, ChevronRight, Bell } from 'lucide-react';
 import { getUnreadAnnouncements, getUserContractAnnouncements } from './Database/actions';
 import { filterUnreadAnnouncements, markAnnouncementsAsRead } from './utils/announcementCookies';
 import PredictionPotTest from './Pages/PredictionPotTest';
@@ -36,10 +36,6 @@ import { getMarkets } from './Constants/markets';
 import { Language, getTranslation, supportedLanguages, getMarketDisplayName, getPersonalizedLabel } from './Languages/languages';
 import { getPrice } from './Constants/getPrice';
 import Cookies from 'js-cookie';
-
-
-
-
 
 
 // Contract now uses ETH directly - no USDC needed
@@ -343,19 +339,6 @@ export default function App() {
     }
   };
 
-  const scrollLeft = () => {
-    const container = carouselRef.current;
-    if (container) {
-      container.scrollBy({ left: -200, behavior: 'smooth' });
-    }
-  };
-
-  const scrollRight = () => {
-    const container = carouselRef.current;
-    if (container) {
-      container.scrollBy({ left: 200, behavior: 'smooth' });
-    }
-  };
 
   const scrollLeft2 = () => {
     const container = carousel2Ref.current;
@@ -394,12 +377,7 @@ export default function App() {
     }
   };
 
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const container = e.currentTarget;
-    const { scrollLeft, scrollWidth, clientWidth } = container;
-    setShowLeftArrow(scrollLeft > 0);
-    setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
-  };
+ 
 
   const handleScroll2 = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
@@ -664,7 +642,7 @@ export default function App() {
                               {announcements.map((announcement) => (
                                 <div key={announcement.id} className="p-4 hover:bg-gray-50 transition-colors">
                                   <div className="flex items-start justify-between gap-2 mb-1">
-                                    <span className="text-xs font-medium text-gray-900">PrediWin</span>
+                                    <span className="text-xs font-medium text-gray-900">Prediwin</span>
                                     <span className="text-xs text-gray-500">
                                       {(() => {
                                         const date = new Date(announcement.datetime);

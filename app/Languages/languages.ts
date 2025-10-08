@@ -344,7 +344,7 @@ export interface Translations {
   fundAccount: string;
   statsRankings: string;
   games: string;
-  myPots: string;
+  myTournaments: string;
   ideas: string;
   liveMarkets: string;
   wallet: string;
@@ -485,7 +485,8 @@ export interface Translations {
   referrals: string;
   manageEmail: string;
   tapForStats: string;
-  newBadge: string;
+  portfolioOverview: string;
+  ethOnBaseNetwork: string;
   profile: string;
   totalEarnings: string;
   potsWon: string;
@@ -911,7 +912,7 @@ export const translations: Record<Language, Translations> = {
     fundAccount: 'Fund Account',
     statsRankings: 'Profile',
     games: 'Games',
-    myPots: 'Tournaments',
+    myTournaments: 'My Tournaments',
     ideas: 'Ideas',
     liveMarkets: 'Live Markets',
     wallet: 'Wallet',
@@ -1005,7 +1006,8 @@ export const translations: Record<Language, Translations> = {
     // ProfilePage translations
     referrals: 'Referrals',
     tapForStats: 'Your Stats & Earnings',
-    newBadge: 'New',
+    portfolioOverview: 'Ethereum Balance',
+    ethOnBaseNetwork: 'ETH on Base Network',
     profile: 'Profile',
     totalEarnings: 'Total Earnings',
     potsWon: 'Pots Won',
@@ -1428,7 +1430,7 @@ export const translations: Record<Language, Translations> = {
     fundAccount: 'Depositar',
     statsRankings: 'Perfil',
     games: 'Jogos',
-    myPots: 'Torneios',
+    myTournaments: 'Meus Torneios',
     ideas: 'Ideias',
     liveMarkets: 'Mercados Ao Vivo',
     wallet: 'Carteira',
@@ -1521,7 +1523,8 @@ export const translations: Record<Language, Translations> = {
     // ProfilePage translations
     referrals: 'Indicações',
     tapForStats: 'Suas Estatísticas e Ganhos',
-    newBadge: 'Novo',
+    portfolioOverview: 'Saldo em Ethereum',
+    ethOnBaseNetwork: 'ETH na Base Network',
     profile: 'Perfil',
     totalEarnings: 'Ganhos Totais',
     potsWon: 'Potes Ganhos',
