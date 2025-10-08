@@ -592,7 +592,7 @@ export default function App() {
                   {isConnected && (
                     <div className={`relative ${isMobile ? 'order-1' : 'order-3'}`} data-announcements-dropdown>
                       <button
-                        className="relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-3 md:-translate-x-1 md:-mr-6"
+                        className="relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-3 md:-translate-x-1 md:-mr-3"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -668,7 +668,7 @@ export default function App() {
                   {/* Language dropdown - Mobile: middle, Desktop: leftmost - Always visible */}
                   <div className={`relative z-50 ${isMobile ? 'order-2' : (isConnected ? 'order-1' : 'order-1 -ml-4')}`} data-language-dropdown>
                     <button
-                      className="hidden md:flex items-center gap-2 px-3 py-2 bg-white text-gray-700 font-medium hover:bg-gray-200 transition-colors"
+                      className={`hidden md:flex items-center gap-2 px-3 py-2 bg-white text-gray-700 font-medium hover:bg-gray-200 transition-colors ${currentLanguage === 'pt-BR' && !isConnected ? 'translate-x-2' : ''}`}
                       onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
                       type="button"
                     >
@@ -681,7 +681,7 @@ export default function App() {
                         {supportedLanguages.find(lang => lang.code === currentLanguage)?.name}
                       </span>
                       <svg
-                        className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                        className={`w-4 h-4 text-gray-500 transition-transform duration-200 flex-shrink-0 ${
                           isLanguageDropdownOpen ? 'rotate-180' : 'rotate-0'
                         }`}
                         fill="none"
