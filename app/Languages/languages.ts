@@ -26,7 +26,7 @@ export interface Translations {
   sp500Question: string;
   formula1Question: string;
 
-  // Pot Topics
+  // tournament Topics
   generalKnowledgeTopic: string;
   formula1Topic: string;
   cryptoTopic: string;
@@ -81,13 +81,13 @@ export interface Translations {
   amountBalance?: string; // Added for consistency with other sections
   approveSpending?: string; // Added for the approve spending section
   allowContracts?: string; // Added for the allowance message
-  enterPot?: string; // Added for the enter pot section 
-  pay10USDC?: string; // Added for the payment instruction in the enter pot section 
+  enterPot?: string; // Added for the enter tournament section 
+  pay10USDC?: string; // Added for the payment instruction in the enter tournament section 
   approveProcessing?: string; // Added for the processing state of the approve button
   alreadyApproved?: string; // Added for the already approved state of the approve button
   approveUSDC?: string; // Added for the approve USDC button text
-  enterPotProcessing?: string; // Added for the processing state of the enter pot button
-  enterPotButton?: string; // Added for the enter pot button text
+  enterPotProcessing?: string; // Added for the processing state of the enter tournament button
+  enterPotButton?: string; // Added for the enter tournament button text
   insufficientUSDC?: string; // Added for the insufficient balance message
   pleaseApproveFirst?: string; // Added for the message to approve USDC spending first  
   appleQuestion?: string; // Added for the Apple stock question
@@ -213,6 +213,14 @@ export interface Translations {
   yourBalance: string;
   signIn: string;
   signUp: string;
+
+  // Notifications
+  notifications: string;
+  loading: string;
+  noNotifications: string;
+  justNow: string;
+  hoursAgo: string;
+  daysAgo: string;
 
   // Email Collection
   readyToPlay: string;
@@ -540,7 +548,7 @@ export const translations: Record<Language, Translations> = {
     sp500Question: 'Will S&P 500 end the day higher?',
     formula1Question: 'Lewis Hamilton finishes on the podium',
 
-    // Pot Topics
+    // tournament Topics
     generalKnowledgeTopic: 'All in one',
     formula1Topic: 'Formula 1',
     cryptoTopic: 'Crypto',
@@ -551,11 +559,11 @@ export const translations: Record<Language, Translations> = {
     howItWorksTitle: 'How It Works',
     howItWorksSubtitle: 'Join prediction markets with real rewards and consequences',
     step1Title: 'Enter the Pot',
-    step1Description: 'Join weekly prediction markets. Each market has its own growing pot of participants.',
+    step1Description: 'Join weekly prediction markets. Each market has its own growing tournament of participants.',
     step2Title: 'Make Your Prediction',
     step2Description: 'Predict tomorrow\'s outcome - will Bitcoin go up or down? Lock in your prediction before the deadline.',
     step3Title: 'Winners Take All',
-    step3Description: 'Correct predictors at the end of the week split the entire pot equally. Wrong predictors get temporarily blocked from predicting until next week.',
+    step3Description: 'Correct predictors at the end of the week split the entire tournament equally. Wrong predictors get temporarily blocked from predicting until next week.',
     searchPlaceholder: "Search markets...",
     noMarketsFound: "No markets found. Please try a different search.",
 
@@ -563,9 +571,9 @@ export const translations: Record<Language, Translations> = {
     tutorialStep1Title: 'Weekly Prediction Markets',
     tutorialStep1Description: 'Survive the week by making correct predictions across crypto, stocks, sports and more. Entry fees increase daily (Sun $0.01 → Fri $0.06).',
     tutorialStep2Title: 'What are the prizes?',
-    tutorialStep2Description: 'Each tournament has its own pot that grows every time a player enters or re-enters the tournament. The more players, the bigger the rewards for the winners!',
+    tutorialStep2Description: 'Each tournament has its own tournament that grows every time a player enters or re-enters the tournament. The more players, the bigger the rewards for the winners!',
     tutorialStep3Title: 'Get Your Tokens & Enter the Pot',
-    tutorialStep3Description: 'You need USDC (for pot entries) and ETH (for gas fees ~$0.01). Buy them on our Buy page or receive from any wallet. Then pay the daily entry fee to join any prediction market. Sundays are cheapest at $0.01 USDC!',
+    tutorialStep3Description: 'You need USDC (for tournament entries) and ETH (for gas fees ~$0.01). Buy them on our Buy page or receive from any wallet. Then pay the daily entry fee to join any prediction market. Sundays are cheapest at $0.01 USDC!',
     tutorialStep4Title: 'Daily Predictions (Sunday-Friday)',
     tutorialStep4Description: 'Every day, predict tomorrow\'s outcome in your chosen market. Wrong predictions require a re-entry fee to continue playing.',
     tutorialStep5Title: 'Weekly Tournaments',
@@ -599,7 +607,7 @@ export const translations: Record<Language, Translations> = {
     alreadyApproved: 'Already Approved',
     approveUSDC: 'Approve USDC',
     enterPotProcessing: 'Processing...',
-    enterPotButton: 'Enter Pot (10 USDC)',
+    enterPotButton: 'Enter tournament (10 USDC)',
     insufficientUSDC: 'Insufficient USDC balance',
     pleaseApproveFirst: 'Please approve USDC spending first',
     amazonQuestion: 'Will Amazon stock end the day higher?',
@@ -629,7 +637,7 @@ export const translations: Record<Language, Translations> = {
 
     // NotReadyPage translations
     getNotified: 'Get Notified',
-    emailWhenReady: 'We\'ll email you when this pot has enough players to start',
+    emailWhenReady: 'We\'ll email you when this tournament has enough players to start',
     notifyMe: 'Notify Me',
     saving: 'Saving...',
     cancel: 'Cancel',
@@ -639,7 +647,7 @@ export const translations: Record<Language, Translations> = {
     potIsReady: 'Ready. Set. Go! 🎉',
     tournamentStartingSoon: 'Tournament Starting Soon!',
     finalDayEliminated: '🏆 The final day has arrived and winners are being determined. Unfortunately, you were eliminated earlier in the tournament. Better luck next time!',
-    potIsLive: 'This pot is now live and accepting predictions! You shouldn\'t be seeing this page - try refreshing or navigating back.',
+    potIsLive: 'This tournament is now live and accepting predictions! You shouldn\'t be seeing this page - try refreshing or navigating back.',
     potReadyToStart: 'Great news! The tournament is ready to start. Predictions will begin on:',
     inviteFriends: ' Invite your friends! We\'ll notify you via email when there are enough players.',
     tournamentWillBegin: 'The tournament will begin on {startDate} - one week before the event ({eventDate})! Get ready to make your predictions.',
@@ -723,6 +731,14 @@ export const translations: Record<Language, Translations> = {
     signIn: 'Log in',
     signUp: 'Sign up',
 
+    // Notifications
+    notifications: 'Notifications',
+    loading: 'Loading...',
+    noNotifications: 'You have no notifications.',
+    justNow: 'Just now',
+    hoursAgo: 'h ago',
+    daysAgo: 'd ago',
+
     // Filter
     allTournaments: 'All',
     dailyTournaments: 'Daily',
@@ -754,10 +770,10 @@ export const translations: Record<Language, Translations> = {
     detailedStep4Description: 'Every day, you\'ll make a new prediction about the next day\'s outcome. The tournament continues with daily eliminations until only 5 players remain. Each day you survive brings you closer to winning the entire pot. Stay consistent and trust your instincts!',
 
     detailedStep5Title: '🏆 Step 5: Reach the Final 5',
-    detailedStep5Description: 'When the tournament reaches its final day (only 5 players left), this will be your last prediction. Make it count! If you\'re among the final winners, you\'ll split the entire accumulated pot equally with the other survivors. The more people eliminated, the bigger your share!',
+    detailedStep5Description: 'When the tournament reaches its final day (only 5 players left), this will be your last prediction. Make it count! If you\'re among the final winners, you\'ll split the entire accumulated tournament equally with the other survivors. The more people eliminated, the bigger your share!',
 
     detailedStep6Title: '💸 Step 6: Receive Your Winnings',
-    detailedStep6Description: 'If you make it to the end and win, the prize money is automatically sent to your wallet - no need to claim it manually! Winners split the pot equally. ',
+    detailedStep6Description: 'If you make it to the end and win, the prize money is automatically sent to your wallet - no need to claim it manually! Winners split the tournament equally. ',
 
     // Detailed Tournament Steps (Weekly Markets)
     detailedTournamentStep1Title: '🏁 Step 1: Join the Season Tournament',
@@ -770,7 +786,7 @@ export const translations: Record<Language, Translations> = {
     detailedTournamentStep3Description: 'Every week after the event, wrong predictors AND people who forgot to predict are eliminated. This is stricter than daily tournaments! You must both participate and be correct to survive. Stay active and engaged throughout the entire season.',
 
     detailedTournamentStep4Title: '💰 Step 4: Re-entry During Season',
-    detailedTournamentStep4Description: 'If you get eliminated, you can pay the same fixed entry fee to re-enter and continue the tournament. However, the longer the season goes, the bigger the pot grows, making victory more valuable! Strategic timing of re-entry can be important.',
+    detailedTournamentStep4Description: 'If you get eliminated, you can pay the same fixed entry fee to re-enter and continue the tournament. However, the longer the season goes, the bigger the tournament grows, making victory more valuable! Strategic timing of re-entry can be important.',
 
     detailedTournamentStep5Title: '🏁 Step 5: Survive the Full Season',
     detailedTournamentStep5Description: 'The tournament continues for the entire season (multiple weeks or months). Each week, more players are eliminated until only one person remains. You need to make correct predictions consistently throughout the whole season to claim the final prize.',
@@ -825,11 +841,11 @@ export const translations: Record<Language, Translations> = {
     eliminationSystem: '❌ Elimination System',
     eliminationSystemDesc: 'Wrong predictors AND non-predictors are eliminated each week. Stay active and predict correctly to survive!',
     reentryOption: '🔄 Re-entry Option',
-    reentryOptionDesc: 'Eliminated players can re-enter by paying the current fixed entry fee, but the pot grows each week making victory more valuable!',
+    reentryOptionDesc: 'Eliminated players can re-enter by paying the current fixed entry fee, but the tournament grows each week making victory more valuable!',
     seasonFinale: '🏁 Season Finale',
     seasonFinaleDesc: 'The last person standing at the end of the season wins the entire accumulated pot. Survive the full season to claim victory!',
     tournamentStats: '📊 Tournament Stats',
-    tournamentStatsDesc: 'Track remaining participants, pot value, and your survival streak throughout the season. Every week matters!',
+    tournamentStatsDesc: 'Track remaining participants, tournament value, and your survival streak throughout the season. Every week matters!',
     yourGoalTournament: 'Survive the entire tournament season by making correct predictions every week and be the last person standing to claim the full pot!',
 
     // Footer
@@ -940,7 +956,7 @@ export const translations: Record<Language, Translations> = {
     connectWalletTitle: 'Connect Wallet',
     connectToStartPredicting: 'Connect to start predicting',
     accessRequired: 'Access Required',
-    mustJoinPotFirst: 'You must join the pot first',
+    mustJoinPotFirst: 'You must join the tournament first',
 
     yesButton: 'YES',
     noButton: 'NO',
@@ -988,7 +1004,7 @@ export const translations: Record<Language, Translations> = {
     currentlyParticipatingIn: 'You\'re currently participating in',
     pot: 'pot',
     pots: 'pots',
-    clickAnyPotAbove: 'Click on any pot above to make predictions and compete for the pot.',
+    clickAnyPotAbove: 'Click on any tournament above to make predictions and compete for the pot.',
 
     // Penalty-exempt tournament announcements
     penaltyExemptTournamentNote: '📝 Note: The',
@@ -1058,7 +1074,7 @@ export const translations: Record<Language, Translations> = {
     sp500Question: 'O S&P 500 terminará o dia em alta?',
     formula1Question: 'Lewis hamilton terminará entre os três primeiros',
 
-    // Pot Topics
+    // tournament Topics
     generalKnowledgeTopic: 'Geral',
     formula1Topic: 'Fórmula 1',
     cryptoTopic: 'Cripto',
@@ -1155,11 +1171,11 @@ export const translations: Record<Language, Translations> = {
     cancel: 'Cancelar',
     notReadyYet: 'O torneio não está pronto para começar',
     tournamentComplete: 'Torneio Completo - Você Foi Eliminado',
-    potIsActive: 'Pote está Ativo! Pronto para Prever',
-    potIsReady: 'Pote está Pronto! Começando em Breve',
+    potIsActive: 'O Torneio tá Ativo! Pronto para Prever?',
+    potIsReady: 'O Torneio tá Pronto! Começando em Breve',
     tournamentStartingSoon: 'Torneio Começando em Breve!',
     finalDayEliminated: '🏆 O dia final chegou e os vencedores estão sendo determinados. Infelizmente, você foi eliminado mais cedo no torneio. Boa sorte na próxima!',
-    potIsLive: '🚀 Este pote agora está ao vivo e aceitando previsões! Você não deveria estar vendo esta página - tente atualizar ou voltar.',
+    potIsLive: '🚀 Este torneio tá pronto e aceitando previsões! Você não deveria estar vendo esta página - tente atualizar ou voltar.',
     potReadyToStart: '🎉 Ótimas notícias! Este torneio está pronto para começar. As previsões começarão em:',
     inviteFriends: ' Convide seus amigos! Notificaremos você por email quando houver jogadores suficientes.',
     tournamentWillBegin: '🏁 O torneio começará em {startDate} - uma semana antes do evento ({eventDate})! Prepare-se para fazer suas previsões.',
@@ -1170,7 +1186,7 @@ export const translations: Record<Language, Translations> = {
     transactionConfirming: 'Transação confirmando na blockchain...',
     viewOnBasescan: 'Ver no BaseScan →',
     reEntryRequired: '⚠️ Reentrada Necessária',
-    reEntryDescription: 'Você fez uma previsão errada e precisa pagar a taxa de entrada de hoje para reentrar neste pote específico.',
+    reEntryDescription: 'Você fez uma previsão errada e precisa pagar a taxa de entrada de hoje para reentrar neste torneio.',
     payReEntryFee: 'Pague a taxa de reentrada para continuar prevendo neste pote',
     processingReEntry: 'Processando Reentrada...',
     payToReEnter: 'Pagar para Reentrar',
@@ -1240,6 +1256,14 @@ export const translations: Record<Language, Translations> = {
     yourBalance: 'Seu Saldo',
     signIn: 'Entrar',
     signUp: 'Criar Conta',
+
+    // Notifications
+    notifications: 'Notificações',
+    loading: 'Carregando...',
+    noNotifications: 'Você não tem notificações.',
+    justNow: 'Agora mesmo',
+    hoursAgo: 'h atrás',
+    daysAgo: 'd atrás',
 
     // Filter
     allTournaments: 'Todos',

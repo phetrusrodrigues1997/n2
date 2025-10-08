@@ -625,17 +625,17 @@ export default function App() {
                         >
                           {/* Header */}
                           <div className="border-b border-gray-200 p-4">
-                            <h3 className="text-base font-medium text-gray-900">Notifications</h3>
+                            <h3 className="text-base font-medium text-gray-900">{t.notifications}</h3>
                           </div>
 
                           {/* Content */}
                           {loadingAnnouncements ? (
                             <div className="p-8 text-center">
-                              <div className="text-sm text-gray-500">Loading...</div>
+                              <div className="text-sm text-gray-500">{t.loading}</div>
                             </div>
                           ) : announcements.length === 0 ? (
                             <div className="p-8 text-center">
-                              <div className="text-sm text-gray-500">You have no notifications.</div>
+                              <div className="text-sm text-gray-500">{t.noNotifications}</div>
                             </div>
                           ) : (
                             <div className="divide-y divide-gray-200">
@@ -648,9 +648,9 @@ export default function App() {
                                         const date = new Date(announcement.datetime);
                                         const now = new Date();
                                         const diffHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-                                        if (diffHours < 1) return 'Just now';
-                                        if (diffHours < 24) return `${Math.floor(diffHours)}h ago`;
-                                        return `${Math.floor(diffHours / 24)}d ago`;
+                                        if (diffHours < 1) return t.justNow;
+                                        if (diffHours < 24) return `${Math.floor(diffHours)}${t.hoursAgo}`;
+                                        return `${Math.floor(diffHours / 24)}${t.daysAgo}`;
                                       })()}
                                     </span>
                                   </div>
