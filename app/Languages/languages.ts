@@ -1109,7 +1109,7 @@ export const translations: Record<Language, Translations> = {
     formula1Question: 'Lewis hamilton terminará entre os três primeiros',
 
     // tournament Topics
-    generalKnowledgeTopic: 'Geral',
+    generalKnowledgeTopic: 'Tudo',
     formula1Topic: 'Fórmula 1',
     cryptoTopic: 'Cripto',
     stocksTopic: 'Ações',

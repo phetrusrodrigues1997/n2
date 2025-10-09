@@ -987,7 +987,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           const percentage = getPercentageForButton(buttonType);
           return (
             <div className="flex items-center justify-center gap-2">
-              <span className={buttonType === 'positive' ? 'text-blue-600' : 'text-purple-600'}>
+              <span className={buttonType === 'positive' ? 'text-green-600' : 'text-red-600'}>
                 {buttonType === 'positive' ? '✓' : '✗'}
               </span>
               <span className="text-xs font-semibold opacity-75">{percentage}</span>
@@ -996,7 +996,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         } else {
           return (
             <div className="flex items-center justify-center gap-2">
-              <span className={buttonType === 'positive' ? 'text-blue-600' : 'text-purple-600'}>
+              <span className={buttonType === 'positive' ? 'text-green-600' : 'text-red-600'}>
                 {buttonType === 'positive' ? '✓' : '✗'}
               </span>
             </div>
@@ -1043,18 +1043,18 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     if (prediction && prediction.prediction === buttonType) {
       // User has voted for this option - show confirmed styling with white background
       if (buttonType === 'positive') {
-        return baseClasses.replace('bg-blue-50 hover:bg-blue-200 text-blue-700', 'bg-white text-blue-600 cursor-default border border-blue-600');
+        return baseClasses.replace('bg-green-100 hover:bg-green-200 text-green-700', 'bg-white text-green-600 cursor-default border border-green-600');
       } else {
-        return baseClasses.replace('bg-purple-50 hover:bg-purple-200 text-purple-700', 'bg-white text-purple-600 cursor-default border border-purple-600');
+        return baseClasses.replace('bg-red-50 hover:bg-red-200 text-red-700', 'bg-white text-red-600 cursor-default border border-red-600');
       }
     }
 
     // If user is participant and has voted for the opposite option, make this button more prominent (change vote)
     if (isParticipant && prediction && prediction.prediction !== buttonType) {
       if (buttonType === 'positive') {
-        return baseClasses.replace('bg-blue-50 hover:bg-blue-200 text-blue-700', 'bg-blue-100 hover:bg-purple-200 text-blue-800');
+        return baseClasses.replace('bg-green-100 hover:bg-green-200 text-green-700', 'bg-green-100 hover:bg-red-200 text-green-800');
       } else {
-        return baseClasses.replace('bg-purple-50 hover:bg-purple-200 text-purple-700', 'bg-purple-100 hover:bg-blue-200 text-purple-800');
+        return baseClasses.replace('bg-red-50 hover:bg-red-200 text-red-700', 'bg-red-100 hover:bg-green-200 text-red-800');
       }
     }
 
@@ -1608,7 +1608,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               handleMarketClick(market.id);
                             }
                           }}
-                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 ${market.marketIndex === 0 ? 'shadow-[-4px_0_12px_rgba(147,51,234,0.1),_0_-1px_20px_rgba(147,51,234,0.01),_4px_0_12px_rgba(59,130,246,0.1),_0_2px_16px_rgba(59,130,246,0.01)]' : 'hover:shadow-blue-200'} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
+                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 ${market.marketIndex === 0 ? 'shadow-[-4px_0_12px_rgba(147,51,234,0.1),_0_-1px_20px_rgba(147,51,234,0.01),_4px_0_12px_rgba(59,130,246,0.1),_0_2px_16px_rgba(59,130,246,0.01)]' : 'hover:shadow-green-200'} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
                             } ${animatingMarket === market.tabId ? 'animate-scale-once' : ''} ${(() => {
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
@@ -1647,10 +1647,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             else if (market.marketIndex === 0) {
                               // No bottom border for first market
                               if (market.tabId === selectedMarket) {
-                                classes += ' shadow-lg shadow-blue-100/50';
+                                classes += ' shadow-lg shadow-green-100/50';
                               }
                             } else if (market.tabId === selectedMarket) {
-                              classes += ' border-b border-gray-200 shadow-lg shadow-blue-100/50';
+                              classes += ' border-b border-gray-200 shadow-lg shadow-green-100/50';
                             } else {
                               classes += ' border-b border-gray-200';
                             }
@@ -1834,7 +1834,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-blue-200 text-blue-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'positive', true)}
                                     </button>
@@ -1851,7 +1851,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-purple-200 text-purple-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-22 py-2 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'negative', true)}
                                     </button>
@@ -1908,7 +1908,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                               handleMarketClick(market.id);
                                             }, 300);
                                           })}
-                                          className={`${getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-blue-200 text-blue-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
+                                          className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
                                         >
                                           {getButtonContent(market.id, 'positive', true)}
                                         </button>
@@ -1925,7 +1925,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                               handleMarketClick(market.id);
                                             }, 300);
                                           })}
-                                          className={`${getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-purple-200 text-purple-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
+                                          className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
                                         >
                                           {getButtonContent(market.id, 'negative', true)}
                                         </button>
@@ -1994,15 +1994,15 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 if (isEliminated) {
                                   // USER IS ELIMINATED: Show normal stats footer, no More Info button
                                   return (
-                                    <div className={`flex justify-between items-center pt-2 ${(() => {
-                                      return !market.useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
-                                    })()}`}>
+                                    <div className="absolute bottom-3 left-4 right-4 flex justify-between items-center">
                                       <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                                         {(() => {
                                           const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
                                           return (
                                             <>
-                                              {market.potTopic || 'N/A'}
+                                              {currentLanguage === 'pt-BR'
+                                                ? `Torneio de ${market.potTopic || 'N/A'}`
+                                                : `${market.potTopic || 'N/A'} Tournament`}
                                               <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
                                               <RefreshCw className="w-3 h-3" />
                                               {isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily')}
@@ -2017,7 +2017,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         style={{ opacity: 0.7 }}
                                       >
                                         {bookmarkLoading === market.id ? (
-                                          <div className="w-4 h-4 animate-spin rounded-full border-2 border-blue-700 border-t-transparent"></div>
+                                          <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
                                         ) : bookmarkedMarkets.has(market.id) ? (
                                           <Bookmark className="w-4 h-4 transition-all duration-200 text-red-700 fill-red-700" />
                                         ) : (
@@ -2065,9 +2065,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               } else {
                                 // USER IS NOT PARTICIPANT: Show two-column layout
                                 return (
-                                  <div className={`flex justify-between items-center pt-2 ${(() => {
-                                    return !market.useTraditionalLayout ? '-translate-y-2' : 'translate-y-2';
-                                  })()}`}>
+                                  <div className="absolute bottom-3 left-4 right-4 flex justify-between items-center">
                               <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                                 {(() => {
                                   const contractAddress = getContractAddress(market.id);
@@ -2075,7 +2073,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
                                   return (
                                     <>
-                                      {market.potTopic || 'N/A'}
+                                      {currentLanguage === 'pt-BR'
+                                        ? `Torneio de ${market.potTopic || 'N/A'}`
+                                        : `${market.potTopic || 'N/A'} Tournament`}
                                       <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
                                       <RefreshCw className="w-3 h-3" />
                                       {isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily')}
@@ -2094,7 +2094,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       style={{ opacity: 0.7 }}
                                     >
                                       {bookmarkLoading === market.id ? (
-                                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-blue-700 border-t-transparent"></div>
+                                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
                                       ) : bookmarkedMarkets.has(market.id) ? (
                                         <Bookmark
                                           className="w-4 h-4 transition-all duration-200 text-red-700 fill-red-700"
@@ -2141,7 +2141,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                   <div className="md:hidden">
                     {isLoadingMore && (
                       <div className="flex justify-center items-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-700"></div>
                         <span className="ml-3 text-gray-600">Loading more pots...</span>
                       </div>
                     )}
@@ -2151,7 +2151,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                       <div className="text-center py-6 hidden">
                         <button
                           onClick={loadMoreMarkets}
-                          className="bg-blue-700 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
+                          className="bg-green-700 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
                         >
                           Load More Pots ({allMarkets - displayedMarketsCount} remaining)
                         </button>
@@ -2498,7 +2498,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-blue-200 text-blue-700 px-14 py-2.5 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
+                                    className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-14 py-2.5 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
                                   >
                                     {getButtonContent(market.id, 'positive', false)}
                                   </button>
@@ -2515,7 +2515,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-purple-200 text-purple-700 px-14 py-2.5 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
+                                    className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-14 py-2.5 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
                                   >
                                     {getButtonContent(market.id, 'negative', false)}
                                   </button>
@@ -2565,7 +2565,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             handleMarketClick(market.id);
                                           }, 300);
                                         })}
-                                        className={`${getButtonStyles(market.id, 'positive', "bg-blue-50 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[38px]")}`}
+                                        className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[38px]")}`}
                                       >
                                         {getButtonContent(market.id, 'positive', false)}
                                       </button>
@@ -2582,7 +2582,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             handleMarketClick(market.id);
                                           }, 300);
                                         })}
-                                        className={`${getButtonStyles(market.id, 'negative', "bg-purple-50 hover:bg-purple-200 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[38px]")}`}
+                                        className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[38px]")}`}
                                       >
                                         {getButtonContent(market.id, 'negative', false)}
                                       </button>
@@ -2619,15 +2619,15 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               if (isEliminated) {
                                 // USER IS ELIMINATED: Show normal stats footer, no More Info button
                                 return (
-                                  <div className={`flex justify-between items-center pt-2 ${(() => {
-                                    return !market.useTraditionalLayout ? '' : '';
-                                  })()}`}>
+                                  <div className="absolute bottom-3 left-4 right-4 flex justify-between items-center">
                                     <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                                       {(() => {
                                         const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
                                         return (
                                           <>
-                                            {market.potTopic || 'N/A'}
+                                            {currentLanguage === 'pt-BR'
+                                              ? `Torneio de ${market.potTopic || 'N/A'}`
+                                              : `${market.potTopic || 'N/A'} Tournament`}
                                             <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
                                             <RefreshCw className="w-3 h-3" />
                                             {isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily')}
@@ -2642,7 +2642,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       style={{ opacity: 0.7 }}
                                     >
                                       {bookmarkLoading === market.id ? (
-                                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-blue-700 border-t-transparent"></div>
+                                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
                                       ) : bookmarkedMarkets.has(market.id) ? (
                                         <Bookmark className="w-4 h-4 transition-all duration-200 text-red-700 fill-red-700" />
                                       ) : (
@@ -2690,9 +2690,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             } else {
                               // USER IS NOT PARTICIPANT: Show two-column layout
                               return (
-                                <div className={`flex justify-between items-center pt-2 ${(() => {
-                                  return !market.useTraditionalLayout ? '' : '';
-                                })()}`}>
+                                <div className="absolute bottom-3 left-4 right-4 flex justify-between items-center">
                             <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                               {(() => {
                                 const contractAddress = getContractAddress(market.id);
@@ -2700,7 +2698,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
                                 return (
                                   <>
-                                    {market.potTopic || 'N/A'}
+                                    {currentLanguage === 'pt-BR'
+                                      ? `Torneio de ${market.potTopic || 'N/A'}`
+                                      : `${market.potTopic || 'N/A'} Tournament`}
                                     <span className="font-medium text-gray-700 opacity-50" style={{ fontSize: '8px' }}>•</span>
                                     <RefreshCw className="w-3 h-3" />
                                     {isPenaltyExempt ? (t.weekly || 'Weekly') : (t.daily || 'Daily')}
@@ -2716,7 +2716,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               style={{ opacity: 0.7 }}
                             >
                               {bookmarkLoading === market.id ? (
-                                <div className="w-4 h-4 animate-spin rounded-full border-2 border-blue-700 border-t-transparent"></div>
+                                <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
                               ) : bookmarkedMarkets.has(market.id) ? (
                                 <Bookmark
                                   className="w-4 h-4 transition-all duration-200 text-red-700 fill-red-700"
@@ -2749,7 +2749,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 <>
                   {isLoadingMore && (
                     <div className="flex justify-center items-center py-12">
-                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700"></div>
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-700"></div>
                       <span className="ml-4 text-gray-600 text-lg">Loading more pots...</span>
                     </div>
                   )}
@@ -2759,7 +2759,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                     <div className="text-center py-8 hidden">
                       <button
                         onClick={loadMoreMarkets}
-                        className="bg-blue-700 hover:bg-purple-700 text-white px-8 py-4 rounded-lg font-medium text-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
+                        className="bg-green-700 hover:bg-red-700 text-white px-8 py-4 rounded-lg font-medium text-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
                       >
                         Load More Pots ({allMarkets - displayedMarketsCount} remaining)
                       </button>
@@ -2777,7 +2777,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           <div className="max-w-4xl mx-auto px-2 md:px-8 text-center">
             <div className="space-y-4 mb-12">
               <h2 className="text-4xl font-light text-gray-900 tracking-tight leading-[1.15]">
-                <span className="text-blue-700 font-medium">{t.thousandsOfPlayers}</span>
+                <span className="text-green-700 font-medium">{t.thousandsOfPlayers}</span>
               </h2>
               <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-[1.2]">
                 {t.lastStandingQuestion}
@@ -2787,12 +2787,12 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
             {/* Minimalist Entry Button */}
             <button
               onClick={() => handleMarketClick('Trending')}
-              className="group relative bg-red-700 border-2 border-black text-white px-20 py-5 rounded-lg font-semibold text-xl tracking-[0.05em] uppercase transition-all duration-300 hover:bg-purple-700 hover:border-blue-700 hover:text-white overflow-hidden shadow-xl hover:shadow-blue-200"
+              className="group relative bg-red-700 border-2 border-black text-white px-20 py-5 rounded-lg font-semibold text-xl tracking-[0.05em] uppercase transition-all duration-300 hover:bg-red-700 hover:border-green-700 hover:text-white overflow-hidden shadow-xl hover:shadow-green-200"
             >
               <span className="relative z-10">Enter</span>
 
               {/* Sliding fill effect */}
-              <div className="absolute inset-0 bg-blue-700 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></div>
+              <div className="absolute inset-0 bg-green-700 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></div>
 
               {/* Subtle arrows that appear on hover */}
               <div className="absolute left-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-2 group-hover:translate-x-0">
@@ -2809,7 +2809,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         <section id="call-to-action" className="relative z-10 mt-16 mb-16 md:hidden">
           <div className="max-w-7xl mx-auto px-2 md:px-8 text-center">
             <h2 className="text-2xl font-light text-gray-900 mb-2 tracking-tight leading-[1.3]">
-              <span className="text-blue-700 font-medium">{t.thousandsOfWinners}</span>
+              <span className="text-green-700 font-medium">{t.thousandsOfWinners}</span>
             </h2>
             <h3 className="text-xl font-extrabold text-gray-900 mb-10 tracking-tight leading-[1.3]">
               {t.lastStandingQuestion}
@@ -2818,12 +2818,12 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
             {/* Minimalist Entry Button - Mobile */}
             <button
               onClick={() => handleMarketClick('Trending')}
-              className="group relative bg-white border-2 border-black text-black px-12 py-4 rounded-lg font-semibold text-base tracking-[0.05em] uppercase transition-all duration-300 hover:bg-purple-700 hover:border-blue-700 hover:text-white overflow-hidden mx-auto shadow-lg hover:shadow-blue-200"
+              className="group relative bg-white border-2 border-black text-black px-12 py-4 rounded-lg font-semibold text-base tracking-[0.05em] uppercase transition-all duration-300 hover:bg-red-700 hover:border-green-700 hover:text-white overflow-hidden mx-auto shadow-lg hover:shadow-green-200"
             >
               <span className="relative z-10">Enter</span>
 
               {/* Sliding fill effect */}
-              <div className="absolute inset-0 bg-blue-700 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></div>
+              <div className="absolute inset-0 bg-green-700 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></div>
 
               {/* Subtle arrows that appear on hover */}
               <div className="absolute left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-2 group-hover:translate-x-0">
@@ -2836,7 +2836,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           </div>
         </section>
 
-        <footer className="relative z-10 py-10 bg-white text-center text-blue-700 text-sm shadow-md">
+        <footer className="relative z-10 py-10 bg-white text-center text-green-700 text-sm shadow-md">
           <div className="max-w-7xl mx-auto px-2 md:px-8">
             &copy; {new Date().getFullYear()} {t.footerText}
           </div>
