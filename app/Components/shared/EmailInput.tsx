@@ -80,7 +80,7 @@ const EmailInput: React.FC<EmailInputProps> = ({
           placeholder={placeholder}
           disabled={disabled}
           className={`w-full px-4 py-2.5 pr-10
-                     text-sm bg-white border ${getBorderColor()} rounded-lg
+                     text-sm text-gray-900 bg-white border ${getBorderColor()} rounded-lg
                      focus:ring-2 ${getRingColor()} focus:outline-none
                      transition-all duration-200 placeholder-gray-500 font-normal
                      text-left hover:border-gray-300

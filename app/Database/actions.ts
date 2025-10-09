@@ -2257,19 +2257,39 @@ export async function createAnnouncement(message: string, messagePt?: string) {
  */
 export async function createContractAnnouncement(message: string, contractAddress: string, messagePt?: string) {
   try {
+    console.log(`📝 ==========================================`);
+    console.log(`📝 CREATE CONTRACT ANNOUNCEMENT`);
+    console.log(`📝 ==========================================`);
+    console.log(`📝 Contract: ${contractAddress}`);
+    console.log(`📝 Message (EN): ${message}`);
+    console.log(`📝 Message (PT) received: ${messagePt}`);
+    console.log(`📝 messagePt type: ${typeof messagePt}`);
+    console.log(`📝 messagePt is undefined: ${messagePt === undefined}`);
+    console.log(`📝 messagePt is null: ${messagePt === null}`);
+    console.log(`📝 messagePt truthy: ${!!messagePt}`);
+
     const datetime = getCurrentUTCTime().toISOString();
 
-    return db
+    const valuesToInsert = {
+      from: SYSTEM_ANNOUNCEMENT_SENDER,
+      to: CONTRACT_PARTICIPANTS,
+      message: message,
+      messagePt: messagePt || null,
+      datetime: datetime,
+      contractAddress: contractAddress.toLowerCase(),
+    };
+
+    console.log(`📝 Values being inserted:`, JSON.stringify(valuesToInsert, null, 2));
+
+    const result = await db
       .insert(Messages)
-      .values({
-        from: SYSTEM_ANNOUNCEMENT_SENDER,
-        to: CONTRACT_PARTICIPANTS,
-        message: message,
-        messagePt: messagePt || null,
-        datetime: datetime,
-        contractAddress: contractAddress.toLowerCase(),
-      })
+      .values(valuesToInsert)
       .returning();
+
+    console.log(`📝 Insert result:`, JSON.stringify(result, null, 2));
+    console.log(`📝 ==========================================`);
+
+    return result;
   } catch (error) {
     console.error("Error creating contract announcement:", error);
     throw new Error("Failed to create contract announcement");
@@ -2311,7 +2331,14 @@ export async function createContractAnnouncementSafe(
   deduplicationWindow: number = 300000 // 5 minutes in milliseconds
 ) {
   try {
-    console.log(`🔍 Checking for duplicate announcements for contract ${contractAddress}`);
+    console.log(`🔍 ==========================================`);
+    console.log(`🔍 CREATE CONTRACT ANNOUNCEMENT SAFE`);
+    console.log(`🔍 ==========================================`);
+    console.log(`🔍 Contract: ${contractAddress}`);
+    console.log(`🔍 Message (EN): ${message}`);
+    console.log(`🔍 Message (PT) received: ${messagePt}`);
+    console.log(`🔍 messagePt type: ${typeof messagePt}`);
+    console.log(`🔍 Checking for duplicate announcements...`);
 
     // Calculate cutoff time for deduplication window
     const cutoffTime = new Date(Date.now() - deduplicationWindow);
@@ -2665,15 +2692,26 @@ export async function notifyMarketOutcome(
       ? `🎉 Fantastic! Users who predicted POSITIVE won today's ${smartMarketName} challenge!`
       : `🎉 Fantastic! Users who predicted NEGATIVE won today's ${smartMarketName} challenge!`;
 
+    const winnerMessagePt = outcome === 'positive'
+      ? `🎉 Fantástico! Usuários que previram POSITIVO ganharam o desafio ${smartMarketName} de hoje!`
+      : `🎉 Fantástico! Usuários que previram NEGATIVO ganharam o desafio ${smartMarketName} de hoje!`;
+
     const eliminationSummary = eliminatedCount === 0
       ? ` Amazing! No one was eliminated this round - all predictions were spot on! 🎯`
       : eliminatedCount === 1
         ? ` Your prediction was off this time. Pay today's entry fee to jump back into the ${smartMarketName} action!`
         : ` ${eliminatedCount} users were eliminated this round. If that's you, pay today's entry fee to re-enter the competition!`;
 
-    const message = winnerMessage + eliminationSummary;
+    const eliminationSummaryPt = eliminatedCount === 0
+      ? ` Incrível! Ninguém foi eliminado nesta rodada - todas as previsões estavam corretas! 🎯`
+      : eliminatedCount === 1
+        ? ` Sua previsão estava errada desta vez. Pague a taxa de entrada de hoje para voltar à ação ${smartMarketName}!`
+        : ` ${eliminatedCount} usuários foram eliminados nesta rodada. Se é você, pague a taxa de entrada de hoje para voltar à competição!`;
 
-    const result = await createContractAnnouncementSafe(message, contractAddress);
+    const message = winnerMessage + eliminationSummary;
+    const messagePt = winnerMessagePt + eliminationSummaryPt;
+
+    const result = await createContractAnnouncementSafe(message, contractAddress, messagePt);
     
     if (result.isDuplicate) {
       console.log(`🔄 Market outcome notification: ${result.message}`);
@@ -2696,12 +2734,16 @@ export async function notifyMarketOutcome(
 export async function notifyWinners(contractAddress: string, winnerAddresses: string[]) {
   try {
     console.log(`🏆 Sending winner notification for ${contractAddress} to ${winnerAddresses.length} winners`);
-    
+
     const message = winnerAddresses.length === 1
       ? `🏆 Congratulations! You won the pot and received your prize!`
       : `🏆 Congratulations! You and ${winnerAddresses.length - 1} other winners split the pot!`;
-    
-    const result = await createContractAnnouncementSafe(message, contractAddress);
+
+    const messagePt = winnerAddresses.length === 1
+      ? `🏆 Parabéns! Você ganhou o pote e recebeu seu prêmio!`
+      : `🏆 Parabéns! Você e ${winnerAddresses.length - 1} outros vencedores dividiram o pote!`;
+
+    const result = await createContractAnnouncementSafe(message, contractAddress, messagePt);
     
     if (result.isDuplicate) {
       console.log(`🔄 Winner notification: ${result.message}`);
@@ -2738,8 +2780,14 @@ export async function notifyEliminatedUsers(
       : eliminatedCount === 1
         ? `📉 Your prediction was off this time. Pay today's entry fee to jump back into the ${smartMarketName} action!`
         : `😱 Tough round! ${eliminatedCount} users were eliminated. If that's you, pay today's entry fee to re-enter the competition!`;
-    
-    const result = await createContractAnnouncementSafe(message, contractAddress);
+
+    const messagePt = eliminatedCount === 0
+      ? `🎉 Incrível! Ninguém foi eliminado nesta rodada - todas as previsões estavam corretas! 🎯`
+      : eliminatedCount === 1
+        ? `📉 Sua previsão estava errada desta vez. Pague a taxa de entrada de hoje para voltar à ação ${smartMarketName}!`
+        : `😱 Rodada difícil! ${eliminatedCount} usuários foram eliminados. Se é você, pague a taxa de entrada de hoje para voltar à competição!`;
+
+    const result = await createContractAnnouncementSafe(message, contractAddress, messagePt);
     
     if (result.isDuplicate) {
       console.log(`🔄 Elimination notification: ${result.message}`);
@@ -2760,18 +2808,22 @@ export async function notifyEliminatedUsers(
  * Call this AFTER successful ETH distribution to winners
  */
 export async function notifyPotDistributed(
-  contractAddress: string, 
+  contractAddress: string,
   totalAmount: string,
   winnerCount: number
 ) {
   try {
     console.log(`💰 Sending pot distribution notification for ${contractAddress}`);
-    
+
     const message = winnerCount === 1
       ? `💰 Pot distributed! ${totalAmount} ETH has been sent to the winner!`
       : `💰 Pot distributed! ${totalAmount} ETH has been split between ${winnerCount} winners!`;
-    
-    const result = await createContractAnnouncementSafe(message, contractAddress);
+
+    const messagePt = winnerCount === 1
+      ? `💰 Pote distribuído! ${totalAmount} ETH foi enviado ao vencedor!`
+      : `💰 Pote distribuído! ${totalAmount} ETH foi dividido entre ${winnerCount} vencedores!`;
+
+    const result = await createContractAnnouncementSafe(message, contractAddress, messagePt);
     
     if (result.isDuplicate) {
       console.log(`🔄 Pot distribution notification: ${result.message}`);
@@ -2792,20 +2844,24 @@ export async function notifyPotDistributed(
  * Call this for any other market events (new participants, etc.)
  */
 export async function notifyMarketUpdate(
-  contractAddress: string, 
-  message: string
+  contractAddress: string,
+  message: string,
+  messagePt?: string
 ) {
   try {
     console.log(`📊 Sending market update notification for ${contractAddress}`);
-    
-    const result = await createContractAnnouncementSafe(`📊 ${message}`, contractAddress);
-    
+
+    const messageEn = `📊 ${message}`;
+    const messagePtFinal = messagePt ? `📊 ${messagePt}` : undefined;
+
+    const result = await createContractAnnouncementSafe(messageEn, contractAddress, messagePtFinal);
+
     if (result.isDuplicate) {
       console.log(`🔄 Market update notification: ${result.message}`);
     } else {
       console.log(`✅ Market update notification sent successfully`);
     }
-    
+
     return result;
   } catch (error) {
     console.error("❌ Error sending market update notification:", error);
@@ -3099,6 +3155,7 @@ export async function notifyMinimumPlayersReached(
     const friendlyMarketName = getSmartMarketDisplayName(marketType as TableType);
 
     let message: string;
+    let messagePt: string;
 
     if (isPenaltyExempt && eventDate) {
       // For penalty-exempt contracts, mention tournament will start one week before event
@@ -3126,14 +3183,22 @@ export async function notifyMinimumPlayersReached(
       };
 
       message = `🏆 ${friendlyMarketName} tournament is now active! We have ${currentParticipants} participants ready to compete. The tournament officially begins on ${getTournamentStartDate(eventDate)}. Time to sharpen your prediction skills! 🎯`;
+      messagePt = `🏆 O torneio ${friendlyMarketName} está ativo! Temos ${currentParticipants} participantes prontos para competir. O torneio começa oficialmente em ${getTournamentStartDate(eventDate)}. Hora de afiar suas habilidades de previsão! 🎯`;
     } else {
       // Regular contract behavior
       const nextDay = getNextCalendarDayUTC();
       message = `The ${friendlyMarketName} tournament is ready to begin with ${currentParticipants} participants! Daily predictions start on ${nextDay}. Good luck! 💪`;
+      messagePt = `O torneio ${friendlyMarketName} está pronto para começar com ${currentParticipants} participantes! As previsões diárias começam em ${nextDay}. Boa sorte! 💪`;
     }
-    
+
     // Create the announcement directly since we've already checked for duplicates
-    const announcementResult = await createContractAnnouncement(message, contractAddress);
+    console.log(`🎯 About to call createContractAnnouncement with:`);
+    console.log(`🎯   message (EN): ${message}`);
+    console.log(`🎯   messagePt (PT): ${messagePt}`);
+    console.log(`🎯   messagePt type: ${typeof messagePt}`);
+    console.log(`🎯   contractAddress: ${contractAddress}`);
+
+    const announcementResult = await createContractAnnouncement(message, contractAddress, messagePt);
     console.log(`✅ Minimum players notification sent successfully (${currentParticipants} participants)`);
     
     // Set the announcement flag to prevent future duplicates
@@ -3214,10 +3279,12 @@ export async function notifyMinimumPlayersReached(
         console.log(`📧 Email addresses:`, emails.length > 0 ? emails : 'NONE - No users registered emails');
 
         if (emails.length > 0) {
-          // Send email notifications using the existing email function
-          console.log(`📧 ✅ SENDING EMAILS to ${emails.length} participants...`);
+          // Send email notifications using language-aware announcement email function
+          console.log(`📧 ✅ SENDING EMAILS to ${participantAddresses.length} participants (${emails.length} with emails)...`);
           console.log(`📧 Market type being sent: "${marketType}" (display: "${displayMarketType}")`);
-          const emailResult = await sendMinimumPlayersEmail(emails, currentParticipants, marketType);
+          const emailSubjectEn = `${displayMarketType} tournament - Enough players joined`;
+          const emailSubjectPt = `Torneio ${displayMarketType} - Jogadores suficientes entraram`;
+          const emailResult = await sendAnnouncementEmail(message, messagePt, participantAddresses, emailSubjectEn, emailSubjectPt);
 
           console.log(`📧 Email notification result:`, emailResult);
           if (emailResult.success) {
@@ -3291,15 +3358,23 @@ export async function notifyTournamentStarted(
     });
 
     let message: string;
+    let messagePt: string;
 
     if (isPenaltyExempt && eventDate) {
       message = `The ${friendlyMarketName} tournament has officially begun! Day 1 predictions are now open. You have 24 hours to make your first prediction. Remember to return daily to stay in the competition. If eliminated, you can re-enter and compete again.`;
+      messagePt = `O torneio ${friendlyMarketName} começou oficialmente! As previsões do Dia 1 estão abertas. Você tem 24 horas para fazer sua primeira previsão. Lembre-se de retornar diariamente para permanecer na competição. Se eliminado, você pode entrar novamente e competir.`;
     } else {
       message = `The ${friendlyMarketName} tournament has officially begun! Day 1 predictions are now open with ${currentParticipants} participants. You have 24 hours to make your prediction for today. Return daily to continue competing. If you're eliminated, you can re-enter and keep playing.`;
+      messagePt = `O torneio ${friendlyMarketName} começou oficialmente! As previsões do Dia 1 estão abertas com ${currentParticipants} participantes. Você tem 24 horas para fazer sua previsão de hoje. Retorne diariamente para continuar competindo. Se for eliminado, você pode entrar novamente e continuar jogando.`;
     }
 
     // Create the announcement
-    const announcementResult = await createContractAnnouncement(message, contractAddress);
+    console.log(`🎯 [Tournament Started] About to call createContractAnnouncement with:`);
+    console.log(`🎯   message (EN): ${message}`);
+    console.log(`🎯   messagePt (PT): ${messagePt}`);
+    console.log(`🎯   messagePt type: ${typeof messagePt}`);
+
+    const announcementResult = await createContractAnnouncement(message, contractAddress, messagePt);
     console.log(`✅ Tournament started notification sent successfully (${currentParticipants} participants)`);
 
     // Send emails to participants
@@ -3311,7 +3386,14 @@ export async function notifyTournamentStarted(
         console.log(`📧 Found ${emails.length} email addresses for tournament started notification`);
 
         if (emails.length > 0) {
-          const emailResult = await sendTournamentStartedEmail(emails, currentParticipants, marketType);
+          // Display "All in One" for featured markets, capitalize first letter for others
+          const displayMarketType = marketType === 'featured'
+            ? 'All in One'
+            : marketType.charAt(0).toUpperCase() + marketType.slice(1);
+
+          const emailSubjectEn = `${displayMarketType} tournament - Tournament started`;
+          const emailSubjectPt = `Torneio ${displayMarketType} - Torneio começou`;
+          const emailResult = await sendAnnouncementEmail(message, messagePt, participantAddresses, emailSubjectEn, emailSubjectPt);
 
           console.log(`📧 Tournament started email result:`, emailResult);
           if (emailResult.success) {
@@ -3657,14 +3739,16 @@ export async function updateUserLanguage(walletAddress: string, language: 'en' |
  * @param message - English announcement message
  * @param messagePt - Portuguese announcement message (optional)
  * @param participants - Array of participant wallet addresses
- * @param subject - Email subject (will be used for both languages)
+ * @param subject - Email subject in English
+ * @param subjectPt - Email subject in Portuguese (optional, defaults to English subject)
  * @returns Result object with success status and counts
  */
 export async function sendAnnouncementEmail(
   message: string,
   messagePt: string | null | undefined,
   participants: string[],
-  subject: string = 'PrediWin Notification'
+  subject: string = 'PrediWin Notification',
+  subjectPt?: string
 ): Promise<{ success: boolean; sent: number; errors: string[] }> {
   try {
     if (!participants || participants.length === 0) {
@@ -3783,7 +3867,7 @@ export async function sendAnnouncementEmail(
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             to: portugueseEmails,
-            subject,
+            subject: subjectPt || subject,
             html: htmlContent,
             type: 'announcement'
           }),
