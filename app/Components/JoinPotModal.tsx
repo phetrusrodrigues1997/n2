@@ -230,11 +230,30 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
     }
   };
 
-  const handleSlideEnd = async () => {
+  const handleSlideEnd = () => {
     if (isSlideComplete) {
-      // Trigger transaction directly from user interaction event
+      // Trigger transaction directly and synchronously from user interaction event
       setIsDragging(false);
-      await handleEnterPot();
+
+      // Call writeContract directly (synchronously) to avoid popup blocking
+      if (!contractAddress || !isConnected) return;
+
+      setIsLoading(true);
+
+      try {
+        writeContract({
+          address: contractAddress as `0x${string}`,
+          abi: PREDICTION_POT_ABI,
+          functionName: 'enterPot',
+          args: [],
+          value: entryAmount,
+        });
+        showMessage(t.modalWaitingConfirmation);
+      } catch (error) {
+        console.error('Enter pot failed:', error);
+        showMessage(t.modalTransactionFailed, true);
+        setIsLoading(false);
+      }
     } else {
       // Snap back to start with animation
       setSliderPosition(0);
