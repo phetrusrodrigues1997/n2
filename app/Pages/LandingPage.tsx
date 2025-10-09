@@ -1693,12 +1693,13 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   letterSpacing: '-0.01em'
                                 }}>
                                   {(() => {
-                                    const wrapLimit = market.marketIndex === 0 ? 25 : (market.useTraditionalLayout ? 25 : 37);
-                                    const truncateLimit = 60;
+                                    const wrapLimit = market.marketIndex === 0 ? 35 : (market.useTraditionalLayout ? 25 : 37);
+                                    // Mobile truncate limits - cut text earlier on mobile
+                                    const truncateLimit = market.marketIndex === 0 ? 40 : (market.useTraditionalLayout ? 30 : 45);
 
                                     let text = getTranslatedMarketQuestion(market, currentLanguage);
 
-                                    // Truncate if over 100 characters
+                                    // Truncate if over limit
                                     if (text.length > truncateLimit) {
                                       text = text.substring(0, truncateLimit) + '...';
                                     }
@@ -2396,11 +2397,13 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   }}>
                                     {(() => {
                                       // Mobile vs Desktop character limits
+                                      console.log(`🔍 DEBUG charLimit - isMobile: ${isMobile}, window.innerWidth: ${window.innerWidth}, marketIndex: ${market.marketIndex}`);
                                       const charLimit = market.marketIndex === 0
                                         ? (isMobile ? 60 : 60)  // First market: 40 mobile, 60 desktop
                                         : market.useTraditionalLayout
-                                          ? (isMobile ? 25 : 35)  // Traditional: 25 mobile, 30 desktop
-                                          : (isMobile ? 45 : 45); // Non-traditional: 35 mobile, 45 desktop
+                                          ? (isMobile ? 20 : 35)  // Traditional: 25 mobile, 30 desktop
+                                          : (isMobile ? 35 : 45); // Non-traditional: 35 mobile, 45 desktop
+                                      console.log(`🔍 DEBUG charLimit result: ${charLimit} (${isMobile ? 'MOBILE' : 'DESKTOP'})`);
                                       return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
                                     })()}
                                   </p>
