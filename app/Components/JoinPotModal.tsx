@@ -285,7 +285,26 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   };
 
   const handleTouchEnd = () => {
-    handleSlideEnd();
+    // CRITICAL: Trigger transaction directly in touch event to prevent popup blocking
+    if (isSlideComplete) {
+      setIsDragging(false);
+
+      if (!contractAddress || !isConnected) return;
+
+      setIsLoading(true);
+
+      // Call writeContract synchronously within touch event
+      writeContract({
+        address: contractAddress as `0x${string}`,
+        abi: PREDICTION_POT_ABI,
+        functionName: 'enterPot',
+        args: [],
+        value: entryAmount,
+      });
+      showMessage(t.modalWaitingConfirmation);
+    } else {
+      handleSlideEnd();
+    }
   };
 
   // Add/remove event listeners for mouse
