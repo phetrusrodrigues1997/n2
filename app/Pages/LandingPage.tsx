@@ -1693,7 +1693,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   letterSpacing: '-0.01em'
                                 }}>
                                   {(() => {
-                                    const wrapLimit = market.marketIndex === 0 ? 35 : (market.useTraditionalLayout ? 25 : 37);
+                                    const wrapLimit = market.marketIndex === 0 ? 25 : (market.useTraditionalLayout ? 25 : 37);
                                     const truncateLimit = 60;
 
                                     let text = getTranslatedMarketQuestion(market, currentLanguage);
