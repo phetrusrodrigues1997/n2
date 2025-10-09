@@ -2397,13 +2397,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   }}>
                                     {(() => {
                                       // Mobile vs Desktop character limits
-                                      console.log(`🔍 DEBUG charLimit - isMobile: ${isMobile}, window.innerWidth: ${window.innerWidth}, marketIndex: ${market.marketIndex}`);
                                       const charLimit = market.marketIndex === 0
                                         ? (isMobile ? 60 : 60)  // First market: 40 mobile, 60 desktop
                                         : market.useTraditionalLayout
                                           ? (isMobile ? 20 : 35)  // Traditional: 25 mobile, 30 desktop
                                           : (isMobile ? 35 : 45); // Non-traditional: 35 mobile, 45 desktop
-                                      console.log(`🔍 DEBUG charLimit result: ${charLimit} (${isMobile ? 'MOBILE' : 'DESKTOP'})`);
                                       return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
                                     })()}
                                   </p>
