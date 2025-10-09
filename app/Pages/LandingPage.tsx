@@ -1966,9 +1966,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 <div className={`flex justify-start ${(() => {
                                   const contractAddress = getContractAddress(market.id);
                                   const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
-                                  return userIsParticipant ? '-mt-16 -translate-y-6' : 'mb-2';
+                                  return userIsParticipant ? 'mb-1 -mt-16 -translate-y-6' : 'mb-2';
                                 })()}`}>
-                                  <div className="text-base text-gray-500 text-left h-12 flex flex-col">
+                                  <div className="text-base text-gray-500 text-left h-12 flex flex-col translate-y-1">
                                     <div className="flex-1 flex items-center justify-start">
                                       <p className="transition-opacity duration-300 leading-tight">
                                         <span className="text-[#040404] font-semibold">{t.tipLabel}</span>
