@@ -435,8 +435,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     {
       title: t.dynamicPricing || "Entry Fees Grow the Pots",
       content: (
-        <div>
-          
+        <div className="hidden">
+
           <span style={{color: '#6B7280', fontWeight: 'bold', opacity: 0.7}}>{t.entryFeeExample}</span> → <span style={{color: '#039905', fontWeight: 'bold'}}>{t.potBalanceExample}</span> {t.meansYouPay} {t.entryFeeExample} {t.canWin} {t.potBalanceExample} {t.canWinPotBalance}.
         </div>
       ),
@@ -946,10 +946,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     // Check if this is the first market (index 0)
     const marketIndex = marketOptions.findIndex(m => m.id === marketId);
     const isFirstMarket = marketIndex === 0;
+    const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
 
-    // Helper function to get percentage for first market (only on mobile)
+    // Helper function to get percentage for markets with traditional layout (on mobile)
     const getPercentageForButton = (type: 'positive' | 'negative') => {
-      if (!isFirstMarket || !isMobile) return '';
+      if (!useTraditionalLayout || !isMobile) return '';
 
       const percentageData = predictionPercentages[marketId];
       if (!percentageData) return '0%';
@@ -981,8 +982,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       // User has voted for this option
       if (isParticipant) {
         // Show confirmed tick for participants (they can't click to change from same option)
-        // For first market on mobile, also show percentage next to tick
-        if (isFirstMarket && isMobile) {
+        // For markets with traditional layout on mobile, also show percentage next to tick
+        if (useTraditionalLayout && isMobile) {
           const percentage = getPercentageForButton(buttonType);
           return (
             <div className="flex items-center justify-center gap-2">
@@ -1004,8 +1005,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       }
     }
 
-    // For first market on mobile, show button text with percentage
-    if (isFirstMarket && isMobile) {
+    // For markets with traditional layout on mobile, show button text with percentage
+    if (useTraditionalLayout && isMobile) {
       const percentage = getPercentageForButton(buttonType);
       const buttonText = buttonType === 'positive' ? t.higher : t.lower;
       return (
@@ -1937,7 +1938,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             </div>
 
                             {/* Entry Fee -> Pot Balance Display */}
-                            <div className={`flex justify-center items-center ${(() => {
+                            <div className={`hidden flex justify-center items-center ${(() => {
                               const contractAddress = getContractAddress(market.id);
                               const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
 
@@ -2594,7 +2595,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           </div>
 
                           {/* Entry Fee -> Pot Balance Display */}
-                          <div className={`flex justify-center items-center ${(() => {
+                          <div className={`hidden flex justify-center items-center ${(() => {
                               return !market.useTraditionalLayout ? '-translate-y-2' : 'py-1.5 translate-y-1';
                             })()}`} >
                             <div className="flex items-center gap-2 text-sm text-gray-700 opacity-100">
