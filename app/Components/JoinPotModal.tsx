@@ -227,17 +227,19 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
     // Check if slider reached the end (95% threshold)
     if (newPosition >= maxPosition * 0.95) {
       setIsSlideComplete(true);
-      setIsDragging(false);
-      handleEnterPot();
     }
   };
 
-  const handleSlideEnd = () => {
-    if (!isSlideComplete) {
+  const handleSlideEnd = async () => {
+    if (isSlideComplete) {
+      // Trigger transaction directly from user interaction event
+      setIsDragging(false);
+      await handleEnterPot();
+    } else {
       // Snap back to start with animation
       setSliderPosition(0);
+      setIsDragging(false);
     }
-    setIsDragging(false);
   };
 
   // Mouse events
