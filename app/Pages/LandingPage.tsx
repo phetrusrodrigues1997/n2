@@ -78,6 +78,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   const [isLoading, setIsLoading] = useState(true);
   const [isSkeletonLoading, setIsSkeletonLoading] = useState(false);
 
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState(false);
+
   // Animation state for selected market
   const [animatingMarket, setAnimatingMarket] = useState<string | null>(null);
   const [previousSelectedMarket, setPreviousSelectedMarket] = useState(selectedMarket);
@@ -85,6 +88,22 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // Mobile detection
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.matchMedia('(max-width: 787px)').matches);
+    };
+
+    // Initial check
+    checkIfMobile();
+
+    // Listen for window resize events
+    window.addEventListener('resize', checkIfMobile);
+
+    // Clean up
+    return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
   // Trigger animation when selectedMarket changes
@@ -2376,7 +2395,12 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     overflow: 'hidden'
                                   }}>
                                     {(() => {
-                                      const charLimit = market.marketIndex === 0 ? 60 : (market.useTraditionalLayout ? 30 : 45); // First market gets higher limit, desktop: keep traditional tight, moderate expansion for new style
+                                      // Mobile vs Desktop character limits
+                                      const charLimit = market.marketIndex === 0
+                                        ? (isMobile ? 60 : 60)  // First market: 40 mobile, 60 desktop
+                                        : market.useTraditionalLayout
+                                          ? (isMobile ? 25 : 35)  // Traditional: 25 mobile, 30 desktop
+                                          : (isMobile ? 45 : 45); // Non-traditional: 35 mobile, 45 desktop
                                       return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
                                     })()}
                                   </p>
