@@ -138,6 +138,7 @@ export interface Translations {
   payReEntryFee?: string;
   processingReEntry?: string;
   payToReEnter?: string;
+  reEnterButton?: string;
   loadingTournamentInfo?: string;
   checkingTournamentStatus?: string;
   specialDiscountAvailable?: string;
@@ -662,6 +663,7 @@ export const translations: Record<Language, Translations> = {
     payReEntryFee: 'Pay the re-entry fee to resume predicting in this pot',
     processingReEntry: 'Processing Re-entry...',
     payToReEnter: 'Pay to Re-enter',
+    reEnterButton: 'Re-enter',
     loadingTournamentInfo: 'Loading Tournament Info...',
     checkingTournamentStatus: 'Checking tournament status',
     specialDiscountAvailable: 'Special Discount Available',
@@ -1016,8 +1018,8 @@ export const translations: Record<Language, Translations> = {
     thousandsOfPlayers: 'Thousands of players,',
     thousandsOfWinners: 'Thousands of winners,',
     lastStandingQuestion: 'will you be among the last 5 standing?',
-    TapforMoreInfo: 'Tap for More Info',
-    ClickforMoreInfo: 'Click for More Info',
+    TapforMoreInfo: 'My Tournament',
+    ClickforMoreInfo: 'My Tournament',
 
     // ProfilePage translations
     referrals: 'Referrals',
@@ -1190,6 +1192,7 @@ export const translations: Record<Language, Translations> = {
     payReEntryFee: 'Pague a taxa de reentrada para continuar prevendo neste pote',
     processingReEntry: 'Processando Reentrada...',
     payToReEnter: 'Pagar para Reentrar',
+    reEnterButton: 'Reentar',
     loadingTournamentInfo: 'Carregando Informações do Torneio...',
     checkingTournamentStatus: 'Verificando status do torneio',
     specialDiscountAvailable: 'Desconto Especial Disponível',
@@ -1541,8 +1544,8 @@ export const translations: Record<Language, Translations> = {
     thousandsOfPlayers: 'Milhares de jogadores,',
     thousandsOfWinners: 'Milhares de vencedores,',
     lastStandingQuestion: 'você estará entre os 5 últimos de pé?',
-    TapforMoreInfo: 'Toque para Saber Mais',
-    ClickforMoreInfo: 'Clique para Saber Mais',
+    TapforMoreInfo: 'Meu Torneio',
+    ClickforMoreInfo: 'Meu Torneio',
 
     // ProfilePage translations
     referrals: 'Indicações',
