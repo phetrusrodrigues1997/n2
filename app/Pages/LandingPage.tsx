@@ -1834,7 +1834,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-24 py-3 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-22 py-3 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'positive', true)}
                                     </button>
@@ -1851,7 +1851,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-24 py-3 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-22 py-3 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'negative', true)}
                                     </button>
