@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAccount } from 'wagmi';
 import { formatUnits } from 'viem';
 import { getMarkets } from '../Constants/markets';
-import { Language, getTranslation } from '../Languages/languages';
+import { Language, getTranslation, translateMarketQuestion } from '../Languages/languages';
 import {
   PENALTY_EXEMPT_CONTRACTS,
   MIN_PLAYERS,
@@ -67,7 +67,8 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
   // Get market data from cookies - with proper loading state
   const [contractAddress, setContractAddress] = useState<string | undefined>(undefined);
-  const [marketQuestion, setMarketQuestion] = useState<string>('');
+  const [marketQuestion, setMarketQuestion] = useState<string>(''); // Original English question for database
+  const [displayQuestion, setDisplayQuestion] = useState<string>(''); // Translated question for display
   const [marketIcon, setMarketIcon] = useState<string>('');
   const [potBalances, setPotBalances] = useState<Record<string, string>>({});
 
@@ -109,7 +110,9 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
       if (contract) {
         setContractAddress(contract);
-        setMarketQuestion(question);
+        setMarketQuestion(question); // Store original English question
+        const translatedQuestion = translateMarketQuestion(question, currentLanguage);
+        setDisplayQuestion(translatedQuestion); // Store translated question for display
         setMarketIcon(icon);
         setCookiesLoaded(true);
         console.log('✅ PotInfoPage - Cookies loaded successfully');
@@ -139,6 +142,14 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
     };
   }, []);
 
+  // Retranslate display question when language changes
+  useEffect(() => {
+    if (marketQuestion && currentLanguage) {
+      const translatedQuestion = translateMarketQuestion(marketQuestion, currentLanguage);
+      setDisplayQuestion(translatedQuestion);
+      console.log('Language changed, retranslating question for', currentLanguage, ':', translatedQuestion);
+    }
+  }, [currentLanguage, marketQuestion]);
 
   // Find market by contract address - need to search all categories
   const findMarketByContract = (contractAddr: string) => {
@@ -613,7 +624,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   )}
                 </div>
                 <h1 className="text-xl md:text-2xl font-normal text-gray-900 leading-[1.3] tracking-tight">
-                  {marketQuestion || market?.question || 'Loading...'}
+                  {displayQuestion || marketQuestion || market?.question || 'Loading...'}
                 </h1>
               </div>
 
@@ -851,7 +862,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           isOpen={isJoinModalOpen}
           onClose={() => setIsJoinModalOpen(false)}
           contractAddress={contractAddress}
-          marketQuestion={marketQuestion}
+          marketQuestion={displayQuestion || marketQuestion}
           marketIcon={marketIcon}
           potBalance={market ? getRealPotBalance(market.id) : '$0.00'}
           entryFee={entryFee}
