@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import { useAccount, useBalance } from 'wagmi';
 import { formatUnits } from 'viem';
 import {  ChevronLeft, ChevronRight, Bell } from 'lucide-react';
-import { getUnreadAnnouncements, getUserContractAnnouncements } from './Database/actions';
+import { getUnreadAnnouncements, getUserContractAnnouncements, updateUserLanguage } from './Database/actions';
 import { filterUnreadAnnouncements, markAnnouncementsAsRead } from './utils/announcementCookies';
 import PredictionPotTest from './Pages/PredictionPotTest';
 import LandingPage from './Pages/LandingPage';
@@ -45,7 +45,8 @@ const LIVE_POT_ADDRESS = '0xDc6725F0E3D654c3Fde0480428b194ab19F20a9E';
 
 export default function App() {
   const { address, isConnected } = useAccount();
-  const [activeSection, setActiveSection] = useState('home'); // Default section 
+  const addressRef = useRef(address); // Ref to track current address
+  const [activeSection, setActiveSection] = useState('home'); // Default section
   const [privatePotAddress, setPrivatePotAddress] = useState<string>(''); // For routing to private pots
   const [hasEnteredLivePot, setHasEnteredLivePot] = useState(false); // Track live pot entry
   const [isMobileSearchActive, setIsMobileSearchActive] = useState(false); // Track mobile search state
@@ -114,23 +115,43 @@ export default function App() {
     }
   }, []);
 
-  // Listen for language change events from mobile menu
+  // Keep addressRef in sync with address
   useEffect(() => {
-    const handleLanguageChange = (event: CustomEvent) => {
+    addressRef.current = address;
+  }, [address]);
+
+  // Listen for language change events from mobile menu and navigation menu
+  useEffect(() => {
+    const handleLanguageChangeEvent = (event: CustomEvent) => {
       const newLanguage = event.detail as Language;
       setCurrentLanguage(newLanguage);
       Cookies.set('language', newLanguage, { expires: 365 });
+
+      // Save language preference to database if user is connected
+      // Use ref to always get current address value
+      if (addressRef.current) {
+        updateUserLanguage(addressRef.current, newLanguage).catch(error =>
+          console.error('Failed to save language preference:', error)
+        );
+      }
     };
 
-    window.addEventListener('changeLanguage' as any, handleLanguageChange);
-    return () => window.removeEventListener('changeLanguage' as any, handleLanguageChange);
-  }, []);
+    window.addEventListener('changeLanguage' as any, handleLanguageChangeEvent);
+    return () => window.removeEventListener('changeLanguage' as any, handleLanguageChangeEvent);
+  }, []); // No dependencies - listener stays the same, uses ref
 
   // Language switching function
   const handleLanguageChange = (language: Language) => {
     setCurrentLanguage(language);
     Cookies.set('language', language, { expires: 365 });
     setIsLanguageDropdownOpen(false);
+
+    // Save language preference to database if user is connected
+    if (address) {
+      updateUserLanguage(address, language).catch(error =>
+        console.error('Failed to save language preference:', error)
+      );
+    }
   };
 
   // Close language dropdown when clicking outside
@@ -654,7 +675,11 @@ export default function App() {
                                       })()}
                                     </span>
                                   </div>
-                                  <p className="text-sm text-gray-700 leading-relaxed">{announcement.message}</p>
+                                  <p className="text-sm text-gray-700 leading-relaxed">
+                                    {currentLanguage === 'pt-BR' && announcement.messagePt
+                                      ? announcement.messagePt
+                                      : announcement.message}
+                                  </p>
                                 </div>
                               ))}
                             </div>

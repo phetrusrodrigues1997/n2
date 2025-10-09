@@ -5,7 +5,8 @@ export const Messages = pgTable("Messages", {
   id: serial("id").primaryKey(), // Auto-incrementing ID as primary key
   from: text("from").notNull(), // Sender's address or identifier
   to: text("to").notNull(), // Recipient's address or identifier
-  message: text("message").notNull(), // The message content
+  message: text("message").notNull(), // The message content (English)
+  messagePt: text("message_pt"), // Optional: Portuguese translation
   datetime: text("datetime").notNull(), // Timestamp of when the message was sent
   contractAddress: text("contract_address"), // Optional: For contract-specific announcements
 });
@@ -125,6 +126,7 @@ export const UsersTable = pgTable("users_table", {
   walletAddress: text("wallet_address").notNull().unique(), // Each wallet can only have one entry
   imageUrl: text("image_url"), // Optional profile image URL
   email: text("email"), // Optional email address for marketing and updates
+  preferredLanguage: text("preferred_language").default('en'), // User's preferred language ('en' or 'pt-BR')
   collectedAt: timestamp("collected_at").defaultNow().notNull(),
   lastWordlePlay: timestamp("last_wordle_play"), // Last time user played Wordle
   wordlePlaysToday: integer("wordle_plays_today").default(0).notNull(), // Number of plays today

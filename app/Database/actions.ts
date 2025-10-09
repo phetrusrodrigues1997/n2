@@ -2225,17 +2225,20 @@ const CONTRACT_PARTICIPANTS = "CONTRACT_PARTICIPANTS"; // Contract-specific anno
 
 /**
  * Creates a new global announcement (admin only)
+ * @param message - English message
+ * @param messagePt - Optional Portuguese translation
  */
-export async function createAnnouncement(message: string) {
+export async function createAnnouncement(message: string, messagePt?: string) {
   try {
     const datetime = getCurrentUTCTime().toISOString();
-    
+
     return db
       .insert(Messages)
       .values({
         from: SYSTEM_ANNOUNCEMENT_SENDER,
         to: ANNOUNCEMENT_RECIPIENT,
         message: message,
+        messagePt: messagePt || null,
         datetime: datetime,
         contractAddress: null,
       })
@@ -2248,17 +2251,21 @@ export async function createAnnouncement(message: string) {
 
 /**
  * Creates a contract-specific announcement for participants
+ * @param message - English message
+ * @param contractAddress - Contract address
+ * @param messagePt - Optional Portuguese translation
  */
-export async function createContractAnnouncement(message: string, contractAddress: string) {
+export async function createContractAnnouncement(message: string, contractAddress: string, messagePt?: string) {
   try {
     const datetime = getCurrentUTCTime().toISOString();
-    
+
     return db
       .insert(Messages)
       .values({
         from: SYSTEM_ANNOUNCEMENT_SENDER,
         to: CONTRACT_PARTICIPANTS,
         message: message,
+        messagePt: messagePt || null,
         datetime: datetime,
         contractAddress: contractAddress.toLowerCase(),
       })
@@ -2292,18 +2299,23 @@ export async function clearContractMessages(contractAddress: string) {
 /**
  * Creates a contract-specific announcement with duplicate prevention
  * Checks for identical announcements in the last 5 minutes to prevent spam
+ * @param message - English message
+ * @param contractAddress - Contract address
+ * @param messagePt - Optional Portuguese translation
+ * @param deduplicationWindow - Time window in milliseconds to check for duplicates
  */
 export async function createContractAnnouncementSafe(
-  message: string, 
+  message: string,
   contractAddress: string,
+  messagePt?: string,
   deduplicationWindow: number = 300000 // 5 minutes in milliseconds
 ) {
   try {
     console.log(`🔍 Checking for duplicate announcements for contract ${contractAddress}`);
-    
+
     // Calculate cutoff time for deduplication window
     const cutoffTime = new Date(Date.now() - deduplicationWindow);
-    
+
     // Check for identical announcements in recent history
     const recentDuplicate = await db
       .select()
@@ -2331,15 +2343,15 @@ export async function createContractAnnouncementSafe(
 
     // No duplicate found, create new announcement
     console.log(`✅ No duplicate found, creating new announcement`);
-    const result = await createContractAnnouncement(message, contractAddress);
-    
+    const result = await createContractAnnouncement(message, contractAddress, messagePt);
+
     return {
       isDuplicate: false,
       originalMessage: null,
       message: "Announcement created successfully",
       newAnnouncement: result[0]
     };
-    
+
   } catch (error) {
     console.error("Error in createContractAnnouncementSafe:", error);
     throw new Error("Failed to create safe contract announcement");
@@ -2799,6 +2811,45 @@ export async function notifyMarketUpdate(
     console.error("❌ Error sending market update notification:", error);
     return { isDuplicate: false, error: error instanceof Error ? error.message : 'Unknown error' };
     // Don't throw - notifications failing shouldn't break main flow
+  }
+}
+
+/**
+ * Get participant emails with language preferences
+ * @param participants Array of participant wallet addresses
+ * @returns Array of objects with email and preferredLanguage
+ */
+export async function getParticipantEmailsWithLanguage(participants: string[]): Promise<Array<{ email: string; language: 'en' | 'pt-BR' }>> {
+  try {
+    if (!participants || participants.length === 0) {
+      return [];
+    }
+
+    console.log(`📧 Looking up emails and language preferences for ${participants.length} participants`);
+
+    const normalizedParticipants = participants.map(p => p.toLowerCase());
+
+    const results = await db
+      .select({
+        email: UsersTable.email,
+        preferredLanguage: UsersTable.preferredLanguage
+      })
+      .from(UsersTable)
+      .where(sql`LOWER(${UsersTable.walletAddress}) IN (${sql.join(normalizedParticipants.map(p => sql`${p}`), sql`, `)})`);
+
+    const emailsWithLanguage = results
+      .filter((result): result is { email: string; preferredLanguage: string | null } => result.email !== null && result.email !== '')
+      .map(result => ({
+        email: result.email,
+        language: (result.preferredLanguage || 'en') as 'en' | 'pt-BR'
+      }));
+
+    console.log(`📧 Found ${emailsWithLanguage.length} emails with language preferences`);
+    return emailsWithLanguage;
+
+  } catch (error) {
+    console.error("❌ Error getting participant emails with language:", error);
+    return [];
   }
 }
 
@@ -3560,6 +3611,212 @@ export async function saveUserEmail(walletAddress: string, email: string) {
   } catch (error) {
     console.error("❌ Error saving user email:", error);
     return { success: false, error: "Failed to save email" };
+  }
+}
+
+/**
+ * Update user's preferred language
+ * Creates user entry if it doesn't exist
+ */
+export async function updateUserLanguage(walletAddress: string, language: 'en' | 'pt-BR') {
+  try {
+    if (!walletAddress) {
+      return { success: false, error: "Invalid wallet address" };
+    }
+
+    const sanitizedWalletAddress = walletAddress.toLowerCase().trim();
+
+    // Check if user exists
+    const result = await db.select()
+      .from(UsersTable)
+      .where(eq(UsersTable.walletAddress, sanitizedWalletAddress))
+      .limit(1);
+
+    if (result.length > 0) {
+      // Update existing user
+      await db.update(UsersTable)
+        .set({ preferredLanguage: language })
+        .where(eq(UsersTable.walletAddress, sanitizedWalletAddress));
+    } else {
+      // Create new user with language preference
+      await db.insert(UsersTable).values({
+        walletAddress: sanitizedWalletAddress,
+        preferredLanguage: language
+      });
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("❌ Error updating user language:", error);
+    return { success: false, error: "Failed to update language" };
+  }
+}
+
+/**
+ * Send announcement emails with language support
+ * @param message - English announcement message
+ * @param messagePt - Portuguese announcement message (optional)
+ * @param participants - Array of participant wallet addresses
+ * @param subject - Email subject (will be used for both languages)
+ * @returns Result object with success status and counts
+ */
+export async function sendAnnouncementEmail(
+  message: string,
+  messagePt: string | null | undefined,
+  participants: string[],
+  subject: string = 'PrediWin Notification'
+): Promise<{ success: boolean; sent: number; errors: string[] }> {
+  try {
+    if (!participants || participants.length === 0) {
+      console.log('📧 No participants to notify');
+      return { success: true, sent: 0, errors: [] };
+    }
+
+    console.log(`📧 Sending announcement emails to ${participants.length} participants`);
+
+    // Get emails with language preferences
+    const emailsWithLanguage = await getParticipantEmailsWithLanguage(participants);
+
+    if (emailsWithLanguage.length === 0) {
+      console.log('📧 No email addresses found for participants');
+      return { success: true, sent: 0, errors: [] };
+    }
+
+    // Group by language
+    const englishEmails = emailsWithLanguage.filter(e => e.language === 'en').map(e => e.email);
+    const portugueseEmails = emailsWithLanguage.filter(e => e.language === 'pt-BR').map(e => e.email);
+
+    console.log(`📧 Sending to ${englishEmails.length} English users and ${portugueseEmails.length} Portuguese users`);
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://prediwin.com';
+    let totalSent = 0;
+    const errors: string[] = [];
+
+    // Send English emails
+    if (englishEmails.length > 0) {
+      const htmlContent = `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">PrediWin</h1>
+          </div>
+
+          <div style="background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <p style="color: #666; font-size: 16px; line-height: 1.6; white-space: pre-wrap;">
+              ${message}
+            </p>
+
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${siteUrl}"
+                 style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+                        color: white;
+                        text-decoration: none;
+                        padding: 12px 30px;
+                        border-radius: 6px;
+                        font-weight: bold;
+                        display: inline-block;">
+                View Tournament
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(`${baseUrl}/api/send-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: englishEmails,
+            subject,
+            html: htmlContent,
+            type: 'announcement'
+          }),
+        });
+
+        if (response.ok) {
+          totalSent += englishEmails.length;
+          console.log(`✅ Sent ${englishEmails.length} English emails`);
+        } else {
+          const errorText = await response.text();
+          errors.push(`English emails failed: ${errorText}`);
+          console.error(`❌ Failed to send English emails:`, errorText);
+        }
+      } catch (error) {
+        errors.push(`English emails error: ${error instanceof Error ? error.message : 'Unknown'}`);
+        console.error(`❌ Error sending English emails:`, error);
+      }
+    }
+
+    // Send Portuguese emails
+    if (portugueseEmails.length > 0 && messagePt) {
+      const htmlContent = `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">PrediWin</h1>
+          </div>
+
+          <div style="background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <p style="color: #666; font-size: 16px; line-height: 1.6; white-space: pre-wrap;">
+              ${messagePt}
+            </p>
+
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${siteUrl}"
+                 style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+                        color: white;
+                        text-decoration: none;
+                        padding: 12px 30px;
+                        border-radius: 6px;
+                        font-weight: bold;
+                        display: inline-block;">
+                Ver Torneio
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(`${baseUrl}/api/send-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: portugueseEmails,
+            subject,
+            html: htmlContent,
+            type: 'announcement'
+          }),
+        });
+
+        if (response.ok) {
+          totalSent += portugueseEmails.length;
+          console.log(`✅ Sent ${portugueseEmails.length} Portuguese emails`);
+        } else {
+          const errorText = await response.text();
+          errors.push(`Portuguese emails failed: ${errorText}`);
+          console.error(`❌ Failed to send Portuguese emails:`, errorText);
+        }
+      } catch (error) {
+        errors.push(`Portuguese emails error: ${error instanceof Error ? error.message : 'Unknown'}`);
+        console.error(`❌ Error sending Portuguese emails:`, error);
+      }
+    } else if (portugueseEmails.length > 0 && !messagePt) {
+      // Fallback: send English to Portuguese users if no translation available
+      console.log(`⚠️ No Portuguese translation available, sending English to ${portugueseEmails.length} Portuguese users`);
+      // You could optionally send English version here as fallback
+    }
+
+    console.log(`📧 Total emails sent: ${totalSent} out of ${emailsWithLanguage.length}`);
+    return { success: errors.length === 0, sent: totalSent, errors };
+
+  } catch (error) {
+    console.error("❌ Error in sendAnnouncementEmail:", error);
+    return {
+      success: false,
+      sent: 0,
+      errors: [error instanceof Error ? error.message : 'Unknown error']
+    };
   }
 }
 
