@@ -212,7 +212,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
     setIsDragging(true);
   };
 
-  const handleSlideMove = (clientX: number) => {
+  const handleSlideMove = (clientX: number, isTouchEvent = false) => {
     if (!isDragging || !trackRef.current) return;
 
     const trackRect = trackRef.current.getBoundingClientRect();
@@ -225,22 +225,14 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
     setSliderPosition(newPosition);
 
     // Check if slider reached the end (95% threshold)
-    if (newPosition >= maxPosition * 0.95) {
+    if (newPosition >= maxPosition * 0.95 && !isSlideComplete) {
       setIsSlideComplete(true);
-    }
-  };
 
-  const handleSlideEnd = () => {
-    if (isSlideComplete) {
-      // Trigger transaction directly and synchronously from user interaction event
-      setIsDragging(false);
+      // CRITICAL: If this is a touch event, trigger transaction immediately while touch is active
+      if (isTouchEvent && contractAddress && isConnected) {
+        setIsDragging(false);
+        setIsLoading(true);
 
-      // Call writeContract directly (synchronously) to avoid popup blocking
-      if (!contractAddress || !isConnected) return;
-
-      setIsLoading(true);
-
-      try {
         writeContract({
           address: contractAddress as `0x${string}`,
           abi: PREDICTION_POT_ABI,
@@ -249,11 +241,27 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
           value: entryAmount,
         });
         showMessage(t.modalWaitingConfirmation);
-      } catch (error) {
-        console.error('Enter pot failed:', error);
-        showMessage(t.modalTransactionFailed, true);
-        setIsLoading(false);
       }
+    }
+  };
+
+  const handleSlideEnd = () => {
+    if (isSlideComplete) {
+      // Trigger transaction for mouse events (touch events trigger in handleTouchMove)
+      setIsDragging(false);
+
+      if (!contractAddress || !isConnected) return;
+
+      setIsLoading(true);
+
+      writeContract({
+        address: contractAddress as `0x${string}`,
+        abi: PREDICTION_POT_ABI,
+        functionName: 'enterPot',
+        args: [],
+        value: entryAmount,
+      });
+      showMessage(t.modalWaitingConfirmation);
     } else {
       // Snap back to start with animation
       setSliderPosition(0);
@@ -281,30 +289,16 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    handleSlideMove(e.touches[0].clientX);
+    handleSlideMove(e.touches[0].clientX, true); // Pass true to indicate this is a touch event
   };
 
   const handleTouchEnd = () => {
-    // CRITICAL: Trigger transaction directly in touch event to prevent popup blocking
-    if (isSlideComplete) {
-      setIsDragging(false);
-
-      if (!contractAddress || !isConnected) return;
-
-      setIsLoading(true);
-
-      // Call writeContract synchronously within touch event
-      writeContract({
-        address: contractAddress as `0x${string}`,
-        abi: PREDICTION_POT_ABI,
-        functionName: 'enterPot',
-        args: [],
-        value: entryAmount,
-      });
-      showMessage(t.modalWaitingConfirmation);
-    } else {
-      handleSlideEnd();
+    // For touch events, transaction is triggered in handleTouchMove
+    // Just handle the cleanup here
+    if (!isSlideComplete) {
+      setSliderPosition(0);
     }
+    setIsDragging(false);
   };
 
   // Add/remove event listeners for mouse
