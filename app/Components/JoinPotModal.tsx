@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useBalance } from 'wagmi';
 import { formatUnits, parseEther } from 'viem';
-import { X, ChevronRight } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Language, getTranslation } from '../Languages/languages';
 import { calculateEntryFee, PENALTY_EXEMPT_CONTRACTS, CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName } from '../Database/config';
 import { getPrice } from '../Constants/getPrice';
@@ -62,13 +62,6 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   const [showSuccessScreen, setShowSuccessScreen] = useState(false);
   const [showSuccessTick, setShowSuccessTick] = useState(false);
   const [hasRecordedEntry, setHasRecordedEntry] = useState(false);
-
-  // Slide button state
-  const [sliderPosition, setSliderPosition] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isSlideComplete, setIsSlideComplete] = useState(false);
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
 
   // Get user's ETH balance
   const ethBalance = useBalance({
@@ -205,122 +198,6 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   }, [isPending, isConfirming, hash, isConfirmed]);
 
   const isActuallyLoading = isLoading || isPending || isConfirming;
-
-  // Slide button handlers
-  const handleSlideStart = (clientX: number) => {
-    if (isActuallyLoading || hasInsufficientBalance || !isConnected) return;
-    setIsDragging(true);
-  };
-
-  const handleSlideMove = (clientX: number, isTouchEvent = false) => {
-    if (!isDragging || !trackRef.current) return;
-
-    const trackRect = trackRef.current.getBoundingClientRect();
-    const sliderWidth = 56; // Width of the slider button
-    const maxPosition = trackRect.width - sliderWidth;
-
-    let newPosition = clientX - trackRect.left - sliderWidth / 2;
-    newPosition = Math.max(0, Math.min(newPosition, maxPosition));
-
-    setSliderPosition(newPosition);
-
-    // Check if slider reached the end (95% threshold)
-    if (newPosition >= maxPosition * 0.95 && !isSlideComplete) {
-      setIsSlideComplete(true);
-
-      // CRITICAL: If this is a touch event, trigger transaction immediately while touch is active
-      if (isTouchEvent && contractAddress && isConnected) {
-        setIsDragging(false);
-        setIsLoading(true);
-
-        writeContract({
-          address: contractAddress as `0x${string}`,
-          abi: PREDICTION_POT_ABI,
-          functionName: 'enterPot',
-          args: [],
-          value: entryAmount,
-        });
-        showMessage(t.modalWaitingConfirmation);
-      }
-    }
-  };
-
-  const handleSlideEnd = () => {
-    if (isSlideComplete) {
-      // Trigger transaction for mouse events (touch events trigger in handleTouchMove)
-      setIsDragging(false);
-
-      if (!contractAddress || !isConnected) return;
-
-      setIsLoading(true);
-
-      writeContract({
-        address: contractAddress as `0x${string}`,
-        abi: PREDICTION_POT_ABI,
-        functionName: 'enterPot',
-        args: [],
-        value: entryAmount,
-      });
-      showMessage(t.modalWaitingConfirmation);
-    } else {
-      // Snap back to start with animation
-      setSliderPosition(0);
-      setIsDragging(false);
-    }
-  };
-
-  // Mouse events
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    handleSlideStart(e.clientX);
-  };
-
-  const handleMouseMove = (e: MouseEvent) => {
-    handleSlideMove(e.clientX);
-  };
-
-  const handleMouseUp = () => {
-    handleSlideEnd();
-  };
-
-  // Touch events
-  const handleTouchStart = (e: React.TouchEvent) => {
-    handleSlideStart(e.touches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    handleSlideMove(e.touches[0].clientX, true); // Pass true to indicate this is a touch event
-  };
-
-  const handleTouchEnd = () => {
-    // For touch events, transaction is triggered in handleTouchMove
-    // Just handle the cleanup here
-    if (!isSlideComplete) {
-      setSliderPosition(0);
-    }
-    setIsDragging(false);
-  };
-
-  // Add/remove event listeners for mouse
-  useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging, sliderPosition]);
-
-  // Reset slider when modal closes or transaction completes
-  useEffect(() => {
-    if (!isOpen || showSuccessScreen) {
-      setSliderPosition(0);
-      setIsSlideComplete(false);
-      setIsDragging(false);
-    }
-  }, [isOpen, showSuccessScreen]);
 
   if (!isOpen) return null;
 
@@ -487,81 +364,24 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
             </div>
           )}
 
-          {/* Slide to Join Button - Apple Style */}
-          <div className="mt-2 space-y-3">
-            <div
-              ref={trackRef}
-              className={`relative h-[68px] bg-gradient-to-b from-gray-50 to-gray-100 rounded-[20px] overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)] ${
-                isActuallyLoading || hasInsufficientBalance || !isConnected ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-              }`}
+          {/* Join Tournament Button - Same style as PotInfoPage */}
+          <div className="mt-2">
+            <button
+              onClick={handleEnterPot}
+              disabled={isActuallyLoading || hasInsufficientBalance || !isConnected}
+              className="w-full bg-gradient-to-br from-red-600 to-red-700 text-white font-semibold rounded-xl py-3.5 text-base transition-all duration-150 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
             >
-              {/* Shimmer Effect on Progress */}
-              <div
-                className="absolute inset-0 transition-all duration-500 ease-out"
-                style={{
-                  width: `${(sliderPosition / (trackRef.current ? trackRef.current.offsetWidth - 64 : 1)) * 100}%`,
-                  background: 'linear-gradient(90deg, rgba(34,197,94,0.15) 0%, rgba(34,197,94,0.25) 100%)',
-                  boxShadow: sliderPosition > 0 ? 'inset 0 1px 2px rgba(34,197,94,0.2)' : 'none'
-                }}
-              />
-
-              {/* Text */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <span className={`text-gray-600 font-medium text-[15px] tracking-tight transition-all duration-300 ${
-                  sliderPosition > 30 ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
-                }`}>
-                  {isActuallyLoading ? (
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
-                      <span>{t.modalProcessing}</span>
-                    </div>
-                  ) : !isConnected ? (
-                    t.modalConnectWalletFirst
-                  ) : (
-                    t.modalSlideToJoin
-                  )}
-                </span>
-              </div>
-
-              {/* Premium Slider Button */}
-              <div
-                ref={sliderRef}
-                className={`absolute top-[4px] left-[4px] w-[60px] h-[60px] bg-gradient-to-br from-red-600 to-red-700 rounded-[16px] flex items-center justify-center cursor-grab active:cursor-grabbing ${
-                  !isDragging && sliderPosition === 0 ? 'animate-slider-breathe' : ''
-                } ${
-                  isDragging ? 'scale-[0.97] shadow-[0_2px_8px_rgba(185,28,28,0.4)]' : !isDragging && sliderPosition === 0 ? '' : 'shadow-[0_2px_12px_rgba(185,28,28,0.35),0_1px_4px_rgba(185,28,28,0.2)]'
-                } ${isSlideComplete ? 'opacity-0' : 'opacity-100'}`}
-                style={{
-                  transform: isDragging || sliderPosition > 0 ? `translateX(${sliderPosition}px) scale(${isDragging ? '0.97' : '1'})` : undefined,
-                  transition: isDragging || sliderPosition > 0 ? (isDragging ? 'box-shadow 0.15s ease' : 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)') : 'none'
-                }}
-                onMouseDown={handleMouseDown}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-              >
-                <div className="flex items-center justify-center">
-                  <ChevronRight className="w-7 h-7 text-white" strokeWidth={2.5} />
-                  <ChevronRight className="w-7 h-7 text-white -ml-4" strokeWidth={2.5} />
+              {isActuallyLoading ? (
+                <div className="flex items-center justify-center gap-2.5">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>{t.modalProcessing}</span>
                 </div>
-              </div>
-
-              {/* Success Glow Effect */}
-              {sliderPosition > (trackRef.current ? trackRef.current.offsetWidth * 0.8 : 0) && (
-                <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-green-500/20 animate-pulse pointer-events-none" />
+              ) : !isConnected ? (
+                t.modalConnectWalletFirst
+              ) : (
+                t.modalSlideToJoin || 'Join Tournament'
               )}
-            </div>
-
-            {/* Alternative Click/Tap Option */}
-            {!isActuallyLoading && !hasInsufficientBalance && isConnected && (
-              <button
-                onClick={handleEnterPot}
-                className="w-full text-center text-red-600 hover:text-red-700 text-xs font-medium transition-colors"
-              >
-                <span className="hidden md:inline">{t.modalOrClickHere}</span>
-                <span className="md:hidden">{t.modalOrTapHere}</span>
-              </button>
-            )}
+            </button>
           </div>
         </div>
       </div>
