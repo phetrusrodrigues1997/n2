@@ -1297,7 +1297,6 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                     {/* Timer positioned at top right */}
                     {currentTimer && (
                       <div className="flex flex-col items-center bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-1.5 md:px-2.5 rounded-full font-medium">
-                        <span className="text-[10px] md:text-xs text-gray-600">Next question</span>
                         <span className="font-medium text-gray-900 text-[10px] md:text-xs">
                           {currentTimer}
                         </span>
@@ -1328,26 +1327,25 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                   <button
                     onClick={() => handlePlaceBet('positive')}
                     disabled={isLoading || !isBettingAllowed()}
-                    className={`p-4 rounded-lg border transition-colors ${
+                    className={`p-4 rounded-lg border transition-all duration-150 relative ${
                       tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive'
-                        ? 'bg-blue-700 border-blue-700 text-white hover:text-blue-700 shadow-lg'
-                        : tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative'
-                        ? 'bg-white border-blue-700 text-blue-700 hover:bg-blue-500'
-                        : 'bg-blue-500 border-blue-200 text-white hover:border-blue-700 hover:text-blue-700 hover:bg-blue-100'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        ? 'bg-blue-700 border-blue-700 text-white shadow-lg'
+                        : 'bg-blue-500 border-blue-200 text-white hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(29,78,216)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(29,78,216),0_8px_12px_-2px_rgba(0,0,0,0.2)]'
+                    } disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none`}
                   >
                     <div className="flex items-center justify-center gap-2">
-                      {/* Only show symbol if this button is selected */}
-                      {tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive' && <span>✓</span>}
                       {tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive' ? (
-                        predictionPercentages && (
-                          <span className="font-medium">
-                            {getBayesianPercentages().yesPercentage}%
-                          </span>
-                        )
+                        <>
+                          <span className="font-medium">Yes <span className="text-green-500">✓</span></span>
+                          {predictionPercentages && (
+                            <span className="font-medium">
+                              {getBayesianPercentages().yesPercentage}%
+                            </span>
+                          )}
+                        </>
                       ) : (
                         <>
-                          <span className="font-medium">Tap for Yes</span>
+                          <span className="font-medium">Yes</span>
                           {predictionPercentages && (
                             <span className="text-xs">
                               {getBayesianPercentages().yesPercentage}%
@@ -1361,26 +1359,25 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                   <button
                     onClick={() => handlePlaceBet('negative')}
                     disabled={isLoading || !isBettingAllowed()}
-                    className={`p-4 rounded-lg border transition-colors ${
+                    className={`p-4 rounded-lg border transition-all duration-150 relative ${
                       tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative'
-                        ? 'bg-purple-700 border-purple-700 text-white hover:text-purple-700 shadow-lg'
-                        : tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive'
-                        ? 'bg-white border-purple-700 text-purple-700 hover:bg-purple-500'
-                        : 'bg-purple-500 border-purple-200 text-white hover:text-purple-700 hover:border-purple-700 hover:bg-purple-100'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        ? 'bg-purple-700 border-purple-700 text-white shadow-lg'
+                        : 'bg-purple-500 border-purple-200 text-white hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(126,34,206)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(126,34,206),0_8px_12px_-2px_rgba(0,0,0,0.2)]'
+                    } disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none`}
                   >
                     <div className="flex items-center justify-center gap-2">
-                      {/* Only show symbol if this button is selected */}
-                      {tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative' && <span>✗</span>}
                       {tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative' ? (
-                        predictionPercentages && (
-                          <span className="font-medium">
-                            {getBayesianPercentages().noPercentage}%
-                          </span>
-                        )
+                        <>
+                          <span className="font-medium">No <span className="text-green-500">✓</span></span>
+                          {predictionPercentages && (
+                            <span className="font-medium">
+                              {getBayesianPercentages().noPercentage}%
+                            </span>
+                          )}
+                        </>
                       ) : (
                         <>
-                          <span className="font-medium">Tap for No</span>
+                          <span className="font-medium">No</span>
                           {predictionPercentages && (
                             <span className="text-xs">
                               {getBayesianPercentages().noPercentage}%

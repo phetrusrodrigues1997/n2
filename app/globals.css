@@ -366,3 +366,34 @@ div[class*="fixed bottom-0"] button[aria-label="Toggle menu"]:hover svg {
   animation-delay: 0.4s;
 }
 
+/* Slide hint animation - moves RIGHT with the slider */
+@keyframes slide-hint {
+  0%, 100% {
+    transform: translateX(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateX(8px);
+    opacity: 0.8;
+  }
+}
+
+.animate-slide-hint {
+  animation: slide-hint 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Premium slider button breathing animation - moves RIGHT */
+@keyframes slider-breathe {
+  0%, 100% {
+    transform: translateX(0) scale(1);
+    box-shadow: 0 2px 12px rgba(185,28,28,0.35), 0 1px 4px rgba(185,28,28,0.2);
+  }
+  50% {
+    transform: translateX(8px) scale(1.02);
+    box-shadow: 0 2px 16px rgba(185,28,28,0.45), 0 1px 6px rgba(185,28,28,0.25);
+  }
+}
+
+.animate-slider-breathe {
+  animation: slider-breathe 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}

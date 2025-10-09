@@ -520,6 +520,22 @@ export interface Translations {
   tip3: string;
   tip4: string;
   tip5: string;
+
+  // Join Pot Modal
+  modalReadyToPlay: string;
+  modalQuestionOfWeek: string;
+  modalQuestionOfDay: string;
+  modalEntryFee: string;
+  modalPrizePool: string;
+  modalInsufficientETH: string;
+  modalWaitingConfirmation: string;
+  modalTransactionFailed: string;
+  modalSuccessfullyJoined: string;
+  modalProcessing: string;
+  modalConnectWalletFirst: string;
+  modalSlideToJoin: string;
+  modalOrClickHere: string;
+  modalOrTapHere: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -1048,7 +1064,23 @@ export const translations: Record<Language, Translations> = {
     tip3: 'Consider the sentiment around the question and historical patterns.',
     tip4: 'Diversify your predictions by entering different pots',
     tip5: 'Set realistic expectations and manage risk accordingly.',
-  
+
+    // Join Pot Modal
+    modalReadyToPlay: 'Ready to Play?',
+    modalQuestionOfWeek: 'Question of the Week',
+    modalQuestionOfDay: 'Question of the Day',
+    modalEntryFee: 'Entry Fee',
+    modalPrizePool: 'Prize Pool',
+    modalInsufficientETH: 'Insufficient ETH balance. You need at least',
+    modalWaitingConfirmation: 'Waiting for confirmation...',
+    modalTransactionFailed: 'Transaction failed. Please try again.',
+    modalSuccessfullyJoined: 'Successfully Joined! 🎉',
+    modalProcessing: 'Processing...',
+    modalConnectWalletFirst: 'Connect Wallet First',
+    modalSlideToJoin: 'slide to join',
+    modalOrClickHere: 'or just click here',
+    modalOrTapHere: 'or just tap here',
+
   },
   'pt-BR': {
     // Hero Section
@@ -1574,7 +1606,23 @@ export const translations: Record<Language, Translations> = {
     tip3: 'Considere o sentimento em torno do tópico e padrões históricos.',
     tip4: 'Diversifique suas previsões entrando em diferentes potes.',
     tip5: 'Defina expectativas realistas e nao se deixe levar pela emoção.',
-  
+
+    // Join Pot Modal
+    modalReadyToPlay: 'Pronto para Jogar?',
+    modalQuestionOfWeek: 'Questão da Semana',
+    modalQuestionOfDay: 'Questão do Dia',
+    modalEntryFee: 'Taxa de Entrada',
+    modalPrizePool: 'Prêmio Total',
+    modalInsufficientETH: 'Saldo de ETH insuficiente. Você precisa de pelo menos',
+    modalWaitingConfirmation: 'Aguardando confirmação...',
+    modalTransactionFailed: 'Transação falhou. Por favor, tente novamente.',
+    modalSuccessfullyJoined: 'Entrada Confirmada! 🎉',
+    modalProcessing: 'Processando...',
+    modalConnectWalletFirst: 'Conecte a Carteira Primeiro',
+    modalSlideToJoin: 'deslize para entrar',
+    modalOrClickHere: 'ou apenas clique aqui',
+    modalOrTapHere: 'ou apenas toque aqui',
+
   },
 };
 

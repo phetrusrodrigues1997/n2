@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useBalance } from 'wagmi';
 import { formatUnits, parseEther } from 'viem';
-import { X } from 'lucide-react';
+import { X, ChevronRight } from 'lucide-react';
 import { Language, getTranslation } from '../Languages/languages';
 import { calculateEntryFee, PENALTY_EXEMPT_CONTRACTS, CONTRACT_TO_TABLE_MAPPING, getMarketDisplayName } from '../Database/config';
 import { getPrice } from '../Constants/getPrice';
@@ -62,6 +62,13 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   const [showSuccessScreen, setShowSuccessScreen] = useState(false);
   const [showSuccessTick, setShowSuccessTick] = useState(false);
   const [hasRecordedEntry, setHasRecordedEntry] = useState(false);
+
+  // Slide button state
+  const [sliderPosition, setSliderPosition] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isSlideComplete, setIsSlideComplete] = useState(false);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   // Get user's ETH balance
   const ethBalance = useBalance({
@@ -144,10 +151,10 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
         value: entryAmount,
       });
 
-      showMessage('Waiting for confirmation...');
+      showMessage(t.modalWaitingConfirmation);
     } catch (error) {
       console.error('Enter pot failed:', error);
-      showMessage('Transaction failed. Please try again.', true);
+      showMessage(t.modalTransactionFailed, true);
       setIsLoading(false);
     }
   };
@@ -199,6 +206,88 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
 
   const isActuallyLoading = isLoading || isPending || isConfirming;
 
+  // Slide button handlers
+  const handleSlideStart = (clientX: number) => {
+    if (isActuallyLoading || hasInsufficientBalance || !isConnected) return;
+    setIsDragging(true);
+  };
+
+  const handleSlideMove = (clientX: number) => {
+    if (!isDragging || !trackRef.current) return;
+
+    const trackRect = trackRef.current.getBoundingClientRect();
+    const sliderWidth = 56; // Width of the slider button
+    const maxPosition = trackRect.width - sliderWidth;
+
+    let newPosition = clientX - trackRect.left - sliderWidth / 2;
+    newPosition = Math.max(0, Math.min(newPosition, maxPosition));
+
+    setSliderPosition(newPosition);
+
+    // Check if slider reached the end (95% threshold)
+    if (newPosition >= maxPosition * 0.95) {
+      setIsSlideComplete(true);
+      setIsDragging(false);
+      handleEnterPot();
+    }
+  };
+
+  const handleSlideEnd = () => {
+    if (!isSlideComplete) {
+      // Snap back to start with animation
+      setSliderPosition(0);
+    }
+    setIsDragging(false);
+  };
+
+  // Mouse events
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleSlideStart(e.clientX);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    handleSlideMove(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    handleSlideEnd();
+  };
+
+  // Touch events
+  const handleTouchStart = (e: React.TouchEvent) => {
+    handleSlideStart(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    handleSlideMove(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    handleSlideEnd();
+  };
+
+  // Add/remove event listeners for mouse
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, sliderPosition]);
+
+  // Reset slider when modal closes or transaction completes
+  useEffect(() => {
+    if (!isOpen || showSuccessScreen) {
+      setSliderPosition(0);
+      setIsSlideComplete(false);
+      setIsDragging(false);
+    }
+  }, [isOpen, showSuccessScreen]);
+
   if (!isOpen) return null;
 
   return (
@@ -221,7 +310,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
 
         {/* Header */}
         <div className="flex items-center justify-between p-3 md:p-5 border-b border-gray-200 md:flex-shrink">
-          <h2 className="text-lg font-semibold text-gray-900">Ready to Play?</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t.modalReadyToPlay}</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -266,7 +355,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
                   </svg>
                 </div>
                 <p className="mt-6 text-lg font-semibold text-gray-900 text-center animate-fade-in-up">
-                  Successfully Joined! 🎉
+                  {t.modalSuccessfullyJoined}
                 </p>
               </div>
             )}
@@ -275,40 +364,40 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
 
         {/* Content */}
         <div className={`md:flex-initial md:overflow-visible transition-all duration-500 ${
-          showImageIntro || showSuccessScreen ? 'opacity-0 p-0' : 'opacity-100 p-4 md:p-5'
+          showImageIntro || showSuccessScreen ? 'opacity-0 p-0' : 'opacity-100 p-5 md:p-6'
         }`}>
-          {/* Market Info - without image */}
-          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-            <div className="text-xs text-gray-500 font-medium mb-1">
-              {PENALTY_EXEMPT_CONTRACTS.includes(contractAddress) ? 'Question of the Week' : 'Question of the Day'}
+          {/* Market Info */}
+          <div className="mb-6">
+            <div className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold mb-2">
+              {PENALTY_EXEMPT_CONTRACTS.includes(contractAddress) ? t.modalQuestionOfWeek : t.modalQuestionOfDay}
             </div>
-            <h3 className="font-medium text-gray-900 text-sm leading-tight">
+            <h3 className="text-base font-medium text-gray-900 leading-snug">
               {marketQuestion}
             </h3>
           </div>
 
-          {/* Entry Details */}
-          <div className="mb-4">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          {/* Entry Details - Modern Card Design */}
+          <div className="mb-6">
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 border border-gray-200">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
                     <img
                       src="https://dynamic-assets.coinbase.com/dbb4b4983bde81309ddab83eb598358eb44375b930b94687ebe38bc22e52c3b2125258ffb8477a5ef22e33d6bd72e32a506c391caa13af64c00e46613c3e5806/asset_icons/4113b082d21cc5fab17fc8f2d19fb996165bcce635e6900f7fc2d57c4ef33ae9.png"
                       alt="ETH"
-                      className="w-5 h-5"
+                      className="w-6 h-6"
                     />
                   </div>
                   <div>
-                    <div className="text-blue-700 text-xs font-medium">Entry Fee</div>
-                    <div className="text-gray-900 font-semibold text-sm">
+                    <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">{t.modalEntryFee}</div>
+                    <div className="text-gray-900 font-bold text-lg">
                       ${entryFee.toFixed(2)}
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-blue-700 text-xs font-medium">Prize</div>
-                  <div className="text-gray-900 font-semibold text-sm">
+                  <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">{t.modalPrizePool}</div>
+                  <div className="text-gray-900 font-bold text-lg">
                     {potBalance}
                   </div>
                 </div>
@@ -317,7 +406,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
           </div>
 
           {/* Referral Code (Optional) */}
-          <div className="mb-4">
+          <div className="mb-4 hidden">
             <div
               className="flex items-center justify-between cursor-pointer bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-lg p-2.5 transition-colors"
               onClick={() => setIsReferralDropdownOpen(!isReferralDropdownOpen)}
@@ -348,48 +437,97 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
           {hasInsufficientBalance && (
             <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-700 text-xs">
-                Insufficient ETH balance. You need at least ${(entryFee + 0.01).toFixed(2)} worth of ETH.
+                {t.modalInsufficientETH} ${(entryFee + 0.01).toFixed(2)} worth of ETH.
               </p>
             </div>
           )}
 
           {/* Success/Error Message */}
           {message && (
-            <div className={`mb-3 p-3 rounded-lg ${
+            <div className={`mb-4 p-3 rounded-xl ${
               message.includes('failed') || message.includes('error')
                 ? 'bg-red-50 border border-red-200 text-red-700'
                 : 'bg-green-50 border border-green-200 text-green-700'
             }`}>
-              <p className="text-xs">{message}</p>
+              <p className="text-xs font-medium">{message}</p>
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="space-y-2">
-            <button
-              onClick={handleEnterPot}
-              disabled={isActuallyLoading || hasInsufficientBalance || !isConnected}
-              className="w-full bg-red-700 hover:bg-red-800 text-white px-4 py-2.5 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 text-sm"
+          {/* Slide to Join Button - Apple Style */}
+          <div className="mt-2 space-y-3">
+            <div
+              ref={trackRef}
+              className={`relative h-[68px] bg-gradient-to-b from-gray-50 to-gray-100 rounded-[20px] overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)] ${
+                isActuallyLoading || hasInsufficientBalance || !isConnected ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+              }`}
             >
-              {isActuallyLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Processing...</span>
-                </div>
-              ) : !isConnected ? (
-                'Connect Wallet'
-              ) : (
-                `Join Tournament`
-              )}
-            </button>
+              {/* Shimmer Effect on Progress */}
+              <div
+                className="absolute inset-0 transition-all duration-500 ease-out"
+                style={{
+                  width: `${(sliderPosition / (trackRef.current ? trackRef.current.offsetWidth - 64 : 1)) * 100}%`,
+                  background: 'linear-gradient(90deg, rgba(34,197,94,0.15) 0%, rgba(34,197,94,0.25) 100%)',
+                  boxShadow: sliderPosition > 0 ? 'inset 0 1px 2px rgba(34,197,94,0.2)' : 'none'
+                }}
+              />
 
-            <button
-              onClick={onClose}
-              disabled={isActuallyLoading}
-              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-lg font-medium transition-colors text-sm"
-            >
-              Cancel
-            </button>
+              {/* Text */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <span className={`text-gray-600 font-medium text-[15px] tracking-tight transition-all duration-300 ${
+                  sliderPosition > 30 ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+                }`}>
+                  {isActuallyLoading ? (
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                      <span>{t.modalProcessing}</span>
+                    </div>
+                  ) : !isConnected ? (
+                    t.modalConnectWalletFirst
+                  ) : (
+                    t.modalSlideToJoin
+                  )}
+                </span>
+              </div>
+
+              {/* Premium Slider Button */}
+              <div
+                ref={sliderRef}
+                className={`absolute top-[4px] left-[4px] w-[60px] h-[60px] bg-gradient-to-br from-red-600 to-red-700 rounded-[16px] flex items-center justify-center cursor-grab active:cursor-grabbing ${
+                  !isDragging && sliderPosition === 0 ? 'animate-slider-breathe' : ''
+                } ${
+                  isDragging ? 'scale-[0.97] shadow-[0_2px_8px_rgba(185,28,28,0.4)]' : !isDragging && sliderPosition === 0 ? '' : 'shadow-[0_2px_12px_rgba(185,28,28,0.35),0_1px_4px_rgba(185,28,28,0.2)]'
+                } ${isSlideComplete ? 'opacity-0' : 'opacity-100'}`}
+                style={{
+                  transform: isDragging || sliderPosition > 0 ? `translateX(${sliderPosition}px) scale(${isDragging ? '0.97' : '1'})` : undefined,
+                  transition: isDragging || sliderPosition > 0 ? (isDragging ? 'box-shadow 0.15s ease' : 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)') : 'none'
+                }}
+                onMouseDown={handleMouseDown}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                <div className="flex items-center justify-center">
+                  <ChevronRight className="w-7 h-7 text-white" strokeWidth={2.5} />
+                  <ChevronRight className="w-7 h-7 text-white -ml-4" strokeWidth={2.5} />
+                </div>
+              </div>
+
+              {/* Success Glow Effect */}
+              {sliderPosition > (trackRef.current ? trackRef.current.offsetWidth * 0.8 : 0) && (
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-green-500/20 animate-pulse pointer-events-none" />
+              )}
+            </div>
+
+            {/* Alternative Click/Tap Option */}
+            {!isActuallyLoading && !hasInsufficientBalance && isConnected && (
+              <button
+                onClick={handleEnterPot}
+                className="w-full text-center text-red-600 hover:text-red-700 text-xs font-medium transition-colors"
+              >
+                <span className="hidden md:inline">{t.modalOrClickHere}</span>
+                <span className="md:hidden">{t.modalOrTapHere}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
