@@ -1077,7 +1077,7 @@ export const translations: Record<Language, Translations> = {
     modalSuccessfullyJoined: 'Successfully Joined! 🎉',
     modalProcessing: 'Processing...',
     modalConnectWalletFirst: 'Connect Wallet First',
-    modalSlideToJoin: 'slide to join',
+    modalSlideToJoin: 'Enter',
     modalOrClickHere: 'or just click here',
     modalOrTapHere: 'or just tap here',
 
@@ -1619,7 +1619,7 @@ export const translations: Record<Language, Translations> = {
     modalSuccessfullyJoined: 'Entrada Confirmada! 🎉',
     modalProcessing: 'Processando...',
     modalConnectWalletFirst: 'Conecte a Carteira Primeiro',
-    modalSlideToJoin: 'deslize para entrar',
+    modalSlideToJoin: 'Entrar',
     modalOrClickHere: 'ou apenas clique aqui',
     modalOrTapHere: 'ou apenas toque aqui',
 
