@@ -1695,7 +1695,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   {(() => {
                                     const wrapLimit = market.marketIndex === 0 ? 25 : (market.useTraditionalLayout ? 25 : 37);
                                     // Mobile truncate limits - cut text earlier on mobile
-                                    const truncateLimit = market.marketIndex === 0 ? 40 : (market.useTraditionalLayout ? 45 : 60);
+                                    const truncateLimit = market.marketIndex === 0 ? 40 : (market.useTraditionalLayout ? 45 : 65);
 
                                     let text = getTranslatedMarketQuestion(market, currentLanguage);
 
