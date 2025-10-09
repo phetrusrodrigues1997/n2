@@ -1687,7 +1687,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 const isEliminated = contractAddress && eliminationStatus[contractAddress];
                                 const showThermometer = market.useTraditionalLayout && !isEliminated;
                                 return showThermometer ? 'pr-16' : 'pr-4';
-                              })()}`}>                <p className="text-sm leading-tight font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]" style={{
+                              })()}`}>                <p className={`${market.marketIndex === 0 ? 'text-base' : 'text-sm'} leading-tight font-['Inter','system-ui','-apple-system','Segoe_UI','Roboto','Helvetica_Neue',sans-serif]`} style={{
                                   color: '#374151',
                                   fontWeight: '600',
                                   whiteSpace: 'nowrap',
