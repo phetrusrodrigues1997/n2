@@ -340,7 +340,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
       </div> */}
 
       {/* Main Content */}
-      <div className="flex flex-col min-h-[calc(100vh-73px)] px-6 md:px-9 lg:px-9 xl:px-9">
+      <div className="flex flex-col min-h-[calc(100vh-73px)] px-6 md:px-9 lg:px-0 xl:px-0 lg:px-9 xl:px-9">
         <div className="flex-1 py-6">
           {/* Page Title */}
           <div className="mb-8">
