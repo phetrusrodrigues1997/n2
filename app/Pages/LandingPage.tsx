@@ -1446,7 +1446,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         {/* Markets Grid */}
         <section className="relative z-10 pt-2 md:mt-[5.5rem]">
-          <div className="max-w-7xl mx-auto px-2 md:px-8">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
 
             {/* Mobile Markets Display - All Markets */}
             <div className="md:hidden space-y-2 -translate-y-2">
@@ -2177,9 +2177,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         {/* Desktop Markets Grid - Full Width */}
         <section className="relative z-10 -mt-24 pb-16 hidden md:block">
-          <div className="max-w-7xl mx-auto px-2 md:px-8">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
             {/* All Markets Display - Unified Grid with Shared Borders */}
-            <div className="grid grid-cols-4 bg-white">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 bg-white">
               {(() => {
                 // Get all markets and deduplicate by ID
                 const allMarkets = marketOptions.map(option => {
@@ -2342,25 +2342,38 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                         className={`group hover:bg-gray-50 cursor-pointer relative transition-all duration-200 border-t border-gray-200 ${(() => {
                           const contractAddress = getContractAddress(market.id);
                           const isEliminated = contractAddress && eliminationStatus[contractAddress];
-                          // Position in row: 0 = first, 1, 2, 3 = last
-                          const positionInRow = index % 4;
-                          const isFirstInRow = positionInRow === 0;
 
-                          // Check if this is in the last row
-                          const totalCards = displayedMarkets.length;
-                          const lastRowStartIndex = Math.floor((totalCards - 1) / 4) * 4;
-                          const isInLastRow = index >= lastRowStartIndex;
-
-                          // Build border classes
+                          // For responsive grid, use Tailwind's responsive border utilities
+                          // Left borders: show on all except first in each row (handled by CSS)
                           let borderClasses = '';
-                          // Add left border with inset styling for all except first in row
-                          if (!isFirstInRow) {
-                            borderClasses += ' market-left-divider';
+
+                          // Check if this is in the last row (using xl:4 cols, lg:3 cols, md:2 cols)
+                          const totalCards = displayedMarkets.length;
+                          const xl4ColsLastRow = Math.floor((totalCards - 1) / 4) * 4;
+                          const lg3ColsLastRow = Math.floor((totalCards - 1) / 3) * 3;
+                          const md2ColsLastRow = Math.floor((totalCards - 1) / 2) * 2;
+
+                          // Add bottom border for last row (responsive)
+                          if (index >= md2ColsLastRow) {
+                            borderClasses += ' border-b lg:border-b-0';
                           }
-                          // Add bottom border ONLY to cards in the last row
-                          if (isInLastRow) {
-                            borderClasses += ' border-b border-gray-200';
+                          if (index >= lg3ColsLastRow) {
+                            borderClasses += ' lg:border-b xl:border-b-0';
                           }
+                          if (index >= xl4ColsLastRow) {
+                            borderClasses += ' xl:border-b';
+                          }
+
+                          // Add left border for non-first items (responsive per breakpoint)
+                          const posInRow2 = index % 2;
+                          const posInRow3 = index % 3;
+                          const posInRow4 = index % 4;
+
+                          if (posInRow2 !== 0) borderClasses += ' market-left-divider';
+                          if (posInRow3 === 0 && index !== 0) borderClasses += ' lg:border-l-0';
+                          if (posInRow3 !== 0) borderClasses += ' lg:market-left-divider';
+                          if (posInRow4 === 0 && index !== 0) borderClasses += ' xl:border-l-0';
+                          if (posInRow4 !== 0) borderClasses += ' xl:market-left-divider';
 
                           return `${isEliminated ? 'opacity-60 grayscale-[0.3]' : ''}${borderClasses}`;
                         })()}`}
@@ -2817,7 +2830,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         {/* Sleek Call to Action - Mobile Only */}
         <section id="call-to-action" className="relative z-10 mt-16 mb-16 md:hidden">
-          <div className="max-w-7xl mx-auto px-2 md:px-8 text-center">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 text-center">
             <h2 className="text-2xl font-light text-gray-900 mb-2 tracking-tight leading-[1.3]">
               <span className="text-green-700 font-medium">{t.thousandsOfWinners}</span>
             </h2>
@@ -2847,7 +2860,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         </section>
 
         <footer className="relative z-10 py-10 bg-white text-center text-green-700 text-sm shadow-md">
-          <div className="max-w-7xl mx-auto px-2 md:px-8">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
             &copy; {new Date().getFullYear()} {t.footerText}
           </div>
         </footer>

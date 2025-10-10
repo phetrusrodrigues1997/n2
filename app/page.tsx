@@ -559,11 +559,11 @@ export default function App() {
         <div className="relative z-10">
           <div className="max-w-7xl mx-auto flex flex-col ">
           {/* Top row with main header elements */}
-          <div className="flex justify-between items-center mt-3 md:mt-0 px-9 md:px-12">
+          <div className="flex justify-between items-center mt-3 md:mt-0 px-5 md:px-7 lg:px-9">
             <div className="flex items-center flex-1 gap-6">
 
               {/* Logo */}
-              <div className="relative -ml-2 flex-shrink-0">
+              <div className="relative flex-shrink-0">
                 <div className="absolute -inset-1 rounded-full blur-md"></div>
                 <ResponsiveLogo onClick={() => setActiveSection('home')} />
               </div>
@@ -606,14 +606,14 @@ export default function App() {
               {/* Balance display removed - ETH balance handled by wallet */}
 
               {/* Right-side button group - adjust positioning based on connection status */}
-              <div className={`flex items-center ml-auto ${isConnected ? '-mr-8 md:-mr-20' : '-mr-4 md:-mr-10'}`}>
+              <div className="flex items-center gap-2 md:-mr-8">
                 {/* Tight group: Mobile (Bell first) vs Desktop (Language first) */}
                 <div className="flex items-center gap-0">
                   {/* Bell button - Mobile: leftmost, Desktop: rightmost */}
                   {isConnected && (
                     <div className={`relative ${isMobile ? 'order-1' : 'order-3'}`} data-announcements-dropdown>
                       <button
-                        className="relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-3 md:-translate-x-1 md:-mr-3"
+                        className="relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-5 md:translate-x-14"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -691,9 +691,9 @@ export default function App() {
                   )}
 
                   {/* Language dropdown - Mobile: middle, Desktop: leftmost - Always visible */}
-                  <div className={`relative z-50 ${isMobile ? 'order-2' : (isConnected ? 'order-1' : 'order-1 -ml-4')}`} data-language-dropdown>
+                  <div className={`relative z-50 ${isMobile ? 'order-2' : 'order-1'}`} data-language-dropdown>
                     <button
-                      className={`hidden md:flex items-center gap-2 px-3 py-2 bg-white text-gray-700 font-medium hover:bg-gray-200 transition-colors ${currentLanguage === 'pt-BR' && !isConnected ? 'translate-x-2' : ''}`}
+                      className="hidden md:flex items-center gap-2 px-3 py-2 bg-white text-gray-700 font-medium hover:bg-gray-200 transition-colors"
                       onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
                       type="button"
                     >
@@ -751,7 +751,7 @@ export default function App() {
                   {isConnected && (
                     <button
                       onClick={() => setActiveSection('profile')}
-                      className={`hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer order-2 mr-6`}
+                      className="hidden md:flex flex-col items-center bg-transparent text-gray-700 font-medium text-sm transition-colors duration-200 z-10 relative px-1 py-1 rounded-md min-w-fit hover:bg-gray-100 cursor-pointer order-2"
                   >
                     <div className="text-xs text-gray-600 font-medium whitespace-nowrap">{t.yourBalance}</div>
                     <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
@@ -767,11 +767,11 @@ export default function App() {
                   <Wallet>
                     <ConnectWallet
                       text={t.signIn}
-                      className="!bg-transparent !border-none !shadow-none !p-0 [&>span]:!text-red-700 hover:[&>span]:!text-black !font-medium !px-0 !py-2 !min-w-0 -translate-x-6 md:translate-x-12"
+                      className="!bg-transparent !border-none !shadow-none !p-0 [&>span]:!text-red-700 hover:[&>span]:!text-black !font-medium !px-0 !py-2 !min-w-0 -translate-x-2 md:translate-x-16"
                     />
                   </Wallet>
                 )}
-                <div className="wallet-container -translate-x-2">
+                <div className="wallet-container">
                 <Wallet>
                   <ConnectWallet
                     text={t.signUp}
@@ -795,7 +795,7 @@ export default function App() {
                             </div>
                           </div>
                         ) : (
-                          <div className="ml-2 translate-x-2" onClick={(e) => e.stopPropagation()}>
+                          <div onClick={(e) => e.stopPropagation()} className='md:translate-x-14'>
                             <NavigationMenu
                               activeSection={activeSection}
                               setActiveSection={setActiveSection}
@@ -838,7 +838,7 @@ export default function App() {
 
           {/* Market Carousel - show on all sections except coming soon, on its own line */}
           {activeSection !== 'comingsoon' && (
-            <div className={`mt-1 ${isConnected ? 'translate-y-0' : 'translate-y-3'} md:translate-y-2 pt-1 md:pt-0 px-5 md:px-8`}>
+            <div className={`mt-1 ${isConnected ? 'translate-y-0' : 'translate-y-3'} md:translate-y-2 pt-1 md:pt-0 px-4 md:px-6 lg:px-8`}>
               {/* Markets Container - Show first 13 on desktop, all on mobile */}
               <div className="flex gap-1.5 overflow-x-auto md:overflow-visible scrollbar-hide pb-1"
                 style={{
@@ -889,7 +889,7 @@ export default function App() {
       {/* Mobile Search Bar - Below Header - Always show on mobile when home */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection === 'home' && (
       <div className="md:hidden bg-white py-4">
-        <div className="max-w-7xl mx-auto px-5 md:px-8 flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex items-center gap-3">
         <div className="relative flex-1">
           <div className="absolute left-3 top-1/2 -translate-y-1/2">
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -941,7 +941,7 @@ export default function App() {
       {/* Second Carousel - Personalized Labels (Below mobile search bar) */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection === 'home' && (
         <section className="relative z-10 md:py-3 bg-white overflow-hidden">
-          <div className="max-w-7xl mx-auto px-5 md:px-8">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
             <div className="flex items-center gap-4 w-full max-w-full">
               {/* Desktop Search Bar - Left side */}
               <div className="hidden md:flex items-center gap-1">
@@ -1008,7 +1008,7 @@ export default function App() {
               {/* Conditional: Show Filter Bar when filter dropdown is open, otherwise show Carousel */}
               {isFilterDropdownOpen ? (
                 /* Tournament Filter Carousel */
-                <div className="relative flex-1 md:flex-1 min-w-0 overflow-hidden -translate-x-2 md:translate-x-0" data-filter-dropdown>
+                <div className="relative flex-1 md:flex-1 min-w-0 overflow-hidden" data-filter-dropdown>
                   {/* Left Arrow for filter carousel */}
                   {showLeftArrowFilter && (
                     <button
@@ -1031,7 +1031,7 @@ export default function App() {
 
                   <div
                     ref={filterCarouselRef}
-                    className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 max-w-full px-5 md:px-8"
+                    className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 max-w-full px-4 md:px-6 lg:px-8"
                     onScroll={handleScrollFilter}
                     style={{
                       scrollbarWidth: 'none',
