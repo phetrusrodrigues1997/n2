@@ -1618,10 +1618,13 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               handleMarketClick(market.id);
                             }
                           }}
-                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 ${market.marketIndex === 0 ? 'shadow-[-4px_0_12px_rgba(147,51,234,0.1),_0_-1px_20px_rgba(147,51,234,0.01),_4px_0_12px_rgba(59,130,246,0.1),_0_2px_16px_rgba(59,130,246,0.01)]' : 'hover:shadow-green-200'} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
+                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 ${market.marketIndex === 0 ? '' : 'hover:shadow-green-200'} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
                             } ${animatingMarket === market.tabId ? 'animate-scale-once' : ''} ${(() => {
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
+                              if (market.marketIndex === 0) {
+                                return isEliminated ? 'opacity-60 grayscale-[0.3] rounded-lg' : '';
+                              }
                               return isEliminated ? 'opacity-60 grayscale-[0.3] rounded-lg' : 'rounded-2xl';
                             })()}`}
                           style={{
@@ -1655,9 +1658,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             } 
                             
                             else if (market.marketIndex === 0) {
-                              // No bottom border for first market
+                              // Add bottom border for first market like others
                               if (market.tabId === selectedMarket) {
-                                classes += ' shadow-lg shadow-green-100/50';
+                                classes += ' border-b border-gray-200 shadow-lg shadow-green-100/50';
+                              } else {
+                                classes += ' border-b border-gray-200';
                               }
                             } else if (market.tabId === selectedMarket) {
                               classes += ' border-b border-gray-200 shadow-lg shadow-green-100/50';
