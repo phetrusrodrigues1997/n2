@@ -591,7 +591,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
  
   return (
-    <div className="min-h-screen bg-white px-6 md:px-9">
+    <div className="min-h-screen bg-white">
       
 
       {/* Main Content */}

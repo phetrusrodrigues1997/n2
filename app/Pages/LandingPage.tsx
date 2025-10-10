@@ -1446,7 +1446,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         {/* Markets Grid */}
         <section className="relative z-10 pt-2 md:mt-[5.5rem]">
-          <div className="max-w-7xl mx-auto px-6 md:px-9">
+          <div className="max-w-7xl mx-auto ">
 
             {/* Mobile Markets Display - All Markets */}
             <div className="md:hidden space-y-2 -translate-y-2">
@@ -2177,7 +2177,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         {/* Desktop Markets Grid - Full Width */}
         <section className="relative z-10 -mt-24 pb-16 hidden md:block">
-          <div className="max-w-7xl mx-auto px-6 md:px-9">
+          <div className="max-w-7xl mx-auto ">
             {/* All Markets Display - Unified Grid with Shared Borders */}
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 bg-white">
               {(() => {
@@ -2830,7 +2830,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         {/* Sleek Call to Action - Mobile Only */}
         <section id="call-to-action" className="relative z-10 mt-16 mb-16 md:hidden">
-          <div className="max-w-7xl mx-auto px-6 md:px-9 text-center">
+          <div className="max-w-7xl mx-auto  text-center">
             <h2 className="text-2xl font-light text-gray-900 mb-2 tracking-tight leading-[1.3]">
               <span className="text-green-700 font-medium">{t.thousandsOfWinners}</span>
             </h2>
@@ -2860,7 +2860,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         </section>
 
         <footer className="relative z-10 py-10 bg-white text-center text-green-700 text-sm shadow-md">
-          <div className="max-w-7xl mx-auto px-6 md:px-9">
+          <div className="max-w-7xl mx-auto ">
             &copy; {new Date().getFullYear()} {t.footerText}
           </div>
         </footer>
