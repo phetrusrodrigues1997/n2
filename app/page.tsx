@@ -546,7 +546,7 @@ export default function App() {
 
 
   return (
-    <div className="min-h-screen bg-white text-white px-6 md:px-9 lg:px-9 xl:px-9">
+    <div className="min-h-screen bg-white text-white px-6 md:px-9">
 
 
       {/* Hide header and all content when LandingPage is loading or showing coming soon */}
@@ -557,7 +557,7 @@ export default function App() {
   }`}
 >
         <div className="relative z-10">
-          <div className="max-w-7xl mx-auto flex flex-col ">
+          <div className="flex flex-col ">
           {/* Top row with main header elements */}
           <div className="flex justify-between items-center mt-3 md:mt-0 ">
             <div className="flex items-center flex-1 gap-6">
@@ -889,7 +889,7 @@ export default function App() {
       {/* Mobile Search Bar - Below Header - Always show on mobile when home */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection === 'home' && (
       <div className="md:hidden bg-white py-4">
-        <div className="max-w-7xl mx-auto  flex items-center gap-3">
+        <div className="flex items-center gap-3">
         <div className="relative flex-1">
           <div className="absolute left-3 top-1/2 -translate-y-1/2">
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -941,7 +941,7 @@ export default function App() {
       {/* Second Carousel - Personalized Labels (Below mobile search bar) */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection === 'home' && (
         <section className="relative z-10 md:py-3 bg-white overflow-hidden">
-          <div className="max-w-7xl mx-auto ">
+          <div className="">
             <div className="flex items-center gap-4 w-full max-w-full">
               {/* Desktop Search Bar - Left side */}
               <div className="hidden md:flex items-center gap-1">

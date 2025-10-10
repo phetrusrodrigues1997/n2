@@ -1313,7 +1313,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       <div className="min-h-screen bg-gray-50">
         {/* Header area skeleton */}
         <div className="bg-white border-b border-gray-200 p-4">
-          <div className="max-w-7xl mx-auto">
+          <div className="">
             <div className="animate-pulse">
               <div className="h-8 bg-gray-200 rounded w-48 mb-4"></div>
               <div className="flex gap-4 overflow-x-auto">
@@ -1326,7 +1326,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         </div>
 
         {/* Main content skeleton */}
-        <div className="max-w-7xl mx-auto p-4">
+        <div className="p-4">
           {/* Stats cards skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {[...Array(3)].map((_, i) => (
@@ -1446,7 +1446,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         {/* Markets Grid */}
         <section className="relative z-10 pt-2 md:mt-[5.5rem]">
-          <div className="max-w-7xl mx-auto ">
+          <div className="">
 
             {/* Mobile Markets Display - All Markets */}
             <div className="md:hidden space-y-2 -translate-y-2">
@@ -2177,7 +2177,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         {/* Desktop Markets Grid - Full Width */}
         <section className="relative z-10 -mt-24 pb-16 hidden md:block">
-          <div className="max-w-7xl mx-auto ">
+          <div className="">
             {/* All Markets Display - Unified Grid with Shared Borders */}
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 bg-white">
               {(() => {
@@ -2830,7 +2830,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         {/* Sleek Call to Action - Mobile Only */}
         <section id="call-to-action" className="relative z-10 mt-16 mb-16 md:hidden">
-          <div className="max-w-7xl mx-auto  text-center">
+          <div className="text-center">
             <h2 className="text-2xl font-light text-gray-900 mb-2 tracking-tight leading-[1.3]">
               <span className="text-green-700 font-medium">{t.thousandsOfWinners}</span>
             </h2>
@@ -2860,7 +2860,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         </section>
 
         <footer className="relative z-10 py-10 bg-white text-center text-green-700 text-sm shadow-md">
-          <div className="max-w-7xl mx-auto ">
+          <div className="">
             &copy; {new Date().getFullYear()} {t.footerText}
           </div>
         </footer>
