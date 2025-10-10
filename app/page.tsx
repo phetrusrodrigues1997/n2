@@ -1267,7 +1267,7 @@ export default function App() {
                 setIsMobileSearchActive(false);
               }}
               className={`flex flex-col items-center justify-center min-w-[60px] py-0.5 px-3 transition-all duration-200 ${
-                (activeSection === 'home' || activeSection === 'bitcoinPot' || activeSection === 'notReadyPage')
+                activeSection === 'home'
                   ? 'text-black'
                   : 'text-gray-400 hover:text-gray-600 active:scale-95'
               }`}
@@ -1292,28 +1292,28 @@ export default function App() {
             </button>
 
             <button
-              onClick={() => setActiveSection('liveMarkets')}
+              onClick={() => setActiveSection('receive')}
               className={`flex flex-col items-center justify-center min-w-[60px] py-0.5 px-3 transition-all duration-200 ${
-                activeSection === 'liveMarkets'
+                activeSection === 'receive'
                   ? 'text-black'
                   : 'text-gray-400 hover:text-gray-600 active:scale-95'
               }`}
             >
               <div className="relative mb-1">
                 <svg className={`w-5 h-5 transition-all duration-200 ${
-                  activeSection === 'liveMarkets'
+                  activeSection === 'receive'
                     ? 'text-black'
                     : 'text-gray-400'
-                }`} fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M3.05 3.05a7 7 0 0 0 0 9.9.5.5 0 0 1-.707.707 8 8 0 0 1 0-11.314.5.5 0 0 1 .707.707m2.122 2.122a4 4 0 0 0 0 5.656.5.5 0 1 1-.708.708 5 5 0 0 1 0-7.072.5.5 0 0 1 .708.708m5.656-.708a.5.5 0 0 1 .708 0 5 5 0 0 1 0 7.072.5.5 0 1 1-.708-.708 4 4 0 0 0 0-5.656.5.5 0 0 1 0-.708m2.122-2.12a.5.5 0 0 1 .707 0 8 8 0 0 1 0 11.313.5.5 0 0 1-.707-.707 7 7 0 0 0 0-9.9.5.5 0 0 1 0-.707zM10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/>
+                }`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3" />
                 </svg>
               </div>
               <span className={`text-xs transition-all duration-200 ${
-                activeSection === 'liveMarkets'
+                activeSection === 'receive'
                   ? 'font-black text-black'
                   : 'font-medium text-gray-400'
               }`}>
-                {t.bottomNavLive}
+                {t.depositButton || 'Deposit'}
               </span>
             </button>
 
@@ -1325,7 +1325,7 @@ export default function App() {
                 setActiveSection('bookmarks');
               }}
               className={`flex flex-col items-center justify-center min-w-[60px] py-0.5 px-3 transition-all duration-200 ${
-                (activeSection === 'bookmarks' || activeSection === 'makePrediction' || activeSection === 'privatePot' || activeSection === 'createPot' || activeSection === 'profile')
+                activeSection === 'bookmarks'
                   ? 'text-black'
                   : 'text-gray-400 hover:text-gray-600 active:scale-95'
               }`}

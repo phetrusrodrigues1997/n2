@@ -351,6 +351,7 @@ export interface Translations {
   home: string;
   privateMarkets: string;
   fundAccount: string;
+  depositButton: string;
   statsRankings: string;
   games: string;
   myTournaments: string;
@@ -944,6 +945,7 @@ export const translations: Record<Language, Translations> = {
     home: 'Home',
     privateMarkets: 'Private Markets',
     fundAccount: 'Fund Account',
+    depositButton: 'Deposit',
     statsRankings: 'Profile',
     games: 'Games',
     myTournaments: 'My Tournaments',
@@ -1487,6 +1489,7 @@ export const translations: Record<Language, Translations> = {
     home: 'Início',
     privateMarkets: 'Mercados Privados',
     fundAccount: 'Depositar',
+    depositButton: 'Depositar',
     statsRankings: 'Perfil',
     games: 'Jogos',
     myTournaments: 'Meus Torneios',
