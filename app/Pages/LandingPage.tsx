@@ -1625,7 +1625,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               if (market.marketIndex === 0) {
                                 return isEliminated ? 'opacity-60 grayscale-[0.3] rounded-lg' : '';
                               }
-                              return isEliminated ? 'opacity-60 grayscale-[0.3] rounded-lg' : 'rounded-2xl';
+                              return isEliminated ? 'opacity-60 grayscale-[0.3] rounded-lg' : '';
                             })()}`}
                           style={{
                             '--swap-distance': swapDistance
@@ -1828,7 +1828,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               if (market.useTraditionalLayout) {
                                 // Traditional buttons (even index markets)
                                 return (
-                                  <div className={`flex justify-center gap-4 mb-3 ${(() => {
+                                  <div className={`flex gap-3 mb-3 ${(() => {
                                     if (market.marketIndex === 0) {
                                       const contractAddress = getContractAddress(market.id);
                                       const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
@@ -1849,7 +1849,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 py-3 rounded-none text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 py-3 rounded-none text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'positive', true)}
                                     </button>
@@ -1866,7 +1866,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 py-3 rounded-none text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 py-3 rounded-none text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'negative', true)}
                                     </button>
@@ -2009,7 +2009,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 if (isEliminated) {
                                   // USER IS ELIMINATED: Show normal stats footer, no More Info button
                                   return (
-                                    <div className="absolute bottom-3 left-4 right-4 flex justify-between items-center">
+                                    <div className="absolute bottom-3 left-0 right-0 flex justify-between items-center">
                                       <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                                         {(() => {
                                           const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
@@ -2080,7 +2080,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               } else {
                                 // USER IS NOT PARTICIPANT: Show two-column layout
                                 return (
-                                  <div className="absolute bottom-3 left-4 right-4 flex justify-between items-center">
+                                  <div className="absolute bottom-3 left-0 right-0 flex justify-between items-center">
                               <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                                 {(() => {
                                   const contractAddress = getContractAddress(market.id);
@@ -2647,7 +2647,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               if (isEliminated) {
                                 // USER IS ELIMINATED: Show normal stats footer, no More Info button
                                 return (
-                                  <div className="absolute bottom-3 left-4 right-4 flex justify-between items-center">
+                                  <div className="absolute bottom-3 left-2 right-2 flex justify-between items-center">
                                     <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                                       {(() => {
                                         const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
@@ -2718,7 +2718,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             } else {
                               // USER IS NOT PARTICIPANT: Show two-column layout
                               return (
-                                <div className="absolute bottom-3 left-4 right-4 flex justify-between items-center">
+                                <div className="absolute bottom-3 left-2 right-2 flex justify-between items-center">
                             <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                               {(() => {
                                 const contractAddress = getContractAddress(market.id);
