@@ -1917,7 +1917,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             console.log('Yes button clicked for market:', market.id);
                                             // Visual feedback
                                             (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#faf5ff';
-                                            (e.currentTarget as HTMLButtonElement).style.color = '#7e22ce';
+                                            (e.currentTarget as HTMLButtonElement).style.color = '#00aa00';
                                             // Navigate to market after brief visual feedback
                                             setTimeout(() => {
                                               handleMarketClick(market.id);
@@ -1934,7 +1934,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             console.log('No button clicked for market:', market.id);
                                             // Visual feedback
                                             (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#eff6ff';
-                                            (e.currentTarget as HTMLButtonElement).style.color = '#1d4ed8';
+                                            (e.currentTarget as HTMLButtonElement).style.color = '#aa0000';
                                             // Navigate to market after brief visual feedback
                                             setTimeout(() => {
                                               handleMarketClick(market.id);
@@ -2520,7 +2520,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       console.log('Yes button clicked for market:', market.id);
                                       // Visual feedback
                                       (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#faf5ff';
-                                      (e.currentTarget as HTMLButtonElement).style.color = '#7e22ce';
+                                      (e.currentTarget as HTMLButtonElement).style.color = '#00aa00';
                                       // Navigate to market after brief visual feedback
                                       setTimeout(() => {
                                         handleMarketClick(market.id);
@@ -2537,7 +2537,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       console.log('No button clicked for market:', market.id);
                                       // Visual feedback
                                       (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#eff6ff';
-                                      (e.currentTarget as HTMLButtonElement).style.color = '#1d4ed8';
+                                      (e.currentTarget as HTMLButtonElement).style.color = '#aa0000';
                                       // Navigate to market after brief visual feedback
                                       setTimeout(() => {
                                         handleMarketClick(market.id);
@@ -2587,7 +2587,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           console.log('Yes button clicked for market:', market.id);
                                           // Visual feedback
                                           (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#faf5ff';
-                                          (e.currentTarget as HTMLButtonElement).style.color = '#7e22ce';
+                                          (e.currentTarget as HTMLButtonElement).style.color = '#00aa00';
                                           // Navigate to market after brief visual feedback
                                           setTimeout(() => {
                                             handleMarketClick(market.id);
@@ -2604,7 +2604,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           console.log('No button clicked for market:', market.id);
                                           // Visual feedback
                                           (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#eff6ff';
-                                          (e.currentTarget as HTMLButtonElement).style.color = '#1d4ed8';
+                                          (e.currentTarget as HTMLButtonElement).style.color = '#aa0000';
                                           // Navigate to market after brief visual feedback
                                           setTimeout(() => {
                                             handleMarketClick(market.id);
