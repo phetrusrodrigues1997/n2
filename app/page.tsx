@@ -559,7 +559,7 @@ export default function App() {
         <div className="relative z-10">
           <div className="max-w-7xl mx-auto flex flex-col ">
           {/* Top row with main header elements */}
-          <div className="flex justify-between items-center mt-3 md:mt-0 px-5 md:px-7 lg:px-9">
+          <div className="flex justify-between items-center mt-3 md:mt-0 px-4 md:px-6 lg:px-8">
             <div className="flex items-center flex-1 gap-6">
 
               {/* Logo */}
@@ -606,14 +606,14 @@ export default function App() {
               {/* Balance display removed - ETH balance handled by wallet */}
 
               {/* Right-side button group - adjust positioning based on connection status */}
-              <div className="flex items-center gap-2 md:-mr-8">
+              <div className="flex items-center gap-2 md:-mr-8 lg:-mr-10 xl:-mr-12">
                 {/* Tight group: Mobile (Bell first) vs Desktop (Language first) */}
                 <div className="flex items-center gap-0">
                   {/* Bell button - Mobile: leftmost, Desktop: rightmost */}
                   {isConnected && (
                     <div className={`relative ${isMobile ? 'order-1' : 'order-3'}`} data-announcements-dropdown>
                       <button
-                        className="relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-5 md:translate-x-14"
+                        className="relative p-1 hover:bg-gray-100 rounded-full transition-colors z-40 translate-x-5 md:translate-x-14 lg:translate-x-16 xl:translate-x-18"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -795,7 +795,7 @@ export default function App() {
                             </div>
                           </div>
                         ) : (
-                          <div onClick={(e) => e.stopPropagation()} className='md:translate-x-14'>
+                          <div onClick={(e) => e.stopPropagation()} className='md:translate-x-14 lg:translate-x-16 xl:translate-x-18'>
                             <NavigationMenu
                               activeSection={activeSection}
                               setActiveSection={setActiveSection}
