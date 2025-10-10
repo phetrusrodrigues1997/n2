@@ -546,18 +546,17 @@ export default function App() {
 
 
   return (
-    <div className="min-h-screen bg-white text-white px-4 md:px-9">
+    <div className="min-h-screen bg-white text-white px-4 md:px-6">
 
 
       {/* Hide header and all content when LandingPage is loading or showing coming soon */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && (
         <header
-  className={`z-50 bg-white pt-0 md:pt-2 ${isConnected ? 'pb-0' : 'pb-3'} md:pb-2 sticky top-0 overflow-x-hidden  ${
-    (activeSection !== 'comingsoon') ? "border-b border-gray-200" : ""
-  }`}
+  className={`z-50 bg-white sticky top-0`}
 >
-        <div className="relative z-10">
-          <div className="flex flex-col ">
+        <div className={`-mx-4 md:-mx-9 overflow-x-hidden ${(activeSection !== 'comingsoon') ? "border-b border-gray-200" : ""}`}>
+          <div className="relative z-10 px-4 md:px-9 pt-0 md:pt-2 pb-0 md:pb-2">
+            <div className={`flex flex-col ${isConnected ? '' : 'pb-3'}`}>
           {/* Top row with main header elements */}
           <div className="flex justify-between items-center mt-3 md:mt-0 ">
             <div className="flex items-center flex-1 gap-6">
@@ -882,6 +881,7 @@ export default function App() {
               </div>
             </div>
           )}
+          </div>
         </div>
         </header>
       )}
@@ -1257,7 +1257,7 @@ export default function App() {
       </main>
 
       {/* Mobile Bottom Navigation */}
-      {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection !== 'AI' && activeSection !== 'receive' && activeSection !== 'ideas' && activeSection !== 'bitcoinPot' && activeSection !== 'discord' && (
+      {!isLandingPageLoading && activeSection !== 'comingsoon' && (
         <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white z-40 border-t border-gray-200">
           <div className="flex items-center justify-around py-2 px-1">
             <button

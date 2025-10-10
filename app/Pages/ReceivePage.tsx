@@ -74,7 +74,7 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Minimal Header */}
+      {/* Minimal Header
       <div className="flex items-center justify-between p-4 border-b border-gray-100">
         <button
           onClick={() => setActiveSection?.('home')}
@@ -88,7 +88,7 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
         >
           Where can I buy crypto?
         </button>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <div className="max-w-md mx-auto px-4 py-6">
