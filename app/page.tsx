@@ -546,7 +546,7 @@ export default function App() {
 
 
   return (
-    <div className="min-h-screen bg-white text-white px-6 md:px-9">
+    <div className="min-h-screen bg-white text-white px-4 md:px-9">
 
 
       {/* Hide header and all content when LandingPage is loading or showing coming soon */}

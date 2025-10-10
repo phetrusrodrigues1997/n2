@@ -1312,11 +1312,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Header area skeleton */}
-        <div className="bg-white border-b border-gray-200 p-4">
+        <div className="bg-white border-b border-gray-200 py-4">
           <div className="">
             <div className="animate-pulse">
               <div className="h-8 bg-gray-200 rounded w-48 mb-4"></div>
-              <div className="flex gap-4 overflow-x-auto">
+              <div className="flex gapy-4 overflow-x-auto">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="h-10 bg-gray-100 rounded-lg w-24 flex-shrink-0"></div>
                 ))}
@@ -1326,7 +1326,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         </div>
 
         {/* Main content skeleton */}
-        <div className="p-4">
+        <div className="py-4">
           {/* Stats cards skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {[...Array(3)].map((_, i) => (
@@ -1643,11 +1643,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
                             // Reduce bottom padding for non-traditional layouts to make div shorter
-                            let classes = market.useTraditionalLayout ? 'p-4 pb-5' : 'p-4 pb-0';
+                            let classes = market.useTraditionalLayout ? 'py-4 pb-5' : 'py-4 pb-0';
 
                             // Add extra top padding for first market
                             if (market.marketIndex === 0) {
-                              classes = classes.replace('p-4', 'px-4 pt-4 pb-4');
+                              classes = classes.replace('py-4', 'pt-4 pb-4');
                             }
 
                             if (isEliminated) {
@@ -1704,7 +1704,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   letterSpacing: '-0.01em'
                                 }}>
                                   {(() => {
-                                    const wrapLimit = market.marketIndex === 0 ? 25 : (market.useTraditionalLayout ? 25 : 37);
+                                    const wrapLimit = market.marketIndex === 0 ? 32 : (market.useTraditionalLayout ? 26 : 37);
                                     // Mobile truncate limits - cut text earlier on mobile
                                     const truncateLimit = market.marketIndex === 0 ? 40 : (market.useTraditionalLayout ? 45 : 65);
 
@@ -1823,7 +1823,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               if (market.useTraditionalLayout) {
                                 // Traditional buttons (even index markets)
                                 return (
-                                  <div className={`flex justify-center gap-2 mb-3 ${(() => {
+                                  <div className={`flex justify-center gap-4 mb-3 ${(() => {
                                     if (market.marketIndex === 0) {
                                       const contractAddress = getContractAddress(market.id);
                                       const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
@@ -1844,7 +1844,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-22 py-3 rounded-none text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 py-3 rounded-none text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'positive', true)}
                                     </button>
@@ -1861,7 +1861,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-22 py-3 rounded-none text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 py-3 rounded-none text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'negative', true)}
                                     </button>
@@ -2877,7 +2877,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         {/* Tutorial Modal - Polymarket Style */}
         {showTutorial && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center py-4 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full border border-gray-100">
               {/* Modal Header - Clean */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
