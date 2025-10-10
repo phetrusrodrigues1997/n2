@@ -74,6 +74,16 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
   const selectedMarket = propSelectedMarket;
   const { alertState, showAlert, closeAlert } = useCustomAlert();
 
+  // Helper function to generate deterministic random value from market ID
+  const getRandomFromMarketId = (marketId: string): number => {
+    let hash = 0;
+    for (let i = 0; i < marketId.length; i++) {
+      hash = ((hash << 5) - hash) + marketId.charCodeAt(i);
+      hash = hash & hash;
+    }
+    return Math.abs(hash % 100) / 100; // Returns value between 0 and 1
+  };
+
   // Loading state
   const [isLoading, setIsLoading] = useState(true);
   const [isSkeletonLoading, setIsSkeletonLoading] = useState(false);
@@ -946,7 +956,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     // Check if this is the first market (index 0)
     const marketIndex = marketOptions.findIndex(m => m.id === marketId);
     const isFirstMarket = marketIndex === 0;
-    const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
+    const useTraditionalLayout = marketIndex === 0 || getRandomFromMarketId(marketId) < 0.25;
 
     // Helper function to get percentage for markets with traditional layout (on mobile)
     const getPercentageForButton = (type: 'positive' | 'negative') => {
@@ -986,7 +996,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         if (useTraditionalLayout && isMobile) {
           const percentage = getPercentageForButton(buttonType);
           return (
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-1">
               <span className={buttonType === 'positive' ? 'text-green-600' : 'text-red-600'}>
                 {buttonType === 'positive' ? '✓' : '✗'}
               </span>
@@ -995,7 +1005,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           );
         } else {
           return (
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-1">
               <span className={buttonType === 'positive' ? 'text-green-600' : 'text-red-600'}>
                 {buttonType === 'positive' ? '✓' : '✗'}
               </span>
@@ -1010,7 +1020,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       const percentage = getPercentageForButton(buttonType);
       const buttonText = buttonType === 'positive' ? t.higher : t.lower;
       return (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-1">
           <span>{buttonText}</span>
           <span className="text-xs font-semibold opacity-75">{percentage}</span>
         </div>
@@ -1543,7 +1553,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 // Pre-calculate layout data for performance optimization
                 const marketsWithLayoutData = displayedMarkets.map((market: Market, index: number) => {
                   const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                  const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
+                  const useTraditionalLayout = marketIndex === 0 || getRandomFromMarketId(market.id) < 0.25;
                   return { ...market, marketIndex, useTraditionalLayout };
                 });
 
@@ -1834,7 +1844,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-22 py-3 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-22 py-3 rounded-none text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'positive', true)}
                                     </button>
@@ -1851,7 +1861,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-22 py-3 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-22 py-3 rounded-none text-base font-bold transition-all duration-200 flex-1 max-w-[213px] flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'negative', true)}
                                     </button>
@@ -1895,78 +1905,40 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         <div className="text-base font-bold text-gray-900">{noPercentage}%</div>
                                       </div>
                                       <div className="flex flex-col gap-2">
-                                        <div className="flex gap-2">
-                                          <button
-                                            onClick={handleButtonClick(market.id, 'positive', (e) => {
-                                              e.stopPropagation();
-                                              e.preventDefault();
-                                              console.log('Yes button clicked for market:', market.id);
-                                              // Visual feedback
-                                              (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#faf5ff';
-                                              (e.currentTarget as HTMLButtonElement).style.color = '#7e22ce';
-                                              // Navigate to market after brief visual feedback
-                                              setTimeout(() => {
-                                                handleMarketClick(market.id);
-                                              }, 300);
-                                            })}
-                                            className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
-                                          >
-                                            {getButtonContent(market.id, 'positive', true)}
-                                          </button>
-                                          <button
-                                            onClick={handleButtonClick(market.id, 'negative', (e) => {
-                                              e.stopPropagation();
-                                              e.preventDefault();
-                                              console.log('No button clicked for market:', market.id);
-                                              // Visual feedback
-                                              (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#eff6ff';
-                                              (e.currentTarget as HTMLButtonElement).style.color = '#1d4ed8';
-                                              // Navigate to market after brief visual feedback
-                                              setTimeout(() => {
-                                                handleMarketClick(market.id);
-                                              }, 300);
-                                            })}
-                                            className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
-                                          >
-                                            {getButtonContent(market.id, 'negative', true)}
-                                          </button>
-                                        </div>
-                                        <div className="flex gap-2">
-                                          <button
-                                            onClick={handleButtonClick(market.id, 'negative', (e) => {
-                                              e.stopPropagation();
-                                              e.preventDefault();
-                                              console.log('No button clicked for market:', market.id);
-                                              // Visual feedback
-                                              (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#eff6ff';
-                                              (e.currentTarget as HTMLButtonElement).style.color = '#1d4ed8';
-                                              // Navigate to market after brief visual feedback
-                                              setTimeout(() => {
-                                                handleMarketClick(market.id);
-                                              }, 300);
-                                            })}
-                                            className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
-                                          >
-                                            {getButtonContent(market.id, 'negative', true)}
-                                          </button>
-                                          <button
-                                            onClick={handleButtonClick(market.id, 'positive', (e) => {
-                                              e.stopPropagation();
-                                              e.preventDefault();
-                                              console.log('Yes button clicked for market:', market.id);
-                                              // Visual feedback
-                                              (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#faf5ff';
-                                              (e.currentTarget as HTMLButtonElement).style.color = '#7e22ce';
-                                              // Navigate to market after brief visual feedback
-                                              setTimeout(() => {
-                                                handleMarketClick(market.id);
-                                              }, 300);
-                                            })}
-                                            className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 min-w-[45px]")}`}
-                                          >
-                                            {getButtonContent(market.id, 'positive', true)}
-                                          </button>
-                                        </div>
+                                        <button
+                                          onClick={handleButtonClick(market.id, 'positive', (e) => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            console.log('Yes button clicked for market:', market.id);
+                                            // Visual feedback
+                                            (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#faf5ff';
+                                            (e.currentTarget as HTMLButtonElement).style.color = '#7e22ce';
+                                            // Navigate to market after brief visual feedback
+                                            setTimeout(() => {
+                                              handleMarketClick(market.id);
+                                            }, 300);
+                                          })}
+                                          className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-4 py-1.5 rounded-none text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
+                                        >
+                                          {getButtonContent(market.id, 'positive', true)}
+                                        </button>
+                                        <button
+                                          onClick={handleButtonClick(market.id, 'negative', (e) => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            console.log('No button clicked for market:', market.id);
+                                            // Visual feedback
+                                            (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#eff6ff';
+                                            (e.currentTarget as HTMLButtonElement).style.color = '#1d4ed8';
+                                            // Navigate to market after brief visual feedback
+                                            setTimeout(() => {
+                                              handleMarketClick(market.id);
+                                            }, 300);
+                                          })}
+                                          className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-4 py-1.5 rounded-none text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
+                                        >
+                                          {getButtonContent(market.id, 'negative', true)}
+                                        </button>
                                       </div>
                                     </div>
                                   </div>
@@ -2305,7 +2277,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 // Pre-calculate layout data for performance optimization
                 const marketsWithLayoutData = displayedMarkets.map((market: Market, index: number) => {
                   const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                  const useTraditionalLayout = ((marketIndex + 1) % 3 === 0) || marketIndex === 0;
+                  const useTraditionalLayout = marketIndex === 0 || getRandomFromMarketId(market.id) < 0.25;
                   return { ...market, marketIndex, useTraditionalLayout };
                 });
 
@@ -2536,9 +2508,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-14 py-2.5 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
+                                    className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-14 py-2.5 rounded-none text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
                                   >
-                                    {getButtonContent(market.id, 'positive', false)}
+                                    {getButtonContent(market.id, 'positive', true)}
                                   </button>
                                   <button
                                     onClick={handleButtonClick(market.id, 'negative', (e) => {
@@ -2553,9 +2525,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-14 py-2.5 rounded-lg text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
+                                    className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-14 py-2.5 rounded-none text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
                                   >
-                                    {getButtonContent(market.id, 'negative', false)}
+                                    {getButtonContent(market.id, 'negative', true)}
                                   </button>
                                 </div>
                               );
@@ -2590,78 +2562,40 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       <div className="text-lg font-bold text-gray-900">{noPercentage}%</div>
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                      <div className="flex gap-1">
-                                        <button
-                                          onClick={handleButtonClick(market.id, 'positive', (e) => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            console.log('Yes button clicked for market:', market.id);
-                                            // Visual feedback
-                                            (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#faf5ff';
-                                            (e.currentTarget as HTMLButtonElement).style.color = '#7e22ce';
-                                            // Navigate to market after brief visual feedback
-                                            setTimeout(() => {
-                                              handleMarketClick(market.id);
-                                            }, 300);
-                                          })}
-                                          className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[38px]")}`}
-                                        >
-                                          {getButtonContent(market.id, 'positive', false)}
-                                        </button>
-                                        <button
-                                          onClick={handleButtonClick(market.id, 'negative', (e) => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            console.log('No button clicked for market:', market.id);
-                                            // Visual feedback
-                                            (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#eff6ff';
-                                            (e.currentTarget as HTMLButtonElement).style.color = '#1d4ed8';
-                                            // Navigate to market after brief visual feedback
-                                            setTimeout(() => {
-                                              handleMarketClick(market.id);
-                                            }, 300);
-                                          })}
-                                          className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[38px]")}`}
-                                        >
-                                          {getButtonContent(market.id, 'negative', false)}
-                                        </button>
-                                      </div>
-                                      <div className="flex gap-1">
-                                        <button
-                                          onClick={handleButtonClick(market.id, 'negative', (e) => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            console.log('No button clicked for market:', market.id);
-                                            // Visual feedback
-                                            (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#eff6ff';
-                                            (e.currentTarget as HTMLButtonElement).style.color = '#1d4ed8';
-                                            // Navigate to market after brief visual feedback
-                                            setTimeout(() => {
-                                              handleMarketClick(market.id);
-                                            }, 300);
-                                          })}
-                                          className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[38px]")}`}
-                                        >
-                                          {getButtonContent(market.id, 'negative', false)}
-                                        </button>
-                                        <button
-                                          onClick={handleButtonClick(market.id, 'positive', (e) => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            console.log('Yes button clicked for market:', market.id);
-                                            // Visual feedback
-                                            (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#faf5ff';
-                                            (e.currentTarget as HTMLButtonElement).style.color = '#7e22ce';
-                                            // Navigate to market after brief visual feedback
-                                            setTimeout(() => {
-                                              handleMarketClick(market.id);
-                                            }, 300);
-                                          })}
-                                          className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 min-w-[38px]")}`}
-                                        >
-                                          {getButtonContent(market.id, 'positive', false)}
-                                        </button>
-                                      </div>
+                                      <button
+                                        onClick={handleButtonClick(market.id, 'positive', (e) => {
+                                          e.stopPropagation();
+                                          e.preventDefault();
+                                          console.log('Yes button clicked for market:', market.id);
+                                          // Visual feedback
+                                          (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#faf5ff';
+                                          (e.currentTarget as HTMLButtonElement).style.color = '#7e22ce';
+                                          // Navigate to market after brief visual feedback
+                                          setTimeout(() => {
+                                            handleMarketClick(market.id);
+                                          }, 300);
+                                        })}
+                                        className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-none text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
+                                      >
+                                        {getButtonContent(market.id, 'positive', false)}
+                                      </button>
+                                      <button
+                                        onClick={handleButtonClick(market.id, 'negative', (e) => {
+                                          e.stopPropagation();
+                                          e.preventDefault();
+                                          console.log('No button clicked for market:', market.id);
+                                          // Visual feedback
+                                          (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#eff6ff';
+                                          (e.currentTarget as HTMLButtonElement).style.color = '#1d4ed8';
+                                          // Navigate to market after brief visual feedback
+                                          setTimeout(() => {
+                                            handleMarketClick(market.id);
+                                          }, 300);
+                                        })}
+                                        className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-3 py-1 rounded-none text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
+                                      >
+                                        {getButtonContent(market.id, 'negative', false)}
+                                      </button>
                                     </div>
                                   </div>
                                 </div>
