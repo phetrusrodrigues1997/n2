@@ -837,7 +837,7 @@ export default function App() {
 
           {/* Market Carousel - show on all sections except coming soon, on its own line */}
           {activeSection !== 'comingsoon' && (
-            <div className={`mt-1 ${isConnected ? 'translate-y-0' : 'translate-y-3'} md:translate-y-2 pt-1 md:pt-0 `}>
+            <div className={`mt-1 md:translate-y-2 pt-1 md:pt-0 `}>
               {/* Markets Container - Show first 13 on desktop, all on mobile */}
               <div className="flex gap-1.5 overflow-x-auto md:overflow-visible scrollbar-hide pb-1"
                 style={{
