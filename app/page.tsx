@@ -562,7 +562,7 @@ export default function App() {
             <div className="flex items-center flex-1 gap-6">
 
               {/* Logo */}
-              <div className="relative flex-shrink-0">
+              <div className="relative flex-shrink-0 translate-x-1">
                 <div className="absolute -inset-1 rounded-full blur-md"></div>
                 <ResponsiveLogo onClick={() => setActiveSection('home')} />
               </div>

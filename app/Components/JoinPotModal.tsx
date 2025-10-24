@@ -9,7 +9,7 @@ import { calculateEntryFee, PENALTY_EXEMPT_CONTRACTS, CONTRACT_TO_TABLE_MAPPING,
 import { getPrice } from '../Constants/getPrice';
 import { recordPotEntry } from '../Database/actions3';
 
-// Contract ABI for SimplePredictionPot (ETH-based)lol
+// Contract ABI for SimplePredictionPot (ETH-based)
 const PREDICTION_POT_ABI = [
   {
     "inputs": [],
@@ -79,10 +79,17 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   useEffect(() => {
     const fetchEthPrice = async () => {
       try {
+        console.log('[JoinPotModal] Fetching current ETH price...');
         const price = await getPrice('ETH');
+        console.log('[JoinPotModal] ETH price fetched successfully:', { price });
         setEthPrice(price);
       } catch (error) {
-        console.error('Failed to fetch ETH price:', error);
+        console.error('[JoinPotModal] Failed to fetch ETH price, using fallback:', {
+          error,
+          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+          fallbackPrice: 4700,
+          timestamp: new Date().toISOString()
+        });
         setEthPrice(4700); // Fallback price
       }
     };
@@ -93,13 +100,24 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   // Handle image intro animation
   useEffect(() => {
     if (isOpen) {
+      console.log('[JoinPotModal] Modal opened:', {
+        contractAddress,
+        marketQuestion,
+        entryFeeUSD: entryFee,
+        potBalance,
+        isPenaltyExempt: PENALTY_EXEMPT_CONTRACTS.includes(contractAddress),
+        walletAddress: address,
+        isConnected,
+        timestamp: new Date().toISOString()
+      });
+
       setShowImageIntro(true);
       const timer = setTimeout(() => {
         setShowImageIntro(false);
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen, contractAddress, marketQuestion, entryFee, potBalance, address, isConnected]);
 
   // Calculate entry amount in ETH (convert USD to wei)
   const ethToUsd = (ethAmount: bigint): number => {
@@ -135,6 +153,15 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
 
     setIsLoading(true);
 
+    console.log('[JoinPotModal] Initiating pot entry:', {
+      contractAddress,
+      walletAddress: address,
+      entryFeeUSD: entryFee,
+      entryAmountETH: entryAmountEth.toFixed(6),
+      ethPrice: ethPrice || 'fallback',
+      timestamp: new Date().toISOString()
+    });
+
     try {
       await writeContract({
         address: contractAddress as `0x${string}`,
@@ -144,9 +171,16 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
         value: entryAmount,
       });
 
+      console.log('[JoinPotModal] Transaction submitted successfully');
       showMessage(t.modalWaitingConfirmation);
     } catch (error) {
-      console.error('Enter pot failed:', error);
+      console.error('[JoinPotModal] Transaction submission failed:', {
+        error,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        contractAddress,
+        walletAddress: address,
+        timestamp: new Date().toISOString()
+      });
       showMessage(t.modalTransactionFailed, true);
       setIsLoading(false);
     }
@@ -155,6 +189,13 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   // Handle transaction confirmation
   useEffect(() => {
     if (isConfirmed && !hasRecordedEntry) {
+      console.log('[JoinPotModal] Transaction confirmed on-chain:', {
+        transactionHash: hash,
+        walletAddress: address,
+        contractAddress,
+        timestamp: new Date().toISOString()
+      });
+
       setIsLoading(false);
       setShowSuccessScreen(true);
 
@@ -163,10 +204,36 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
         // Get the table type from contract address mapping
         const tableType = CONTRACT_TO_TABLE_MAPPING[contractAddress as keyof typeof CONTRACT_TO_TABLE_MAPPING];
 
-        recordPotEntry(address, contractAddress, tableType || 'featured', 'entry').catch(() => {
-          // Silently handle pot entry recording errors
-          console.warn('Failed to record pot entry in participation history');
+        console.log('[JoinPotModal] Recording pot entry in database:', {
+          walletAddress: address,
+          contractAddress,
+          tableType: tableType || 'featured',
+          eventType: 'entry',
+          timestamp: new Date().toISOString()
         });
+
+        recordPotEntry(address, contractAddress, tableType || 'featured', 'entry')
+          .then(() => {
+            console.log('[JoinPotModal] Database entry recorded successfully:', {
+              walletAddress: address,
+              contractAddress,
+              tableType: tableType || 'featured',
+              timestamp: new Date().toISOString()
+            });
+          })
+          .catch((error) => {
+            console.error('[JoinPotModal] CRITICAL: Failed to record pot entry in database:', {
+              error,
+              errorMessage: error instanceof Error ? error.message : 'Unknown error',
+              errorStack: error instanceof Error ? error.stack : undefined,
+              walletAddress: address,
+              contractAddress,
+              tableType: tableType || 'featured',
+              transactionHash: hash,
+              timestamp: new Date().toISOString(),
+              note: 'Transaction succeeded on-chain but database recording failed - data inconsistency!'
+            });
+          });
 
         setHasRecordedEntry(true); // Mark as recorded to prevent duplicates
       }
@@ -188,14 +255,20 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
         }, 2500);
       }
     }
-  }, [isConfirmed, onSuccess, onClose, address, contractAddress, hasRecordedEntry]);
+  }, [isConfirmed, onSuccess, onClose, address, contractAddress, hasRecordedEntry, hash]);
 
   // Reset loading state if transaction fails
   useEffect(() => {
     if (!isPending && !isConfirming && hash && !isConfirmed) {
+      console.error('[JoinPotModal] Transaction failed to confirm:', {
+        transactionHash: hash,
+        walletAddress: address,
+        contractAddress,
+        timestamp: new Date().toISOString()
+      });
       setIsLoading(false);
     }
-  }, [isPending, isConfirming, hash, isConfirmed]);
+  }, [isPending, isConfirming, hash, isConfirmed, address, contractAddress]);
 
   const isActuallyLoading = isLoading || isPending || isConfirming;
 

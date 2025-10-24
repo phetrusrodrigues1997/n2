@@ -953,32 +953,6 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     const isParticipant = contractAddress && isUserParticipant(contractAddress);
     const isLoading = voteChangeLoading[marketId];
 
-    // Check if this is the first market (index 0)
-    const marketIndex = marketOptions.findIndex(m => m.id === marketId);
-    const isFirstMarket = marketIndex === 0;
-    const useTraditionalLayout = marketIndex === 0 || getRandomFromMarketId(marketId) < 0.25;
-
-    // Helper function to get percentage for markets with traditional layout (on mobile)
-    const getPercentageForButton = (type: 'positive' | 'negative') => {
-      if (!useTraditionalLayout || !isMobile) return '';
-
-      const percentageData = predictionPercentages[marketId];
-      if (!percentageData) return '0%';
-
-      const totalVotes = percentageData.totalPredictions ?? 0;
-      const positive = Math.round((percentageData.positivePercentage ?? 0) / 100 * totalVotes);
-      const negative = totalVotes - positive;
-
-      if (type === 'positive') {
-        const yesPercentage = (((positive + 0.5) / (positive + negative + 1)) * 100).toFixed(0);
-        return yesPercentage + '%';
-      } else {
-        const yesPercentage = (((positive + 0.5) / (positive + negative + 1)) * 100);
-        const noPercentage = (100 - yesPercentage).toFixed(0);
-        return noPercentage + '%';
-      }
-    };
-
     // Show loading spinner if vote is being changed
     if (isLoading) {
       return (
@@ -992,39 +966,14 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       // User has voted for this option
       if (isParticipant) {
         // Show confirmed tick for participants (they can't click to change from same option)
-        // For markets with traditional layout on mobile, also show percentage next to tick
-        if (useTraditionalLayout && isMobile) {
-          const percentage = getPercentageForButton(buttonType);
-          return (
-            <div className="flex items-center justify-center gap-1">
-              <span className={buttonType === 'positive' ? 'text-green-600' : 'text-red-600'}>
-                {buttonType === 'positive' ? '✓' : '✗'}
-              </span>
-              <span className="text-xs font-semibold opacity-75">{percentage}</span>
-            </div>
-          );
-        } else {
-          return (
-            <div className="flex items-center justify-center gap-1">
-              <span className={buttonType === 'positive' ? 'text-green-600' : 'text-red-600'}>
-                {buttonType === 'positive' ? '✓' : '✗'}
-              </span>
-            </div>
-          );
-        }
+        return (
+          <div className="flex items-center justify-center">
+            <span className={buttonType === 'positive' ? 'text-green-600' : 'text-red-600'}>
+              {buttonType === 'positive' ? '✓' : '✗'}
+            </span>
+          </div>
+        );
       }
-    }
-
-    // For markets with traditional layout on mobile, show button text with percentage
-    if (useTraditionalLayout && isMobile) {
-      const percentage = getPercentageForButton(buttonType);
-      const buttonText = buttonType === 'positive' ? t.higher : t.lower;
-      return (
-        <div className="flex items-center justify-center gap-1">
-          <span>{buttonText}</span>
-          <span className="text-xs font-semibold opacity-75">{percentage}</span>
-        </div>
-      );
     }
 
     // For participants who haven't voted or want to change: show clickable option
@@ -1553,7 +1502,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 // Pre-calculate layout data for performance optimization
                 const marketsWithLayoutData = displayedMarkets.map((market: Market, index: number) => {
                   const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                  const useTraditionalLayout = marketIndex === 0 || getRandomFromMarketId(market.id) < 0.25;
+                  const useTraditionalLayout = getRandomFromMarketId(market.id) < 0.18;
                   return { ...market, marketIndex, useTraditionalLayout };
                 });
 
@@ -1639,18 +1588,19 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               // First market: extra height for participants to accommodate More Info button
                               return userIsParticipant ? 'min-h-[360px] bg-[#fefefe]' : 'min-h-[325px] bg-[#fefefe]';
                             } else {
-                              return 'min-h-[260px] bg-white';
+                              return 'min-h-[220px] bg-white';
                             }
                           })()} flex flex-col justify-between transition-all duration-300 ${(() => {
                             const contractAddress = getContractAddress(market.id);
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
                             // Reduce bottom padding for non-traditional layouts to make div shorter
-                            let classes = market.useTraditionalLayout ? 'py-4 pb-5' : 'py-4 pb-0';
-
-                            // Add extra top padding for first market
+                            // First market gets normal padding, others get minimal padding
+                            let classes;
                             if (market.marketIndex === 0) {
-                              classes = classes.replace('py-4', 'pt-4 pb-4');
+                              classes = 'pt-4 pb-4';
+                            } else {
+                              classes = market.useTraditionalLayout ? 'py-1 pb-1' : 'py-1 pb-0';
                             }
 
                             if (isEliminated) {
@@ -1826,15 +1776,15 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             {(() => {
                               // Mobile: Alternating button layout system
                               if (market.useTraditionalLayout) {
-                                // Traditional buttons (even index markets)
+                                // Traditional buttons
                                 return (
-                                  <div className={`flex gap-3 mb-3 ${(() => {
+                                  <div className={`flex gap-3 ${market.marketIndex === 0 ? 'mb-3' : 'mb-1'} ${(() => {
                                     if (market.marketIndex === 0) {
                                       const contractAddress = getContractAddress(market.id);
                                       const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
                                       return userIsParticipant ? 'translate-y-4' : 'translate-y-1';
                                     }
-                                    return 'translate-y-5';
+                                    return '';
                                   })()}`}>
                                     <button
                                       onClick={handleButtonClick(market.id, 'positive', (e) => {
@@ -1849,7 +1799,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 py-3 rounded-none text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 py-3 rounded-md text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'positive', true)}
                                     </button>
@@ -1866,7 +1816,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 py-3 rounded-none text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 py-3 rounded-md text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'negative', true)}
                                     </button>
@@ -1895,7 +1845,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
                                       return userIsParticipant ? 'mb-3 translate-y-1' : 'mb-3 -translate-y-3';
                                     }
-                                    return 'mb-6';
+                                    return 'mb-1';
                                   })()}`}>
                                     {/* Left side: Yes/No labels stacked */}
                                     <div className="flex flex-col gap-2">
@@ -1923,7 +1873,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                               handleMarketClick(market.id);
                                             }, 300);
                                           })}
-                                          className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-4 py-1.5 rounded-none text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
+                                          className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
                                         >
                                           {getButtonContent(market.id, 'positive', true)}
                                         </button>
@@ -1940,7 +1890,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                               handleMarketClick(market.id);
                                             }, 300);
                                           })}
-                                          className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-4 py-1.5 rounded-none text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
+                                          className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
                                         >
                                           {getButtonContent(market.id, 'negative', true)}
                                         </button>
@@ -1961,11 +1911,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               if (market.marketIndex === 0) {
                                 return userIsParticipant ? '-translate-y-24' : '-translate-y-1';
                               }
-                              // For all other markets when user is participant
+                              // For all other markets when user is participant - reduce padding significantly
                               if (userIsParticipant) {
-                                return !market.useTraditionalLayout ? '-translate-y-14' : '-translate-y-10';
+                                return !market.useTraditionalLayout ? '-translate-y-56' : '-translate-y-52';
                               }
-                              return !market.useTraditionalLayout ? '-translate-y-8' : '-translate-y-2';
+                              return !market.useTraditionalLayout ? '-translate-y-48' : '-translate-y-40';
                             })()}`}>
                               <div className="flex items-center gap-2 text-sm text-gray-700 opacity-100">
                                 <span className= "font-bold opacity-50" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>{getEntryFeeDisplay(market.id)}</span>
@@ -2282,7 +2232,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 // Pre-calculate layout data for performance optimization
                 const marketsWithLayoutData = displayedMarkets.map((market: Market, index: number) => {
                   const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                  const useTraditionalLayout = marketIndex === 0 || getRandomFromMarketId(market.id) < 0.25;
+                  const useTraditionalLayout =  getRandomFromMarketId(market.id) < 0.18;
                   return { ...market, marketIndex, useTraditionalLayout };
                 });
 
@@ -2510,7 +2460,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           {(() => {
                             // Alternating button layout system
                             if (market.useTraditionalLayout) {
-                              // Traditional buttons (even index markets)
+                              // Traditional buttons
                               return (
                                 <div className="flex justify-center gap-2 mb-3 translate-y-2">
                                   <button
@@ -2526,7 +2476,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-14 py-2.5 rounded-none text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
+                                    className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-14 py-2.5 rounded-md text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
                                   >
                                     {getButtonContent(market.id, 'positive', true)}
                                   </button>
@@ -2543,7 +2493,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-14 py-2.5 rounded-none text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
+                                    className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-14 py-2.5 rounded-md text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
                                   >
                                     {getButtonContent(market.id, 'negative', true)}
                                   </button>
@@ -2593,7 +2543,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             handleMarketClick(market.id);
                                           }, 300);
                                         })}
-                                        className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-none text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
+                                        className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-md text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
                                       >
                                         {getButtonContent(market.id, 'positive', false)}
                                       </button>
@@ -2610,7 +2560,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             handleMarketClick(market.id);
                                           }, 300);
                                         })}
-                                        className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-3 py-1 rounded-none text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
+                                        className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-3 py-1 rounded-md text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
                                       >
                                         {getButtonContent(market.id, 'negative', false)}
                                       </button>
