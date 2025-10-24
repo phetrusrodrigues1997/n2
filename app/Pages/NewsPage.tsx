@@ -189,7 +189,7 @@ const NewsPage = ({ onBack }: NewsPageProps) => {
                   </button>
 
                   {/* Likes */}
-                  <button className="flex items-center gap-2 text-gray-500 hover:text-red-600 transition-colors group">
+                  <button className="flex items-center gap-2 text-gray-500 hover:text-[#D00048] transition-colors group">
                     <div className="p-2 rounded-full group-hover:bg-red-50 transition-colors">
                       <Heart className="w-5 h-5" />
                     </div>
@@ -229,7 +229,7 @@ const NewsPage = ({ onBack }: NewsPageProps) => {
                         <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-semibold text-sm">
                           {newsArticles[0].category}
                         </span>
-                        <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full font-semibold text-sm">
+                        <span className="bg-red-100 text-[#D00048] px-3 py-1 rounded-full font-semibold text-sm">
                           BREAKING
                         </span>
                       </div>
@@ -259,7 +259,7 @@ const NewsPage = ({ onBack }: NewsPageProps) => {
                       <span className="font-semibold">{formatNumber(newsArticles[0].shares)}</span>
                     </button>
 
-                    <button className="flex items-center gap-3 text-gray-500 hover:text-red-600 transition-colors group">
+                    <button className="flex items-center gap-3 text-gray-500 hover:text-[#D00048] transition-colors group">
                       <div className="p-3 rounded-full group-hover:bg-red-50 transition-colors">
                         <Heart className="w-6 h-6" />
                       </div>
@@ -326,7 +326,7 @@ const NewsPage = ({ onBack }: NewsPageProps) => {
                           <span className="text-sm font-medium">{formatNumber(article.shares)}</span>
                         </button>
 
-                        <button className="flex items-center gap-2 text-gray-500 hover:text-red-600 transition-colors group">
+                        <button className="flex items-center gap-2 text-gray-500 hover:text-[#D00048] transition-colors group">
                           <div className="p-2 rounded-full group-hover:bg-red-50 transition-colors">
                             <Heart className="w-4 h-4" />
                           </div>

@@ -153,7 +153,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                             setIsLanguageDropdownOpen(false);
                           }}
                           className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors ${
-                            currentLanguage === language.code ? 'bg-white text-red-700' : 'text-gray-700'
+                            currentLanguage === language.code ? 'bg-white text-[#D00048]' : 'text-gray-700'
                           }`}
                         >
                           <img
@@ -197,7 +197,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                       }
                       setIsMenuOpen(false);
                     }}
-                    className="block w-full text-left py-4 text-lg text-red-600 hover:text-red-700 border-t border-gray-100 mt-2"
+                    className="block w-full text-left py-4 text-lg text-[#D00048] hover:text-[#D00048] border-t border-gray-100 mt-2"
                   >
                     {t.wallet || "Wallet"}
                   </button>
@@ -210,7 +210,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                       disconnect();
                       setIsMenuOpen(false);
                     }}
-                    className="block w-full text-left py-4 text-lg text-red-600 hover:text-red-700 border-t border-gray-100 mt-2"
+                    className="block w-full text-left py-4 text-lg text-[#D00048] hover:text-[#D00048] border-t border-gray-100 mt-2"
                   >
                     {t.logOut || "Log out"}
                   </button>
@@ -319,7 +319,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                           }
                           setIsMenuOpen(false);
                         }}
-                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50 hover:text-red-700"
+                        className="block w-full text-left px-4 py-2 text-[#D00048] hover:bg-gray-50 hover:text-[#D00048]"
                       >
                         {t.wallet || "Wallet"}
                       </button>
@@ -328,7 +328,7 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
                           disconnect();
                           setIsMenuOpen(false);
                         }}
-                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50 hover:text-red-700"
+                        className="block w-full text-left px-4 py-2 text-[#D00048] hover:bg-gray-50 hover:text-[#D00048]"
                       >
                         {t.logOut || "Log out"}
                       </button>

@@ -126,7 +126,7 @@ const ReceiveSection: React.FC<ReceiveSectionProps> = ({ activeSection, setActiv
               {/* Copy Button */}
               <button
                 onClick={copyAddressToClipboard}
-                className="w-full bg-red-700 hover:bg-red-800 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2 mb-4"
+                className="w-full bg-[#D00048] hover:bg-red-800 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2 mb-4"
               >
                 {copied ? (
                   <>

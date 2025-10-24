@@ -184,7 +184,7 @@ const EmailManagement: React.FC<EmailManagementProps> = ({
               <div className="min-h-[2rem] flex items-center justify-center">
                 {error && (
                   <div className="w-full bg-red-50 border border-red-200 rounded-lg p-3">
-                    <p className="text-red-700 text-sm text-center">{error}</p>
+                    <p className="text-[#D00048] text-sm text-center">{error}</p>
                   </div>
                 )}
                 {success && (

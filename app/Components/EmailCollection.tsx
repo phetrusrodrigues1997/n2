@@ -87,7 +87,7 @@ const EmailCollection: React.FC<EmailCollectionProps> = ({
         />
 
         {error && (
-          <p className="text-red-600 text-sm">{error}</p>
+          <p className="text-[#D00048] text-sm">{error}</p>
         )}
         {success && (
           <p className="text-green-600 text-sm">✓ Email saved successfully!</p>

@@ -82,7 +82,7 @@ export default function LoadingScreenAdvanced({
 
             {/* Logo in center */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <h1 className="text-4xl font-black text-red-700 tracking-tight">
+              <h1 className="text-4xl font-black text-[#D00048] tracking-tight">
                 {title}
               </h1>
             </div>

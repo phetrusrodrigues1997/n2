@@ -95,7 +95,7 @@ const CreatePotPage = ({ navigateToPrivatePot }: CreatePotPageProps) => {
     return (
       <div className="max-w-2xl mx-auto mt-20 p-8 text-center -translate-y-16 md:translate-y-0">
         <div className="bg-white border-2 border-red-200 rounded-xl p-8 shadow-lg">
-          <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 bg-gradient-to-br from-[#D00048] to-[#D00048] rounded-full flex items-center justify-center mx-auto mb-6">
             <div className="text-2xl">🎉</div>
           </div>
           <h2 className="text-2xl font-semibold text-gray-900 mb-4">Private Tournaments Coming Soon!</h2>
@@ -247,7 +247,7 @@ const CreatePotPage = ({ navigateToPrivatePot }: CreatePotPageProps) => {
                     setShowMyPots(false);
                     setShowCreateForm(true);
                   }}
-                  className="bg-red-700 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+                  className="bg-[#D00048] text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-colors"
                 >
                   Create Your First Pot
                 </button>
@@ -386,7 +386,7 @@ const CreatePotPage = ({ navigateToPrivatePot }: CreatePotPageProps) => {
             </div> */}
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-3">
-                <span className="text-red-600 text-xl">🏆</span>
+                <span className="text-[#D00048] text-xl">🏆</span>
               </div>
               <p className="text-sm text-gray-600">Winners split the pot equally</p>
             </div>
@@ -405,7 +405,7 @@ const CreatePotPage = ({ navigateToPrivatePot }: CreatePotPageProps) => {
           <button
             onClick={handleMyMarketsClick}
             disabled={isLoadingMyPots}
-            className="w-full bg-red-700 py-4 px-6 rounded-lg text-lg text-white font-medium hover:border-gray-400 hover:bg-gray-500 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-[#D00048] py-4 px-6 rounded-lg text-lg text-white font-medium hover:border-gray-400 hover:bg-gray-500 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isLoadingMyPots ? (
               <>

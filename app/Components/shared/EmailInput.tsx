@@ -51,7 +51,7 @@ const EmailInput: React.FC<EmailInputProps> = ({
     if (disabled) return 'border-gray-200';
     if (!email.trim()) return 'border-gray-200 focus:border-gray-400';
     if (emailValidation.isValid) return 'border-green-400 focus:border-green-500';
-    return 'border-red-400 focus:border-red-500';
+    return 'border-red-400 focus:border-[#D00048]';
   };
 
   const getRingColor = () => {
@@ -64,7 +64,7 @@ const EmailInput: React.FC<EmailInputProps> = ({
     if (disabled) return 'text-gray-400';
     if (!email.trim()) return 'text-gray-400';
     if (emailValidation.isValid) return 'text-green-500';
-    return 'text-red-500';
+    return 'text-[#D00048]';
   };
 
   return (
@@ -104,7 +104,7 @@ const EmailInput: React.FC<EmailInputProps> = ({
 
       {/* Error message */}
       {email.trim() && emailValidation.error && (isFocused || email.length > 5) && (
-        <div className="mt-2 text-sm text-red-600 text-center animate-fade-in">
+        <div className="mt-2 text-sm text-[#D00048] text-center animate-fade-in">
           {emailValidation.error}
         </div>
       )}
