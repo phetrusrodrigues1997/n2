@@ -968,7 +968,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         // Show confirmed tick for participants (they can't click to change from same option)
         return (
           <div className="flex items-center justify-center">
-            <span className={buttonType === 'positive' ? 'text-green-600' : 'text-red-600'}>
+            <span className={buttonType === 'positive' ? 'text-blue-600' : 'text-purple-600'}>
               {buttonType === 'positive' ? '✓' : '✗'}
             </span>
           </div>
@@ -1002,18 +1002,18 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     if (prediction && prediction.prediction === buttonType) {
       // User has voted for this option - show confirmed styling with white background
       if (buttonType === 'positive') {
-        return baseClasses.replace('bg-green-100 hover:bg-green-200 text-green-700', 'bg-white text-green-600 cursor-default border border-green-600');
+        return baseClasses.replace('bg-blue-100 hover:bg-blue-200 text-blue-700', 'bg-white text-blue-600 cursor-default border border-blue-600');
       } else {
-        return baseClasses.replace('bg-red-50 hover:bg-red-200 text-red-700', 'bg-white text-red-600 cursor-default border border-red-600');
+        return baseClasses.replace('bg-purple-100 hover:bg-purple-200 text-purple-700', 'bg-white text-purple-600 cursor-default border border-purple-600');
       }
     }
 
     // If user is participant and has voted for the opposite option, make this button more prominent (change vote)
     if (isParticipant && prediction && prediction.prediction !== buttonType) {
       if (buttonType === 'positive') {
-        return baseClasses.replace('bg-green-100 hover:bg-green-200 text-green-700', 'bg-green-100 hover:bg-red-200 text-green-800');
+        return baseClasses.replace('bg-blue-100 hover:bg-blue-200 text-blue-700', 'bg-blue-100 hover:bg-purple-200 text-blue-800');
       } else {
-        return baseClasses.replace('bg-red-50 hover:bg-red-200 text-red-700', 'bg-red-100 hover:bg-green-200 text-red-800');
+        return baseClasses.replace('bg-purple-100 hover:bg-purple-200 text-purple-700', 'bg-purple-100 hover:bg-blue-200 text-purple-800');
       }
     }
 
@@ -1534,7 +1534,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   e.preventDefault();
                                   handleMarketClick(market.id, true);
                                 }}
-                                className="w-full bg-gradient-to-br from-red-600 to-red-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                                className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                               >
                                 <span className="relative z-10 flex items-center justify-center gap-2">
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1567,7 +1567,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               handleMarketClick(market.id);
                             }
                           }}
-                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 ${market.marketIndex === 0 ? '' : 'hover:shadow-green-200'} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
+                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 ${market.marketIndex === 0 ? '' : 'hover:shadow-blue-200'} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
                             } ${animatingMarket === market.tabId ? 'animate-scale-once' : ''} ${(() => {
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
@@ -1610,12 +1610,12 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             else if (market.marketIndex === 0) {
                               // Add bottom border for first market like others
                               if (market.tabId === selectedMarket) {
-                                classes += ' border-b border-gray-200 shadow-lg shadow-green-100/50';
+                                classes += ' border-b border-gray-200 shadow-lg shadow-blue-100/50';
                               } else {
                                 classes += ' border-b border-gray-200';
                               }
                             } else if (market.tabId === selectedMarket) {
-                              classes += ' border-b border-gray-200 shadow-lg shadow-green-100/50';
+                              classes += ' border-b border-gray-200 shadow-lg shadow-blue-100/50';
                             } else {
                               classes += ' border-b border-gray-200';
                             }
@@ -1715,8 +1715,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                     <div className="absolute top-0 right-0">
                                       <div className="text-right flex flex-col items-end">
                                         {/* Thermometer Arc */}
-                                        <div className="w-16 h-8 mb-1 relative">
-                                          <svg className="w-16 h-8" viewBox="0 0 100 50">
+                                        <div className="w-14 h-7 mb-1 relative">
+                                          <svg className="w-14 h-7" viewBox="0 0 100 50">
                                             {/* Background arc */}
                                             <path
                                               d="M 10 45 A 40 40 0 0 1 90 45"
@@ -1748,8 +1748,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           </svg>
 
                                           {/* Text overlaid inside the arc */}
-                                          <div className="absolute inset-0 flex flex-col items-center justify-center mt-6">
-                                            <div className="text-base font-semibold text-gray-900 leading-none tracking-tight">
+                                          <div className="absolute inset-0 flex flex-col items-center justify-center mt-3">
+                                            <div className="text-xs font-semibold text-gray-900 leading-none tracking-tight">
                                               {(() => {
                                                 const percentageData = predictionPercentages[market.tabId || market.id];
                                                 if (!percentageData) return '0'; // Fallback to 0%
@@ -1761,7 +1761,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                                 return smoothedPercentage;
                                               })()}%
                                             </div>
-                                            <div className="text-xs text-gray-500 leading-none -mt-0.5">chance</div>
+                                            <div className="text-[10px] text-gray-500 leading-none -mt-0.5">chance</div>
                                           </div>
                                         </div>
                                       </div>
@@ -1799,7 +1799,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 py-3 rounded-md text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'positive', "bg-blue-100 hover:bg-blue-200 text-blue-700 py-3 rounded-md text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'positive', true)}
                                     </button>
@@ -1816,7 +1816,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 py-3 rounded-md text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'negative', "bg-purple-100 hover:bg-purple-200 text-purple-700 py-3 rounded-md text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'negative', true)}
                                     </button>
@@ -1873,7 +1873,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                               handleMarketClick(market.id);
                                             }, 300);
                                           })}
-                                          className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
+                                          className={`${getButtonStyles(market.id, 'positive', "bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
                                         >
                                           {getButtonContent(market.id, 'positive', true)}
                                         </button>
@@ -1890,7 +1890,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                               handleMarketClick(market.id);
                                             }, 300);
                                           })}
-                                          className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
+                                          className={`${getButtonStyles(market.id, 'negative', "bg-purple-100 hover:bg-purple-200 text-purple-700 px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
                                         >
                                           {getButtonContent(market.id, 'negative', true)}
                                         </button>
@@ -1982,9 +1982,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         style={{ opacity: 0.7 }}
                                       >
                                         {bookmarkLoading === market.id ? (
-                                          <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
+                                          <div className="w-4 h-4 animate-spin rounded-full border-2 border-blue-700 border-t-transparent"></div>
                                         ) : bookmarkedMarkets.has(market.id) ? (
-                                          <Bookmark className="w-4 h-4 transition-all duration-200 text-red-700 fill-red-700" />
+                                          <Bookmark className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700" />
                                         ) : (
                                           <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
@@ -2004,7 +2004,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                         setActiveSection('potInfo');
                                       }}
-                                      className="w-full bg-gradient-to-br from-red-600 to-red-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                                      className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                                     >
                                       <span className="relative z-10 flex items-center justify-center gap-2">
                                         {t.TapforMoreInfo}
@@ -2056,16 +2056,15 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       onClick={(e) => handleBookmarkToggle(market, e)}
                                       disabled={bookmarkLoading === market.id}
                                       className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
-                                      style={{ opacity: 0.7 }}
                                     >
                                       {bookmarkLoading === market.id ? (
-                                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
+                                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-blue-700 border-t-transparent"></div>
                                       ) : bookmarkedMarkets.has(market.id) ? (
                                         <Bookmark
-                                          className="w-4 h-4 transition-all duration-200 text-red-700 fill-red-700"
+                                          className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700"
                                         />
                                       ) : (
-                                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-4 h-4 text-[#0a1628]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                           <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
                                           <path d="M12 7v10M7 12h10" strokeWidth={2} strokeLinecap="round" />
                                         </svg>
@@ -2106,7 +2105,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                   <div className="md:hidden">
                     {isLoadingMore && (
                       <div className="flex justify-center items-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-700"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700"></div>
                         <span className="ml-3 text-gray-600">Loading more pots...</span>
                       </div>
                     )}
@@ -2116,7 +2115,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                       <div className="text-center py-6 hidden">
                         <button
                           onClick={loadMoreMarkets}
-                          className="bg-green-700 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
+                          className="bg-blue-700 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
                         >
                           Load More Pots ({allMarkets - displayedMarketsCount} remaining)
                         </button>
@@ -2261,7 +2260,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 e.preventDefault();
                                 handleMarketClick(market.id, true);
                               }}
-                              className="w-full bg-gradient-to-br from-red-600 to-red-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                              className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                             >
                               <span className="relative z-10 flex items-center justify-center gap-2">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2399,8 +2398,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   <div className="absolute top-0 -right-1">
                                     <div className="text-right flex flex-col items-end">
                                       {/* Thermometer Arc */}
-                                      <div className="w-16 h-8 mb-1 relative">
-                                        <svg className="w-16 h-8" viewBox="0 0 100 50">
+                                      <div className="w-14 h-7 mb-1 relative">
+                                        <svg className="w-14 h-7" viewBox="0 0 100 50">
                                           {/* Background arc */}
                                           <path
                                             d="M 10 45 A 40 40 0 0 1 90 45"
@@ -2432,8 +2431,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         </svg>
 
                                         {/* Text overlaid inside the arc */}
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center mt-6">
-                                          <div className="text-base font-semibold text-gray-900 leading-none tracking-tight">
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center mt-3">
+                                          <div className="text-xs font-semibold text-gray-900 leading-none tracking-tight">
                                             {(() => {
                                               const percentageData = predictionPercentages[market.tabId || market.id];
                                               if (!percentageData) return '0'; // Fallback to 0%
@@ -2445,7 +2444,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                               return smoothedPercentage;
                                             })()}%
                                           </div>
-                                          <div className="text-xs text-gray-500 leading-none -mt-0.5">chance</div>
+                                          <div className="text-[10px] text-gray-500 leading-none -mt-0.5">chance</div>
                                         </div>
                                       </div>
                                     </div>
@@ -2476,7 +2475,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-14 py-2.5 rounded-md text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
+                                    className={getButtonStyles(market.id, 'positive', "bg-blue-100 hover:bg-blue-200 text-blue-700 px-14 py-2.5 rounded-md text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
                                   >
                                     {getButtonContent(market.id, 'positive', true)}
                                   </button>
@@ -2493,7 +2492,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-14 py-2.5 rounded-md text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
+                                    className={getButtonStyles(market.id, 'negative', "bg-purple-100 hover:bg-purple-200 text-purple-700 px-14 py-2.5 rounded-md text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
                                   >
                                     {getButtonContent(market.id, 'negative', true)}
                                   </button>
@@ -2543,7 +2542,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             handleMarketClick(market.id);
                                           }, 300);
                                         })}
-                                        className={`${getButtonStyles(market.id, 'positive', "bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-md text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
+                                        className={`${getButtonStyles(market.id, 'positive', "bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-md text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
                                       >
                                         {getButtonContent(market.id, 'positive', false)}
                                       </button>
@@ -2560,7 +2559,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             handleMarketClick(market.id);
                                           }, 300);
                                         })}
-                                        className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-700 px-3 py-1 rounded-md text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
+                                        className={`${getButtonStyles(market.id, 'negative', "bg-purple-100 hover:bg-purple-200 text-purple-700 px-3 py-1 rounded-md text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
                                       >
                                         {getButtonContent(market.id, 'negative', false)}
                                       </button>
@@ -2617,14 +2616,13 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       onClick={(e) => handleBookmarkToggle(market, e)}
                                       disabled={bookmarkLoading === market.id}
                                       className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
-                                      style={{ opacity: 0.7 }}
                                     >
                                       {bookmarkLoading === market.id ? (
-                                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
+                                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-blue-700 border-t-transparent"></div>
                                       ) : bookmarkedMarkets.has(market.id) ? (
-                                        <Bookmark className="w-4 h-4 transition-all duration-200 text-red-700 fill-red-700" />
+                                        <Bookmark className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700" />
                                       ) : (
-                                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-4 h-4 text-[#0a1628]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                           <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
                                           <path d="M12 7v10M7 12h10" strokeWidth={2} strokeLinecap="round" />
                                         </svg>
@@ -2642,7 +2640,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       handleMarketClick(market.id);
                                       setActiveSection('potInfo');
                                     }}
-                                    className="w-full bg-gradient-to-br from-red-600 to-red-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                                    className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                                   >
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                       {t.ClickforMoreInfo}
@@ -2691,16 +2689,15 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               onClick={(e) => handleBookmarkToggle(market, e)}
                               disabled={bookmarkLoading === market.id}
                               className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
-                              style={{ opacity: 0.7 }}
                             >
                               {bookmarkLoading === market.id ? (
-                                <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
+                                <div className="w-4 h-4 animate-spin rounded-full border-2 border-blue-700 border-t-transparent"></div>
                               ) : bookmarkedMarkets.has(market.id) ? (
                                 <Bookmark
-                                  className="w-4 h-4 transition-all duration-200 text-red-700 fill-red-700"
+                                  className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700"
                                 />
                               ) : (
-                                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 text-[#0a1628]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
                                   <path d="M12 7v10M7 12h10" strokeWidth={2} strokeLinecap="round" />
                                 </svg>
@@ -2727,7 +2724,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 <>
                   {isLoadingMore && (
                     <div className="flex justify-center items-center py-12">
-                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-700"></div>
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700"></div>
                       <span className="ml-4 text-gray-600 text-lg">Loading more pots...</span>
                     </div>
                   )}
@@ -2737,7 +2734,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                     <div className="text-center py-8 hidden">
                       <button
                         onClick={loadMoreMarkets}
-                        className="bg-green-700 hover:bg-red-700 text-white px-8 py-4 rounded-lg font-medium text-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
+                        className="bg-blue-700 hover:bg-purple-700 text-white px-8 py-4 rounded-lg font-medium text-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
                       >
                         Load More Pots ({allMarkets - displayedMarketsCount} remaining)
                       </button>
@@ -2750,71 +2747,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           </div>
         </section>
 
-        {/* Thousands of Winners Section - Desktop */}
-        <section className="relative z-10 py-16 hidden md:block">
-          <div className="max-w-4xl mx-auto px-2 md:px-8 text-center">
-            <div className="space-y-4 mb-12">
-              <h2 className="text-4xl font-light text-gray-900 tracking-tight leading-[1.15]">
-                <span className="text-green-700 font-medium">{t.thousandsOfPlayers}</span>
-              </h2>
-              <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-[1.2]">
-                {t.lastStandingQuestion}
-              </h3>
-            </div>
+        
 
-            {/* Minimalist Entry Button */}
-            <button
-              onClick={() => handleMarketClick('Trending')}
-              className="group relative bg-red-700 border-2 border-black text-white px-20 py-5 rounded-lg font-semibold text-xl tracking-[0.05em] uppercase transition-all duration-300 hover:bg-red-700 hover:border-green-700 hover:text-white overflow-hidden shadow-xl hover:shadow-green-200"
-            >
-              <span className="relative z-10">Enter</span>
-
-              {/* Sliding fill effect */}
-              <div className="absolute inset-0 bg-green-700 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></div>
-
-              {/* Subtle arrows that appear on hover */}
-              <div className="absolute left-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-2 group-hover:translate-x-0">
-                <span className="text-white text-lg">→</span>
-              </div>
-              <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                <span className="text-white text-lg">←</span>
-              </div>
-            </button>
-          </div>
-        </section>
-
-        {/* Sleek Call to Action - Mobile Only */}
-        <section id="call-to-action" className="relative z-10 mt-16 mb-16 md:hidden">
-          <div className="text-center">
-            <h2 className="text-2xl font-light text-gray-900 mb-2 tracking-tight leading-[1.3]">
-              <span className="text-green-700 font-medium">{t.thousandsOfWinners}</span>
-            </h2>
-            <h3 className="text-xl font-extrabold text-gray-900 mb-10 tracking-tight leading-[1.3]">
-              {t.lastStandingQuestion}
-            </h3>
-
-            {/* Minimalist Entry Button - Mobile */}
-            <button
-              onClick={() => handleMarketClick('Trending')}
-              className="group relative bg-white border-2 border-black text-black px-12 py-4 rounded-lg font-semibold text-base tracking-[0.05em] uppercase transition-all duration-300 hover:bg-red-700 hover:border-green-700 hover:text-white overflow-hidden mx-auto shadow-lg hover:shadow-green-200"
-            >
-              <span className="relative z-10">Enter</span>
-
-              {/* Sliding fill effect */}
-              <div className="absolute inset-0 bg-green-700 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></div>
-
-              {/* Subtle arrows that appear on hover */}
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-2 group-hover:translate-x-0">
-                <span className="text-white text-xs">→</span>
-              </div>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                <span className="text-white text-xs">←</span>
-              </div>
-            </button>
-          </div>
-        </section>
-
-        <footer className="relative z-10 py-10 bg-white text-center text-green-700 text-sm shadow-md">
+        <footer className="relative z-10 py-10 bg-white text-center text-blue-700 text-sm shadow-md">
           <div className="">
             &copy; {new Date().getFullYear()} {t.footerText}
           </div>
