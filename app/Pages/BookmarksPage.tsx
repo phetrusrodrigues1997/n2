@@ -408,7 +408,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                           <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
                             Current Question
                           </span>
-                          <span className="text-xs font-medium text-[#D00048] bg-red-100 px-2 py-1 rounded">
+                          <span className="text-xs font-medium text-[#010065] bg-red-100 px-2 py-1 rounded">
                             Bookmarked
                           </span>
                         </div>
@@ -465,7 +465,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                         )}
                         <button
                           onClick={() => handleViewMarket(bookmark)}
-                          className="bg-[#D00048] text-white py-2 px-4 rounded-md transition-colors text-sm font-semibold"
+                          className="bg-[#010065] text-white py-2 px-4 rounded-md transition-colors text-sm font-semibold"
                         >
                           {t.view}
                         </button>
@@ -570,7 +570,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                           )}
                           <button
                             onClick={() => handleMarketClick(contractAddress)}
-                            className="bg-[#D00048] text-white py-2 px-4 rounded-md cursor-pointer transition-colors text-sm font-semibold"
+                            className="bg-[#010065] text-white py-2 px-4 rounded-md cursor-pointer transition-colors text-sm font-semibold"
                           >
                             {t.view}
                           </button>

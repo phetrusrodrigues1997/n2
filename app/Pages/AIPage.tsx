@@ -60,7 +60,7 @@ const GamesHub = ({ activeSection, setActiveSection }: AIPageProps) => {
               </div>
               
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-[#D00048]">Play Now →</span>
+                <span className="text-sm font-medium text-[#010065]">Play Now →</span>
                 <div className="text-xs text-gray-500">5 min</div>
               </div>
             </div>

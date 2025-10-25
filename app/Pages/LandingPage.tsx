@@ -1534,7 +1534,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   e.preventDefault();
                                   handleMarketClick(market.id, true);
                                 }}
-                                className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                                className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                               >
                                 <span className="relative z-10 flex items-center justify-center gap-2">
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1659,9 +1659,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   letterSpacing: '-0.01em'
                                 }}>
                                   {(() => {
-                                    const wrapLimit = market.marketIndex === 0 ? 32 : (market.useTraditionalLayout ? 26 : 37);
+                                    const wrapLimit = market.marketIndex === 0 ? 32 : 37;
                                     // Mobile truncate limits - cut text earlier on mobile
-                                    const truncateLimit = market.marketIndex === 0 ? 40 : (market.useTraditionalLayout ? 45 : 65);
+                                    const truncateLimit = market.marketIndex === 0 ? 40 : 65;
 
                                     let text = getTranslatedMarketQuestion(market, currentLanguage);
 
@@ -1714,54 +1714,19 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   return (
                                     <div className="absolute top-0 right-0">
                                       <div className="text-right flex flex-col items-end">
-                                        {/* Thermometer Arc */}
-                                        <div className="w-14 h-7 mb-1 relative">
-                                          <svg className="w-14 h-7" viewBox="0 0 100 50">
-                                            {/* Background arc */}
-                                            <path
-                                              d="M 10 45 A 40 40 0 0 1 90 45"
-                                              stroke="#e5e7eb"
-                                              strokeWidth="6"
-                                              fill="none"
-                                              strokeLinecap="round"
-                                            />
-                                            {/* Progress arc */}
-                                            <path
-                                              d="M 10 45 A 40 40 0 0 1 90 45"
-                                              stroke={(() => {
-                                                const percentageData = predictionPercentages[market.tabId || market.id];
-                                                const positivePercentage = percentageData?.positivePercentage ?? 0;
-                                                return positivePercentage >= 80 ? '#10b981' :
-                                                  positivePercentage >= 60 ? '#f59e0b' :
-                                                    positivePercentage >= 40 ? '#f97316' : '#ef4444';
-                                              })()}
-                                              strokeWidth="6"
-                                              fill="none"
-                                              strokeLinecap="round"
-                                              strokeDasharray={(() => {
-                                                const percentageData = predictionPercentages[market.tabId || market.id];
-                                                const positivePercentage = percentageData?.positivePercentage ?? 0;
-                                                return `${positivePercentage * 1.26} 126`;
-                                              })()}
-                                              className="transition-all duration-300"
-                                            />
-                                          </svg>
+                                        {/* Percentage only */}
+                                        <div className="flex flex-col items-center justify-center">
+                                          <div className="text-xs font-semibold text-gray-900 leading-none tracking-tight">
+                                            {(() => {
+                                              const percentageData = predictionPercentages[market.tabId || market.id];
+                                              if (!percentageData) return '0'; // Fallback to 0%
 
-                                          {/* Text overlaid inside the arc */}
-                                          <div className="absolute inset-0 flex flex-col items-center justify-center mt-3">
-                                            <div className="text-xs font-semibold text-gray-900 leading-none tracking-tight">
-                                              {(() => {
-                                                const percentageData = predictionPercentages[market.tabId || market.id];
-                                                if (!percentageData) return '0'; // Fallback to 0%
-
-                                                const totalVotes = percentageData.totalPredictions ?? 0;
-                                                const positive = Math.round((percentageData.positivePercentage ?? 0) / 100 * totalVotes);
-                                                const negative = totalVotes - positive;
-                                                const smoothedPercentage = (((positive + 0.5) / (positive + negative + 1)) * 100).toFixed(0);
-                                                return smoothedPercentage;
-                                              })()}%
-                                            </div>
-                                            <div className="text-[10px] text-gray-500 leading-none -mt-0.5">chance</div>
+                                              const totalVotes = percentageData.totalPredictions ?? 0;
+                                              const positive = Math.round((percentageData.positivePercentage ?? 0) / 100 * totalVotes);
+                                              const negative = totalVotes - positive;
+                                              const smoothedPercentage = (((positive + 0.5) / (positive + negative + 1)) * 100).toFixed(0);
+                                              return smoothedPercentage;
+                                            })()}%
                                           </div>
                                         </div>
                                       </div>
@@ -2004,7 +1969,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                         setActiveSection('potInfo');
                                       }}
-                                      className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                                      className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                                     >
                                       <span className="relative z-10 flex items-center justify-center gap-2">
                                         {t.TapforMoreInfo}
@@ -2133,7 +2098,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         <section className="relative z-10 -mt-24 pb-16 hidden md:block">
           <div className="">
             {/* All Markets Display - Unified Grid with Shared Borders */}
-            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 bg-white">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 bg-white lg:bg-transparent lg:gap-4">
               {(() => {
                 // Get all markets and deduplicate by ID
                 const allMarkets = marketOptions.map(option => {
@@ -2260,7 +2225,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 e.preventDefault();
                                 handleMarketClick(market.id, true);
                               }}
-                              className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                              className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                             >
                               <span className="relative z-10 flex items-center justify-center gap-2">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2293,7 +2258,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             handleMarketClick(market.id);
                           }
                         }}
-                        className={`group hover:bg-gray-50 cursor-pointer relative transition-all duration-200 border-t border-gray-200 ${(() => {
+                        className={`group hover:bg-gray-50 cursor-pointer relative transition-all duration-200 border-t border-gray-200 lg:border lg:border-gray-200 lg:rounded-xl lg:overflow-hidden ${(() => {
                           const contractAddress = getContractAddress(market.id);
                           const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
@@ -2301,33 +2266,19 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           // Left borders: show on all except first in each row (handled by CSS)
                           let borderClasses = '';
 
-                          // Check if this is in the last row (using xl:4 cols, lg:3 cols, md:2 cols)
+                          // Check if this is in the last row (using md:2 cols for mobile)
                           const totalCards = displayedMarkets.length;
-                          const xl4ColsLastRow = Math.floor((totalCards - 1) / 4) * 4;
-                          const lg3ColsLastRow = Math.floor((totalCards - 1) / 3) * 3;
                           const md2ColsLastRow = Math.floor((totalCards - 1) / 2) * 2;
 
-                          // Add bottom border for last row (responsive)
+                          // Add bottom border for last row (mobile only)
                           if (index >= md2ColsLastRow) {
-                            borderClasses += ' border-b lg:border-b-0';
-                          }
-                          if (index >= lg3ColsLastRow) {
-                            borderClasses += ' lg:border-b xl:border-b-0';
-                          }
-                          if (index >= xl4ColsLastRow) {
-                            borderClasses += ' xl:border-b';
+                            borderClasses += ' border-b lg:border-b';
                           }
 
-                          // Add left border for non-first items (responsive per breakpoint)
+                          // Add left border for non-first items (mobile only)
                           const posInRow2 = index % 2;
-                          const posInRow3 = index % 3;
-                          const posInRow4 = index % 4;
 
-                          if (posInRow2 !== 0) borderClasses += ' market-left-divider';
-                          if (posInRow3 === 0 && index !== 0) borderClasses += ' lg:border-l-0';
-                          if (posInRow3 !== 0) borderClasses += ' lg:market-left-divider';
-                          if (posInRow4 === 0 && index !== 0) borderClasses += ' xl:border-l-0';
-                          if (posInRow4 !== 0) borderClasses += ' xl:market-left-divider';
+                          if (posInRow2 !== 0) borderClasses += ' market-left-divider lg:market-left-divider-none';
 
                           return `${isEliminated ? 'opacity-60 grayscale-[0.3]' : ''}${borderClasses}`;
                         })()}`}
@@ -2397,54 +2348,19 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 return (
                                   <div className="absolute top-0 -right-1">
                                     <div className="text-right flex flex-col items-end">
-                                      {/* Thermometer Arc */}
-                                      <div className="w-14 h-7 mb-1 relative">
-                                        <svg className="w-14 h-7" viewBox="0 0 100 50">
-                                          {/* Background arc */}
-                                          <path
-                                            d="M 10 45 A 40 40 0 0 1 90 45"
-                                            stroke="#e5e7eb"
-                                            strokeWidth="6"
-                                            fill="none"
-                                            strokeLinecap="round"
-                                          />
-                                          {/* Progress arc */}
-                                          <path
-                                            d="M 10 45 A 40 40 0 0 1 90 45"
-                                            stroke={(() => {
-                                              const percentageData = predictionPercentages[market.tabId || market.id];
-                                              const positivePercentage = percentageData?.positivePercentage ?? 0;
-                                              return positivePercentage >= 80 ? '#10b981' :
-                                                positivePercentage >= 60 ? '#f59e0b' :
-                                                  positivePercentage >= 40 ? '#f97316' : '#ef4444';
-                                            })()}
-                                            strokeWidth="6"
-                                            fill="none"
-                                            strokeLinecap="round"
-                                            strokeDasharray={(() => {
-                                              const percentageData = predictionPercentages[market.tabId || market.id];
-                                              const positivePercentage = percentageData?.positivePercentage ?? 0;
-                                              return `${positivePercentage * 1.26} 126`;
-                                            })()}
-                                            className="transition-all duration-300"
-                                          />
-                                        </svg>
+                                      {/* Percentage only */}
+                                      <div className="flex flex-col items-center justify-center">
+                                        <div className="text-xs font-semibold text-gray-900 leading-none tracking-tight">
+                                          {(() => {
+                                            const percentageData = predictionPercentages[market.tabId || market.id];
+                                            if (!percentageData) return '0'; // Fallback to 0%
 
-                                        {/* Text overlaid inside the arc */}
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center mt-3">
-                                          <div className="text-xs font-semibold text-gray-900 leading-none tracking-tight">
-                                            {(() => {
-                                              const percentageData = predictionPercentages[market.tabId || market.id];
-                                              if (!percentageData) return '0'; // Fallback to 0%
-
-                                              const totalVotes = percentageData.totalPredictions ?? 0;
-                                              const positive = Math.round((percentageData.positivePercentage ?? 0) / 100 * totalVotes);
-                                              const negative = totalVotes - positive;
-                                              const smoothedPercentage = (((positive + 0.5) / (positive + negative + 1)) * 100).toFixed(0);
-                                              return smoothedPercentage;
-                                            })()}%
-                                          </div>
-                                          <div className="text-[10px] text-gray-500 leading-none -mt-0.5">chance</div>
+                                            const totalVotes = percentageData.totalPredictions ?? 0;
+                                            const positive = Math.round((percentageData.positivePercentage ?? 0) / 100 * totalVotes);
+                                            const negative = totalVotes - positive;
+                                            const smoothedPercentage = (((positive + 0.5) / (positive + negative + 1)) * 100).toFixed(0);
+                                            return smoothedPercentage;
+                                          })()}%
                                         </div>
                                       </div>
                                     </div>
@@ -2640,7 +2556,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       handleMarketClick(market.id);
                                       setActiveSection('potInfo');
                                     }}
-                                    className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                                    className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                                   >
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                       {t.ClickforMoreInfo}

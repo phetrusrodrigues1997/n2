@@ -633,7 +633,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 <button
                   onClick={handleReady}
                   disabled={isConnected && isParticipant && userEliminated}
-                  className="w-full bg-gradient-to-br from-[#D00048] to-[#D00048] text-white font-semibold rounded-xl py-3.5 text-base transition-all duration-150 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(153,27,27)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(153,27,27),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                  className="w-full bg-gradient-to-br from-[#010065] to-[#010065] text-white font-semibold rounded-xl py-3.5 text-base transition-all duration-150 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                 >
                   {!isConnected ? (
                     'Join Tournament'
@@ -758,7 +758,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   isParticipant && !userEliminated && potInfo.isFinalDay
                     ? 'bg-black text-white'
                     : userEliminated
-                      ? 'bg-[#D00048] text-white'
+                      ? 'bg-[#010065] text-white'
                       : 'bg-gray-200 text-gray-500'
                 }`}>
                   {userEliminated ? '!' : '4'}

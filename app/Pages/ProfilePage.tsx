@@ -259,7 +259,7 @@ const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => 
               <div className="space-y-3">
                 <button
                   onClick={() => setActiveSection('receive')}
-                  className="w-full bg-[#D00048] text-white font-medium py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors text-sm"
+                  className="w-full bg-[#010065] text-white font-medium py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors text-sm"
                 >
                   {t.fundAccount}
                 </button>
@@ -302,7 +302,7 @@ const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => 
                       alt={t.profile}
                       className="w-full h-full object-cover"
                     />
-                    <label className="absolute inset-0 flex items-center justify-center bg-[#D00048] bg-opacity-0 hover:bg-opacity-30 transition-all duration-200 cursor-pointer">
+                    <label className="absolute inset-0 flex items-center justify-center bg-[#010065] bg-opacity-0 hover:bg-opacity-30 transition-all duration-200 cursor-pointer">
                       <Upload className="text-white opacity-0 group-hover:opacity-100 w-5 h-5" />
                       <input
                         type="file"

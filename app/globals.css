@@ -336,6 +336,26 @@ div[class*="fixed bottom-0"] button[aria-label="Toggle menu"]:hover svg {
   box-shadow: -0.5px 0 0 0 #d1d5db;
 }
 
+/* Hide divider when border-l-0 is applied at responsive breakpoints */
+@media (min-width: 1024px) {
+  .lg\:border-l-0.market-left-divider::before,
+  .lg\:border-l-0.lg\:market-left-divider::before {
+    display: none;
+  }
+
+  /* Hide mobile divider on desktop - each card has its own border */
+  .lg\:market-left-divider-none::before {
+    display: none;
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl\:border-l-0.market-left-divider::before,
+  .xl\:border-l-0.xl\:market-left-divider::before {
+    display: none;
+  }
+}
+
 /* Animated dots for waiting state */
 @keyframes dotPulse {
   0%, 20% {

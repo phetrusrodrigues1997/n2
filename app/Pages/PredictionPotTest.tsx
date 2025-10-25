@@ -1238,7 +1238,7 @@ useEffect(() => {
     </div>
 
     {/* Clear Pot Information */}
-    <div className="bg-[#2C2C47] p-4 rounded-lg mb-4 border-2 border-[#D00048]">
+    <div className="bg-[#2C2C47] p-4 rounded-lg mb-4 border-2 border-[#010065]">
       <h3 className="text-[#F5F5F5] font-medium mb-2">🗑️ Reset Pot Data</h3>
       <p className="text-[#A0A0B0] text-sm mb-3">
         Reset pot information and clear all user prediction history for this contract. This will reset pot status, timing data, and remove all prediction records.
@@ -1275,7 +1275,7 @@ useEffect(() => {
           }
         }}
         disabled={isActuallyLoading}
-        className="bg-[#D00048] text-[#F5F5F5] px-6 py-3 rounded-md font-medium hover:bg-[#D00048] disabled:opacity-50 disabled:cursor-not-allowed w-full"
+        className="bg-[#010065] text-[#F5F5F5] px-6 py-3 rounded-md font-medium hover:bg-[#010065] disabled:opacity-50 disabled:cursor-not-allowed w-full"
       >
         {isActuallyLoading ? "Resetting..." : "🗑️ Reset Pot Data"}
       </button>

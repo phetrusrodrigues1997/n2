@@ -362,7 +362,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
           <div className="text-center w-full max-w-2xl">
             {/* Email Collection Modal */}
             {showEmailCollection && (
-              <div className="fixed inset-0 bg-[#D00048]/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <div className="fixed inset-0 bg-[#010065]/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                 <div className="bg-white rounded-xl border border-gray-200 p-8 max-w-md w-full">
                   <div className="text-center mb-8">
                     <h2 className="text-xl font-medium text-gray-900 mb-3">
@@ -387,7 +387,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
                       <button
                         onClick={handleEmailSubmit}
                         disabled={emailSubmitting || !email.trim()}
-                        className="w-full bg-[#D00048] hover:bg-gray-800 disabled:bg-red-300 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed"
+                        className="w-full bg-[#010065] hover:bg-gray-800 disabled:bg-red-300 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed"
                       >
                         {emailSubmitting ? (t.saving || 'Saving...') : (t.notifyMe || 'Notify Me')}
                       </button>
@@ -482,7 +482,7 @@ const NotReadyPage = ({ activeSection, setActiveSection, currentLanguage = 'en' 
                   <div className="flex justify-center">
                     <button
                       onClick={() => setShowEmailCollection(true)}
-                      className="bg-[#D00048] hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
+                      className="bg-[#010065] hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
                     >
                       <Mail className="w-4 h-4" />
                       {t.getNotified || 'Get Notified'}
