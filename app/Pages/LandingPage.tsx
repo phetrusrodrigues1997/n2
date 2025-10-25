@@ -1398,7 +1398,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
           <div className="">
 
             {/* Mobile Markets Display - All Markets */}
-            <div className="md:hidden space-y-2 -translate-y-2">
+            <div className="md:hidden space-y-3 -translate-y-2">
               {(() => {
                 // Get all markets and deduplicate by ID
                 const allMarkets = marketOptions.map(option => {
@@ -1527,14 +1527,14 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
 
                           return (isEliminated && userIsParticipant) ? (
-                            <div className="absolute bottom-2 left-2 right-2 z-20">
+                            <div className="absolute bottom-2 left-3 right-3 z-20">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   e.preventDefault();
                                   handleMarketClick(market.id, true);
                                 }}
-                                className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                                className="w-full bg-[#010065] text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                               >
                                 <span className="relative z-10 flex items-center justify-center gap-2">
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1567,14 +1567,14 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               handleMarketClick(market.id);
                             }
                           }}
-                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 ${market.marketIndex === 0 ? '' : 'hover:shadow-blue-200'} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
+                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 border border-gray-200 rounded-xl ${market.marketIndex === 0 ? '' : 'hover:shadow-blue-200'} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
                             } ${animatingMarket === market.tabId ? 'animate-scale-once' : ''} ${(() => {
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
                               if (market.marketIndex === 0) {
-                                return isEliminated ? 'opacity-60 grayscale-[0.3] rounded-lg' : '';
+                                return isEliminated ? 'opacity-60 grayscale-[0.3]' : '';
                               }
-                              return isEliminated ? 'opacity-60 grayscale-[0.3] rounded-lg' : '';
+                              return isEliminated ? 'opacity-60 grayscale-[0.3]' : '';
                             })()}`}
                           style={{
                             '--swap-distance': swapDistance
@@ -1598,26 +1598,14 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             // First market gets normal padding, others get minimal padding
                             let classes;
                             if (market.marketIndex === 0) {
-                              classes = 'pt-4 pb-4';
+                              classes = 'pt-4 pb-4 px-3';
                             } else {
-                              classes = market.useTraditionalLayout ? 'py-1 pb-1' : 'py-1 pb-0';
+                              classes = market.useTraditionalLayout ? 'py-1 pb-1 px-3' : 'py-1 pb-0 px-3';
                             }
 
-                            if (isEliminated) {
-                              classes += ' border border-gray-300 rounded-lg';
-                            } 
-                            
-                            else if (market.marketIndex === 0) {
-                              // Add bottom border for first market like others
-                              if (market.tabId === selectedMarket) {
-                                classes += ' border-b border-gray-200 shadow-lg shadow-blue-100/50';
-                              } else {
-                                classes += ' border-b border-gray-200';
-                              }
-                            } else if (market.tabId === selectedMarket) {
-                              classes += ' border-b border-gray-200 shadow-lg shadow-blue-100/50';
-                            } else {
-                              classes += ' border-b border-gray-200';
+                            // Add shadow for selected market
+                            if (market.tabId === selectedMarket && !isEliminated) {
+                              classes += ' shadow-lg shadow-blue-100/50';
                             }
 
                             return classes;
@@ -1631,7 +1619,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             <div className="flex items-center gap-3 mb-6 relative">
                               {/* Small Square Image */}
                               <div className="flex-shrink-0">
-                                <div className={`rounded-lg ${market.marketIndex === 0 ? 'w-24 h-24' : 'w-16 h-16'} bg-white overflow-hidden relative`}>
+                                <div className={`rounded-lg ${market.marketIndex === 0 ? 'w-20 h-20' : 'w-16 h-16'} bg-white overflow-hidden relative`}>
                                 {market.icon && (market.icon.slice(0, 1) === '/') ? (
                                 <img
                                     src={market.icon}
@@ -1924,7 +1912,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 if (isEliminated) {
                                   // USER IS ELIMINATED: Show normal stats footer, no More Info button
                                   return (
-                                    <div className="absolute bottom-3 left-0 right-0 flex justify-between items-center">
+                                    <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center">
                                       <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                                         {(() => {
                                           const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
@@ -1963,13 +1951,13 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                                 // USER IS PARTICIPANT (NOT ELIMINATED): Show ONLY full-width "More Info" button
                                 return (
-                                  <div className="absolute bottom-2 left-2 right-2 z-20">
+                                  <div className="absolute bottom-2 left-3 right-3 z-20">
                                     <button
                                       onClick={() => {
                                         handleMarketClick(market.id);
                                         setActiveSection('potInfo');
                                       }}
-                                      className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                                      className="w-full bg-[#010065] text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                                     >
                                       <span className="relative z-10 flex items-center justify-center gap-2">
                                         {t.TapforMoreInfo}
@@ -1995,7 +1983,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               } else {
                                 // USER IS NOT PARTICIPANT: Show two-column layout
                                 return (
-                                  <div className="absolute bottom-3 left-0 right-0 flex justify-between items-center">
+                                  <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center">
                               <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                                 {(() => {
                                   const contractAddress = getContractAddress(market.id);
@@ -2218,14 +2206,14 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                         const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
 
                         return (isEliminated && userIsParticipant) ? (
-                          <div className="absolute bottom-2 left-2 right-2 z-20">
+                          <div className="absolute bottom-2 left-3 right-3 z-20">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 handleMarketClick(market.id, true);
                               }}
-                              className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                              className="w-full bg-[#010065] text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                             >
                               <span className="relative z-10 flex items-center justify-center gap-2">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2512,7 +2500,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               if (isEliminated) {
                                 // USER IS ELIMINATED: Show normal stats footer, no More Info button
                                 return (
-                                  <div className="absolute bottom-3 left-2 right-2 flex justify-between items-center">
+                                  <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center">
                                     <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                                       {(() => {
                                         const isPenaltyExempt = contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress);
@@ -2556,7 +2544,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       handleMarketClick(market.id);
                                       setActiveSection('potInfo');
                                     }}
-                                    className="w-full bg-gradient-to-br from-purple-600 to-purple-700 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                                    className="w-full bg-[#010065] text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                                   >
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                       {t.ClickforMoreInfo}
@@ -2582,7 +2570,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             } else {
                               // USER IS NOT PARTICIPANT: Show two-column layout
                               return (
-                                <div className="absolute bottom-3 left-2 right-2 flex justify-between items-center">
+                                <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center">
                             <div className="text-sm font-medium text-gray-700 opacity-50 leading-none flex items-center gap-2 tracking-wide" style={{ fontFamily: '"SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif', fontWeight: '500' }}>
                               {(() => {
                                 const contractAddress = getContractAddress(market.id);
