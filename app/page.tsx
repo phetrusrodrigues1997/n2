@@ -766,7 +766,7 @@ export default function App() {
                   <Wallet>
                     <ConnectWallet
                       text={t.signIn}
-                      className="!bg-transparent !border-none !shadow-none !p-0 [&>span]:!text-white hover:[&>span]:!text-black !font-medium !px-0 !py-2 !min-w-0 -translate-x-2 md:translate-x-16"
+                      className="!bg-transparent !border !border-gray-200 !shadow-none !p-0 [&>span]:!text-[#010062] hover:[&>span]:!text-black !font-medium !px-3 !py-1.5 !min-w-0 -translate-x-2 md:translate-x-12"
                     />
                   </Wallet>
                 )}
