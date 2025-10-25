@@ -1588,7 +1588,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               // First market: same height as other markets now
                               return userIsParticipant ? 'min-h-[220px] bg-[#fefefe]' : 'min-h-[220px] bg-[#fefefe]';
                             } else {
-                              return 'min-h-[220px] bg-white';
+                              // Non-traditional markets need more height for the moved-down button
+                              return !market.useTraditionalLayout ? 'min-h-[250px] bg-white' : 'min-h-[220px] bg-white';
                             }
                           })()} flex flex-col justify-between transition-all duration-300 ${(() => {
                             const contractAddress = getContractAddress(market.id);
@@ -1945,7 +1946,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                                 // USER IS PARTICIPANT (NOT ELIMINATED): Show ONLY full-width "More Info" button
                                 return (
-                                  <div className="absolute bottom-2 left-3 right-3 z-20">
+                                  <div className="absolute left-3 right-3 z-20 bottom-2">
                                     <button
                                       onClick={() => {
                                         handleMarketClick(market.id);
@@ -2413,7 +2414,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               }
 
                               return (
-                                <div className="flex items-center justify-between mb-3">
+                                <div className={`flex items-center justify-between ${market.useTraditionalLayout ? 'mb-3' : 'mb-1'}`}>
                                   {/* Left side: Yes/No labels stacked */}
                                   <div className="flex flex-col gap-1">
                                     <div className="text-sm font-normal text-black">{t.higher}</div>
@@ -2532,16 +2533,16 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                               // USER IS PARTICIPANT (NOT ELIMINATED): Show ONLY full-width "More Info" button
                               return (
-                                <div className="pt-2">
+                                <div className={market.useTraditionalLayout ? 'pt-2' : 'pt-0'}>
                                   <button
                                     onClick={() => {
                                       handleMarketClick(market.id);
                                       setActiveSection('potInfo');
                                     }}
-                                    className="w-full bg-[#010065] text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                                    className={`w-full bg-[#010065] text-white font-semibold rounded-xl px-4 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)] ${market.useTraditionalLayout ? 'py-2' : 'py-1.5'}`}
                                   >
                                     <span className="relative z-10 flex items-center justify-center gap-2">
-                                      {t.ClickforMoreInfo}
+                                      {t.TapforMoreInfo}
                                       {/* Show timer if pot has started */}
                                       {(() => {
                                         const potInfo = contractAddress ? potInformation[contractAddress] : null;
