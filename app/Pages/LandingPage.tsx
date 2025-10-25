@@ -1585,8 +1585,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
 
                             if (market.marketIndex === 0) {
-                              // First market: extra height for participants to accommodate More Info button
-                              return userIsParticipant ? 'min-h-[360px] bg-[#fefefe]' : 'min-h-[325px] bg-[#fefefe]';
+                              // First market: same height as other markets now
+                              return userIsParticipant ? 'min-h-[220px] bg-[#fefefe]' : 'min-h-[220px] bg-[#fefefe]';
                             } else {
                               return 'min-h-[220px] bg-white';
                             }
@@ -1594,14 +1594,8 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             const contractAddress = getContractAddress(market.id);
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
 
-                            // Reduce bottom padding for non-traditional layouts to make div shorter
-                            // First market gets normal padding, others get minimal padding
-                            let classes;
-                            if (market.marketIndex === 0) {
-                              classes = 'pt-4 pb-4 px-3';
-                            } else {
-                              classes = market.useTraditionalLayout ? 'py-1 pb-1 px-3' : 'py-1 pb-0 px-3';
-                            }
+                            // All markets get the same padding now
+                            let classes = 'py-4 px-3';
 
                             // Add shadow for selected market
                             if (market.tabId === selectedMarket && !isEliminated) {
@@ -1880,7 +1874,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             </div>
 
                             {/* Tip sentence for first market only */}
-                            {(() => {
+                            {/* {(() => {
                               return market.marketIndex === 0 ? (
                                 <div className={`flex justify-start ${(() => {
                                   const contractAddress = getContractAddress(market.id);
@@ -1898,7 +1892,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   </div>
                                 </div>
                               ) : null;
-                            })()}
+                            })()} */}
 
                             {/* Stats Footer */}
                             {(() => {
