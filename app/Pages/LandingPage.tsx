@@ -1712,11 +1712,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 // Show thermometer for traditional layout (even index markets), but not for first market
                                 else if (market.useTraditionalLayout && !isEliminated && market.marketIndex !== 0) {
                                   return (
-                                    <div className="absolute top-0 right-0">
+                                    <div className="absolute top-3 right-3">
                                       <div className="text-right flex flex-col items-end">
                                         {/* Percentage only */}
                                         <div className="flex flex-col items-center justify-center">
-                                          <div className="text-xs font-semibold text-gray-900 leading-none tracking-tight">
+                                          <div className="text-sm font-semibold text-gray-900 leading-none tracking-tight">
                                             {(() => {
                                               const percentageData = predictionPercentages[market.tabId || market.id];
                                               if (!percentageData) return '0'; // Fallback to 0%
@@ -2346,11 +2346,11 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               // Show thermometer for traditional layout (even index markets) - Desktop shows full thermometer including first market
                               if (market.useTraditionalLayout && !isEliminated) {
                                 return (
-                                  <div className="absolute top-0 -right-1">
+                                  <div className="absolute top-3 right-3">
                                     <div className="text-right flex flex-col items-end">
                                       {/* Percentage only */}
                                       <div className="flex flex-col items-center justify-center">
-                                        <div className="text-xs font-semibold text-gray-900 leading-none tracking-tight">
+                                        <div className="text-base font-semibold text-gray-900 leading-none tracking-tight">
                                           {(() => {
                                             const percentageData = predictionPercentages[market.tabId || market.id];
                                             if (!percentageData) return '0'; // Fallback to 0%
