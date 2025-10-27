@@ -774,7 +774,15 @@ export default function App() {
                 <Wallet>
                   <ConnectWallet
                     text={t.signUp}
-                    className={`${currentLanguage === 'pt-BR' ? 'md:-translate-x-8' : ''} ${isConnected ? '!bg-transparent !border-none !shadow-none !p-0' : ''} ${isMobile ? `bg-[#010065] hover:bg-black !min-w-0 !text-sm ${currentLanguage === 'pt-BR' ? '!px-3 !py-1.5' : '!px-3.5 !py-1.5'}` : 'bg-[#010065] hover:bg-black !px-4 !py-2 !min-w-0 !whitespace-nowrap'}`}
+className={`${isConnected 
+  ? '!bg-transparent !border-none !shadow-none !p-0 md:translate-x-4'
+  : `${currentLanguage === 'pt-BR' ? 'md:-translate-x-8' : ''} ${isMobile 
+      ? `bg-[#010065] hover:bg-black !min-w-0 !text-sm ${
+          currentLanguage === 'pt-BR' ? '!px-3 !py-1.5' : '!px-3.5 !py-1.5'
+        }` 
+      : 'bg-[#010065] hover:bg-black !px-4 !py-2 !min-w-0 !whitespace-nowrap'
+    }`
+}`}
                   >
                     {isConnected && (
                       <div className="flex items-center gap-2">
