@@ -1578,8 +1578,16 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           } as React.CSSProperties}
                         >
                           <div className={`h-full ${(() => {
+                            const contractAddress = getContractAddress(market.id);
+                            const userIsParticipant = contractAddress ? isUserParticipant(contractAddress) : false;
+                            const isEliminated = contractAddress && eliminationStatus[contractAddress];
+
+                            // If user is participant (not eliminated), button will show and needs more height
+                            if (userIsParticipant && !isEliminated) {
+                              return !market.useTraditionalLayout ? 'min-h-[260px] bg-white' : 'min-h-[240px] bg-white';
+                            }
                             // Non-traditional markets need more height for the moved-down button
-                            return !market.useTraditionalLayout ? 'min-h-[250px] bg-white' : 'min-h-[220px] bg-white';
+                            return !market.useTraditionalLayout ? 'min-h-[225px] bg-white' : 'min-h-[205px] bg-white';
                           })()} flex flex-col justify-between transition-all duration-300 ${(() => {
                             const contractAddress = getContractAddress(market.id);
                             const isEliminated = contractAddress && eliminationStatus[contractAddress];
@@ -1913,7 +1921,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                                 // USER IS PARTICIPANT (NOT ELIMINATED): Show ONLY full-width "More Info" button
                                 return (
-                                  <div className="absolute left-3 right-3 z-20 bottom-2">
+                                  <div className="absolute left-3 right-3 z-20 bottom-4">
                                     <button
                                       onClick={() => {
                                         handleMarketClick(market.id);

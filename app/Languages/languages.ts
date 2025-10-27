@@ -441,7 +441,6 @@ export interface Translations {
   thousandsOfWinners: string;
   lastStandingQuestion: string;
   TapforMoreInfo: string;
-  ClickforMoreInfo: string;
 
   // Search
   search: string;
@@ -1037,7 +1036,6 @@ export const translations: Record<Language, Translations> = {
     thousandsOfWinners: 'Thousands of winners,',
     lastStandingQuestion: 'will you be among the last 5 standing?',
     TapforMoreInfo: 'My Tournament',
-    ClickforMoreInfo: 'My Tournament',
 
     // ProfilePage translations
     referrals: 'Referrals',
@@ -1580,7 +1578,6 @@ export const translations: Record<Language, Translations> = {
     thousandsOfWinners: 'Milhares de vencedores,',
     lastStandingQuestion: 'você estará entre os 5 últimos de pé?',
     TapforMoreInfo: 'Meu Torneio',
-    ClickforMoreInfo: 'Meu Torneio',
 
     // ProfilePage translations
     referrals: 'Indicações',
