@@ -329,18 +329,10 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Minimal Header */}
-      {/* <div className="flex items-center justify-between p-4 border-b border-gray-100">
-        <button
-          onClick={() => setActiveSection('home')}
-          className="text-gray-900 hover:text-gray-600 transition-colors"
-        >
-          <span className="text-xl">←</span>
-        </button>
-      </div> */}
+      
 
       {/* Main Content */}
-      <div className="flex flex-col min-h-[calc(100vh-73px)] px-6 md:px-9 lg:px-0 xl:px-0 lg:px-9 xl:px-9">
+      <div className="flex flex-col min-h-[calc(100vh-73px)]">
         <div className="flex-1 py-6">
           {/* Page Title */}
           <div className="mb-8">

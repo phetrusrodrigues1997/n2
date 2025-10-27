@@ -1329,8 +1329,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                     disabled={isLoading || !isBettingAllowed()}
                     className={`p-4 rounded-lg border transition-all duration-150 relative ${
                       tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive'
-                        ? 'bg-blue-700 border-blue-700 text-white shadow-lg'
-                        : 'bg-blue-500 border-blue-200 text-white hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(29,78,216)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(29,78,216),0_8px_12px_-2px_rgba(0,0,0,0.2)]'
+                        ? 'bg-green-700 border-green-700 text-white shadow-lg'
+                        : 'bg-green-500 border-green-200 text-white hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(29,190,78)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(29,190,78),0_8px_12px_-2px_rgba(0,0,0,0.2)]'
                     } disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none`}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -1361,8 +1361,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                     disabled={isLoading || !isBettingAllowed()}
                     className={`p-4 rounded-lg border transition-all duration-150 relative ${
                       tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative'
-                        ? 'bg-purple-700 border-purple-700 text-white shadow-lg'
-                        : 'bg-purple-500 border-purple-200 text-white hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(126,34,206)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(126,34,206),0_8px_12px_-2px_rgba(0,0,0,0.2)]'
+                        ? 'bg-red-700 border-red-700 text-white shadow-lg'
+                        : 'bg-red-500 border-red-200 text-white hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(206,34,78)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(206,34,78),0_8px_12px_-2px_rgba(0,0,0,0.2)]'
                     } disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none`}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -1424,9 +1424,9 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                           <div key={index} className="flex items-center justify-between text-sm">
                             <div>
                               <span className={`font-medium flex items-center gap-1 ${
-                                prediction.status === 'correct' ? 'text-blue-600' :
-                                prediction.status === 'incorrect' ? 'text-purple-600' :
-                                prediction.prediction === 'positive' ? 'text-blue-600' : 'text-purple-600'
+                                prediction.status === 'correct' ? 'text-green-600' :
+                                prediction.status === 'incorrect' ? 'text-red-600' :
+                                prediction.prediction === 'positive' ? 'text-green-600' : 'text-red-600'
                               }`}>
                                 <span className="text-sm">
                                   {prediction.prediction === 'positive' ? '✓' : '✗'}
@@ -1438,8 +1438,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                               </span>
                             </div>
                             <span className={`text-xs px-2 py-1 rounded-full ${
-                              prediction.status === 'correct' ? 'bg-blue-100 text-blue-700' :
-                              prediction.status === 'incorrect' ? 'bg-purple-100 text-purple-700' :
+                              prediction.status === 'correct' ? 'bg-green-100 text-green-700' :
+                              prediction.status === 'incorrect' ? 'bg-red-100 text-red-700' :
                               'bg-gray-100 text-gray-700'
                             }`}>
                               {prediction.status === 'pending' ? 'Pending' :
