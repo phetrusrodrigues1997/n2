@@ -33,7 +33,7 @@ const ResponsiveLogo = ({ onClick }: ResponsiveLogoProps) => {
       >
         {isMobile ? (
           // Mobile version - prevent text and image wrapping
-          <span className="flex items-center whitespace-nowrap text-[1.625rem] font-extrabold tracking-wide">
+          <span className="flex items-center whitespace-nowrap text-[1.8rem] font-extrabold tracking-wide">
             <span className="text-[#010062]">Prediwin</span>
             {/* <span className="text-black">.com</span> */}
            {/* <Image
