@@ -1231,7 +1231,7 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
         </div>
       )}
       
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
         {/* Minimal Header */}
         {/* <div className="flex items-center p-4">
           <button
@@ -1242,17 +1242,17 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
           </button>
         </div> */}
 
-     
-      
+
+
         {/* Main Content */}
-        <div className="flex flex-col py-12 px-7 md:px-10">
-          <div className="flex-1">
+        <div className="flex flex-col py-8 md:py-12 px-4 md:px-6">
+          <div className="max-w-2xl mx-auto w-full">
             {/* Page Header */}
-            <div className="mb-8 text-center">
-              <h1 className="text-3xl md:text-4xl font-normal text-gray-900 tracking-tight mb-2">
+            <div className="mb-10 text-center">
+              <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-2">
                 Predictions Hub
               </h1>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-500 text-sm">
                 Make your predictions and track your tournament progress
               </p>
             </div>
@@ -1266,29 +1266,37 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
               </div>
 
             ) : reEntryFee && reEntryFee > 0 && !potInfo.isFinalDay ? (
-              <div className="text-center py-8">
-                <h2 className="text-lg font-medium text-gray-900 mb-2">{t.reentryRequired || "Re-entry Required"}</h2>
-                <p className="text-gray-600 text-sm mb-6">
-                  {t.wrongPredictionIn || "Wrong prediction in"} {selectedTableType ? getSmartMarketDisplayName(selectedTableType) : 'this market'}. {t.payTodaysEntryFee || "Pay today's entry fee to continue."}
-                </p>
-                <button
-                  onClick={handleReEntry}
-                  disabled={isReEntryLoading || isPending || isConfirming}
-                  className="bg-gray-900 text-white font-medium py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isReEntryLoading || isPending || isConfirming ? (
-                    `${t.processing || "Processing..."}`
-                  ) : (
-                    `${t.enterPot || 'Enter Pot'} (${ethToUsd(getEntryAmount()).toFixed(2)} USD)`
-                  )}
-                </button>
+              <div className="text-center py-12">
+                <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 max-w-md mx-auto">
+                  <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-orange-500/20">
+                    <AlertTriangle className="w-8 h-8 text-white" />
+                  </div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3">{t.reentryRequired || "Re-entry Required"}</h2>
+                  <p className="text-gray-600 text-sm mb-8 leading-relaxed">
+                    {t.wrongPredictionIn || "Wrong prediction in"} {selectedTableType ? getSmartMarketDisplayName(selectedTableType) : 'this market'}. {t.payTodaysEntryFee || "Pay today's entry fee to continue."}
+                  </p>
+                  <button
+                    onClick={handleReEntry}
+                    disabled={isReEntryLoading || isPending || isConfirming}
+                    className="w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white font-semibold py-4 px-6 rounded-xl hover:from-gray-800 hover:to-gray-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl active:scale-[0.98]"
+                  >
+                    {isReEntryLoading || isPending || isConfirming ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        {t.processing || "Processing..."}
+                      </span>
+                    ) : (
+                      `${t.enterPot || 'Enter Pot'} - $${ethToUsd(getEntryAmount()).toFixed(2)}`
+                    )}
+                  </button>
+                </div>
               </div>
             ) : (
               <>
                 {/* Question and Context - Always Visible */}
-                <div className="border border-gray-200 rounded-lg p-4 mb-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-xs md:text-sm text-gray-500">
+                <div className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 p-5 md:p-6 mb-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">
                       {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
                         ? "This week's question"
                         : "Today's question"
@@ -1296,24 +1304,25 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                     </div>
                     {/* Timer positioned at top right */}
                     {currentTimer && (
-                      <div className="flex flex-col items-center bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-1.5 md:px-2.5 rounded-full font-medium">
-                        <span className="font-medium text-gray-900 text-[10px] md:text-xs">
+                      <div className="flex items-center bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-[10px] md:text-xs px-3 py-1.5 rounded-full font-semibold shadow-sm">
+                        <FaClock className="mr-1.5 text-gray-500" />
+                        <span className="text-gray-900">
                           {currentTimer}
                         </span>
                       </div>
                     )}
                   </div>
-                  <div className="text-base text-gray-900 mb-3">
+                  <div className="text-base md:text-lg font-medium text-gray-900 mb-4 leading-relaxed">
                     {displayQuestion || marketQuestion || 'Loading question...'}
                   </div>
 
                   {/* Context info - Always Visible */}
                   {contractAddress && (
-                    <div className="flex items-center gap-4 text-xs md:text-sm text-gray-500">
-                      <span className="flex items-center gap-1">
-                        <FaChartBar className="text-gray-400" /> {participantStats.eligibleParticipants} players remaining
+                    <div className="flex flex-wrap items-center gap-3 md:gap-4 pt-3 border-t border-gray-100">
+                      <span className="flex items-center gap-1.5 text-xs md:text-sm text-gray-600 font-medium">
+                        <Users className="w-4 h-4 text-gray-400" /> {participantStats.eligibleParticipants} players remaining
                       </span>
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center gap-1.5 text-xs md:text-sm text-gray-600 font-medium">
                         <FaDollarSign className="text-gray-400" /> ${ethToUsd(getEntryAmount()).toFixed(2)} Re-entry
                       </span>
                     </div>
@@ -1323,32 +1332,39 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                 
 
                 {/* Single Set of Prediction Buttons */}
-                <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="grid grid-cols-2 gap-4 mb-6">
                   <button
                     onClick={() => handlePlaceBet('positive')}
                     disabled={isLoading || !isBettingAllowed()}
-                    className={`p-4 rounded-lg border transition-all duration-150 relative ${
+                    className={`group relative p-5 md:p-6 rounded-2xl border-2 transition-all duration-200 font-semibold text-base md:text-lg ${
                       tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive'
-                        ? 'bg-green-700 border-green-700 text-white shadow-lg'
-                        : 'bg-green-500 border-green-200 text-white hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(29,190,78)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(29,190,78),0_8px_12px_-2px_rgba(0,0,0,0.2)]'
-                    } disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none`}
+                        ? 'bg-gradient-to-br from-green-500 to-green-600 border-green-500 text-white shadow-lg shadow-green-500/30 scale-[1.02]'
+                        : 'bg-white border-green-200 text-green-600 hover:bg-green-50 hover:border-green-300 hover:shadow-md active:scale-[0.98]'
+                    } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:shadow-none`}
                   >
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex flex-col items-center gap-1">
                       {tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'positive' ? (
                         <>
-                          <span className="font-medium">Yes <span className="text-green-500">✓</span></span>
+                          <div className="flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5" />
+                            <span className="font-bold">Yes</span>
+                            <span className="text-sm bg-white/20 px-2 py-0.5 rounded-full">✓</span>
+                          </div>
                           {predictionPercentages && (
-                            <span className="font-medium">
-                              {getBayesianPercentages().yesPercentage}%
+                            <span className="text-sm font-medium opacity-90">
+                              {getBayesianPercentages().yesPercentage}% predict Yes
                             </span>
                           )}
                         </>
                       ) : (
                         <>
-                          <span className="font-medium">Yes</span>
+                          <div className="flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5" />
+                            <span>Yes</span>
+                          </div>
                           {predictionPercentages && (
-                            <span className="text-xs">
-                              {getBayesianPercentages().yesPercentage}%
+                            <span className="text-xs text-gray-500">
+                              {getBayesianPercentages().yesPercentage}% predict Yes
                             </span>
                           )}
                         </>
@@ -1359,28 +1375,35 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                   <button
                     onClick={() => handlePlaceBet('negative')}
                     disabled={isLoading || !isBettingAllowed()}
-                    className={`p-4 rounded-lg border transition-all duration-150 relative ${
+                    className={`group relative p-5 md:p-6 rounded-2xl border-2 transition-all duration-200 font-semibold text-base md:text-lg ${
                       tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative'
-                        ? 'bg-red-700 border-red-700 text-white shadow-lg'
-                        : 'bg-red-500 border-red-200 text-white hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(206,34,78)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(206,34,78),0_8px_12px_-2px_rgba(0,0,0,0.2)]'
-                    } disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none`}
+                        ? 'bg-gradient-to-br from-red-500 to-red-600 border-red-500 text-white shadow-lg shadow-red-500/30 scale-[1.02]'
+                        : 'bg-white border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 hover:shadow-md active:scale-[0.98]'
+                    } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:shadow-none`}
                   >
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex flex-col items-center gap-1">
                       {tomorrowsBet && (tomorrowsBet as TodaysBet).prediction === 'negative' ? (
                         <>
-                          <span className="font-medium">No <span className="text-green-500">✓</span></span>
+                          <div className="flex items-center gap-2">
+                            <TrendingDown className="w-5 h-5" />
+                            <span className="font-bold">No</span>
+                            <span className="text-sm bg-white/20 px-2 py-0.5 rounded-full">✓</span>
+                          </div>
                           {predictionPercentages && (
-                            <span className="font-medium">
-                              {getBayesianPercentages().noPercentage}%
+                            <span className="text-sm font-medium opacity-90">
+                              {getBayesianPercentages().noPercentage}% predict No
                             </span>
                           )}
                         </>
                       ) : (
                         <>
-                          <span className="font-medium">No</span>
+                          <div className="flex items-center gap-2">
+                            <TrendingDown className="w-5 h-5" />
+                            <span>No</span>
+                          </div>
                           {predictionPercentages && (
-                            <span className="text-xs">
-                              {getBayesianPercentages().noPercentage}%
+                            <span className="text-xs text-gray-500">
+                              {getBayesianPercentages().noPercentage}% predict No
                             </span>
                           )}
                         </>
@@ -1393,10 +1416,10 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
                 {/* Loading State */}
                 {isLoading && (
-                  <div className="text-center py-4">
-                    <div className="inline-flex items-center gap-2 text-gray-600">
-                      <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
-                      <span className="text-sm">
+                  <div className="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-2xl p-6 text-center">
+                    <div className="inline-flex items-center gap-3 text-gray-700">
+                      <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin"></div>
+                      <span className="text-sm font-medium">
                         {tomorrowsBet ? 'Updating prediction...' : 'Placing prediction...'}
                       </span>
                     </div>
@@ -1405,39 +1428,48 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
                 {/* Prediction History */}
                 {predictionHistory.length > 0 && (
-                  <div className="border border-gray-200 rounded-lg mb-6">
+                  <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-6">
                     <div
-                      className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                      className="p-5 cursor-pointer hover:bg-gray-50 transition-colors"
                       onClick={() => setIsPredictionHistoryCollapsed(!isPredictionHistoryCollapsed)}
                     >
                       <div className="flex items-center justify-between">
-                        <h3 className="font-medium text-gray-900">{t.predictionHistory}</h3>
+                        <div className="flex items-center gap-2">
+                          <Trophy className="w-5 h-5 text-gray-400" />
+                          <h3 className="font-semibold text-gray-900">{t.predictionHistory || "Prediction History"}</h3>
+                        </div>
                         <span className="text-gray-400">
-                          {isPredictionHistoryCollapsed ? <ChevronDown></ChevronDown>: <ChevronUp></ChevronUp>}
+                          {isPredictionHistoryCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
                         </span>
                       </div>
                     </div>
 
                     {!isPredictionHistoryCollapsed && (
-                      <div className="border-t border-gray-200 p-4 space-y-3">
+                      <div className="border-t border-gray-200 p-5 space-y-3">
                         {predictionHistory.slice(0, 5).map((prediction, index) => (
-                          <div key={index} className="flex items-center justify-between text-sm">
-                            <div>
-                              <span className={`font-medium flex items-center gap-1 ${
-                                prediction.status === 'correct' ? 'text-green-600' :
-                                prediction.status === 'incorrect' ? 'text-red-600' :
-                                prediction.prediction === 'positive' ? 'text-green-600' : 'text-red-600'
+                          <div key={index} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <div className="flex items-center gap-3">
+                              <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                                prediction.status === 'correct' ? 'bg-green-100 text-green-600' :
+                                prediction.status === 'incorrect' ? 'bg-red-100 text-red-600' :
+                                prediction.prediction === 'positive' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
                               }`}>
-                                <span className="text-sm">
-                                  {prediction.prediction === 'positive' ? '✓' : '✗'}
-                                </span>
-                                {prediction.prediction === 'positive' ? 'YES' : 'NO'}
+                                {prediction.prediction === 'positive' ? '↑' : '↓'}
                               </span>
-                              <span className="text-gray-500 ml-2">
-                                {new Date(prediction.predictionDate).toLocaleDateString()}
-                              </span>
+                              <div>
+                                <div className={`font-semibold text-sm ${
+                                  prediction.status === 'correct' ? 'text-green-600' :
+                                  prediction.status === 'incorrect' ? 'text-red-600' :
+                                  'text-gray-900'
+                                }`}>
+                                  {prediction.prediction === 'positive' ? 'YES' : 'NO'}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {new Date(prediction.predictionDate).toLocaleDateString()}
+                                </div>
+                              </div>
                             </div>
-                            <span className={`text-xs px-2 py-1 rounded-full ${
+                            <span className={`text-xs px-3 py-1.5 rounded-full font-medium ${
                               prediction.status === 'correct' ? 'bg-green-100 text-green-700' :
                               prediction.status === 'incorrect' ? 'bg-red-100 text-red-700' :
                               'bg-gray-100 text-gray-700'
@@ -1459,8 +1491,13 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
 
       {/* Message Display */}
       {message && (
-        <div className="fixed bottom-4 left-4 right-4 bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg z-50">
-          {message}
+        <div className="fixed bottom-6 left-4 right-4 md:left-auto md:right-6 md:max-w-md bg-gradient-to-r from-gray-900 to-gray-800 text-white px-5 py-4 rounded-2xl shadow-2xl z-50 backdrop-blur-lg border border-gray-700 animate-in slide-in-from-bottom-4 duration-300">
+          <div className="flex items-start gap-3">
+            <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-xs">ℹ</span>
+            </div>
+            <p className="text-sm font-medium leading-relaxed">{message}</p>
+          </div>
         </div>
       )}
     </>

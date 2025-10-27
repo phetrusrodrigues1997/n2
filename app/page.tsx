@@ -896,7 +896,7 @@ className={`${isConnected
 
       {/* Mobile Search Bar - Below Header - Always show on mobile when home */}
       {!isLandingPageLoading && activeSection !== 'comingsoon' && activeSection === 'home' && (
-      <div className="md:hidden bg-white py-4">
+      <div className="md:hidden bg-white py-3">
         <div className="flex items-center gap-3">
         <div className="relative flex-1">
           <div className="absolute left-3 top-1/2 -translate-y-1/2">
