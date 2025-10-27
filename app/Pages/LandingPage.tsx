@@ -968,7 +968,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         // Show confirmed tick for participants (they can't click to change from same option)
         return (
           <div className="flex items-center justify-center">
-            <span className={buttonType === 'positive' ? 'text-blue-600' : 'text-purple-600'}>
+            <span className={buttonType === 'positive' ? 'text-green-500' : 'text-red-500'}>
               {buttonType === 'positive' ? '✓' : '✗'}
             </span>
           </div>
@@ -1002,18 +1002,18 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
     if (prediction && prediction.prediction === buttonType) {
       // User has voted for this option - show confirmed styling with white background
       if (buttonType === 'positive') {
-        return baseClasses.replace('bg-blue-100 hover:bg-blue-200 text-blue-700', 'bg-white text-blue-600 cursor-default border border-blue-600');
+        return baseClasses.replace('bg-green-50 hover:bg-green-200 text-green-500', 'bg-white text-green-500 cursor-default border border-green-600');
       } else {
-        return baseClasses.replace('bg-purple-100 hover:bg-purple-200 text-purple-700', 'bg-white text-purple-600 cursor-default border border-purple-600');
+        return baseClasses.replace('bg-red-50 hover:bg-red-200 text-red-500', 'bg-white text-red-500 cursor-default border border-red-600');
       }
     }
 
     // If user is participant and has voted for the opposite option, make this button more prominent (change vote)
     if (isParticipant && prediction && prediction.prediction !== buttonType) {
       if (buttonType === 'positive') {
-        return baseClasses.replace('bg-blue-100 hover:bg-blue-200 text-blue-700', 'bg-blue-100 hover:bg-purple-200 text-blue-800');
+        return baseClasses.replace('bg-green-50 hover:bg-green-200 text-green-500', 'bg-green-50 hover:bg-red-200 text-green-800');
       } else {
-        return baseClasses.replace('bg-purple-100 hover:bg-purple-200 text-purple-700', 'bg-purple-100 hover:bg-blue-200 text-purple-800');
+        return baseClasses.replace('bg-red-50 hover:bg-red-200 text-red-500', 'bg-red-50 hover:bg-green-200 text-red-800');
       }
     }
 
@@ -1534,7 +1534,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   e.preventDefault();
                                   handleMarketClick(market.id, true);
                                 }}
-                                className="w-full bg-[#010065] text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                                className="w-full bg-[#010065] text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                               >
                                 <span className="relative z-10 flex items-center justify-center gap-2">
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1567,7 +1567,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               handleMarketClick(market.id);
                             }
                           }}
-                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 border border-gray-200 rounded-xl ${market.marketIndex === 0 ? '' : 'hover:shadow-blue-200'} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
+                          className={`group cursor-pointer relative overflow-hidden transition-all duration-500 border border-gray-200 rounded-xl ${market.marketIndex === 0 ? '' : 'hover:shadow-green-200'} ${isSwappingToFirst ? 'swap-to-first' : isSwappingFromFirst ? 'swap-from-first' : ''
                             } ${animatingMarket === market.tabId ? 'animate-scale-once' : ''} ${(() => {
                               const contractAddress = getContractAddress(market.id);
                               const isEliminated = contractAddress && eliminationStatus[contractAddress];
@@ -1600,7 +1600,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
                             // Add shadow for selected market
                             if (market.tabId === selectedMarket && !isEliminated) {
-                              classes += ' shadow-lg shadow-blue-100/50';
+                              classes += ' shadow-lg shadow-green-50/50';
                             }
 
                             return classes;
@@ -1614,7 +1614,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                             <div className="flex items-center gap-3 mb-6 relative">
                               {/* Small Square Image */}
                               <div className="flex-shrink-0">
-                                <div className={`rounded-lg ${market.marketIndex === 0 ? 'w-20 h-20' : 'w-16 h-16'} bg-white overflow-hidden relative`}>
+                                <div className="rounded-lg w-16 h-16 bg-white overflow-hidden relative">
                                 {market.icon && (market.icon.slice(0, 1) === '/') ? (
                                 <img
                                     src={market.icon}
@@ -1747,7 +1747,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'positive', "bg-blue-100 hover:bg-blue-200 text-blue-700 py-3 rounded-md text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'positive', "bg-green-50 hover:bg-green-200 text-green-500 py-3 rounded-md text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'positive', true)}
                                     </button>
@@ -1764,7 +1764,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                           handleMarketClick(market.id);
                                         }, 300);
                                       })}
-                                      className={getButtonStyles(market.id, 'negative', "bg-purple-100 hover:bg-purple-200 text-purple-700 py-3 rounded-md text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
+                                      className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-500 py-3 rounded-md text-base font-bold transition-all duration-200 flex-1 flex items-center justify-center")}
                                     >
                                       {getButtonContent(market.id, 'negative', true)}
                                     </button>
@@ -1821,7 +1821,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                               handleMarketClick(market.id);
                                             }, 300);
                                           })}
-                                          className={`${getButtonStyles(market.id, 'positive', "bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
+                                          className={`${getButtonStyles(market.id, 'positive', "bg-green-50 hover:bg-green-200 text-green-500 px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
                                         >
                                           {getButtonContent(market.id, 'positive', true)}
                                         </button>
@@ -1838,7 +1838,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                               handleMarketClick(market.id);
                                             }, 300);
                                           })}
-                                          className={`${getButtonStyles(market.id, 'negative', "bg-purple-100 hover:bg-purple-200 text-purple-700 px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
+                                          className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-500 px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 w-[60px] flex items-center justify-center")}`}
                                         >
                                           {getButtonContent(market.id, 'negative', true)}
                                         </button>
@@ -1930,9 +1930,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         style={{ opacity: 0.7 }}
                                       >
                                         {bookmarkLoading === market.id ? (
-                                          <div className="w-4 h-4 animate-spin rounded-full border-2 border-blue-700 border-t-transparent"></div>
+                                          <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
                                         ) : bookmarkedMarkets.has(market.id) ? (
-                                          <Bookmark className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700" />
+                                          <Bookmark className="w-4 h-4 transition-all duration-200 text-red-500 fill-red-700" />
                                         ) : (
                                           <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
@@ -1952,7 +1952,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                         setActiveSection('potInfo');
                                       }}
-                                      className="w-full bg-[#010065] text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                                      className="w-full bg-[#010065] text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                                     >
                                       <span className="relative z-10 flex items-center justify-center gap-2">
                                         {t.TapforMoreInfo}
@@ -2006,10 +2006,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
                                     >
                                       {bookmarkLoading === market.id ? (
-                                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-blue-700 border-t-transparent"></div>
+                                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
                                       ) : bookmarkedMarkets.has(market.id) ? (
                                         <Bookmark
-                                          className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700"
+                                          className="w-4 h-4 transition-all duration-200 text-red-500 fill-red-700"
                                         />
                                       ) : (
                                         <svg className="w-4 h-4 text-[#0a1628]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2053,7 +2053,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                   <div className="md:hidden">
                     {isLoadingMore && (
                       <div className="flex justify-center items-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-700"></div>
                         <span className="ml-3 text-gray-600">Loading more pots...</span>
                       </div>
                     )}
@@ -2063,7 +2063,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                       <div className="text-center py-6 hidden">
                         <button
                           onClick={loadMoreMarkets}
-                          className="bg-blue-700 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
+                          className="bg-green-700 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
                         >
                           Load More Pots ({allMarkets - displayedMarketsCount} remaining)
                         </button>
@@ -2208,7 +2208,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 e.preventDefault();
                                 handleMarketClick(market.id, true);
                               }}
-                              className="w-full bg-[#010065] text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
+                              className="w-full bg-[#010065] text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                             >
                               <span className="relative z-10 flex items-center justify-center gap-2">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2374,7 +2374,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'positive', "bg-blue-100 hover:bg-blue-200 text-blue-700 px-14 py-2.5 rounded-md text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
+                                    className={getButtonStyles(market.id, 'positive', "bg-green-50 hover:bg-green-200 text-green-500 px-14 py-2.5 rounded-md text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
                                   >
                                     {getButtonContent(market.id, 'positive', true)}
                                   </button>
@@ -2391,7 +2391,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         handleMarketClick(market.id);
                                       }, 300);
                                     })}
-                                    className={getButtonStyles(market.id, 'negative', "bg-purple-100 hover:bg-purple-200 text-purple-700 px-14 py-2.5 rounded-md text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
+                                    className={getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-500 px-14 py-2.5 rounded-md text-base font-bold transition-all duration-200 flex-1 max-w-[137px]")}
                                   >
                                     {getButtonContent(market.id, 'negative', true)}
                                   </button>
@@ -2441,7 +2441,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             handleMarketClick(market.id);
                                           }, 300);
                                         })}
-                                        className={`${getButtonStyles(market.id, 'positive', "bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-md text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
+                                        className={`${getButtonStyles(market.id, 'positive', "bg-green-50 hover:bg-green-200 text-green-500 px-3 py-1 rounded-md text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
                                       >
                                         {getButtonContent(market.id, 'positive', false)}
                                       </button>
@@ -2458,7 +2458,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                             handleMarketClick(market.id);
                                           }, 300);
                                         })}
-                                        className={`${getButtonStyles(market.id, 'negative', "bg-purple-100 hover:bg-purple-200 text-purple-700 px-3 py-1 rounded-md text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
+                                        className={`${getButtonStyles(market.id, 'negative', "bg-red-50 hover:bg-red-200 text-red-500 px-3 py-1 rounded-md text-xs font-bold transition-all duration-200 w-[50px] flex items-center justify-center")}`}
                                       >
                                         {getButtonContent(market.id, 'negative', false)}
                                       </button>
@@ -2517,9 +2517,9 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
                                     >
                                       {bookmarkLoading === market.id ? (
-                                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-blue-700 border-t-transparent"></div>
+                                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
                                       ) : bookmarkedMarkets.has(market.id) ? (
-                                        <Bookmark className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700" />
+                                        <Bookmark className="w-4 h-4 transition-all duration-200 text-red-500 fill-red-700" />
                                       ) : (
                                         <svg className="w-4 h-4 text-[#0a1628]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                           <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
@@ -2539,7 +2539,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       handleMarketClick(market.id);
                                       setActiveSection('potInfo');
                                     }}
-                                    className={`w-full bg-[#010065] text-white font-semibold rounded-xl px-4 text-sm transition-all duration-150 disabled:bg-purple-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)] ${market.useTraditionalLayout ? 'py-2' : 'py-1.5'}`}
+                                    className={`w-full bg-[#010065] text-white font-semibold rounded-xl px-4 text-sm transition-all duration-150 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)] ${market.useTraditionalLayout ? 'py-2' : 'py-1.5'}`}
                                   >
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                       {t.TapforMoreInfo}
@@ -2590,10 +2590,10 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                               className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
                             >
                               {bookmarkLoading === market.id ? (
-                                <div className="w-4 h-4 animate-spin rounded-full border-2 border-blue-700 border-t-transparent"></div>
+                                <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
                               ) : bookmarkedMarkets.has(market.id) ? (
                                 <Bookmark
-                                  className="w-4 h-4 transition-all duration-200 text-purple-700 fill-purple-700"
+                                  className="w-4 h-4 transition-all duration-200 text-red-500 fill-red-700"
                                 />
                               ) : (
                                 <svg className="w-4 h-4 text-[#0a1628]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2623,7 +2623,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 <>
                   {isLoadingMore && (
                     <div className="flex justify-center items-center py-12">
-                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700"></div>
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-700"></div>
                       <span className="ml-4 text-gray-600 text-lg">Loading more pots...</span>
                     </div>
                   )}
@@ -2633,7 +2633,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                     <div className="text-center py-8 hidden">
                       <button
                         onClick={loadMoreMarkets}
-                        className="bg-blue-700 hover:bg-purple-700 text-white px-8 py-4 rounded-lg font-medium text-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
+                        className="bg-green-700 hover:bg-red-700 text-white px-8 py-4 rounded-lg font-medium text-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
                       >
                         Load More Pots ({allMarkets - displayedMarketsCount} remaining)
                       </button>
@@ -2648,7 +2648,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         
 
-        <footer className="relative z-10 py-10 bg-white text-center text-blue-700 text-sm shadow-md">
+        <footer className="relative z-10 py-10 bg-white text-center text-green-500 text-sm shadow-md">
           <div className="">
             &copy; {new Date().getFullYear()} {t.footerText}
           </div>

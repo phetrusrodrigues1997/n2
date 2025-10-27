@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">PrediWin</string>
-    <string name="title_activity_main">PrediWin</string>
-    <string name="package_name">com.prediwin.app</string>
-    <string name="custom_url_scheme">com.prediwin.app</string>
-</resources>
