@@ -794,7 +794,7 @@ className={`${isConnected
                               e.stopPropagation();
                               setActiveSection('profile');
                             }}
-                            className="flex flex-col items-center bg-transparent text-gray-700 font-medium text-xs hover:bg-gray-100 cursor-pointer px-2 py-1 rounded-md transition-colors duration-200 translate-x-4 md:translate-x-0"
+                            className="flex flex-col items-center bg-transparent text-gray-700 font-medium text-xs hover:bg-gray-100 cursor-pointer px-2 py-1 rounded-md transition-colors duration-200 translate-x-2 md:translate-x-0"
                           >
                             <div className="text-xs text-gray-600 font-medium whitespace-nowrap">{t.yourBalance}</div>
                             <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
