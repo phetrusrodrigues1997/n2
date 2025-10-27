@@ -1292,7 +1292,7 @@ export const translations: Record<Language, Translations> = {
     howItWorks: 'Como funciona',
     yourBalance: 'Seu Saldo',
     signIn: 'Entrar',
-    signUp: 'Registrar',
+    signUp: 'Cadastrar',
 
     // Notifications
     notifications: 'Notificações',
