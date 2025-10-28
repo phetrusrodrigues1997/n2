@@ -40,50 +40,53 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gray-900 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      {/* Subtle background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-50"></div>
+
+      {/* Animated subtle accent */}
+      <div className="absolute inset-0 opacity-[0.02]">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse" style={{ backgroundColor: '#010062' }}></div>
       </div>
-      
+
       <div className="max-w-md mx-auto text-center relative z-10 px-6 mb-32 md:mb-20">
-        <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-3xl p-12">
+        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl p-12 shadow-sm">
           {/* Ghostie Logo */}
           <div className="flex justify-center mb-6">
-            {/* <img 
-              src="/ghostienobg.png" 
-              alt="Prediwin Logo" 
+            {/* <img
+              src="/ghostienobg.png"
+              alt="Prediwin Logo"
               className="w-20 h-20 md:w-24 md:h-24 opacity-90"
             /> */}
           </div>
-          
+
           {/* Title */}
-          <h1 className="text-3xl font-black text-purple-600 mb-4 tracking-tight">{title}</h1>
-          <p className="text-gray-600 text-base mb-8">{subtitle}</p>
-          
+          <h1 className="text-3xl font-bold mb-4 tracking-tight" style={{ color: '#010062' }}>{title}</h1>
+          <p className="text-gray-500 text-sm mb-8">{subtitle}</p>
+
           {showProgress ? (
             <>
               {/* Progress Bar */}
-              <div className="w-full bg-gray-200 rounded-full h-3 mb-4 overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full transition-all duration-300 ease-out relative"
-                  style={{ width: `${loadingProgress}%` }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-purple-600 animate-pulse"></div>
-                </div>
+              <div className="w-full bg-gray-100 rounded-full h-1.5 mb-4 overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  style={{
+                    width: `${loadingProgress}%`,
+                    backgroundColor: '#010062'
+                  }}
+                ></div>
               </div>
-              
+
               {/* Progress Text */}
-              <div className="text-gray-500 text-sm font-medium">
+              <div className="text-gray-400 text-xs font-medium">
                 {loadingProgress}%
               </div>
             </>
           ) : (
-            /* Bouncing red dots for non-progress loading */
-            <div className="flex justify-center gap-2">
-              <div className="w-3 h-3 bg-purple-600 rounded-full animate-bounce"></div>
-              <div className="w-3 h-3 bg-purple-600 rounded-full animate-bounce delay-100"></div>
-              <div className="w-3 h-3 bg-purple-600 rounded-full animate-bounce delay-200"></div>
+            /* Loading dots */
+            <div className="flex justify-center gap-1.5">
+              <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#010062', animationDelay: '0ms', animationDuration: '1.4s' }}></div>
+              <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#010062', animationDelay: '200ms', animationDuration: '1.4s' }}></div>
+              <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#010062', animationDelay: '400ms', animationDuration: '1.4s' }}></div>
             </div>
           )}
         </div>

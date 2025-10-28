@@ -36,8 +36,11 @@ export default function LoadingScreenAdvanced({
   }, []);
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="text-center">
+    <div className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden">
+      {/* Subtle background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-50"></div>
+
+      <div className="text-center relative z-10">
         {/* Logo with Circular Loading Animation */}
         <div className="flex justify-center relative">
           {/* Circular loading ring */}
@@ -48,8 +51,8 @@ export default function LoadingScreenAdvanced({
                 cx="64"
                 cy="64"
                 r="56"
-                stroke="#e5e7eb"
-                strokeWidth="4"
+                stroke="#f3f4f6"
+                strokeWidth="3"
                 fill="none"
               />
               {/* Progress circle */}
@@ -57,37 +60,42 @@ export default function LoadingScreenAdvanced({
                 cx="64"
                 cy="64"
                 r="56"
-                stroke="#dc2626"
-                strokeWidth="4"
+                stroke="#010062"
+                strokeWidth="3"
                 fill="none"
                 strokeLinecap="round"
                 strokeDasharray={`${2 * Math.PI * 56}`}
                 strokeDashoffset={`${2 * Math.PI * 56 * (1 - loadingProgress / 100)}`}
-                className="transition-all duration-300 ease-out"
+                className="transition-all duration-500 ease-out"
               />
               {/* Animated rotating circle on top */}
               <circle
                 cx="64"
                 cy="64"
                 r="56"
-                stroke="#b91c1c"
-                strokeWidth="2"
+                stroke="#010062"
+                strokeWidth="1.5"
                 fill="none"
                 strokeLinecap="round"
-                strokeDasharray="20 200"
-                className="animate-spin"
-                style={{ transformOrigin: '64px 64px' }}
+                strokeDasharray="15 200"
+                className="animate-spin opacity-60"
+                style={{ transformOrigin: '64px 64px', animationDuration: '2s' }}
               />
             </svg>
 
             {/* Logo in center */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <h1 className="text-4xl font-black text-[#010065] tracking-tight">
+              <h1 className="text-4xl font-bold tracking-tight" style={{ color: '#010062' }}>
                 {title}
               </h1>
             </div>
           </div>
         </div>
+
+        {/* Subtitle */}
+        {subtitle && (
+          <p className="mt-6 text-gray-500 text-sm">{subtitle}</p>
+        )}
       </div>
     </div>
   );

@@ -536,6 +536,35 @@ export interface Translations {
   modalSlideToJoin: string;
   modalOrClickHere: string;
   modalOrTapHere: string;
+
+  // PotInfoPage
+  potInfoQuestionOfWeek: string;
+  potInfoQuestionOfDay: string;
+  potInfoNextQuestion: string;
+  potInfoReenterTournament: string;
+  potInfoWaitForNextQuestion: string;
+  potInfoMakePrediction: string;
+  potInfoTournamentDetails: string;
+  potInfoReEntry: string;
+  potInfoPrize: string;
+  potInfoFormat: string;
+  potInfoTopic: string;
+  potInfoYourProgress: string;
+  potInfoJoin: string;
+  potInfoPredict: string;
+  potInfoWait: string;
+  potInfoLast5: string;
+  potInfoReenter: string;
+  potInfoWin: string;
+  potInfoEliminated: string;
+  potInfoSignInToJoin: string;
+  potInfoLoading: string;
+  potInfoStartingSoon: string;
+  potInfoWaitingForMorePlayers: string;
+  potInfoPlayersRemaining: string;
+  potInfoTournamentStatus: string;
+  potInfoWeekly: string;
+  potInfoDaily: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -1081,6 +1110,35 @@ export const translations: Record<Language, Translations> = {
     modalOrClickHere: 'or just click here',
     modalOrTapHere: 'or just tap here',
 
+    // PotInfoPage
+    potInfoQuestionOfWeek: 'Question of the Week',
+    potInfoQuestionOfDay: 'Question of the Day',
+    potInfoNextQuestion: 'Next question',
+    potInfoReenterTournament: 'Re-enter Tournament',
+    potInfoWaitForNextQuestion: 'Wait for Next Question',
+    potInfoMakePrediction: 'Make Prediction',
+    potInfoTournamentDetails: 'Tournament Details',
+    potInfoReEntry: 'Re-Entry',
+    potInfoPrize: 'Prize',
+    potInfoFormat: 'Format',
+    potInfoTopic: 'Topic',
+    potInfoYourProgress: 'Your Progress',
+    potInfoJoin: 'Join',
+    potInfoPredict: 'Predict',
+    potInfoWait: 'Wait',
+    potInfoLast5: 'Last 5',
+    potInfoReenter: 'Re-enter',
+    potInfoWin: 'Win',
+    potInfoEliminated: 'Eliminated',
+    potInfoSignInToJoin: 'Sign in to join',
+    potInfoLoading: 'Loading...',
+    potInfoStartingSoon: 'Starting soon',
+    potInfoWaitingForMorePlayers: 'Waiting for more players',
+    potInfoPlayersRemaining: 'players remaining',
+    potInfoTournamentStatus: 'Tournament Status',
+    potInfoWeekly: 'Weekly',
+    potInfoDaily: 'Daily',
+
   },
   'pt-BR': {
     // Hero Section
@@ -1622,6 +1680,35 @@ export const translations: Record<Language, Translations> = {
     modalSlideToJoin: 'Entrar',
     modalOrClickHere: 'ou apenas clique aqui',
     modalOrTapHere: 'ou apenas toque aqui',
+
+    // PotInfoPage
+    potInfoQuestionOfWeek: 'Questão da Semana',
+    potInfoQuestionOfDay: 'Questão do Dia',
+    potInfoNextQuestion: 'Próxima questão',
+    potInfoReenterTournament: 'Reentrar no Torneio',
+    potInfoWaitForNextQuestion: 'Aguarde a Próxima Questão',
+    potInfoMakePrediction: 'Fazer Previsão',
+    potInfoTournamentDetails: 'Detalhes do Torneio',
+    potInfoReEntry: 'Reentrada',
+    potInfoPrize: 'Prêmio',
+    potInfoFormat: 'Formato',
+    potInfoTopic: 'Tópico',
+    potInfoYourProgress: 'Seu Progresso',
+    potInfoJoin: 'Participar',
+    potInfoPredict: 'Prever',
+    potInfoWait: 'Aguardar',
+    potInfoLast5: 'Últimos 5',
+    potInfoReenter: 'Reentrar',
+    potInfoWin: 'Vencer',
+    potInfoEliminated: 'Eliminado',
+    potInfoSignInToJoin: 'Entre para participar',
+    potInfoLoading: 'Carregando...',
+    potInfoStartingSoon: 'Começando em breve',
+    potInfoWaitingForMorePlayers: 'Aguardando mais jogadores',
+    potInfoPlayersRemaining: 'jogadores restantes',
+    potInfoTournamentStatus: 'Status do Torneio',
+    potInfoWeekly: 'Semanal',
+    potInfoDaily: 'Diário',
 
   },
 };

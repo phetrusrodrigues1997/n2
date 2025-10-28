@@ -282,26 +282,26 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
   // Helper function to get simplified player message
   const getPlayerMessage = () => {
-    if (isLoading) return 'Loading...';
+    if (isLoading) return t.potInfoLoading;
 
-    if (userEliminated) return 'Eliminated';
+    if (userEliminated) return t.potInfoEliminated;
 
-    if (!isConnected) return 'Sign in to join';
+    if (!isConnected) return t.potInfoSignInToJoin;
 
-    
-      
-    
+
+
+
 
     if (potInfo.hasStarted) {
       if (questionCountLoading) {
-        return 'Loading...';
+        return t.potInfoLoading;
       }
-      return `${current} players remaining`;
+      return `${current} ${t.potInfoPlayersRemaining}`;
     } else {
       if (hasEnoughPlayers) {
-        return `Starting soon`;
+        return t.potInfoStartingSoon;
       }
-      return `Waiting for more players`;
+      return t.potInfoWaitingForMorePlayers;
     }
   };
 
@@ -606,15 +606,15 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-xs font-medium text-gray-500 tracking-wide uppercase">
                     {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
-                      ? 'Question of the Week'
-                      : 'Question of the Day'
+                      ? t.potInfoQuestionOfWeek
+                      : t.potInfoQuestionOfDay
                     }
                   </div>
                   {/* Timer positioned at top right of question section */}
                   {currentTimer && (
                     <div className="flex flex-col items-center bg-gray-100 text-gray-600 text-[10px] md:text-xs px-3 py-2 rounded-full font-medium">
   {/* <Clock className="w-3 h-3 text-gray-500" /> */}
-  <span className="text-[10px] md:text-xs text-gray-600">Next question</span>
+  <span className="text-[10px] md:text-xs text-gray-600">{t.potInfoNextQuestion}</span>
   <span className="font-medium text-gray-900 text-[10px] md:text-xs">
     {currentTimer}
   </span>
@@ -636,22 +636,22 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   className="w-full bg-gradient-to-br from-[#010065] to-[#010065] text-white font-semibold rounded-xl py-3.5 text-base transition-all duration-150 disabled:bg-red-300 disabled:cursor-not-allowed disabled:text-gray-500 disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
                 >
                   {!isConnected ? (
-                    'Join Tournament'
+                    t.joinTournament
                   ) : isParticipant && userEliminated ? (
-                    `Re-enter Tournament - $${entryFee?.toFixed(2) || '0.00'}`
+                    `${t.potInfoReenterTournament} - $${entryFee?.toFixed(2) || '0.00'}`
                   ) : isParticipant ? (
-                    userEliminated ? 'Eliminated' : hasUserPredictedToday ? (
+                    userEliminated ? t.potInfoEliminated : hasUserPredictedToday ? (
                       <>
-                        Wait for Next Question
+                        {t.potInfoWaitForNextQuestion}
                         <span className="waiting-dots">
                           <span>.</span>
                           <span>.</span>
                           <span>.</span>
                         </span>
                       </>
-                    ) : 'Make Prediction'
+                    ) : t.potInfoMakePrediction
                   ) : (
-                    'Join Tournament'
+                    t.joinTournament
                   )}
                 </button>
               </div>
@@ -661,7 +661,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             <div className="hidden lg:flex lg:flex-col bg-white border border-gray-200 rounded-xl p-6">
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Details</h3>
+                  <h3 className="text-xs font-medium text-gray-500 tracking-wide uppercase">{t.potInfoTournamentDetails}</h3>
                   {/* Tournament status message positioned at top right */}
                   <div className="flex items-center gap-2 bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
                     <span className="text-[10px] md:text-xs text-gray-600">{getPlayerMessage()}</span>
@@ -677,26 +677,26 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
               <div className="grid grid-cols-2 gap-6 mt-auto">
                 <div>
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">{isParticipant ? 'Re-Entry' : 'Entry Fee'}</h4>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">{isParticipant ? t.potInfoReEntry : t.modalEntryFee}</h4>
                   <p className="text-lg font-normal text-gray-900">${entryFee?.toFixed(2) || '0.00'}</p>
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">Prize</h4>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">{t.potInfoPrize}</h4>
                   <p className="text-lg font-normal text-gray-900">
                     {market ? getRealPotBalance(market.id) : '$0'}
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">Format</h4>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">{t.potInfoFormat}</h4>
                   <p className="text-lg font-normal text-gray-900">
-                    {isPenaltyExempt ? 'Weekly' : 'Daily'}
+                    {isPenaltyExempt ? t.potInfoWeekly : t.potInfoDaily}
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">Topic</h4>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">{t.potInfoTopic}</h4>
                   <p className="text-lg font-normal text-gray-900">{market?.potTopic || 'General'}</p>
                 </div>
               </div>
@@ -706,7 +706,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           {/* Tournament Journey Flow - Full Width */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 relative">
             <div className="mb-3">
-              <div className="text-xs font-medium text-gray-500 tracking-wide uppercase">Your Progress</div>
+              <div className="text-xs font-medium text-gray-500 tracking-wide uppercase">{t.potInfoYourProgress}</div>
             </div>
 
             <div className="relative flex items-center justify-between px-2 md:px-4 py-6">
@@ -723,7 +723,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 }`}>
                   {!isParticipant ? '1' : '✓'}
                 </div>
-                <div className="text-xs font-medium text-gray-700 text-center">Join</div>
+                <div className="text-xs font-medium text-gray-700 text-center">{t.potInfoJoin}</div>
               </div>
 
               {/* Step 2: Predict */}
@@ -737,7 +737,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 }`}>
                   {isParticipant && !userEliminated && hasUserPredictedToday === true ? '✓' : '2'}
                 </div>
-                <div className="text-xs font-medium text-gray-700 text-center">Predict</div>
+                <div className="text-xs font-medium text-gray-700 text-center">{t.potInfoPredict}</div>
               </div>
 
               {/* Step 3: Wait */}
@@ -749,7 +749,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 }`}>
                   {isParticipant && !userEliminated && hasUserPredictedToday === true ? '✓' : '3'}
                 </div>
-                <div className="text-xs font-medium text-gray-700 text-center">Wait</div>
+                <div className="text-xs font-medium text-gray-700 text-center">{t.potInfoWait}</div>
               </div>
 
               {/* Step 4: Last 5 */}
@@ -764,7 +764,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   {userEliminated ? '!' : '4'}
                 </div>
                 <div className="text-xs font-medium text-gray-700 text-center leading-tight">
-                  {userEliminated ? 'Re-enter' : 'Last 5'}
+                  {userEliminated ? t.potInfoReenter : t.potInfoLast5}
                 </div>
               </div>
 
@@ -773,7 +773,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                 <div className="w-8 h-8 md:w-10 md:h-10 bg-gray-200 rounded-full flex items-center justify-center text-xs font-medium text-gray-500 mb-3 transition-all duration-200">
                   5
                 </div>
-                <div className="text-xs font-medium text-gray-700 text-center">Win</div>
+                <div className="text-xs font-medium text-gray-700 text-center">{t.potInfoWin}</div>
               </div>
 
               {/* Clean Connecting Lines */}
@@ -812,14 +812,14 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           <div className="lg:hidden bg-white border border-gray-200 rounded-xl p-4 mb-6">
             <div className="mb-6">
               <div className="flex items-center justify-between mb-1">
-                <h3 className="text-xs font-medium text-gray-500 tracking-wide uppercase">Tournament Status</h3>
+                <h3 className="text-xs font-medium text-gray-500 tracking-wide uppercase">{t.potInfoTournamentStatus}</h3>
                 {/* Tournament status message positioned at top right */}
                 <div className="flex items-center gap-2 bg-gray-100 text-gray-600 text-[10px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-medium">
                   <span className="text-[10px] md:text-xs text-gray-600">{getPlayerMessage()}</span>
                 </div>
               </div>
               <p className="text-sm text-gray-500 mt-1">{new Date().toLocaleDateString('en-US', {
-                
+
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
@@ -828,26 +828,26 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
 
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-2">{isParticipant ? 'Re-Entry' : 'Entry Fee'}</h4>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">{isParticipant ? t.potInfoReEntry : t.modalEntryFee}</h4>
                 <p className="text-lg font-normal text-gray-900">${entryFee?.toFixed(2) || '0.00'}</p>
               </div>
 
               <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-2">Prize</h4>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">{t.potInfoPrize}</h4>
                 <p className="text-lg font-normal text-gray-900">
                   {market ? getRealPotBalance(market.id) : '$0'}
                 </p>
               </div>
 
               <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-2">Format</h4>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">{t.potInfoFormat}</h4>
                 <p className="text-lg font-normal text-gray-900">
-                  {isPenaltyExempt ? 'Weekly' : 'Daily'}
+                  {isPenaltyExempt ? t.potInfoWeekly : t.potInfoDaily}
                 </p>
               </div>
 
               <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-2">Topic</h4>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">{t.potInfoTopic}</h4>
                 <p className="text-lg font-normal text-gray-900">{market?.potTopic || 'General'}</p>
               </div>
             </div>
