@@ -617,7 +617,7 @@ export const translations: Record<Language, Translations> = {
     tutorialStep1Title: 'Weekly Prediction Markets',
     tutorialStep1Description: 'Survive the week by making correct predictions across crypto, stocks, sports and more. Entry fees increase daily (Sun $0.01 → Fri $0.06).',
     tutorialStep2Title: 'What are the prizes?',
-    tutorialStep2Description: 'Each tournament has its own tournament that grows every time a player enters or re-enters the tournament. The more players, the bigger the rewards for the winners!',
+    tutorialStep2Description: 'Each tournament has its own pot that grows every time a player enters or re-enters the tournament. The more players, the bigger the rewards for the winners!',
     tutorialStep3Title: 'Get Your Tokens & Enter the Pot',
     tutorialStep3Description: 'You need USDC (for tournament entries) and ETH (for gas fees ~$0.01). Buy them on our Buy page or receive from any wallet. Then pay the daily entry fee to join any prediction market. Sundays are cheapest at $0.01 USDC!',
     tutorialStep4Title: 'Daily Predictions (Sunday-Friday)',
