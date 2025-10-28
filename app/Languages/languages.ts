@@ -1164,7 +1164,7 @@ export const translations: Record<Language, Translations> = {
     teslaQuestion: 'Ação da Tesla fechará em alta em relação ao preço de abertura',
     nvidiaQuestion: 'A ação da NVIDIA terminará o dia em alta?',
     sp500Question: 'O S&P 500 terminará o dia em alta?',
-    formula1Question: 'Lewis hamilton terminará entre os três primeiros',
+    formula1Question: 'Lewis hamilton termina entre os três primeiros',
 
     // tournament Topics
     generalKnowledgeTopic: 'Tudo',
@@ -1960,7 +1960,7 @@ export const translateMarketQuestion = (questionText: string, language: Language
     // Handle case where questions might already be in Portuguese
     'A ação da Tesla terminará o dia em alta?': 'A ação da Tesla terminará o dia em alta?',
     'Bitcoin fechará em alta em relação ao preço de abertura': 'Bitcoin fechará em alta em relação ao preço de abertura',
-    'Lewis hamilton terminará entre os três primeiros': 'Lewis hamilton terminará entre os três primeiros',
+    'Lewis hamilton termina entre os três primeiros': 'Lewis hamilton termina entre os três primeiros',
   };
   
   // Debug logging (can be removed in production)
