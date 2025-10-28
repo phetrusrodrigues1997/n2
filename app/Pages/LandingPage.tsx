@@ -1641,7 +1641,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   {(() => {
                                     const wrapLimit = market.useTraditionalLayout ? 26 : 37;
                                     // Mobile truncate limits - cut text earlier on mobile
-                                    const truncateLimit = market.useTraditionalLayout ? 45 : 65;
+                                    const truncateLimit =  20;
 
                                     let text = getTranslatedMarketQuestion(market, currentLanguage);
 
@@ -2284,9 +2284,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   }}>
                                     {(() => {
                                       // Mobile vs Desktop character limits
-                                      const charLimit = market.useTraditionalLayout
-                                        ? (isMobile ? 20 : 35)  // Traditional: 25 mobile, 30 desktop
-                                        : (isMobile ? 35 : 45); // Non-traditional: 35 mobile, 45 desktop
+                                      const charLimit = 34
                                       return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
                                     })()}
                                   </p>
