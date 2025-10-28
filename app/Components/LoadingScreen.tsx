@@ -41,7 +41,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
   return (
     <div className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden">
       {/* Subtle background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-50"></div>
+      <div className="absolute inset-0 bg-white"></div>
 
       {/* Animated subtle accent */}
       <div className="absolute inset-0 opacity-[0.02]">
@@ -49,7 +49,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
       </div>
 
       <div className="max-w-md mx-auto text-center relative z-10 px-6 mb-32 md:mb-20">
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl p-12 shadow-sm">
+        <div className="bg-white backdrop-blur-sm border border-gray-100 rounded-2xl p-12 shadow-sm">
           {/* Ghostie Logo */}
           <div className="flex justify-center mb-6">
             {/* <img
@@ -66,7 +66,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
           {showProgress ? (
             <>
               {/* Progress Bar */}
-              <div className="w-full bg-gray-100 rounded-full h-1.5 mb-4 overflow-hidden">
+              <div className="w-full bg-white rounded-full h-1.5 mb-4 overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-500 ease-out"
                   style={{

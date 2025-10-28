@@ -38,7 +38,7 @@ export default function LoadingScreenAdvanced({
   return (
     <div className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden">
       {/* Subtle background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-50"></div>
+      <div className="absolute inset-0 bg-white to-gray-50"></div>
 
       <div className="text-center relative z-10">
         {/* Logo with Circular Loading Animation */}
