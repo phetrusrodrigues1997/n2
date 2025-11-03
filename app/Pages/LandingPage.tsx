@@ -439,22 +439,23 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
       content: t.globalCompetitionDesc || "Join thousands of users worldwide in predicting market movements. Every prediction counts towards building a global community of forecasters.",
     },
     {
-      title: t.tutorialStep2Title || "Growing Tournament Pots",
-      content: t.tutorialStep2Description || "Each tournament has its own pot that grows every time a player enters or re-enters. The more players, the bigger the rewards!",
-    },
-    {
-      title: t.dynamicPricing || "Entry Fees Grow the Pots",
-      content: (
-        <div className="hidden">
-
-          <span style={{color: '#6B7280', fontWeight: 'bold', opacity: 0.7}}>{t.entryFeeExample}</span> → <span style={{color: '#039905', fontWeight: 'bold'}}>{t.potBalanceExample}</span> {t.meansYouPay} {t.entryFeeExample} {t.canWin} {t.potBalanceExample} {t.canWinPotBalance}.
-        </div>
-      ),
-    },
-    {
       title: t.dailyPredictions || "Daily Predictions",
       content: t.dailyPredictionsDesc || "Make your prediction each day before midnight. Will Bitcoin go up or down tomorrow? Simple yes/no predictions with real rewards.",
     },
+    {
+      title: t.tutorialStep2Title || "Growing Tournament Pots",
+      content: t.tutorialStep2Description || "Each tournament has its own pot that grows every time a player enters or re-enters. The more players, the bigger the rewards!",
+    },
+    // {
+    //   title: t.dynamicPricing || "Entry Fees Grow the Pots",
+    //   content: (
+    //     <div className="hidden">
+
+    //       <span style={{color: '#6B7280', fontWeight: 'bold', opacity: 0.7}}>{t.entryFeeExample}</span> → <span style={{color: '#039905', fontWeight: 'bold'}}>{t.potBalanceExample}</span> {t.meansYouPay} {t.entryFeeExample} {t.canWin} {t.potBalanceExample} {t.canWinPotBalance}.
+    //     </div>
+    //   ),
+    // },
+    
     {
       title: t.tutorialStep5Title || "Weekly Predictions",
       content: t.tutorialStep5Description || "Some tournaments happen weekly, and begin one week before the first day of the event. Examples include Formula 1 races, NBA playoffs, and World Cup matches.",
@@ -1502,7 +1503,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 // Pre-calculate layout data for performance optimization
                 const marketsWithLayoutData = displayedMarkets.map((market: Market, index: number) => {
                   const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                  const useTraditionalLayout = getRandomFromMarketId(market.id) < 0.18;
+                  const useTraditionalLayout = index >= 8 && getRandomFromMarketId(market.id) < 0.23;
                   return { ...market, marketIndex, useTraditionalLayout };
                 });
 
@@ -1907,7 +1908,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         {bookmarkLoading === market.id ? (
                                           <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
                                         ) : bookmarkedMarkets.has(market.id) ? (
-                                          <Bookmark className="w-4 h-4 transition-all duration-200 text-red-500 fill-red-700" />
+                                          <Bookmark className="w-4 h-4 transition-all duration-200 text-[#010062] fill-blue-[#010062]" />
                                         ) : (
                                           <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
@@ -1984,7 +1985,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                         <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
                                       ) : bookmarkedMarkets.has(market.id) ? (
                                         <Bookmark
-                                          className="w-4 h-4 transition-all duration-200 text-red-500 fill-red-700"
+                                          className="w-4 h-4 transition-all duration-200 text-[#010062] fill-[#010062]"
                                         />
                                       ) : (
                                         <svg className="w-4 h-4 text-[#0a1628]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2154,7 +2155,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 // Pre-calculate layout data for performance optimization
                 const marketsWithLayoutData = displayedMarkets.map((market: Market, index: number) => {
                   const marketIndex = marketOptions.findIndex(m => m.id === market.id);
-                  const useTraditionalLayout =  getRandomFromMarketId(market.id) < 0.18;
+                  const useTraditionalLayout = index >= 8 && getRandomFromMarketId(market.id) < 0.23;
                   return { ...market, marketIndex, useTraditionalLayout };
                 });
 
@@ -2490,7 +2491,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                       {bookmarkLoading === market.id ? (
                                         <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
                                       ) : bookmarkedMarkets.has(market.id) ? (
-                                        <Bookmark className="w-4 h-4 transition-all duration-200 text-red-500 fill-red-700" />
+                                        <Bookmark className="w-4 h-4 transition-all duration-200 text-[#010062] fill-[#010062]" />
                                       ) : (
                                         <svg className="w-4 h-4 text-[#0a1628]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                           <circle cx="12" cy="12" r="11" strokeWidth={1.5} />
@@ -2564,7 +2565,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                 <div className="w-4 h-4 animate-spin rounded-full border-2 border-green-700 border-t-transparent"></div>
                               ) : bookmarkedMarkets.has(market.id) ? (
                                 <Bookmark
-                                  className="w-4 h-4 transition-all duration-200 text-red-500 fill-red-700"
+                                  className="w-4 h-4 transition-all duration-200 text-[#010062] fill-[#010062]"
                                 />
                               ) : (
                                 <svg className="w-4 h-4 text-[#0a1628]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2594,7 +2595,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                 <>
                   {isLoadingMore && (
                     <div className="flex justify-center items-center py-12">
-                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-700"></div>
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#010065]"></div>
                       <span className="ml-4 text-gray-600 text-lg">Loading more pots...</span>
                     </div>
                   )}
@@ -2619,7 +2620,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         
 
-        <footer className="relative z-10 py-10 bg-white text-center text-green-500 text-sm shadow-md">
+        <footer className="relative z-10 py-10 bg-white text-center text-[#010065] text-sm shadow-md">
           <div className="">
             &copy; {new Date().getFullYear()} {t.footerText}
           </div>

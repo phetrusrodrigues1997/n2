@@ -37,6 +37,7 @@ interface JoinPotModalProps {
   entryFee: number;
   currentLanguage?: Language;
   onSuccess?: () => void;
+  setActiveSection?: (section: string) => void;
 }
 
 const JoinPotModal: React.FC<JoinPotModalProps> = ({
@@ -48,7 +49,8 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   potBalance,
   entryFee,
   currentLanguage = 'en',
-  onSuccess
+  onSuccess,
+  setActiveSection
 }) => {
   const { address, isConnected } = useAccount();
   const t = getTranslation(currentLanguage);
@@ -440,8 +442,13 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
           {/* Join Tournament Button - Same style as PotInfoPage */}
           <div className="mt-2">
             <button
-              onClick={handleEnterPot}
-              disabled={isActuallyLoading || hasInsufficientBalance || !isConnected}
+              onClick={hasInsufficientBalance ? () => {
+                if (setActiveSection) {
+                  setActiveSection('receive');
+                  onClose();
+                }
+              } : handleEnterPot}
+              disabled={isActuallyLoading || (!hasInsufficientBalance && !isConnected)}
               className="w-full bg-gradient-to-br from-[#010065] to-[#010065] text-white font-semibold rounded-xl py-3.5 text-base transition-all duration-150 disabled:bg-red-300 disabled:cursor-not-allowed disabled:shadow-none relative hover:translate-y-[2px] hover:shadow-[0_4px_0_0_rgb(0,0,50)] active:translate-y-[6px] active:shadow-none shadow-[0_6px_0_0_rgb(0,0,50),0_8px_12px_-2px_rgba(0,0,0,0.2)]"
             >
               {isActuallyLoading ? (
@@ -451,6 +458,8 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
                 </div>
               ) : !isConnected ? (
                 t.modalConnectWalletFirst
+              ) : hasInsufficientBalance ? (
+                t.depositButton || 'Deposit'
               ) : (
                 t.modalSlideToJoin || 'Join Tournament'
               )}

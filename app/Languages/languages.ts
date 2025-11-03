@@ -718,7 +718,7 @@ export const translations: Record<Language, Translations> = {
     saveAmount: 'SAVE',
     usingDiscount: 'Using Discount...',
     payToEnter: 'Pay to Enter',
-    joinTournament: 'Join Tournament',
+    joinTournament: 'Enter',
     joinPredictionsTournament: 'Join Predictions Tournament',
     referralCodeShort: 'Referral Code (Optional)',
     enterCode: 'Enter code...',
@@ -1292,7 +1292,7 @@ export const translations: Record<Language, Translations> = {
     saveAmount: 'ECONOMIZE',
     usingDiscount: 'Usando Desconto...',
     payToEnter: 'Pagar para Entrar',
-    joinTournament: 'Participe do Torneio',
+    joinTournament: 'Entrar',
     joinPredictionsTournament: 'Participe do Torneio de Previsões',
     referralCodeShort: 'Código de Referência (Opcional)',
     enterCode: 'Digite o código...',
@@ -1668,7 +1668,7 @@ export const translations: Record<Language, Translations> = {
     // Join Pot Modal
     modalReadyToPlay: 'Pronto para Jogar?',
     modalQuestionOfWeek: 'Questão da Semana',
-    modalQuestionOfDay: 'Questão do Dia',
+    modalQuestionOfDay: 'Pergunta do Dia',
     modalEntryFee: 'Taxa de Entrada',
     modalPrizePool: 'Prêmio Total',
     modalInsufficientETH: 'Saldo de ETH insuficiente. Você precisa de pelo menos',
@@ -1682,8 +1682,8 @@ export const translations: Record<Language, Translations> = {
     modalOrTapHere: 'ou apenas toque aqui',
 
     // PotInfoPage
-    potInfoQuestionOfWeek: 'Questão da Semana',
-    potInfoQuestionOfDay: 'Questão do Dia',
+    potInfoQuestionOfWeek: 'Pergunta da Semana',
+    potInfoQuestionOfDay: 'Pergunta do Dia',
     potInfoNextQuestion: 'Próxima questão',
     potInfoReenterTournament: 'Reentrar no Torneio',
     potInfoWaitForNextQuestion: 'Aguarde a Próxima Questão',

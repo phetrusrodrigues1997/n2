@@ -867,6 +867,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
           potBalance={market ? getRealPotBalance(market.id) : '$0.00'}
           entryFee={entryFee}
           currentLanguage={currentLanguage}
+          setActiveSection={setActiveSection}
           onSuccess={() => {
             // Redirect to MakePredictionsPage after successful entry
             if (setActiveSection) {
