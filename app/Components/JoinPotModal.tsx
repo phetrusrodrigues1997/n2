@@ -60,7 +60,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
   const [referralCode, setReferralCode] = useState('');
   const [isReferralDropdownOpen, setIsReferralDropdownOpen] = useState(false);
   const [ethPrice, setEthPrice] = useState<number | null>(null);
-  const [showImageIntro, setShowImageIntro] = useState(true);
+  // const [showImageIntro, setShowImageIntro] = useState(true); // Commented out - may reintroduce later
   const [showSuccessScreen, setShowSuccessScreen] = useState(false);
   const [showSuccessTick, setShowSuccessTick] = useState(false);
   const [hasRecordedEntry, setHasRecordedEntry] = useState(false);
@@ -99,27 +99,27 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
     fetchEthPrice();
   }, []);
 
-  // Handle image intro animation
-  useEffect(() => {
-    if (isOpen) {
-      console.log('[JoinPotModal] Modal opened:', {
-        contractAddress,
-        marketQuestion,
-        entryFeeUSD: entryFee,
-        potBalance,
-        isPenaltyExempt: PENALTY_EXEMPT_CONTRACTS.includes(contractAddress),
-        walletAddress: address,
-        isConnected,
-        timestamp: new Date().toISOString()
-      });
+  // Handle image intro animation - Commented out - may reintroduce later
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     console.log('[JoinPotModal] Modal opened:', {
+  //       contractAddress,
+  //       marketQuestion,
+  //       entryFeeUSD: entryFee,
+  //       potBalance,
+  //       isPenaltyExempt: PENALTY_EXEMPT_CONTRACTS.includes(contractAddress),
+  //       walletAddress: address,
+  //       isConnected,
+  //       timestamp: new Date().toISOString()
+  //     });
 
-      setShowImageIntro(true);
-      const timer = setTimeout(() => {
-        setShowImageIntro(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen, contractAddress, marketQuestion, entryFee, potBalance, address, isConnected]);
+  //     setShowImageIntro(true);
+  //     const timer = setTimeout(() => {
+  //       setShowImageIntro(false);
+  //     }, 2000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [isOpen, contractAddress, marketQuestion, entryFee, potBalance, address, isConnected]);
 
   // Calculate entry amount in ETH (convert USD to wei)
   const ethToUsd = (ethAmount: bigint): number => {
@@ -305,8 +305,8 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
           </button>
         </div>
 
-        {/* Image Intro Animation */}
-        {showImageIntro && (
+        {/* Image Intro Animation - Commented out - may reintroduce later */}
+        {/* {showImageIntro && (
           <div className="absolute inset-x-0 top-[60px] md:top-[73px] bottom-0 bg-white z-10 animate-fade-in overflow-hidden">
             <img
               src={marketIcon}
@@ -314,7 +314,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
               className="w-full h-full object-cover"
             />
           </div>
-        )}
+        )} */}
 
         {/* Success Screen */}
         {showSuccessScreen && (
@@ -350,7 +350,7 @@ const JoinPotModal: React.FC<JoinPotModalProps> = ({
 
         {/* Content */}
         <div className={`md:flex-initial md:overflow-visible transition-all duration-500 ${
-          showImageIntro || showSuccessScreen ? 'opacity-0 p-0' : 'opacity-100 p-5 md:p-6'
+          showSuccessScreen ? 'opacity-0 p-0' : 'opacity-100 p-5 md:p-6'
         }`}>
           {/* Market Info */}
           <div className="mb-6">

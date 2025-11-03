@@ -2285,7 +2285,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                                   }}>
                                     {(() => {
                                       // Mobile vs Desktop character limits
-                                      const charLimit = 34 // Non-traditional: 35 mobile, 45 desktop
+                                      const charLimit = (market.useTraditionalLayout ? 34 : (isMobile ? 34 : 46)) // Non-traditional: 35 mobile, 45 desktop
                                       return truncateText(getTranslatedMarketQuestion(market, currentLanguage), charLimit);
                                     })()}
                                   </p>
@@ -2620,7 +2620,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
 
         
 
-        <footer className="relative z-10 py-10 bg-white text-center text-[#010065] text-sm shadow-md">
+        <footer className="relative z-10 py-5 bg-white text-center text-black text-sm shadow-md">
           <div className="">
             &copy; {new Date().getFullYear()} {t.footerText}
           </div>
