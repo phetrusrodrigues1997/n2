@@ -474,7 +474,7 @@ const BookmarksPage = ({ activeSection, setActiveSection, currentLanguage = 'en'
                 <p className="text-gray-500 mb-6">{t.enterPredictionPots}</p>
                 <button
                   onClick={() => setActiveSection('home')}
-                  className="bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+                  className="bg-[#010065] text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
                 >
                   {t.findPotsToEnter}
                 </button>

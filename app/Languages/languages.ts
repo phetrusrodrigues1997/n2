@@ -52,8 +52,7 @@ export interface Translations {
   tutorialStep2Description: string;
   tutorialStep3Title: string;
   tutorialStep3Description: string;
-  tutorialStep4Title: string;
-  tutorialStep4Description: string;
+  
   tutorialStep5Title: string;
   tutorialStep5Description: string;
   tutorialStep6Title: string;
@@ -620,8 +619,6 @@ export const translations: Record<Language, Translations> = {
     tutorialStep2Description: 'Each tournament has its own pot that grows every time a player enters or re-enters the tournament. The more players, the bigger the rewards for the winners!',
     tutorialStep3Title: 'Get Your Tokens & Enter the Pot',
     tutorialStep3Description: 'You need USDC (for tournament entries) and ETH (for gas fees ~$0.01). Buy them on our Buy page or receive from any wallet. Then pay the daily entry fee to join any prediction market. Sundays are cheapest at $0.01 USDC!',
-    tutorialStep4Title: 'Daily Predictions (Sunday-Friday)',
-    tutorialStep4Description: 'Every day, predict tomorrow\'s outcome in your chosen market. Wrong predictions require a re-entry fee to continue playing.',
     tutorialStep5Title: 'Weekly Tournaments',
     tutorialStep5Description: 'Some tournaments have weekly questions. Examples include Formula 1, NBA, and World Cup tournaments.',
     tutorialStep6Title: 'Ready to Start?',
@@ -1192,8 +1189,6 @@ export const translations: Record<Language, Translations> = {
     tutorialStep2Description: 'Cada torneio possui o seu próprio pote que cresce cada vez que um jogador entra ou re-entra no torneio. Quanto mais jogadores, maiores as recompensas para os ganhadores!',
     tutorialStep3Title: 'Obtenha Tokens e Entre no Pote',
     tutorialStep3Description: 'Você precisa de USDC (para entradas) e ETH (para taxas de gás ~$0.01). Compre na nossa página ou receba de qualquer carteira. Depois pague a taxa diária para entrar no mercado de previsão. Domingos custam apenas $0.01 USDC!',
-    tutorialStep4Title: 'Faça Suas Previsões (Ter-Qui)',
-    tutorialStep4Description: 'Previsões abrem de terça a quinta-feira. Preveja se Bitcoin vai subir ou descer no próximo dia. Escolha sabiamente - sua previsão determina seu destino.',
     tutorialStep5Title: 'Torneios Semanais',
     tutorialStep5Description: 'Alguns torneios têm perguntas semanais. Exemplos incluem Fórmula 1, NBA e Copa do Mundo.',
     tutorialStep6Title: 'Pronto para Jogar?',

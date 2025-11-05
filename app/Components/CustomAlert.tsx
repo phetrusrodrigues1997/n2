@@ -37,19 +37,19 @@ export const CustomAlert: React.FC<CustomAlertProps> = ({
     switch (type) {
       case 'success':
         return {
-          bg: 'bg-green-50',
-          border: 'border-green-200',
-          icon: <CheckCircle className="w-6 h-6 text-green-600" />,
-          titleColor: 'text-green-800',
-          messageColor: 'text-green-700'
+          bg: 'bg-[#010065]',
+          border: 'border-[#010065]',
+          icon: <CheckCircle className="w-6 h-6 text-white" />,
+          titleColor: 'text-white',
+          messageColor: 'text-black'
         };
       case 'error':
         return {
-          bg: 'bg-purple-100',
-          border: 'border-purple-200',
-          icon: <AlertCircle className="w-6 h-6 text-purple-700" />,
-          titleColor: 'text-purple-800',
-          messageColor: 'text-purple-700'
+          bg: 'bg-[#010065]',
+          border: 'border-[#010065]',
+          icon: <AlertCircle className="w-6 h-6 text-white" />,
+          titleColor: 'text-white',
+          messageColor: 'text-black'
         };
       case 'warning':
         return {
@@ -113,7 +113,7 @@ export const CustomAlert: React.FC<CustomAlertProps> = ({
         <div className="px-6 py-4 bg-gray-50 flex justify-end">
           <button
             onClick={onClose}
-            className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition-colors font-medium text-sm"
+            className="bg-[#010065] text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition-colors font-medium text-sm"
           >
             OK
           </button>
