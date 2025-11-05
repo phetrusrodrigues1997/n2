@@ -2253,7 +2253,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
                           <div className="flex items-start gap-3 mb-3 relative">
                             {/* Small Square Image */}
                             <div className="flex-shrink-0">
-                              <div className="rounded-lg w-14 h-14 bg-white overflow-hidden relative">
+                              <div className="rounded-lg w-14 h-14 bg-white relative transition-transform duration-300 group-hover:scale-110 overflow-hidden">
                                 {market.icon && (market.icon.slice(0, 1) === '/') ? (
                                   <img
                                     src={market.icon}

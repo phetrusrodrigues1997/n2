@@ -1298,8 +1298,8 @@ export default function MakePredictions({ activeSection, setActiveSection, curre
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">
                       {contractAddress && PENALTY_EXEMPT_CONTRACTS.includes(contractAddress)
-                        ? "This week's question"
-                        : "Today's question"
+                        ? t.potInfoQuestionOfWeek
+                        : t.potInfoQuestionOfDay
                       }
                     </div>
                     {/* Timer positioned at top right */}

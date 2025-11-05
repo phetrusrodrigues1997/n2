@@ -25,6 +25,7 @@ import { getPredictionPercentages, isEliminated, getEliminatedPlayersCount, getT
 
 import Cookies from 'js-cookie';
 import JoinPotModal from '../Components/JoinPotModal';
+import { FaClock } from 'react-icons/fa';
 
 interface PotInfoPageProps {
   currentLanguage?: Language;
@@ -612,15 +613,12 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
                   </div>
                   {/* Timer positioned at top right of question section */}
                   {currentTimer && (
-                    <div className="flex flex-col items-center bg-gray-100 text-gray-600 text-[10px] md:text-xs px-3 py-2 rounded-full font-medium">
-  {/* <Clock className="w-3 h-3 text-gray-500" /> */}
-  <span className="text-[10px] md:text-xs text-gray-600">{t.potInfoNextQuestion}</span>
-  <span className="font-medium text-gray-900 text-[10px] md:text-xs">
-    {currentTimer}
-  </span>
-</div>
-
-
+                    <div className="flex items-center bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-[10px] md:text-xs px-3 py-1.5 rounded-full font-semibold shadow-sm">
+                      <FaClock className="mr-1.5 text-gray-500" />
+                      <span className="text-gray-900">
+                        {currentTimer}
+                      </span>
+                    </div>
                   )}
                 </div>
                 <h1 className="text-xl md:text-2xl font-normal text-gray-900 leading-[1.3] tracking-tight">
@@ -658,7 +656,7 @@ const PotInfoPage: React.FC<PotInfoPageProps> = ({
             </div>
 
             {/* Right Column: Tournament Details - Hidden on mobile, shown on desktop */}
-            <div className="hidden lg:flex lg:flex-col bg-white border border-gray-200 rounded-xl p-6">
+            <div className="hidden lg:flex lg:flex-col bg-white border border-gray-200 rounded-xl p-4">
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-1">
                   <h3 className="text-xs font-medium text-gray-500 tracking-wide uppercase">{t.potInfoTournamentDetails}</h3>
