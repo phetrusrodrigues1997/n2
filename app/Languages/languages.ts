@@ -588,7 +588,7 @@ export const translations: Record<Language, Translations> = {
     bitcoinQuestion: 'Bitcoin closes higher than opening price',
     ethereumQuestion: 'Will Ethereum end the day higher?',
     solanaQuestion: 'Will Solana end the day higher?',
-    teslaQuestion: 'Tesla stock closes higher than opening pricesldflflkdlkfldkflgkdflgkdlfgkldfkglkflgklfg lklgkdfg flgkdlfgkldfkglkflgklfg lklgkdfg',
+    teslaQuestion: 'Tesla stock closes higher than opening prices',
     nvidiaQuestion: 'Will NVIDIA stock end the day higher?',
     sp500Question: 'Will S&P 500 end the day higher?',
     formula1Question: 'Lewis Hamilton finishes on the podium',
