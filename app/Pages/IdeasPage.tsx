@@ -230,7 +230,7 @@ const IdeasPage = ({ activeSection, setActiveSection }: IdeasPageProps) => {
         <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <MessageSquare className="w-6 h-6 text-purple-700 mr-3" />
+              <MessageSquare className="w-6 h-6 text-[#010065] mr-3" />
               <h1 className="text-xl font-bold">Community Ideas</h1>
             </div>
             <button
