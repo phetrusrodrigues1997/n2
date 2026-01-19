@@ -63,16 +63,30 @@ const IdeasPage = ({ activeSection, setActiveSection }: IdeasPageProps) => {
   };
 
   const getUserAvatar = (walletAddress: string) => {
-    const profile = userProfiles.get(walletAddress.toLowerCase());
-    console.log(`👤 Avatar for ${walletAddress}:`, profile);
+    const lowerAddress = walletAddress.toLowerCase();
+    const profile = userProfiles.get(lowerAddress);
     
-    if (profile?.imageUrl) {
+    console.log(`👤 Avatar lookup for ${walletAddress}:`, {
+      lowerAddress,
+      profileFound: !!profile,
+      imageUrl: profile?.imageUrl,
+      profileData: profile
+    });
+    
+    if (profile && profile.imageUrl) {
       console.log(`🖼️ Using profile image: ${profile.imageUrl}`);
       return (
         <img 
           src={profile.imageUrl} 
           alt="Profile" 
           className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
+          onError={(e) => {
+            console.error('❌ Image failed to load:', profile.imageUrl);
+            (e.target as HTMLImageElement).style.display = 'none';
+          }}
+          onLoad={() => {
+            console.log('✅ Image loaded successfully:', profile.imageUrl);
+          }}
         />
       );
     }
@@ -221,7 +235,7 @@ const IdeasPage = ({ activeSection, setActiveSection }: IdeasPageProps) => {
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="bg-purple-700 text-white px-4 py-2 rounded-full font-medium hover:bg-purple-700 transition-all duration-200 hover:scale-105 flex items-center gap-2 shadow-lg"
+              className="bg-black text-white px-4 py-2 rounded-full font-medium hover:bg-purple-700 transition-all duration-200 hover:scale-105 flex items-center gap-2 shadow-lg"
             >
               <Plus className="w-4 h-4" />
               Share Idea
@@ -381,7 +395,7 @@ const IdeasPage = ({ activeSection, setActiveSection }: IdeasPageProps) => {
                   <button
                     type="submit"
                     disabled={isSubmitting || idea.trim().length < 10}
-                    className="w-full bg-purple-700 text-white py-3 px-6 rounded-lg font-medium hover:bg-purple-700 disabled:bg-red-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                    className="w-full bg-black text-white py-3 px-6 rounded-lg font-medium hover:bg-purple-700 disabled:bg-red-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                   >
                     {isSubmitting ? (
                       <>

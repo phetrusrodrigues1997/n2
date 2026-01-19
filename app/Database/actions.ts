@@ -1993,7 +1993,15 @@ export async function getUserProfiles(walletAddresses: string[]) {
       .where(sql`LOWER(${UsersTable.walletAddress}) IN (${sql.join(sanitizedAddresses.map(addr => sql`${addr}`), sql`, `)})`);
 
     console.log('📸 Found profiles:', profiles);
-    return profiles;
+    
+    // Ensure all profiles have imageUrl (even if null) for consistency
+    const normalizedProfiles = profiles.map(profile => ({
+      walletAddress: profile.walletAddress || '',
+      imageUrl: profile.imageUrl || null
+    }));
+    
+    console.log('✅ Normalized profiles:', normalizedProfiles);
+    return normalizedProfiles;
 
   } catch (error) {
     console.error("Error getting user profiles:", error);
