@@ -802,7 +802,7 @@ const LandingPage = ({ activeSection, setActiveSection, isMobileSearchActive = f
         );
         if (result.success) {
           setBookmarkedMarkets(prev => new Set(prev).add(market.id));
-          showAlert('Market bookmarked!', 'success', 'Success');
+          showAlert('Tournament bookmarked!', 'success', 'Success');
         } else {
           showAlert(result.message, 'error', 'Error');
         }

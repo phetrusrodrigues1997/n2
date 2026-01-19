@@ -2039,7 +2039,7 @@ export async function addBookmark(walletAddress: string, marketId: string, marke
     });
 
     console.log('📑 Bookmark added successfully for market:', marketId);
-    return { success: true, message: 'Market bookmarked successfully' };
+    return { success: true, message: 'Tournament bookmarked successfully' };
 
   } catch (error) {
     console.error("Error adding bookmark:", error);
