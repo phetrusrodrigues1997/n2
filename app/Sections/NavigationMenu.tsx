@@ -59,8 +59,6 @@ const NavigationMenu = ({ activeSection, setActiveSection, onMenuToggle, onTrigg
 
   const desktopMenuItems = [
     { id: 'home', label: t.home || 'Home' },
-    { id: 'createPot', label: t.privateMarkets || 'Private Pots' },
-    { id: 'liveMarkets', label: t.liveMarkets || 'Live Markets' },
     { id: 'news', label: 'News' },
     { id: 'bookmarks', label: t.myTournaments || 'My Pots' },
     { id: 'ideas', label: t.ideas || 'Ideas' },
